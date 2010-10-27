@@ -1,7 +1,8 @@
 from django.contrib import admin
 from ecms.models import CmsSite, CmsObject, CmsPageItem
 from django.utils.translation import gettext_lazy as _
-from mptt.admin import MPTTModelAdmin
+from mptt.admin import MPTTModelAdmin   # mptt 0.4
+
 
 # -------- Custom screen definitions --------
 
