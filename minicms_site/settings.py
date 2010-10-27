@@ -87,10 +87,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.media',
+TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.auth',
                                'django.core.context_processors.debug',
                                'django.core.context_processors.i18n',
-                               'django.core.context_processors.auth',
+                               'django.core.context_processors.media',
+                               'django.core.context_processors.request',               # Required by admin_tools
                                'django.contrib.messages.context_processors.messages',  # Django 1.2
                               )
 
@@ -101,7 +102,10 @@ ADMIN_MEDIA_PREFIX = '/admin-media/'
 INTERNAL_IPS = ('127.0.0.1',)
 
 if ENABLE_ADMIN:
-    INSTALLED_APPS += ('django.contrib.admin',
+    INSTALLED_APPS += ('admin_tools.theming',
+                       'admin_tools.menu',
+                       'admin_tools.dashboard',
+                       'django.contrib.admin',
                        'django.contrib.admindocs',
                       )
 

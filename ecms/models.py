@@ -47,8 +47,8 @@ class CmsSite(Site):
     """
 
     class Meta:
-        verbose_name = _('CMS Site')
-        verbose_name_plural = _('CMS Sites')
+        verbose_name = _('CMS Site Settings')
+        verbose_name_plural = _('CMS Site Settings')
 
 
 class CmsObject(MPTTModel):
@@ -95,8 +95,8 @@ class CmsObject(MPTTModel):
 
     class Meta:
         ordering = ('lft', 'sort_order', 'title')
-        verbose_name = _('Object node')
-        verbose_name_plural = _('Object nodes')
+        verbose_name = _('CMS Page')
+        verbose_name_plural = _('CMS Pages')
 
     class MPTTMeta:
         order_insertion_by = 'title'
@@ -115,8 +115,8 @@ class CmsPageItem(models.Model):
 
     class Meta:
         ordering = ('parent', 'sort_order')
-        verbose_name = _('Page Item')
-        verbose_name_plural = _('Page Items')
+        verbose_name = _('CMS Page item')
+        verbose_name_plural = _('CMS Page items')
 
 
 # -------- Legacy mptt support --------

@@ -24,6 +24,7 @@ if settings.ENABLE_ADMIN:
     urlpatterns += patterns('',
         (r'^admin/doc/', include('django.contrib.admindocs.urls')),
         (r'^admin/', include(admin.site.urls)),
+        (r'^admin_tools/', include('admin_tools.urls')),
     )
 
 
