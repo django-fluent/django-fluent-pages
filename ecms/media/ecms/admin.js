@@ -39,9 +39,16 @@
     var href   = event.target.href;
     var active = href.substring( href.indexOf("#") );
 
-    panes.hide().filter("#" + active).show();
+    var activePane = panes.filter("#" + active);
+
+    panes.hide();
+    activePane.show();
     nav.removeClass("active");
     thisnav.addClass("active");
+
+    // Auto focus on first editor.
+    var firstField = activePane.find(".yui-editor-editable-container:first > iframe, .form-row :input:first").eq(0);
+    firstField.focus();
   }
 
 

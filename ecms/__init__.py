@@ -3,6 +3,7 @@ VERSION = (0, 1, 0)
 # Do some sane version checking
 import django
 import mptt
+import django_wysiwyg
 
 if django.VERSION < (1,2,0):
     raise ImportError("At least Django 1.2.0 is required to run this application")

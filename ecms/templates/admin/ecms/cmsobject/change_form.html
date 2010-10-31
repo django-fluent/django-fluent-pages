@@ -1,10 +1,11 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_modify adminmedia %}
+{% load i18n admin_modify adminmedia wysiwyg %}
 
 {% block extrastyle %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}ecms/admin.css" />{% endblock %}
 
 {% block extrahead %}{{ block.super }}
+{% wysiwyg_setup %}
 <script type="text/javascript" src="{{ MEDIA_URL }}ecms/admin.js"></script>{% endblock %}
 
 {% block content %}<div id="content-main">
@@ -51,7 +52,12 @@
   <div id="ecms-tabmain">
 
     <div class="ecms-tab ecms-tab-active" id="tab-content">
-      Main area!
+
+      {# todo: currently hardcode the pageitem editor #}
+
+      <textarea id="cmspageitem_content"></textarea>
+
+      {% wysiwyg_editor "cmspageitem_content" %}
     </div>
 
     <div class="ecms-tab" id="tab-properties">

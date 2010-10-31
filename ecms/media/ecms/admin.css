@@ -78,3 +78,24 @@
 
 .ecms-tab { display: none }
 #ecms-tabmain .ecms-tab-active { display: block }
+
+
+/* ---- Rich editor (quick fixes) ---- */
+
+body.yui-skin-sam .yui-editor-container {
+  border-color: #ccc;
+}
+
+body.yui-skin-sam .yui-editor-container .yui-toolbar-subcont {
+  border-color: #ccc;
+  padding-left: 0.5em;
+}
+
+body.yui-skin-sam .yui-toolbar-container {
+  background-color: #eee;
+}
+
+body.yui-skin-sam .yui-toolbar-container .yui-toolbar-group h3 {
+  font-weight: normal;
+  margin-top: 0.35em;
+}

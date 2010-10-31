@@ -49,6 +49,8 @@ MEDIA_URL   = '/media/'        # Must end with /
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '2x@x)9^etcc3(+6ow74=hh0p=fbzbxpz5)h=s=8qv4kt2c)ze#'
 
+INTERNAL_IPS = ('127.0.0.1',)
+
 
 
 ## --- Plugin components
@@ -56,7 +58,7 @@ SECRET_KEY = '2x@x)9^etcc3(+6ow74=hh0p=fbzbxpz5)h=s=8qv4kt2c)ze#'
 # Extend the python path, to include projects at the same level.
 _appsPath = os.path.dirname(_projectDir)
 if _appsPath not in sys.path:
-    sys.path.append(_appsPath)
+    sys.path.insert(0, _appsPath)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -67,6 +69,7 @@ INSTALLED_APPS = (
     # All site parts should preferably be separate (reusable) apps
     'ecms',
     'mptt',
+    'django_wysiwyg',
 )
 
 ROOT_URLCONF = 'minicms_site.urls'
@@ -87,29 +90,35 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.auth',
-                               'django.core.context_processors.i18n',
-                               'django.core.context_processors.media',
-                               'django.core.context_processors.request',               # Required by admin_tools
-                               'django.contrib.messages.context_processors.messages',  # Django 1.2
-                              )
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.auth',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.request',               # Required by admin_tools
+    'django.contrib.messages.context_processors.messages',  # Django 1.2
+)
+
+
+## -- Application settings
+
+ADMIN_MEDIA_PREFIX = '/admin-media/'
+
+DJANGO_WYSIWYG_FLAVOR = "yui"
 
 
 ## --- Optional Features
-
-ADMIN_MEDIA_PREFIX = '/admin-media/'
-INTERNAL_IPS = ('127.0.0.1',)
 
 if DEBUG:
     TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.debug',)
 
 if ENABLE_ADMIN:
-    INSTALLED_APPS += ('admin_tools.theming',
-                       'admin_tools.menu',
-                       'admin_tools.dashboard',
-                       'django.contrib.admin',
-                       'django.contrib.admindocs',
-                      )
+    INSTALLED_APPS += (
+        'admin_tools.theming',
+        'admin_tools.menu',
+        'admin_tools.dashboard',
+        'django.contrib.admin',
+        'django.contrib.admindocs',
+    )
 
 if ENABLE_TOOLBAR:
     INSTALLED_APPS     += ('debug_toolbar',)
