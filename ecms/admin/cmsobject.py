@@ -21,18 +21,18 @@ class CmsObjectAdmin(MPTTModelAdmin):
     raw_id_fields = ['parent']
     fieldsets = (
         (None, {
-            'fields': ('title',),
-        }),
-        (_('Publication settings'), {
-            'fields': ('status', 'parent', 'publication_date', 'expire_date'),
-            #'classes': ('collapse',),
+            'fields': ('title','status'),
         }),
         (_('SEO settings'), {
             'fields': ('slug', 'keywords', 'description'),
             #'classes': ('collapse',),
-        })
+        }),
+        (_('Publication settings'), {
+            'fields': ('publication_date', 'expire_date', 'parent'),
+            #'classes': ('collapse',),
+        }),
     )
-    radio_fields = {"status": admin.VERTICAL}
+    radio_fields = {"status": admin.HORIZONTAL}
 
 
     def save_model(self, request, obj, form, change):
