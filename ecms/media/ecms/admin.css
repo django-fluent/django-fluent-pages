@@ -1,0 +1,80 @@
+/*
+  Extra CSS for the ECMS admin interface customisations
+ */
+
+
+/* ---- Clearfix ---- */
+
+.ecms-clearfix:after {
+  content:      ".";
+  font-size:    0;
+  line-height:  0;
+  display:      block;
+  height:       0;  
+  clear:        both;
+  visibility:   hidden;
+}
+
+* html .ecms-clearfix { height:     1%; } /* 1% of nothing makes IE 6 do the right thing. */
+*+html .ecms-clearfix { min-height: 0;  } /* and IE7 has new tricks to trigger hasLayout. */
+
+
+/* ---- Tabbar ---- */
+
+#ecms-tabbar {
+  border: 1px solid #EEEEEE;
+}
+
+#ecms-tabnav {
+  margin: 0;
+  padding: 0;
+}
+
+#ecms-tabnav li {
+  float: left;
+  display: inline;
+  list-style-position: inside;
+
+  margin: 3px 0 0 0;
+  padding: 5px 14px 5px 12px;
+  min-width: 100px;
+  height: 13px;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+
+  font-weight: bold;
+  font-size: 12px;
+  background-image: none;
+
+  color: #333333;
+  cursor: pointer;
+}
+
+#ecms-tabnav li.active {
+  margin-top: 0;
+  padding-top: 6px;
+  padding-bottom: 7px;
+  background-image: url('img/default-bg.gif');
+  color: #ffffff;
+}
+
+#ecms-tabnav a {
+  outline: 0;
+}
+
+#ecms-tabnav li.active a {
+  color: #fff;
+}
+
+#ecms-tabmain {
+  padding: 10px;
+  margin: 0 0 10px 0;
+  border: 1px solid #ccc;
+}
+
+
+/* default tabbar appearance */
+
+.ecms-tab { display: none }
+#ecms-tabmain .ecms-tab-active { display: block }

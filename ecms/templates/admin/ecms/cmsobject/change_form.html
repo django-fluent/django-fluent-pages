@@ -1,5 +1,15 @@
-{% extends "admin/change_form.html" %}{% load i18n %}
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify adminmedia %}
 
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}ecms/admin.css" />{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{{ MEDIA_URL }}ecms/admin.js"></script>{% endblock %}
+
+{% block content %}<div id="content-main">
+
+{# overrule toolbar #}
 {% block object-tools %}
 {% if change and not is_popup %}
   <ul class="object-tools">
@@ -8,4 +18,66 @@
     <li><a href="#todo" class="viewsitelink">{% trans "View on site" %}</a></li>
   </ul>
 {% endif %}
+{% endblock %}
+
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
+<div>
+{% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
+{% if save_on_top %}{% submit_row %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% blocktrans count errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+
+
+{# Different layout for fieldsets:  #}
+{# - Display first fieldset on top. #}
+{# - remaining in a properties tab. #}
+
+{% for fieldset in adminform %}
+  {% if forloop.first %}
+  {% include "admin/includes/fieldset.html" %}
+  {% endif %}
+{% endfor %}
+
+<div id="ecms-tabbar">{# todo: this can be view-driven someday #}
+  <ul id="ecms-tabnav" class="ecms-clearfix">
+    <li class="active"><a href="#tab-content">{% trans "Page content" %}</a></li>
+    <li><a href="#tab-properties">{% trans "Properties" %}</a></li>
+  </ul>
+
+  <div id="ecms-tabmain">
+
+    <div class="ecms-tab ecms-tab-active" id="tab-content">
+      Main area!
+    </div>
+
+    <div class="ecms-tab" id="tab-properties">
+      <div id="ecms-fieldset-secondary">
+
+        {% for fieldset in adminform %}
+          {% if not forloop.first%}
+          {% include "admin/includes/fieldset.html" %}
+          {% endif %}
+        {% endfor %}
+
+      </div><!-- /ecms-fieldset-secondary -->
+    </div>
+
+  </div><!-- /ecms-tabmain -->
+</div><!-- /ecms-tabbar -->
+
+{% submit_row %}
+
+{% if adminform and add %}
+   <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>
+{% endif %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</div>
+</form></div>
 {% endblock %}

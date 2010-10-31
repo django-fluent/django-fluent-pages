@@ -25,11 +25,11 @@ class CmsObjectAdmin(MPTTModelAdmin):
         }),
         (_('Publication settings'), {
             'fields': ('status', 'parent', 'publication_date', 'expire_date'),
-            'classes': ('collapse',),
+            #'classes': ('collapse',),
         }),
         (_('SEO settings'), {
             'fields': ('slug', 'keywords', 'description'),
-            'classes': ('collapse',),
+            #'classes': ('collapse',),
         })
     )
     radio_fields = {"status": admin.VERTICAL}
