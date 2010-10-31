@@ -88,7 +88,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.auth',
-                               'django.core.context_processors.debug',
                                'django.core.context_processors.i18n',
                                'django.core.context_processors.media',
                                'django.core.context_processors.request',               # Required by admin_tools
@@ -100,6 +99,9 @@ TEMPLATE_CONTEXT_PROCESSORS = ('django.core.context_processors.auth',
 
 ADMIN_MEDIA_PREFIX = '/admin-media/'
 INTERNAL_IPS = ('127.0.0.1',)
+
+if DEBUG:
+    TEMPLATE_CONTEXT_PROCESSORS += ('django.core.context_processors.debug',)
 
 if ENABLE_ADMIN:
     INSTALLED_APPS += ('admin_tools.theming',
