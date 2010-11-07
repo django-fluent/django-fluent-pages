@@ -78,7 +78,7 @@ class CmsObject(MPTTModel):
     # SEO fields, misc
     keywords = models.CharField(max_length=255, blank=True)
     description = models.CharField(max_length=255, blank=True)
-    sort_order = models.IntegerField(editable=False, default=0)
+    sort_order = models.IntegerField(editable=False, default=1)
 
     # Publication information
     status = models.CharField(_('status'), max_length=1, choices=STATUSES, default=DRAFT)
@@ -105,18 +105,48 @@ class CmsObject(MPTTModel):
         return self.title
 
 
+    # ---- Custom behavior ----
+
+    def save(self, *args, **kwargs):
+        # Check for duplicate slugs at the same level
+        origslug = self.slug
+        dupnr = 1
+        while True:
+            others = CmsObject.objects.filter(parent=self.parent, slug=self.slug)
+            if self.pk:
+                others = others.exclude(pk=self.pk)
+
+            if not others.count():
+                break
+
+            dupnr += 1
+            self.slug = "%s-%d" % (origslug, dupnr)
+
+        return super(CmsObject, self).save(*args, **kwargs)
+
+
+
 class CmsPageItem(models.Model):
     """
     A ```PageItem``` is a content part which is displayed at the page.
     """
+
+    # Note the validation settings defined here are not reflected automatically
+    # in the ecms admin interface because it uses a custom ModelForm to handle these fields.
     parent = models.ForeignKey(CmsObject)
-    sort_order = models.IntegerField(editable=False)
-    region = models.CharField(max_length=128)
+    sort_order = models.IntegerField(editable=False, default=1)
+    region = models.CharField(max_length=128, blank=True)
 
     class Meta:
         ordering = ('parent', 'sort_order')
         verbose_name = _('CMS Page item')
         verbose_name_plural = _('CMS Page items')
+        abstract = True
+
+
+class CmsTextItem(CmsPageItem):
+    """A snippet of text to display on a page"""
+    text = models.TextField(_('text'), blank=True)
 
 
 # -------- Legacy mptt support --------

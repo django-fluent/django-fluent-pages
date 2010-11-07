@@ -4,6 +4,7 @@ import os
 
 DEBUG          = True
 TEMPLATE_DEBUG = DEBUG
+TEMPLATE_STRING_IF_INVALID = ''
 
 # My custom features
 ENABLE_PYDEV   = DEBUG

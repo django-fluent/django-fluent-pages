@@ -55,9 +55,31 @@
 
       {# todo: currently hardcode the pageitem editor #}
 
-      <textarea id="cmspageitem_content"></textarea>
+      <div id="inlines">
+{% for formset in inline_ecms_formsets %}
+    <div id="{{ formset.rel_name }}">
+        <div class="header">
+            {{ formset.management_form }}
+        </div>
+        {% for form in formset.forms %}
+            {{ form.errors }}
+            <div id="{{ formset.rel_name }}_item_{{ forloop.counter0 }}">
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+                    {% else %}
+                        <div class="form-row{% if field.errors %} errors{% endif %}">
+                          {{ field }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endfor %}
+</div>
 
-      {% wysiwyg_editor "cmspageitem_content" %}
+      {% wysiwyg_editor "id_cmstextitem-0-text" %}
     </div>
 
     <div class="ecms-tab" id="tab-properties">
