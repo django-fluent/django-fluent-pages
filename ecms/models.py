@@ -18,13 +18,15 @@ import mptt
 
 # -------- Init code --------
 
+# MPTT 0.3
+MPTTModel = models.Model
+
 try:
-    # MPTT 0.4
+    # MPTT 0.4.
+    # placed below MPTT 0.3 definition so IDE's detect the base class properly.
     from mptt.models import MPTTModel
 except ImportError:
-    # MPTT 0.3
-    MPTTModel = models.Model
-
+    pass
 
 def _get_current_site():
     id = settings.SITE_ID
