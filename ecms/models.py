@@ -8,15 +8,16 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 from django.core.validators import validate_slug
 from django.utils.translation import ugettext_lazy as _
+from django.utils.html import strip_tags
 from django.forms.models import model_to_dict
+from django.template.defaultfilters import truncatewords
 
 from ecms.managers import CmsObjectManager
+import mptt
 
 
 # -------- Init code --------
 
-
-import mptt
 try:
     # MPTT 0.4
     from mptt.models import MPTTModel
@@ -147,6 +148,14 @@ class CmsPageItem(models.Model):
 class CmsTextItem(CmsPageItem):
     """A snippet of text to display on a page"""
     text = models.TextField(_('text'), blank=True)
+
+    class Meta:
+        verbose_name = _('Text item')
+        verbose_name_plural = _('Text items')
+
+    def __unicode__(self):
+        return truncatewords(strip_tags(self.text), 10)
+
 
 
 # -------- Legacy mptt support --------

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ecms.models import CmsSite, CmsObject, CmsPageItem
+from ecms.models import CmsSite, CmsObject, CmsTextItem
 from ecms.admin.cmsobject import CmsObjectAdmin
 
 
@@ -7,5 +7,4 @@ from ecms.admin.cmsobject import CmsObjectAdmin
 
 # Register the models with the admin site
 admin.site.register(CmsSite)
-admin.site.register(CmsPageItem)
 admin.site.register(CmsObject, admin_class=CmsObjectAdmin)
