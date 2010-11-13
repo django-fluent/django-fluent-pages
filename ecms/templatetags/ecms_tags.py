@@ -55,6 +55,9 @@ class SimpleInclusionNode(Node):
 
 
 class EcmsBreadcrumbNode(SimpleInclusionNode):
+    """
+    Template node for breadcrumb.
+    """
     template_name = 'ecms/parts/breadcrumb.html'
 
     def get_context_data(self, context):
@@ -65,9 +68,13 @@ class EcmsBreadcrumbNode(SimpleInclusionNode):
 
 
 class EcmsTopLevelMenuNode(SimpleInclusionNode):
+    """
+    Template Node for topmenu
+    """
     template_name = 'ecms/parts/toplevel_menu.html'
 
     def get_context_data(self, context):
+        # Get page
         page  = _ecms_get_current_page(context)
         items = CmsObject.objects.toplevel_navigation(current_page=page)
 
@@ -77,6 +84,9 @@ class EcmsTopLevelMenuNode(SimpleInclusionNode):
 
 
 class EcmsSubMenuNode(Node):
+    """
+    Template Node for submenu.
+    """
     def render(self, context):
         page = _ecms_get_current_page(context)
 
@@ -85,6 +95,9 @@ class EcmsSubMenuNode(Node):
 # ---- Util functions ----
 
 def _ecms_get_current_page(context):
+    """
+    Fetch the current page.
+    """
     # context = Context()
     assert context.has_key('request'), "ECMS functions require a 'request' object in the context, is RequestProcessor not used?"
     request = context['request']
