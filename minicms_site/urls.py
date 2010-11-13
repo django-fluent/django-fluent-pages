@@ -27,4 +27,7 @@ if settings.ENABLE_ADMIN:
         (r'^admin_tools/', include('admin_tools.urls')),
     )
 
-
+# Include all remaining pages URLs from the CMS
+urlpatterns += patterns('',
+    url(r'.*', include('ecms.urls'))
+)

@@ -71,6 +71,7 @@ INSTALLED_APPS = (
     'ecms',
     'mptt',
     'django_wysiwyg',
+    'vdboor',   # all common stuff, not moved to separate apps yet.
 )
 
 ROOT_URLCONF = 'minicms_site.urls'

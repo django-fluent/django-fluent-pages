@@ -1,0 +1,7 @@
+{% if menu_items %}
+<ul>
+{% for item in menu_items %}
+  <li class="{% if item.is_current %}current{% endif %}{% if forloop.last %} last{% endif %}"><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
