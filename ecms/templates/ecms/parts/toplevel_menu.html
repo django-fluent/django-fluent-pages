@@ -1,7 +1,13 @@
 {% if menu_items %}
 <ul>
 {% for item in menu_items %}
-  <li class="{% if item.is_current %}current{% endif %}{% if forloop.last %} last{% endif %}"><a href="{{ item.url }}">{{ item.title }}</a></li>
+  <li class="{% if item.is_active %}active{% endif %}{% if forloop.last %} last{% endif %}"><a href="{{ item.url }}">{{ item.title }}</a>
+    {% for item in item.children %}
+    {% if forloop.first %}<ul>{% endif %}
+      <li class="{% if item.is_active %}active{% endif %}{% if forloop.last %} last{% endif %}"><a href="{{ item.url }}">{{ item.title }}</a>
+    {% if forloop.last %}</ul>{% endif %}
+    {% endfor %}
+  </li>
 {% endfor %}
 </ul>
 {% endif %}

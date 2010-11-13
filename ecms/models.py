@@ -90,7 +90,7 @@ class CmsObject(MPTTModel):
     # Standard metadata
     title = models.CharField(max_length=255)
     slug = models.SlugField(validators=[validate_slug], help_text=_("The slug is used in the URL of the page"))
-    parent = models.ForeignKey('self', blank=True, null=True, related_name=_('children'), verbose_name=_('parent'))
+    parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
     parent_site = models.ForeignKey(CmsSite, editable=False, default=_get_current_site)
 
     # SEO fields, misc

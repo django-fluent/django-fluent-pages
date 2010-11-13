@@ -4,6 +4,7 @@ Template tags to request ECMS content in the template
 from ecms.models import CmsObject
 from django.template import Template, Library, Node, Context
 from django.template.loader import get_template
+from ecms.navigation import CmsObjectNavigationNode
 
 # Export the tags
 
@@ -69,7 +70,10 @@ class EcmsTopLevelMenuNode(SimpleInclusionNode):
     def get_context_data(self, context):
         page  = _ecms_get_current_page(context)
         items = CmsObject.objects.toplevel_navigation(current_page=page)
-        return {'menu_items': items}
+
+        # Make iterable context
+        menu_items = [CmsObjectNavigationNode(page) for page in items]
+        return {'menu_items': menu_items}
 
 
 class EcmsSubMenuNode(Node):
