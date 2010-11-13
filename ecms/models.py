@@ -5,19 +5,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 
-from django.conf import settings
-
 # Util functions
 from django.core.validators import validate_slug
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import commit_on_success
-from django.forms.models import model_to_dict
 from django.template.defaultfilters import truncatewords
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 
-from ecms.managers import CmsObjectManager
+from ecms.managers import CmsSiteManager, CmsObjectManager
 import mptt
 import types
 
@@ -25,8 +22,6 @@ import types
 # -------- Init code --------
 
 # MPTT 0.3
-
-
 MPTTModel = models.Model
 
 try:
@@ -37,16 +32,7 @@ except ImportError:
     pass
 
 def _get_current_site():
-    id = settings.SITE_ID
-    try:
-        return CmsSite.objects.get(pk=id)
-    except CmsSite.DoesNotExist:
-        # Create CmsSite object on demand, populate with existing site values
-        # so nothing is overwritten with empty values
-        site = Site.objects.get_current()
-        wrapper = CmsSite(**model_to_dict(site))
-        wrapper.save()
-        return wrapper
+    return CmsSite.objects.get_current()
 
 
 # -------- Models --------
@@ -57,9 +43,30 @@ class CmsSite(Site):
     A CmsSite holds all global settings for a site
     """
 
+    # Template properties
+    def _get_title(self):
+        """
+        Return the title of the site.
+        """
+        return self.name
+
+    def _get_url(self):
+        """
+        Return the root/home URL of the site.
+        """
+        return '/'
+
+    title = property(_get_title)
+    url = property(_get_url)
+
+
+    # Django stuff
+    objects = CmsSiteManager()
+
     class Meta:
         verbose_name = _('CMS Site Settings')
         verbose_name_plural = _('CMS Site Settings')
+
 
 
 class CmsObject(MPTTModel):
