@@ -1,6 +1,6 @@
 [submodule "externals/django-wysiwyg"]
 	path = externals/django-wysiwyg
-	url = git://github.com/pydanny/django-wysiwyg.git
+	url = git@github.com:vdboor/django-wysiwyg.git
 [submodule "externals/django-vdboor"]
 	path = externals/django-vdboor
 	url = https://vdboor.homelinux.net/git/django-vdboor.git
