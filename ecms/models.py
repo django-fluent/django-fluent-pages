@@ -211,6 +211,12 @@ class CmsObject(MPTTModel):
         nodes.append(self)
         return nodes
 
+    def _is_published(self):
+        return self.status == self.PUBLISHED
+
+    def is_draft(self):
+        return self.status == self.DRAFT
+
 
     # Map to properties (also for templates)
     supported_page_item_types = property(_get_supported_page_item_types)
@@ -218,6 +224,7 @@ class CmsObject(MPTTModel):
     main_page_item = property(_get_main_page_item)
     breadcrumb = property(_get_breadcrumb)
     url = property(get_absolute_url)
+    is_published = property(_is_published)
 
 
     # ---- Custom behavior ----

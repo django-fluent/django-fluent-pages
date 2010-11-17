@@ -16,7 +16,7 @@
   <ul class="object-tools">
     <li><a href="../add/?parent={{ original.id }}" class="addlink">{% trans "Add Subpage" %}</a></li>
     <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
-    <li><a href="#todo" class="viewsitelink">{% trans "View on site" %}</a></li>
+    {% if original.is_published %}<li><a href="{{ original.url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
   </ul>
 {% endif %}
 {% endblock %}
