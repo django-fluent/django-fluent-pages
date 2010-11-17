@@ -38,7 +38,7 @@ DATABASES = {
 # Language codes
 USE_I18N = True                   # False for optimizations
 TIME_ZONE = 'Europe/Amsterdam'
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'nl_NL'
 
 # Extra autodetection
 _projectDir = os.path.dirname(os.path.realpath(__file__))

@@ -88,14 +88,14 @@ class CmsObject(MPTTModel):
     # Some content types
 
     # Standard metadata
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(validators=[validate_slug], help_text=_("The slug is used in the URL of the page"))
+    title = models.CharField(_('title'), max_length=255)
+    slug = models.SlugField(_('slug'), validators=[validate_slug], help_text=_("The slug is used in the URL of the page"))
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
     parent_site = models.ForeignKey(CmsSite, editable=False, default=_get_current_site)
 
     # SEO fields, misc
-    keywords = models.CharField(max_length=255, blank=True)
-    description = models.CharField(max_length=255, blank=True)
+    keywords = models.CharField(_('keywords'), max_length=255, blank=True)
+    description = models.CharField(_('description'), max_length=255, blank=True)
     sort_order = models.IntegerField(editable=False, default=1)
 
     # Publication information
