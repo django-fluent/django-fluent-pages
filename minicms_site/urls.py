@@ -29,5 +29,5 @@ if settings.ENABLE_ADMIN:
 
 # Include all remaining pages URLs from the CMS
 urlpatterns += patterns('',
-    url(r'.*', include('ecms.urls'))
+    url(r'^$|^(.*)/$', include('ecms.urls'))
 )
