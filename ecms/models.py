@@ -103,6 +103,7 @@ class CmsObject(MPTTModel):
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, help_text=_('''When the page should go live, status must be "Published".'''))
     expire_date = models.DateTimeField(_('publication end date'), null=True, blank=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=True)
+    override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
 
     # Metadata
     author = models.ForeignKey(User, verbose_name=_('author'), editable=False)
@@ -248,9 +249,9 @@ class CmsObject(MPTTModel):
         cached_page_urls = {}
 
         # determine own URL
-        #if self.override_url:
-        #    self._cached_url = self.override_url
-        if self.is_root_node():
+        if self.override_url:
+            self._cached_url = self.override_url
+        elif self.is_root_node():
             self._cached_url = u'/%s/' % self.slug
         else:
             self._cached_url = u'%s%s/' % (self.parent._cached_url, self.slug)
@@ -273,7 +274,11 @@ class CmsObject(MPTTModel):
         subobjects = self.get_descendants().order_by('lft')
         for subobject in subobjects:
             # Set URL, using cache for parent URL.
-            subobject._cached_url = u'%s%s/' % (cached_page_urls[subobject.parent_id], subobject.slug)
+            if subobject.override_url:
+                subobject._cached_url = subobject.override_url  # reaffirms, so enforces consistency
+            else:
+                subobject._cached_url = u'%s%s/' % (cached_page_urls[subobject.parent_id], subobject.slug)
+
             cached_page_urls[subobject.id] = subobject._cached_url
 
             # call base class, do not recurse

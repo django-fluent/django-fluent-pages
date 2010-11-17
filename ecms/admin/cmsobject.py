@@ -29,6 +29,49 @@ class CmsObjectAdminForm(forms.ModelForm):
     class Meta:
         model = CmsObject
 
+    def clean(self):
+        """
+        Extend valiation of the form, checking whether the URL is unique.
+        Returns all fields which are valid.
+        """
+        cleaned_data = super(CmsObjectAdminForm, self).clean()
+
+        # See if the current
+        current_id = None
+        other_objects = CmsObject.objects.all()
+
+        if 'id' in self.initial:
+            # Editing an existing page
+            current_id = self.initial['id']
+            other_objects = other_objects.exclude(id=current_id)
+            parent = CmsObject.objects.get(pk=current_id).parent
+        else:
+            # Creating new page!
+            parent = cleaned_data['parent']
+
+        # If fields are filled in, and still valid, check for unique URL.
+        # Determine new URL (note: also done in CmsObject model..)
+        if cleaned_data['override_url']:
+            new_url = cleaned_data['override_url']
+
+            if other_objects.filter(_cached_url=new_url).count():
+                self._errors['override_url'] = self.error_class([_('This URL is already taken by an other page.')])
+                del cleaned_data['override_url']
+
+        elif cleaned_data['slug']:
+            new_slug = cleaned_data['slug']
+            if parent:
+                new_url = '%s%s/' % (parent._cached_url, new_slug)
+            else:
+                new_url = '/%s/' % new_slug
+
+            if other_objects.filter(_cached_url=new_url).count():
+                self._errors['slug'] = self.error_class([_('This slug is already used by an other page at the same level.')])
+                del cleaned_data['slug']
+
+        return cleaned_data
+
+
 class CmsTextItemInline(admin.StackedInline):
     model = CmsTextItem
     extra = 1
@@ -72,7 +115,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
             #'classes': ('collapse',),
         }),
         (_('Publication settings'), {
-            'fields': ('publication_date', 'expire_date', 'parent'),
+            'fields': ('publication_date', 'expire_date', 'parent', 'override_url'),
             #'classes': ('collapse',),
         }),
     )
