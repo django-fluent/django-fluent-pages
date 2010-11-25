@@ -36,7 +36,7 @@ def _get_current_site():
     return CmsSite.objects.get_current()
 
 
-# -------- Models --------
+# -------- Site structure --------
 
 
 class CmsSite(Site):
@@ -72,7 +72,7 @@ class CmsSite(Site):
 
 class CmsObject(MPTTModel):
     """
-    A ```CmsObject``` represents one tree node (e.g. HTML page) of the site.
+    A ```CmsObject``` represents one tree node (e.g. HTML page, or blog entry) of the site.
     """
 
     # Some publication states
@@ -90,7 +90,7 @@ class CmsObject(MPTTModel):
 
     # Standard metadata
     title = models.CharField(_('title'), max_length=255)
-    slug = models.SlugField(_('slug'), validators=[validate_slug], help_text=_("The slug is used in the URL of the page"))
+    slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
     parent_site = models.ForeignKey(CmsSite, editable=False, default=_get_current_site)
 
@@ -417,3 +417,4 @@ class CmsTextItem(CmsPageItem):
 if hasattr(mptt, 'register'):
     # MPTT 0.3 legacy support
     mptt.register(CmsObject)
+
