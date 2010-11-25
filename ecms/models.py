@@ -135,7 +135,7 @@ class CmsObject(MPTTModel):
         Overwritten representation, so Django still displays short representations
         while subclasses may display the full text with __unicode__
         """
-        return '<%s#%d: %s; %s>' % (self.__class__.__name__, self.id, self._cached_url, smart_str(self.title))
+        return '<%s#%d: %s; %s>' % (self.__class__.__name__, (self.id or 0), self._cached_url, smart_str(self.title))
 
 
     # ---- Extra properties ----
