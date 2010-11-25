@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
-from django.db import transaction
+from django.db import models, transaction
+from django.conf.urls.defaults import patterns
 
 # Core objects
 from django.http import Http404, HttpResponseRedirect
@@ -13,19 +14,23 @@ from django.forms.formsets import all_valid
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_unicode
+from django.utils.functional import curry
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 # Other libs
 from mptt.admin import MPTTModelAdmin   # mptt 0.4
-from ecms.models import CmsObject, CmsTextItem
-from django.utils.functional import curry
+from ecms.models import CmsObject, CmsTextItem, CmsLayout
+from vdboor.ajax import JsonResponse
 
 csrf_protect_m = method_decorator(csrf_protect)
 
 
 class CmsObjectAdminForm(forms.ModelForm):
+    """
+    The admin form for the main fields (the ``CmsObject`` object).
+    """
     class Meta:
         model = CmsObject
 
@@ -87,7 +92,7 @@ class ItemEditorForm(forms.ModelForm):
 
 class CmsObjectAdmin(MPTTModelAdmin):
     """
-    Customisations for the admin interface.
+    The admin screen for the ``CmsObject`` object, with lots of customisations.
     """
 
     # Config list page:
@@ -108,7 +113,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
     raw_id_fields = ['parent']
     fieldsets = (
         (None, {
-            'fields': ('title','status'),
+            'fields': ('title','status','layout'),
         }),
         (_('SEO settings'), {
             'fields': ('slug', 'keywords', 'description'),
@@ -119,7 +124,40 @@ class CmsObjectAdmin(MPTTModelAdmin):
             #'classes': ('collapse',),
         }),
     )
-    radio_fields = {"status": admin.HORIZONTAL}
+    radio_fields = {'status': admin.HORIZONTAL}
+
+
+
+    # ---- Extra Ajax views ----
+
+
+    def get_urls(self):
+        """
+        Introduce more urls
+        """
+        urls = super(CmsObjectAdmin, self).get_urls()
+        my_urls = patterns('',
+            (r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view))
+        )
+        return my_urls + urls
+
+
+    def get_layout_view(self, request, id):
+        """
+        Return the metadata about a layout
+        """
+        try:
+            layout = CmsLayout.objects.get(pk=id)
+            json = {
+                'id': layout.id,
+                'key': layout.key,
+                'title': layout.title,
+                'regions': [{ 'key': r.key, 'title': r.title, 'role': r.role} for r in layout.regions.only('key', 'title', 'role')]
+            }
+        except CmsLayout.DoesNotExist:
+            json = None
+
+        return JsonResponse(json)
 
 
     # ---- Hooking into show/save ----

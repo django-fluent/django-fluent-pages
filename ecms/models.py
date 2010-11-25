@@ -4,6 +4,7 @@ Database model for django-enterprise-cms
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.conf import settings
 
 # Util functions
 from django.core.validators import validate_slug
@@ -99,6 +100,7 @@ class CmsObject(MPTTModel):
     sort_order = models.IntegerField(editable=False, default=1)
 
     # Publication information
+    layout = models.ForeignKey('CmsLayout', verbose_name=_('Layout'))
     status = models.CharField(_('status'), max_length=1, choices=STATUSES, default=DRAFT)
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, help_text=_('''When the page should go live, status must be "Published".'''))
     expire_date = models.DateTimeField(_('publication end date'), null=True, blank=True)
@@ -293,6 +295,67 @@ class CmsObject(MPTTModel):
 
         return super(CmsObject, self).save(*args, **kwargs)
 
+
+# -------- Page layout models --------
+
+
+class CmsLayout(models.Model):
+    """
+    A ```CmsLayout``` object defines a layout of a page; which content blocks are available.
+    """
+
+    key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
+    title = models.CharField(_('title'), max_length=255)
+    template_path = models.FilePathField('template file', path=settings.TEMPLATE_DIRS[0], match=r'.*\.html$', recursive=True)
+    #no children
+    #unique
+    #allowed_children
+
+    # Django stuff
+    def __unicode__(self):
+        return self.title
+
+    class Meta:
+        ordering = ('title',)
+        verbose_name = _('Page layout')
+        verbose_name_plural = _('Page layouts')
+
+
+class CmsRegion(models.Model):
+    """
+    A ```CmsRegion``` is a part of a ```CmsLayout```.
+    It defines a specific area of the page where content can be entered.
+    """
+
+    # The 'role' field is useful for migrations,
+    # e.g. moving from a 2-col layout to a 3-col layout.
+    # Based on the role of a pageitem, meaningful conversions can be made.
+    MAIN = 'm'
+    SIDEBAR = 's'
+    RELATED = 'r'
+    ROLES = (
+        (MAIN, _('Main content')),
+        (SIDEBAR, _('Sidebar content')),
+        (RELATED, _('Related content'))
+    )
+
+    layout = models.ForeignKey(CmsLayout, related_name='regions', verbose_name=_('Layout'))
+    key = models.SlugField(_('Template key'), help_text=_("A short name to identify the region in the template code"))
+    title = models.CharField(_('tab title'), max_length=255)
+    inherited = models.BooleanField(_('use parent contents by default'), editable=False, blank=True)
+    role = models.CharField(_('role'), max_length=1, choices=ROLES, default=MAIN)
+
+
+    def __unicode__(self):
+        return self.key + ': ' + self.title
+
+    class Meta:
+        ordering = ('title',)
+        verbose_name = _('Layout region')
+        verbose_name_plural = _('Layout regions')
+
+
+# -------- Page contents--------
 
 
 class CmsPageItem(models.Model):

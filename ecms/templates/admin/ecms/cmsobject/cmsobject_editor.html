@@ -6,10 +6,16 @@
 
 {% block extrahead %}{{ block.super }}
 {% wysiwyg_setup %}
-<script type="text/javascript" src="{{ MEDIA_URL }}ecms/admin.js"></script>{% endblock %}
+<script type="text/javascript" src="{{ MEDIA_URL }}ecms/admin.js"></script>
+<script type="text/javascript">
+  // Pass database data to the admin.js file.
+  var regions   = [ {% for region in original.layout.regions.all %}{ key: '{{ region.key|escapejs }}', title: '{{ region.title|escapejs }}', role: '{{ region.role|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
+  var formsets  = [ {% for formset in inline_ecms_formsets %}{name: '{{ formset.rel_name|escapejs }}', auto_id: '{{ formset.auto_id|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
+  ecms_admin.setRegions( regions );
+  ecms_admin.setFormSets( formsets )
+</script>{% endblock %}
 
 {% block content %}<div id="content-main">
-
 {# overrule toolbar #}
 {% block object-tools %}
 {% if change and not is_popup %}
@@ -31,6 +37,7 @@
     </p>
     {{ adminform.form.non_field_errors }}
 {% endif %}
+</div>
 
 
 {# Different layout for fieldsets:  #}
@@ -43,43 +50,32 @@
   {% endif %}
 {% endfor %}
 
-<div id="ecms-tabbar">{# todo: this can be view-driven someday #}
+<div id="ecms-tabbar"{% if not original.layout %} style="display:none"{% endif %}>
   <ul id="ecms-tabnav" class="ecms-clearfix">
-    <li class="active"><a href="#tab-content">{% trans "Page content" %}</a></li>
+    {% for region in original.layout.regions.all %}
+    <li class="ecms-region{% if forloop.first %} active{% endif %}"><a href="#tab-region-{{ region.key }}">{{ region.title }}</a></li>
+    {% endfor %}
+    <li id="ecms-tabnav-loading" style="display: none"><a href="#">{% trans "Loading layout data..." %}</a></li></li>
+    <li id="ecms-tabnav-orphaned" style="display: none"><a href="#tab-orphaned">{% trans "Orphaned content" %}</a></li>
     <li><a href="#tab-properties">{% trans "Properties" %}</a></li>
   </ul>
 
   <div id="ecms-tabmain">
+    {% for region in original.layout.regions.all %}
 
-    <div class="ecms-tab ecms-tab-active" id="tab-content">
+    <div class="ecms-tab ecms-region-tab{% if forloop.first %} ecms-tab-active{% endif %}" id="tab-region-{{ region.key }}">
+
+      <div class="ecms-region-empty">
+        {% trans "Region empty" %}
+      </div>
 
       {# todo: currently hardcode the pageitem editor #}
-
-      <div id="inlines">
-{% for formset in inline_ecms_formsets %}
-    <div id="{{ formset.rel_name }}">
-        <div class="header">
-            {{ formset.management_form }}
-        </div>
-        {% for form in formset.forms %}
-            {{ form.errors }}
-            <div id="{{ formset.rel_name }}_item_{{ forloop.counter0 }}">
-                {% for field in form %}
-                    {% if field.is_hidden %}
-                        {{ field }}
-                    {% else %}
-                        <div class="form-row{% if field.errors %} errors{% endif %}">
-                          {{ field }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        {% endfor %}
     </div>
-{% endfor %}
-</div>
 
-      {% wysiwyg_editor "id_cmstextitem-0-text" %}
+    {% endfor %}
+
+    <div class="ecms-tab" id="tab-orphaned">
+
     </div>
 
     <div class="ecms-tab" id="tab-properties">
@@ -106,6 +102,36 @@
 {# JavaScript for prepopulated fields #}
 {% prepopulated_fields_js %}
 
-</div>
-</form></div>
+
+{# The inlines are defined here so the information is available in the page. #}
+{# Visually however, they are reorganized across the various region tabs #}
+<div id="inlines" style="xdisplay: none;">
+{% for formset in inline_ecms_formsets %}
+  <div id="{{ formset.rel_name }}">
+    <div class="header">
+      {{ formset.management_form }}
+    </div>
+
+    {% for form in formset.forms %}
+      {{ form.errors }}
+      <div id="{{ formset.rel_name }}_item_{{ forloop.counter0 }}">
+        {% for field in form %}
+          {% if field.is_hidden %}
+            {{ field }}
+          {% else %}
+            <div class="form-row{% if field.errors %} errors{% endif %}">
+              {{ field }}
+            </div>
+          {% endif %}
+        {% endfor %}
+        {# wysiwyg_editor "id_cmstextitem-0-text" #}
+      </div>
+    {% endfor %}
+  </div>
+{% endfor %}
+</div><!-- /inlines -->
+
+</form>
+
+</div><!-- /content-main -->
 {% endblock %}
