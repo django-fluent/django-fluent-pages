@@ -61,7 +61,11 @@
 
 #ecms-tabnav a {
   outline: 0;
+  display: block;
 }
+
+* html #ecms-tabnav li.active a { height: 1%;    } /* IE 6 */
+*+html #ecms-tabnav li.active a { min-height: 0; } /* IE 7 */
 
 #ecms-tabnav li.active a {
   color: #fff;
