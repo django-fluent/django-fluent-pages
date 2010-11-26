@@ -24,7 +24,13 @@
   , 'setFormSets': function(data) { formsets  = data; }
   }
 
+  // Global vars
   var dom_formsets = {};  // { tab: DOM, items: [ item1, item2 ] }
+
+  // Constants
+  var REGION_ROLE_MAIN = 'm';
+  var REGION_ROLE_SIDEBAR = 's';
+  var REGION_ROLE_RELATED = 'r';
 
 
   /**
@@ -65,20 +71,16 @@
       var item = items.eq(i);
 
       // Get inputs
-      var inputs         = item.find("input");
-      var input_region   = inputs.filter("[name$=-region]").addClass("ecms-input-region");
-      var input_ordering = inputs.filter("input[name$=-ordering]").addClass("ecms-input-ordering");
-      var region   = input_region.val();
-      var ordering = input_ordering.val();
+      var inputs   = item.find("input");
+      var region   = inputs.filter("[name$=-region]").addClass("ecms-input-region").val();;
+      var ordering = inputs.filter("input[name$=-ordering]").addClass("ecms-input-ordering").val();
 
       // Create administration for first item.
       if(! dom_formsets[region])
       {
         dom_formsets[region] = {
-          key:            region
-        , input_region:   input_region
-        , input_ordering: input_ordering
-        , items:          []
+          key:   region
+        , items: []
         };
       }
 
@@ -91,35 +93,175 @@
 
   function organize_formset_items()
   {
+    // Get default region.
+    var default_region_id = get_region(REGION_ROLE_MAIN, 1);
+    var roles_seen = {};
+
     // Move all items to the tabs.
     for(var region_id in dom_formsets)
     {
       region = dom_formsets[region_id];
 
+      if( region_id == '' )
+      {
+        region_id = default_region_id;
+      }
+      else
+      {
+        if(roles_seen[region_id] == null)
+          roles_seen[region_id] = 1;
+        else
+          roles_seen[region_id]++;
+      }
+
       // Use orphaned tab for separate content.
-      var tab = $("#tab-region-" + region);
+      var tab = $("#tab-region-" + region_id);
       if( tab.length == 0 )
       {
         // Find a different tab, based on the role.
         // This role exists to assist in migrations.
+        fallback_region_id = get_region(region.role || REGION_ROLE_MAIN, roles_seen[region.key]);
+        if( fallback_region_id )
+        {
+          tab = $("#tab-region-" + fallback_region_id);
+          region_id = fallback_region_id;
+        }
 
-
-        // Fallback to special tab for orphans
-        $("#ecms-tabnav-orphaned").css("display", "inline");
-        tab = $("#tab-orphaned");
+        if( tab.length == 0 )
+        {
+          // Fallback to special tab for orphans
+          $("#ecms-tabnav-orphaned").css("display", "inline");
+          tab = $("#tab-orphaned");
+        }
       }
 
       // Move items to tab
       if( region.items.length > 0 )
       {
         tab.children(".ecms-region-empty").hide();
+
+        // Move all items to that tab.
+        // Restore item values upon restoring fields.
         for(var ordering in region.items)
         {
-          var item = region.items[ordering];
+          var item   = region.items[ordering];
+          var itemId = item.attr("id");
+
+          // Remove the item.
+          disable_wysiwyg(item);
+          var values = get_input_values(item);
           tab.append( item.remove() );
+
+          // Fetch the node reference as it was added to the DOM.
+          item = tab.children("#" + itemId);
+          region.items[ordering] = item;
+
+          // Re-enable the item
+          set_input_values(item, values);
+          enable_wysiwyg(item);
         }
       }
     }
+
+    // In case a previous set of tabs was invalidated,
+    // they can be removed now. The sub items are migrated.
+    cleanup_old_tabs();
+  }
+
+
+  /**
+   * Find the desired region, including the preferred occurrence of it.
+   */
+  function get_region(role, preferredNr)
+  {
+    var candidate = null;
+    var itemNr = 0;
+    for(var i = 0; i < regions.length; i++)
+    {
+      var region = regions[i];
+      if(region.role == role)
+      {
+        candidate = region.key;
+        itemNr++;
+
+        if( itemNr == preferredNr || !preferredNr )
+          return candidate;
+      }
+    }
+
+    return candidate;
+  }
+
+
+  function get_input_values(root)
+  {
+    var inputs = root.find(":input");
+    var values = {};
+    for(var i = 0; i < inputs.length; i++)
+    {
+      var input = inputs.eq(i);
+      values[input.attr("name")] = input.val();
+    }
+
+    return values;
+  }
+
+
+  function set_input_values(root, values)
+  {
+    var inputs = root.find(":input");
+    for(var i = 0; i < inputs.length; i++)
+    {
+      var input = inputs.eq(i);
+      var value = values[input.attr("name")];
+      if(value != null)
+        input.val(value);
+    }
+  }
+
+  function disable_wysiwyg(root)
+  {
+    var textareas = root.find("textarea.vLargeTextField").toArray();
+    for(var i = 0; i < textareas.length; i++)
+    {
+      var textarea = textareas[i];
+      django_wysiwyg_disable("e:" + textarea.name);
+    }
+  }
+
+  function enable_wysiwyg(root)
+  {
+    var textareas = root.find("textarea.vLargeTextField").toArray();
+    for(var i = 0; i < textareas.length; i++)
+    {
+      var textarea = textareas[i];
+      django_wysiwyg_enable("e:" + textarea.name, textarea.id);
+    }
+  }
+
+  function invalidate_tabs()
+  {
+    // Invalidate tab titles
+    $("#ecms-tabnav-loading").show();
+    $("#ecms-tabnav-orphaned").hide();
+    $("#ecms-tabnav > li.ecms-region").remove();
+
+    var tabmain = $("#ecms-tabmain");
+    var height = tabmain.height();
+    if( height )
+    {
+      tabmain.css("height", height + "px");  // set fixed height to avoid scrollbar/footer flashing.
+    }
+    tabmain.children(".ecms-region-tab").removeClass("ecms-region-tab").addClass("ecms-region-oldtab").attr("id",null).hide();
+  }
+
+  function cleanup_old_tabs()
+  {
+    var tabmain = $("#ecms-tabmain");
+    tabmain.children(".ecms-region-oldtab").remove();
+
+    // After children height recalculations / wysiwyg initialisation, restore auto height.
+    setTimeout( function() { tabmain.css("height", ''); }, 100 );
   }
 
 
@@ -135,6 +277,9 @@
       return;
     }
 
+    // Disable content
+    invalidate_tabs();
+
     if( event.originalEvent )
     {
       // Real change event
@@ -145,12 +290,6 @@
       // Manual invocation, to restore at refresh
       $("#ecms-tabbar").show();
     }
-
-    // Invalidate tabs
-    $("#ecms-tabnav-loading").show();
-    $("#ecms-tabnav-orphaned").hide();
-    $("#ecms-tabnav > li.ecms-region").remove();
-    $("#ecms-tabmain > .ecms-region-tab").remove();
 
     // Get layout info.
     $.ajax({

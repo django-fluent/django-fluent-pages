@@ -86,6 +86,10 @@
 
 /* ---- Rich editor (quick fixes) ---- */
 
+#ecms-tabmain textarea.vLargeTextField {
+  display: none;  /* avoid flashing a textarea which is to become a WYSIWYG editor */
+}
+
 body.yui-skin-sam .yui-editor-container {
   border-color: #ccc;
 }
