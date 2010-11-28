@@ -2,12 +2,11 @@
 Template tags to request ECMS content in the template
 """
 from ecms.models import CmsObject
-from django.template import Template, Library, Node, Context
+from django.template import Template, TemplateSyntaxError, Library, Node, Context
 from django.template.loader import get_template
 from ecms.navigation import CmsObjectNavigationNode
 
 # Export the tags
-
 register = Library()
 
 
@@ -27,6 +26,16 @@ def _parse_ecms_menu(parser, token):
 @register.tag(name='render_ecms_sub_menu')
 def _parse_ecms_sub_menu(parser, token):
     return EcmsSubMenuNode()
+
+
+@register.tag(name='render_ecms_region')
+def _parse_ecms_region(parser, token):
+    try:
+        (tag_name, region_name) = token.split_contents()
+    except ValueError:
+        raise TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
+    token.split_contents()
+    return EcmsRegionNode(region_name)
 
 
 
@@ -75,11 +84,11 @@ class EcmsTopLevelMenuNode(SimpleInclusionNode):
 
     def get_context_data(self, context):
         # Get page
-        page  = _ecms_get_current_page(context)
-        items = CmsObject.objects.toplevel_navigation(current_page=page)
+        page      = _ecms_get_current_page(context)
+        top_pages = CmsObject.objects.toplevel_navigation(current_page=page)
 
         # Make iterable context
-        menu_items = [CmsObjectNavigationNode(page) for page in items]
+        menu_items = [CmsObjectNavigationNode(page) for page in top_pages]
         return {'menu_items': menu_items}
 
 
@@ -89,6 +98,22 @@ class EcmsSubMenuNode(Node):
     """
     def render(self, context):
         page = _ecms_get_current_page(context)
+
+
+class EcmsRegionNode(Node):
+    """
+    Template Node for a region.
+    """
+    def __init__(self, region_name):
+        self.region_name = region_name
+
+    def render(self, context):
+        page  = _ecms_get_current_page(context)
+        items = page.regions[self.region_name]
+        if not items:
+            return "<!-- no items in region '%s' -->" % self.region_name
+        else:
+            return items.render()   # is CmsPageItemList.render()
 
 
 
@@ -106,4 +131,4 @@ def _ecms_get_current_page(context):
     if not request._ecms_current_page:
         request._ecms_current_page = CmsObject.objects.get_for_path(request.path)
 
-    return request._ecms_current_page
+    return request._ecms_current_page  # is a CmsObject

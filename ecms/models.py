@@ -16,6 +16,7 @@ from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 
 from ecms.managers import CmsSiteManager, CmsObjectManager
+from ecms.contents import CmsObjectRegionDict, CmsPageItemList
 import mptt
 import types
 
@@ -93,6 +94,7 @@ class CmsObject(MPTTModel):
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
     parent_site = models.ForeignKey(CmsSite, editable=False, default=_get_current_site)
+    #children = a RelatedManager
 
     # SEO fields, misc
     keywords = models.CharField(_('keywords'), max_length=255, blank=True)
@@ -146,8 +148,10 @@ class CmsObject(MPTTModel):
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
         self._original_cached_url = self._cached_url
-        self._cached_main_item = None
+        self._cached_page_items = None
+        self._cached_main_items = None
         self._cached_ancestors = None
+        self._cached_region_dict = None
         self.is_current = None    # Can be defined by mark_current()
         self.is_onpath = None     # is an ancestor of the current node (part of the "menu trail").
 
@@ -167,38 +171,53 @@ class CmsObject(MPTTModel):
         return CmsPageItem.__subclasses__()
 
 
-    def _get_page_items(self, subtypes=None, region=None):
+    def _get_page_items(self):
         """
         Return all page items which are associated with the page.
+        This is a list of different object types, all inheriting from ``CmsPageItem``.
         """
-        objects = []
-        for ItemType in (subtypes or self.supported_page_item_types):
-            # Get all items per type.
-            query = ItemType.objects.filter(parent=self.id)
-            if region:
-                query = query.filter(region=region)
+        if not self._cached_page_items:
+            items = []
+            # Get all items per object type.
+            for ItemType in self.supported_page_item_types:
+                query = ItemType.objects.filter(parent=self.id)
+                items.extend(query)
 
-            # Execute query
-            objects.extend(query)
+            # order by region, wrap in CmsPageItemList so it can be rendered
+            # directly using {{ ecms_page.page_items }}
+            items.sort(key=lambda x: x.sort_order)
+            self._cached_page_items = CmsPageItemList(items)
 
-        objects.sort(key=lambda x: x.sort_order)
-        return objects
+        return self._cached_page_items
 
 
-    def _get_main_page_item(self):
+    def _get_regions(self):
+        """
+        Access the region information.
+
+        This allows template tags like {{ ecms_page.regions.main }}
+        """
+        if not self._cached_region_dict:
+            # Assume all regions will be read (why else would you include regions in a layout)
+            # Therefore, read them all, and construct a dict-like object which provides
+            # an API to read the data through a structured interface.
+            regions = self.layout.regions.only("key", "role")
+            all_page_items = self._get_page_items()
+            self._cached_region_dict = CmsObjectRegionDict(regions, all_page_items)
+
+        return self._cached_region_dict
+
+
+    def _get_main_page_items(self):
         """
         Return the main page items.
         """
-        if self._cached_main_item:
-            return self._cached_main_item
+        if not self._cached_main_items:
+            main_keys  = [region.key for region in self.layout.regions.filter(role=CmsRegion.MAIN).only("key")] + ['__main__']
+            main_items = [item for item in self.page_items if item.region in main_keys]
+            self._cached_main_items = CmsPageItemList(main_items)  # should already be ordered properly
 
-        # Get item
-        items = self._get_page_items(region='__main__')
-        if not items:
-            raise CmsPageItem.DoesNotExist("No CmsPageItem deriative found with region '__main__'.")
-
-        self._cached_main_item = items[0]
-        return items[0]
+        return self._cached_main_items
 
 
     def _get_breadcrumb(self):
@@ -213,6 +232,7 @@ class CmsObject(MPTTModel):
         nodes.append(self)
         return nodes
 
+
     def _is_published(self):
         return self.status == self.PUBLISHED
 
@@ -223,7 +243,8 @@ class CmsObject(MPTTModel):
     # Map to properties (also for templates)
     supported_page_item_types = property(_get_supported_page_item_types)
     page_items = property(_get_page_items)
-    main_page_item = property(_get_main_page_item)
+    regions = property(_get_regions)
+    main_page_items = property(_get_main_page_items)
     breadcrumb = property(_get_breadcrumb)
     url = property(get_absolute_url)
     is_published = property(_is_published)
@@ -307,6 +328,7 @@ class CmsLayout(models.Model):
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
     title = models.CharField(_('title'), max_length=255)
     template_path = models.FilePathField('template file', path=settings.TEMPLATE_DIRS[0], match=r'.*\.html$', recursive=True)
+    #regions = a RelatedManager
     #no children
     #unique
     #allowed_children
@@ -361,6 +383,8 @@ class CmsRegion(models.Model):
 class CmsPageItem(models.Model):
     """
     A ```PageItem``` is a content part which is displayed at the page.
+
+    The item renders itself by overriding ``__unicode__``.
     """
 
     # Note the validation settings defined here are not reflected automatically
@@ -387,6 +411,17 @@ class CmsPageItem(models.Model):
         return '<%s: #%d, region=%s, content=%s>' % (self.__class__.__name__, self.id, self.region, smart_str(truncatewords(strip_tags(unicode(self)), 10)))
 
 
+    def render(self):
+        """
+        By default, the unicode string is rendered.
+        """
+        return unicode(self)
+
+
+    def __unicode__(self):
+        return _(u"{No rendering defined for class '%s'}" % self.__class__.__name__)
+
+
     class Meta:
         ordering = ('parent', 'sort_order')
         verbose_name = _('CMS Page item')
@@ -409,7 +444,6 @@ class CmsTextItem(CmsPageItem):
         # No wrapping, but return the full text.
         # works nicer for templates (e.g. mark_safe(main_page_item).
         return self.text
-
 
 
 # -------- Legacy mptt support --------

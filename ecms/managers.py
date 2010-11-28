@@ -93,7 +93,6 @@ class CmsObjectManager(DecoratorManager):
         return items
 
 
-
 # Implemented as method, to avoid overwriting the QuerySet once again.
 def _mark_current(qs, current_page):
     """

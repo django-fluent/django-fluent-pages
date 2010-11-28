@@ -26,7 +26,6 @@ def cmspage(request, path):
     context = {
         'ecms_site': site,
         'ecms_page': page,
-        'ecms_main_content': SimpleLazyObject(lambda: mark_safe(page.main_page_item))
     }
 
     return render_to_response("ecms/cmspage.html", context, context_instance=RequestContext(request))
