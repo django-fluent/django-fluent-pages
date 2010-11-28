@@ -256,11 +256,6 @@ class CmsObjectAdmin(MPTTModelAdmin):
                 for PageItemType, FormSetClass in inline_formset_types
             ]
 
-            # Fill initial values in extra forms.
-            first_spare = inline_formsets[0].extra_forms[0]
-            region_field = first_spare.fields['text']
-            region_field.initial = 'Hallo!'
-
             # Get all standard admin inlines
             prefixes = {}
             for FormSet, inline in zip(self.get_formsets(request),
