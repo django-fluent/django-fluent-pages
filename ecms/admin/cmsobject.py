@@ -246,6 +246,10 @@ class CmsObjectAdmin(MPTTModelAdmin):
                 if isinstance(f, models.ManyToManyField):
                     initial[k] = initial[k].split(",")
 
+            # The first page becomes the homepage by default.
+            if not CmsObject.objects.count():
+                initial['override_url'] = '/'
+
             # Get form and ecms inlines
             form = ModelForm(initial=initial)
             dummy_object = self.model()
