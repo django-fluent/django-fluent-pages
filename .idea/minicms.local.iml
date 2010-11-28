@@ -6,6 +6,7 @@
         <option name="rootFolder" value="$MODULE_DIR$" />
         <option name="templatesFolders" value="$MODULE_DIR$/minicms_site/templates" />
         <option name="settingsModule" value="minicms_site/settings.py" />
+        <option name="manageScript" value="manage.py" />
       </configuration>
     </facet>
   </component>
