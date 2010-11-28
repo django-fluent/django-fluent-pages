@@ -143,14 +143,15 @@ class CmsObjectAdmin(MPTTModelAdmin):
         """
         try:
             layout = CmsLayout.objects.get(pk=id)
-            json = {
-                'id': layout.id,
-                'key': layout.key,
-                'title': layout.title,
-                'regions': [{ 'key': r.key, 'title': r.title, 'role': r.role} for r in layout.regions.only('key', 'title', 'role')]
-            }
         except CmsLayout.DoesNotExist:
-            json = None
+            return JsonResponse(None)
+
+        json = {
+            'id': layout.id,
+            'key': layout.key,
+            'title': layout.title,
+            'regions': [{ 'key': r.key, 'title': r.title, 'role': r.role} for r in layout.regions.only('key', 'title', 'role')]
+        }
 
         return JsonResponse(json)
 
