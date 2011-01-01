@@ -250,6 +250,22 @@ class CmsObject(MPTTModel):
     is_published = property(_is_published)
 
 
+    # ---- Page rendering ----
+
+
+    def get_template_context(self):
+        """
+        Return all context variables required to render a page properly.
+
+        This includes the ``ecms_page`` and ``ecms_site`` variables.
+        """
+        context = {
+            'ecms_page': self,
+            'ecms_site': self.parent_site
+        }
+        return context
+
+
     # ---- Custom behavior ----
 
     # This code runs in a transaction since it's potentially editing a lot of records.
