@@ -51,8 +51,8 @@ class CmsObjectManager(DecoratorManager):
         """
         try:
             return self.get_for_path(path)
-        except self.model.DoesNotExist:
-            raise Http404("No published CmsObject found for the path: '%s'" % path)
+        except self.model.DoesNotExist, e:
+            raise Http404(e)
 
 
     def get_for_path(self, path):
@@ -61,9 +61,14 @@ class CmsObjectManager(DecoratorManager):
 
         Raises CmsObject.DoesNotExist when the item is not found.
         """
+        # Normalize slashes
         stripped = path.strip('/')
         stripped = stripped and u'/%s/' % stripped or '/'
-        return self.published().get(_cached_url=stripped)
+
+        try:
+            return self.published().get(_cached_url=stripped)
+        except self.model.DoesNotExist:
+            raise self.model.DoesNotExist("No published CmsObject found for the path '%s'" % stripped)
 
 
     def published(self):

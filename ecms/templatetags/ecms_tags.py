@@ -123,12 +123,26 @@ def _ecms_get_current_page(context):
     """
     Fetch the current page.
     """
-    # context = Context()
+    # Enforce the use of a RequestProcessor, e.g.
+    # render_to_response("tpl", context, context_instance=RequestProcessor(request))
     assert context.has_key('request'), "ECMS functions require a 'request' object in the context, is RequestProcessor not used?"
     request = context['request']
 
-    # Load on demand, e.g. calling the ecms template tags outside the standard view.
-    if not request._ecms_current_page:
-        request._ecms_current_page = CmsObject.objects.get_for_path(request.path)
+    # This is a load-on-demand attribute, to allow calling the ecms template tags outside the standard view.
+    # When the current page is not specified, do auto-detection.
+    if not hasattr(request, '_ecms_current_page'):
+        try:
+            # First start with something you can control,
+            # and likely want to mimic from the standard view.
+            request._ecms_current_page = context['ecms_page']
+        except KeyError:
+            try:
+                # Then try looking up environmental properties.
+                request._ecms_current_page = CmsObject.objects.get_for_path(request.path)
+            except CmsObject.DoesNotExist, e:
+                # Be descriptive. This saves precious developer time.
+                raise CmsObject.DoesNotExist("Could not detect current page.\n"
+                                             "- " + unicode(e) + "\n"
+                                             "- No context variable named 'ecms_page' found.")
 
     return request._ecms_current_page  # is a CmsObject
