@@ -268,13 +268,30 @@ class CmsObject(MPTTModel):
 
     # ---- Custom behavior ----
 
-    # This code runs in a transaction since it's potentially editing a lot of records.
+    # This code runs in a transaction since it's potentially editing a lot of records (all decendant urls).
     @commit_on_success
     def save(self, *args, **kwargs):
         """
         Save the model, and update caches.
         """
-        # Check for duplicate slugs at the same level
+        # Store this object
+        self._make_slug_unique()
+        self._update_cached_url()
+        super(CmsObject, self).save(*args, **kwargs)
+
+        # Update others
+        self._update_decendant_urls()
+        return super(CmsObject, self).save(*args, **kwargs)
+
+
+    # Following of the principles for "clean code"
+    # the save() method is split in the 3 methods below,
+    # each "do one thing, and only one thing".
+
+    def _make_slug_unique(self):
+        """
+        Check for duplicate slugs at the same level, and make the current object unique.
+        """
         origslug = self.slug
         dupnr = 1
         while True:
@@ -288,11 +305,13 @@ class CmsObject(MPTTModel):
             dupnr += 1
             self.slug = "%s-%d" % (origslug, dupnr)
 
-        # Update the URLs
+
+    def _update_cached_url(self):
+        """
+        Update the URLs
+        """
         # This block of code is largely inspired and based on FeinCMS
         # (c) Matthias Kestenholz, BSD licensed
-
-        cached_page_urls = {}
 
         # determine own URL
         if self.override_url:
@@ -302,19 +321,21 @@ class CmsObject(MPTTModel):
         else:
             self._cached_url = u'%s%s/' % (self.parent._cached_url, self.slug)
 
-        # And store this object
-        super(CmsObject, self).save(*args, **kwargs)
-        cached_page_urls[self.id] = self._cached_url
 
-        # Okay, we changed the URL -- remove the old stale entry from the cache
-#        if settings.FEINCMS_USE_CACHE:
-#            ck = 'PAGE-FOR-URL-' + self._original_cached_url.strip('/')
-#            django_cache.delete(ck)
+    def _update_decendant_urls(self):
+        """
+        Update the URLs of all decendant pages.
+        """
+        # This block of code is largely inspired and based on FeinCMS
+        # (c) Matthias Kestenholz, BSD licensed
 
         # Performance optimisation: avoid traversing and updating many records
         # when nothing changed in the URL.
         if self._cached_url == self._original_cached_url:
             return
+
+        # Keep cache
+        cached_page_urls = {self.id: self._cached_url}
 
         # Update all sub objects
         subobjects = self.get_descendants().order_by('lft')
@@ -329,8 +350,6 @@ class CmsObject(MPTTModel):
 
             # call base class, do not recurse
             super(CmsObject, subobject).save()
-
-        return super(CmsObject, self).save(*args, **kwargs)
 
 
 # -------- Page layout models --------
