@@ -163,6 +163,9 @@ class CmsObjectAdmin(MPTTModelAdmin):
         if not change:
             obj.author = request.user
 
+        # Set default values for hidden fields.
+        obj.in_navigation = True
+
         obj.save()
 
 
