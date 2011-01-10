@@ -66,8 +66,8 @@ class CmsSite(Site):
     objects = CmsSiteManager()
 
     class Meta:
-        verbose_name = _('CMS Site Settings')
-        verbose_name_plural = _('CMS Site Settings')
+        verbose_name = _('Site Settings')
+        verbose_name_plural = _('Site Settings')
 
 
 
@@ -122,8 +122,8 @@ class CmsObject(MPTTModel):
 
     class Meta:
         ordering = ('lft', 'sort_order', 'title')
-        verbose_name = _('CMS Page')
-        verbose_name_plural = _('CMS Pages')
+        verbose_name = _('Page')
+        verbose_name_plural = _('Pages')
 
     class MPTTMeta:
         order_insertion_by = 'title'
@@ -374,8 +374,8 @@ class CmsLayout(models.Model):
 
     class Meta:
         ordering = ('title',)
-        verbose_name = _('Page layout')
-        verbose_name_plural = _('Page layouts')
+        verbose_name = _('Layout')
+        verbose_name_plural = _('Layouts')
 
 
 class CmsRegion(models.Model):
