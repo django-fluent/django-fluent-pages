@@ -26,6 +26,7 @@
 
   // Global vars
   var dom_formsets = {};  // { tab: DOM, items: [ item1, item2 ] }
+  var has_load_error = false;
 
   // Constants
   var REGION_ROLE_MAIN = 'm';
@@ -231,7 +232,20 @@
 
   function enable_wysiwyg(root)
   {
-    var textareas = root.find("textarea.vLargeTextField").toArray();
+    var textareas = root.find("textarea.vLargeTextField");
+
+    if( ! django_wysiwyg_is_loaded() )
+    {
+      if( ! has_load_error )
+      {
+        textareas.before("<p><em style='color:#cc3333'>Unable to load WYSIWYG editor, is the system connected to the Internet?</em></p>").show();
+        has_load_error = true;
+      }
+
+      return;
+    }
+
+    textareas = textareas.toArray();
     for(var i = 0; i < textareas.length; i++)
     {
       var textarea = textareas[i];
