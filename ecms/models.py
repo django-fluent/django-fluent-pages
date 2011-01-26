@@ -99,7 +99,7 @@ class CmsObject(MPTTModel):
     # SEO fields, misc
     keywords = models.CharField(_('keywords'), max_length=255, blank=True)
     description = models.CharField(_('description'), max_length=255, blank=True)
-    sort_order = models.IntegerField(editable=False, default=1)
+    sort_order = models.IntegerField(editable=True, default=1)
 
     # Publication information
     layout = models.ForeignKey('CmsLayout', verbose_name=_('Layout'))

@@ -115,7 +115,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
             #'classes': ('collapse',),
         }),
         (_('Publication settings'), {
-            'fields': ('publication_date', 'expire_date', 'parent', 'override_url'),
+            'fields': ('publication_date', 'expire_date', 'parent', 'sort_order', 'override_url'),
             #'classes': ('collapse',),
         }),
     )
