@@ -196,6 +196,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
 
         # Get the forms + FormSets per content type.
         formsets = []
+        parent_object = None
         if request.method == 'POST':
             form = ModelForm(request.POST, request.FILES)
 
@@ -239,9 +240,12 @@ class CmsObjectAdmin(MPTTModelAdmin):
                 self.log_addition(request, new_object)
                 return self.response_add(request, new_object)
 
+            # View current
+            parent_object = new_object.parent
         else:
             # Prepare the dict of initial data from the request.
             # We have to special-case M2Ms as a list of comma-separated PKs.
+            # This also allows setting the parent id.
             initial = dict(request.GET.items())
             for k in initial:
                 try:
@@ -258,6 +262,9 @@ class CmsObjectAdmin(MPTTModelAdmin):
             # Get form and ecms inlines
             form = ModelForm(initial=initial)
             dummy_object = self.model()
+
+            if initial.has_key('parent'):
+                parent_object = self.model.objects.get(pk=int(initial['parent']))
 
             # Get all ECMS inlines
             inline_formsets = [
@@ -302,6 +309,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
             'adminform': adminForm,
             'is_popup': request.REQUEST.has_key('_popup'),
             'show_delete': False,
+            'parent_object': parent_object,
             'media': mark_safe(media),
             'inline_ecms_formsets': inline_formsets,
             'inline_admin_formsets': inline_admin_formsets,
@@ -432,6 +440,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
             'adminform': adminForm,
             'object_id': object_id,
             'original': obj,
+            'parent_object': obj.parent,
             'is_popup': request.REQUEST.has_key('_popup'),
             'media': mark_safe(media),
             'inline_ecms_formsets': inline_formsets,
