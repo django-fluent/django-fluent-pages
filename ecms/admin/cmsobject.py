@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django import forms
 from django.db import models, transaction
+from django.conf import settings
 from django.conf.urls.defaults import patterns
 
 # Core objects
@@ -92,7 +93,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
     """
 
     # Config list page:
-    list_display = ('title', 'slug', 'status', 'modification_date')
+    list_display = ('title', 'slug', 'status', 'modification_date', 'actions_column')
     #list_filter = ('status', 'parent')
     search_fields = ('slug', 'title')
     actions = ['make_published']
@@ -469,6 +470,34 @@ class CmsObjectAdmin(MPTTModelAdmin):
                 )
             ) for PageItemType in [CmsTextItem]  # self.model._get_supported_page_item_types()
         ]
+
+
+    # ---- list actions ----
+
+    def actions_column(self, page):
+        return u' '.join(self._actions_column(page))
+
+    actions_column.allow_tags = True
+    actions_column.short_description = _('actions')
+
+    def _actions_column(self, obj):
+        actions = []
+        actions.insert(0,
+            u'<a href="add/?%s=%s" title="%s"><img src="%simg/admin/icon_addlink.gif" alt="%s" /></a>' % (
+                self.model._mptt_meta.parent_attr,
+                obj.pk,
+                _('Add child'),
+                settings.ADMIN_MEDIA_PREFIX,
+                _('Add child')))
+
+        if hasattr(obj, 'get_absolute_url'):
+            actions.insert(0,
+                u'<a href="%s" title="%s" target="_blank"><img src="%simg/admin/selector-search.gif" alt="%s" /></a>' % (
+                    obj.get_absolute_url(),
+                    _('View on site'),
+                    settings.ADMIN_MEDIA_PREFIX,
+                    _('View on site')))
+        return actions
 
 
     # ---- Custom actions ----
