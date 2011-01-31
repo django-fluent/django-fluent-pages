@@ -27,110 +27,26 @@ register = Library()
 MPTT_ADMIN_LEVEL_INDENT = getattr(settings, 'MPTT_ADMIN_LEVEL_INDENT', 10)
 
 
-
-def _get_mptt_indent_field(cl, result):
+@register.inclusion_tag("admin/ecms/cmsobject/change_list_results.html")
+def ecms_result_list(cl):
     """
-    Find the first field of the list, it will be indented visually.
+    Displays the headers and data list together
     """
-    # Taken from mptt_items_for_result() in mptt/templatetags/mptt_admin.py
-    mptt_indent_field = None
-    for field_name in cl.list_display:
-        try:
-            f = cl.lookup_opts.get_field(field_name)
-        except models.FieldDoesNotExist:
-            if mptt_indent_field is None:
-                attr = getattr(result, field_name, None)
-                if callable(attr):
-                    # first callable field, use this if we can't find any model fields
-                    mptt_indent_field = field_name
-        else:
-            # first model field, use this one
-            mptt_indent_field = field_name
-            break
-    return mptt_indent_field
+    return {'cl': cl,
+            'result_headers': list(result_headers(cl)),
+            'results': list(ecms_results(cl))}
 
 
-def _get_non_field_repr(cl, result, field_name):
-    # For non-field list_display values, the value is either a method,
-    # property or returned via a callable.
-    try:
-        if callable(field_name):
-            attr = field_name
-            value = attr(result)
-        elif hasattr(cl.model_admin, field_name) and \
-           not field_name == '__str__' and not field_name == '__unicode__':
-            attr = getattr(cl.model_admin, field_name)
-            value = attr(result)
-        else:
-            attr = getattr(result, field_name)
-            if callable(attr):
-                value = attr()
-            else:
-                value = attr
-
-        allow_tags = getattr(attr, 'allow_tags', False)
-        boolean = getattr(attr, 'boolean', False)
-
-        if boolean:
-            allow_tags = True
-            result_repr = _boolean_icon(value)
-        else:
-            result_repr = smart_unicode(value)
-
-    except (AttributeError, ObjectDoesNotExist):
-        result_repr = EMPTY_CHANGELIST_VALUE
-
+def ecms_results(cl):
+    """
+    Collect all rows to display
+    """
+    if cl.formset:
+        for res, form in zip(cl.result_list, cl.formset.forms):
+            yield list(ecms_items_for_result(cl, res, form))
     else:
-        # Strip HTML tags in the resulting text, except if the
-        # function has an "allow_tags" attribute set to True.
-        if not allow_tags:
-            result_repr = escape(result_repr)
-        else:
-            result_repr = mark_safe(result_repr)
-
-    return result_repr
-
-
-def _get_field_repr(cl, result, f):
-    row_classes = []
-    field_val = getattr(result, f.attname)
-    result_repr = EMPTY_CHANGELIST_VALUE
-
-    if isinstance(f.rel, models.ManyToOneRel):
-        if field_val is not None:
-            result_repr = escape(getattr(result, f.name))
-
-    elif isinstance(f, models.DateField) \
-      or isinstance(f, models.TimeField):
-        # Dates and times are special: They're formatted in a certain way.
-        if field_val:
-            (date_format, datetime_format, time_format) = get_date_formats()
-            if isinstance(f, models.DateTimeField):
-                result_repr = capfirst(dateformat.format(field_val, datetime_format))
-            elif isinstance(f, models.TimeField):
-                result_repr = capfirst(dateformat.time_format(field_val, time_format))
-            else:
-                result_repr = capfirst(dateformat.format(field_val, date_format))
-        row_classes += 'nowrap',
-
-    elif isinstance(f, models.BooleanField) \
-      or isinstance(f, models.NullBooleanField):
-        # Booleans are special: We use images.
-        result_repr = _boolean_icon(field_val)
-
-    elif isinstance(f, models.DecimalField):
-        # DecimalFields are special: Zero-pad the decimals.
-        if field_val is not None:
-            result_repr = ('%%.%sf' % f.decimal_places) % field_val
-
-    elif f.flatchoices:
-        # Fields with choices are special: Use the representation of the choice.
-        result_repr = dict(f.flatchoices).get(field_val, EMPTY_CHANGELIST_VALUE)
-
-    else:
-        result_repr = escape(field_val)
-
-    return result_repr, row_classes
+        for res in cl.result_list:
+            yield list(ecms_items_for_result(cl, res, None))
 
 
 def ecms_items_for_result(cl, result, form):
@@ -203,21 +119,114 @@ def ecms_items_for_result(cl, result, form):
         yield mark_safe(u'<td>%s</td>' % force_unicode(form[cl.model._meta.pk.name]))
 
 
-def ecms_results(cl):
-    if cl.formset:
-        for res, form in zip(cl.result_list, cl.formset.forms):
-            yield list(ecms_items_for_result(cl, res, form))
+def _get_mptt_indent_field(cl, result):
+    """
+    Find the first field of the list, it will be indented visually.
+    """
+    # Taken from mptt_items_for_result() in mptt/templatetags/mptt_admin.py
+    mptt_indent_field = None
+    for field_name in cl.list_display:
+        try:
+            f = cl.lookup_opts.get_field(field_name)
+        except models.FieldDoesNotExist:
+            if mptt_indent_field is None:
+                attr = getattr(result, field_name, None)
+                if callable(attr):
+                    # first callable field, use this if we can't find any model fields
+                    mptt_indent_field = field_name
+        else:
+            # first model field, use this one
+            mptt_indent_field = field_name
+            break
+    return mptt_indent_field
+
+
+def _get_non_field_repr(cl, result, field_name):
+    """
+    Render the visual representation of a column
+    which does not refer to a field in the model
+    """
+    # For non-field list_display values, the value is either a method,
+    # property or returned via a callable.
+    try:
+        if callable(field_name):
+            attr = field_name
+            value = attr(result)
+        elif hasattr(cl.model_admin, field_name) and \
+           not field_name == '__str__' and not field_name == '__unicode__':
+            attr = getattr(cl.model_admin, field_name)
+            value = attr(result)
+        else:
+            attr = getattr(result, field_name)
+            if callable(attr):
+                value = attr()
+            else:
+                value = attr
+
+        allow_tags = getattr(attr, 'allow_tags', False)
+        boolean = getattr(attr, 'boolean', False)
+
+        if boolean:
+            allow_tags = True
+            result_repr = _boolean_icon(value)
+        else:
+            result_repr = smart_unicode(value)
+
+    except (AttributeError, ObjectDoesNotExist):
+        result_repr = EMPTY_CHANGELIST_VALUE
+
     else:
-        for res in cl.result_list:
-            yield list(ecms_items_for_result(cl, res, None))
+        # Strip HTML tags in the resulting text, except if the
+        # function has an "allow_tags" attribute set to True.
+        if not allow_tags:
+            result_repr = escape(result_repr)
+        else:
+            result_repr = mark_safe(result_repr)
+
+    return result_repr
 
 
-# custom template is merely so we can strip out sortable-ness from the column headers
-@register.inclusion_tag("admin/ecms/cmsobject/change_list_results.html")
-def ecms_result_list(cl):
+def _get_field_repr(cl, result, f):
     """
-    Displays the headers and data list together
+    Render the visual representation of a column
+    which refers to a field in the model
     """
-    return {'cl': cl,
-            'result_headers': list(result_headers(cl)),
-            'results': list(ecms_results(cl))}
+    row_classes = []
+    field_val = getattr(result, f.attname)
+    result_repr = EMPTY_CHANGELIST_VALUE
+
+    if isinstance(f.rel, models.ManyToOneRel):
+        if field_val is not None:
+            result_repr = escape(getattr(result, f.name))
+
+    elif isinstance(f, models.DateField) \
+      or isinstance(f, models.TimeField):
+        # Dates and times are special: They're formatted in a certain way.
+        if field_val:
+            (date_format, datetime_format, time_format) = get_date_formats()
+            if isinstance(f, models.DateTimeField):
+                result_repr = capfirst(dateformat.format(field_val, datetime_format))
+            elif isinstance(f, models.TimeField):
+                result_repr = capfirst(dateformat.time_format(field_val, time_format))
+            else:
+                result_repr = capfirst(dateformat.format(field_val, date_format))
+        row_classes += 'nowrap',
+
+    elif isinstance(f, models.BooleanField) \
+      or isinstance(f, models.NullBooleanField):
+        # Booleans are special: We use images.
+        result_repr = _boolean_icon(field_val)
+
+    elif isinstance(f, models.DecimalField):
+        # DecimalFields are special: Zero-pad the decimals.
+        if field_val is not None:
+            result_repr = ('%%.%sf' % f.decimal_places) % field_val
+
+    elif f.flatchoices:
+        # Fields with choices are special: Use the representation of the choice.
+        result_repr = dict(f.flatchoices).get(field_val, EMPTY_CHANGELIST_VALUE)
+
+    else:
+        result_repr = escape(field_val)
+
+    return result_repr, row_classes
