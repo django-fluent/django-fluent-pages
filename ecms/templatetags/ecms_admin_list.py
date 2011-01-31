@@ -28,7 +28,7 @@ MPTT_ADMIN_LEVEL_INDENT = getattr(settings, 'MPTT_ADMIN_LEVEL_INDENT', 10)
 
 
 
-def _get_indent_field(cl, result):
+def _get_mptt_indent_field(cl, result):
     """
     Find the first field of the list, it will be indented visually.
     """
@@ -67,15 +67,19 @@ def _get_non_field_repr(cl, result, field_name):
                 value = attr()
             else:
                 value = attr
+
         allow_tags = getattr(attr, 'allow_tags', False)
         boolean = getattr(attr, 'boolean', False)
+
         if boolean:
             allow_tags = True
             result_repr = _boolean_icon(value)
         else:
             result_repr = smart_unicode(value)
+
     except (AttributeError, ObjectDoesNotExist):
         result_repr = EMPTY_CHANGELIST_VALUE
+
     else:
         # Strip HTML tags in the resulting text, except if the
         # function has an "allow_tags" attribute set to True.
@@ -83,17 +87,19 @@ def _get_non_field_repr(cl, result, field_name):
             result_repr = escape(result_repr)
         else:
             result_repr = mark_safe(result_repr)
+
     return result_repr
 
 
 def _get_field_repr(cl, result, f):
-    row_class = ''
+    row_classes = []
     field_val = getattr(result, f.attname)
     result_repr = EMPTY_CHANGELIST_VALUE
 
     if isinstance(f.rel, models.ManyToOneRel):
         if field_val is not None:
             result_repr = escape(getattr(result, f.name))
+
     elif isinstance(f, models.DateField) \
       or isinstance(f, models.TimeField):
         # Dates and times are special: They're formatted in a certain way.
@@ -105,23 +111,26 @@ def _get_field_repr(cl, result, f):
                 result_repr = capfirst(dateformat.time_format(field_val, time_format))
             else:
                 result_repr = capfirst(dateformat.format(field_val, date_format))
-        row_class = ' class="nowrap"'
+        row_classes += 'nowrap',
+
     elif isinstance(f, models.BooleanField) \
       or isinstance(f, models.NullBooleanField):
         # Booleans are special: We use images.
         result_repr = _boolean_icon(field_val)
+
     elif isinstance(f, models.DecimalField):
         # DecimalFields are special: Zero-pad the decimals.
         if field_val is not None:
             result_repr = ('%%.%sf' % f.decimal_places) % field_val
-    # Fields with choices are special: Use the representation
-    # of the choice.
+
     elif f.flatchoices:
+        # Fields with choices are special: Use the representation of the choice.
         result_repr = dict(f.flatchoices).get(field_val, EMPTY_CHANGELIST_VALUE)
+
     else:
         result_repr = escape(field_val)
 
-    return result_repr, row_class
+    return result_repr, row_classes
 
 
 def ecms_items_for_result(cl, result, form):
@@ -132,45 +141,52 @@ def ecms_items_for_result(cl, result, form):
     pk = cl.lookup_opts.pk.attname
 
     # figure out which field to indent
-    mptt_indent_field = _get_indent_field(cl, result)
+    mptt_indent_field = _get_mptt_indent_field(cl, result)
 
     # Parse all fields to display
     for field_name in cl.list_display:
-        row_class = ''
+        row_attr = ''
+        row_classes = []
         f = None
+
         try:
             f = cl.lookup_opts.get_field(field_name)
         except models.FieldDoesNotExist:
             # Field does not exist. It can be a method for example.
             result_repr = _get_non_field_repr(cl, result, field_name)
         else:
-            result_repr, row_class = _get_field_repr(cl, result, f)
+            result_repr, row_classes = _get_field_repr(cl, result, f)
 
         if force_unicode(result_repr) == '':
             result_repr = mark_safe('&nbsp;')
 
         if field_name == mptt_indent_field:
             level = getattr(result, result._mptt_meta.level_attr)
-            padding_attr = ' style="padding-left:%spx"' % (5 + MPTT_ADMIN_LEVEL_INDENT * level)
-        else:
-            padding_attr = ''
+            row_attr += ' style="padding-left:%spx"' % (5 + MPTT_ADMIN_LEVEL_INDENT * level)
+
+        if row_classes:
+            row_attr += ' class="%s"' % ' '.join(row_classes)
 
         # If list_display_links not defined, add the link tag to the first field
         if (first and not cl.list_display_links) or field_name in cl.list_display_links:
             table_tag = ('th' if first else 'td')
             first = False
             url = cl.url_for_result(result)
-            # Convert the pk to something that can be used in Javascript.
-            # Problem cases are long ints (23L) and non-ASCII strings.
-            if cl.to_field:
-                attr = str(cl.to_field)
-            else:
-                attr = pk
-            value = result.serializable_value(attr)
-            result_id = repr(force_unicode(value))[1:]
-            link_attr = (cl.is_popup and ' onclick="opener.dismissRelatedLookupPopup(window, %s); return false;"' % result_id or '')
-            yield mark_safe(u'<%s%s%s><a href="%s"%s>%s</a></%s>' % \
-                (table_tag, row_class, padding_attr, url, link_attr, conditional_escape(result_repr), table_tag))
+
+            link_attr = ''
+            if cl.is_popup:
+                # Convert the pk to something that can be used in Javascript.
+                # Problem cases are long ints (23L) and non-ASCII strings.
+                if cl.to_field:
+                    attr = str(cl.to_field)
+                else:
+                    attr = pk
+                value = result.serializable_value(attr)
+                result_id = repr(force_unicode(value))[1:]
+                link_attr += ' onclick="opener.dismissRelatedLookupPopup(window, %s); return false;"' % result_id
+
+            yield mark_safe(u'<%s%s><a href="%s"%s>%s</a></%s>' % \
+                (table_tag, row_attr, url, link_attr, conditional_escape(result_repr), table_tag))
         else:
             # By default the fields come from ModelAdmin.list_editable, but if we pull
             # the fields out of the form instead of list_editable custom admins
@@ -180,7 +196,9 @@ def ecms_items_for_result(cl, result, form):
                 result_repr = mark_safe(force_unicode(bf.errors) + force_unicode(bf))
             else:
                 result_repr = conditional_escape(result_repr)
-            yield mark_safe(u'<td%s%s>%s</td>' % (row_class, padding_attr, result_repr))
+
+            yield mark_safe(u'<td%s>%s</td>' % (row_attr, result_repr))
+
     if form:
         yield mark_safe(u'<td>%s</td>' % force_unicode(form[cl.model._meta.pk.name]))
 
