@@ -97,6 +97,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
     #list_filter = ('status', 'parent')
     search_fields = ('slug', 'title')
     actions = ['make_published']
+    change_list_template = ["admin/ecms/cmsobject/change_list.html"]
 
     # Configure edit page:
     form = CmsObjectAdminForm

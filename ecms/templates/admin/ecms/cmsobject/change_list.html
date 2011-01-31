@@ -1,0 +1,8 @@
+{% extends "admin/change_list.html" %}
+{% load adminmedia admin_list i18n ecms_admin_list %}
+
+{% block result_list %}
+    {% if action_form and actions_on_top and cl.full_result_count %}{% admin_actions %}{% endif %}
+    {% ecms_result_list cl %}
+    {% if action_form and actions_on_bottom and cl.full_result_count %}{% admin_actions %}{% endif %}
+{% endblock %}
