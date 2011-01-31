@@ -93,7 +93,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
     """
 
     # Config list page:
-    list_display = ('title', 'slug', 'status', 'modification_date', 'actions_column')
+    list_display = ('title', 'status_column', 'modification_date', 'actions_column')
     #list_filter = ('status', 'parent')
     search_fields = ('slug', 'title')
     actions = ['make_published']
@@ -476,36 +476,47 @@ class CmsObjectAdmin(MPTTModelAdmin):
                     # The form is either an ItemEditorForm, or custom defined.
                     form=getattr(PageItemType, 'ecms_item_editor_form', ItemEditorForm),
                     formfield_callback=curry(self.formfield_for_dbfield, request=request)
-                )
+                    )
             ) for PageItemType in [CmsTextItem]  # self.model._get_supported_page_item_types()
         ]
 
 
     # ---- list actions ----
 
-    def actions_column(self, page):
-        return u' '.join(self._actions_column(page))
+    STATUS_ICONS = (
+        (CmsObject.PUBLISHED, 'img/admin/icon-yes.gif'),
+        (CmsObject.DRAFT,     'img/admin/icon-unknown.gif'),
+        (CmsObject.HIDDEN,    'img/admin/icon-no.gif'),
+    )
+
+    def status_column(self, cmsobject):
+        status = cmsobject.status
+        title = [rec[1] for rec in CmsObject.STATUSES if rec[0] == status].pop()
+        icon  = [rec[1] for rec in self.STATUS_ICONS  if rec[0] == status].pop()
+        return u'<img src="%s%s" width="10" height="10" alt="%s" title="%s" />' % (settings.ADMIN_MEDIA_PREFIX, icon, title, title)
+
+    status_column.allow_tags = True
+    status_column.short_description = _('Status')
+
+
+    def actions_column(self, cmsobject):
+        return u' '.join(self._actions_column(cmsobject))
 
     actions_column.allow_tags = True
     actions_column.short_description = _('actions')
 
-    def _actions_column(self, obj):
+    def _actions_column(self, cmsobject):
         actions = []
-        actions.insert(0,
-            u'<a href="add/?%s=%s" title="%s"><img src="%simg/admin/icon_addlink.gif" alt="%s" /></a>' % (
-                self.model._mptt_meta.parent_attr,
-                obj.pk,
-                _('Add child'),
-                settings.ADMIN_MEDIA_PREFIX,
-                _('Add child')))
+        actions.append(
+            u'<a href="add/?%s=%s" title="%s"><img src="%simg/admin/icon_addlink.gif" width="10" height="10" alt="%s" /></a>' % (
+                self.model._mptt_meta.parent_attr, cmsobject.pk, _('Add child'), settings.ADMIN_MEDIA_PREFIX, _('Add child'))
+            )
 
-        if hasattr(obj, 'get_absolute_url'):
-            actions.insert(0,
-                u'<a href="%s" title="%s" target="_blank"><img src="%simg/admin/selector-search.gif" alt="%s" /></a>' % (
-                    obj.get_absolute_url(),
-                    _('View on site'),
-                    settings.ADMIN_MEDIA_PREFIX,
-                    _('View on site')))
+        if hasattr(cmsobject, 'get_absolute_url') and cmsobject.is_published:
+            actions.append(
+                u'<a href="%s" title="%s" target="_blank"><img src="%simg/admin/selector-search.gif" width="16" height="16" alt="%s" /></a>' % (
+                    cmsobject.get_absolute_url(), _('View on site'), settings.ADMIN_MEDIA_PREFIX, _('View on site'))
+                )
         return actions
 
 
