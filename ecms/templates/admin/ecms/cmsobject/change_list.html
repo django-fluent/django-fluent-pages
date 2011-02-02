@@ -1,6 +1,9 @@
 {% extends "admin/change_list.html" %}
 {% load adminmedia admin_list i18n ecms_admin_list %}
 
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}ecms/admin.css" />{% endblock %}
+
 {% block result_list %}
     {% if action_form and actions_on_top and cl.full_result_count %}{% admin_actions %}{% endif %}
     {% ecms_result_list cl %}

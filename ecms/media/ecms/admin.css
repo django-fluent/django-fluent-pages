@@ -19,7 +19,14 @@
 *+html .ecms-clearfix { min-height: 0;  } /* and IE7 has new tricks to trigger hasLayout. */
 
 
-/* ---- Tabbar ---- */
+/* ---- List display ---- */
+
+td.status-column { width: 80px; }
+td.datetime-column { width: 14em; }
+td.actions-column { width: 120px; }
+
+
+/* ---- Editor Tabbar ---- */
 
 #ecms-tabbar {
   border: 1px solid #EEEEEE;

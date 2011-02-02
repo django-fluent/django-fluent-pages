@@ -59,6 +59,9 @@ def ecms_items_for_result(cl, result, form):
     # figure out which field to indent
     mptt_indent_field = _get_mptt_indent_field(cl, result)
 
+    # Read any custom properties
+    list_column_classes = getattr(cl.model_admin, 'list_column_classes') or {}
+
     # Parse all fields to display
     for field_name in cl.list_display:
         row_attr = ''
@@ -76,9 +79,15 @@ def ecms_items_for_result(cl, result, form):
         if force_unicode(result_repr) == '':
             result_repr = mark_safe('&nbsp;')
 
+        # Begin custom behavior
         if field_name == mptt_indent_field:
             level = getattr(result, result._mptt_meta.level_attr)
             row_attr += ' style="padding-left:%spx"' % (5 + MPTT_ADMIN_LEVEL_INDENT * level)
+
+        column_class = list_column_classes.get(field_name)
+        if column_class:
+            row_classes.append(column_class)
+        # End custom
 
         if row_classes:
             row_attr += ' class="%s"' % ' '.join(row_classes)
