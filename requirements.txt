@@ -1,0 +1,7 @@
+# Install with: `pip install -r requirements.txt`
+Django==1.2.5
+django-admin-tools==0.4.0
+django-mptt==0.4.2
+django-wysiwyg==0.1.0
+# Optional for admin_tools:
+feedparser==4.1
