@@ -49,6 +49,14 @@
     var layout_selector = $("#id_layout");
     layout_selector.change( onLayoutChange );
 
+    // Select default layout of there is only one.
+    var options = layout_selector[0].options;
+    if( ( options.length == 0 )
+     || ( options.length == 2 && options[0].value == "" ) )
+    {
+      layout_selector.val( options[ options.length - 1 ] .value );
+    }
+
     if( layout_selector.val() != 0
      && $("#ecms-tabbar").is(":hidden"))
     {
