@@ -1,7 +1,7 @@
 """
 Template tags to request ECMS content in the template
 """
-from ecms.models import CmsObject
+from ecms.models import CmsObject, CmsSite
 from django.template import Template, TemplateSyntaxError, Library, Node, Context
 from django.template.loader import get_template
 from ecms.navigation import CmsObjectNavigationNode
@@ -34,9 +34,12 @@ def _parse_ecms_region(parser, token):
         (tag_name, region_name) = token.split_contents()
     except ValueError:
         raise TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
-    token.split_contents()
     return EcmsRegionNode(region_name)
 
+
+@register.tag(name='get_ecms_vars')
+def _parse_get_ecms_vars(parser, token):
+    return EcmsGetVarsNode()
 
 
 # ---- All template nodes ----
@@ -116,6 +119,47 @@ class EcmsRegionNode(Node):
             return items.render()   # is CmsPageItemList.render()
 
 
+class EcmsGetVarsNode(Node):
+    """
+    Template Node to setup an application page.
+
+    When a template is used for an application page,
+    add the following contents to make it work:
+
+        {% load ecms_tags %}
+
+        {% ecms_get_vars %}
+    """
+    def render(self, context):
+        # If the current URL does not overlay a page,
+        # create a dummy item to handle the standard rendering.
+        current_site = None
+        current_page = None
+
+        try:
+            current_page = _ecms_get_current_page(context)
+            current_site = current_page.parent_site
+        except CmsObject.DoesNotExist:
+            # Detect current site
+            request = _ecms_get_request(context)
+            current_site = CmsSite.objects.get_current(request)
+
+            # Allow {% render_ecms_menu %} to operate.
+            dummy_page = CmsObject(title='', in_navigation=False, override_url=request.path, status=CmsObject.HIDDEN, parent_site=current_site)
+            request._ecms_current_page = dummy_page
+
+        # Automatically add 'ecms_site', allows "default:ecms_site.domain" to work.
+        # ...and optionally - if a page exists - include 'ecms_page' too.
+        if not context.has_key('ecms_site'):
+            ecms_vars = {'ecms_site': current_site}
+            if current_page and not context.has_key('ecms_page'):
+                ecms_vars['ecms_page'] = current_page
+
+            context.update(ecms_vars)
+
+        return ''
+
+
 
 # ---- Util functions ----
 
@@ -123,10 +167,7 @@ def _ecms_get_current_page(context):
     """
     Fetch the current page.
     """
-    # Enforce the use of a RequestProcessor, e.g.
-    # render_to_response("tpl", context, context_instance=RequestProcessor(request))
-    assert context.has_key('request'), "ECMS functions require a 'request' object in the context, is RequestProcessor not used?"
-    request = context['request']
+    request = _ecms_get_request(context)
 
     # This is a load-on-demand attribute, to allow calling the ecms template tags outside the standard view.
     # When the current page is not specified, do auto-detection.
@@ -146,3 +187,16 @@ def _ecms_get_current_page(context):
                                              "- No context variable named 'ecms_page' found.")
 
     return request._ecms_current_page  # is a CmsObject
+
+
+def _ecms_get_request(context):
+    """
+    Fetch the request from the context.
+
+    This enforces the use of a RequestProcessor, e.g.
+
+        render_to_response("page.html", context, context_instance=RequestProcessor(request))
+    """
+    assert context.has_key('request'), "ECMS functions require a 'request' object in the context, is RequestProcessor not used?"
+    return context['request']
+
