@@ -368,6 +368,15 @@ class CmsLayout(models.Model):
     #unique
     #allowed_children
 
+
+    def get_template(self):
+        """
+        Return the template to render this layout.
+        """
+        from django.template.loader import get_template
+        return get_template(self.template_path)
+
+
     # Django stuff
     def __unicode__(self):
         return self.title

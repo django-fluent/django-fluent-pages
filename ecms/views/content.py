@@ -3,7 +3,7 @@ A collection of views to display the CMS content
 """
 from ecms.models import CmsObject
 from django.template.context import RequestContext
-from django.shortcuts import render_to_response
+from django.http import HttpResponse
 
 
 def cmspage(request, path):
@@ -19,6 +19,9 @@ def cmspage(request, path):
     # allow template tags to track the current page.
     request._ecms_current_page = page
 
-    # Render the page
+    # Render it
+    # Logic for rendering is stored in the layout
     context = page.get_template_context()
-    return render_to_response("ecms/cmspage.html", context, context_instance=RequestContext(request))
+    template = page.layout.get_template()
+    html = template.render(RequestContext(request, context))
+    return HttpResponse(html)
