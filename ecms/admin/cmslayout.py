@@ -15,4 +15,7 @@ class CmsRegionInline(admin.TabularInline):
 class CmsLayoutAdmin(admin.ModelAdmin):
     # Config list page:
     list_display = ('title', 'key')
+    fieldsets = (
+        (None, { 'fields': ('title', 'key', 'template_path'), }),
+    )
     inlines = [CmsRegionInline]
