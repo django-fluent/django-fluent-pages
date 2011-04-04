@@ -1,0 +1,18 @@
+
+h2. Quick Start
+
+The quick start assumes basic familiarity with "vitualenv":http://virtualenv.openplans.org/, "virtualenv wrapper":http://www.doughellmann.com/projects/virtualenvwrapper/.
+
+Tested with pip version 0.8.2.
+
+It also assumes you have git clients locally.
+
+* mkvirtualenv ecms --no-site-packages
+* workon ecms
+* git clone https://git.edoburu.nl/git/edoburu/django-ecms.git
+* cd django-ecms
+* pip install -r requirements.txt
+* ./manage.py syncdb
+* ./manage.py loaddata welcome
+* ./manage.py runserver
+
