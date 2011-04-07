@@ -43,9 +43,7 @@ td.actions-column { width: 120px; }
   list-style-position: inside;
 
   margin: 3px 0 0 0;
-  padding: 5px 14px 5px 12px;
   min-width: 100px;
-  height: 13px;
   border-top: 1px solid #ccc;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
@@ -55,13 +53,10 @@ td.actions-column { width: 120px; }
   background-image: none;
 
   color: #333333;
-  cursor: pointer;
 }
 
 #ecms-tabnav li.active {
   margin-top: 0;
-  padding-top: 6px;
-  padding-bottom: 7px;
   background-image: url('img/default-bg.gif');
   color: #ffffff;
 }
@@ -69,6 +64,17 @@ td.actions-column { width: 120px; }
 #ecms-tabnav a {
   outline: 0;
   display: block;
+  cursor: pointer;
+}
+
+#ecms-tabnav a {
+  padding: 5px 14px 5px 12px;
+  height: 13px;
+}
+
+#ecms-tabnav li.active a {
+  padding-top: 6px;
+  padding-bottom: 7px;
 }
 
 * html #ecms-tabnav li.active a { height: 1%;    } /* IE 6 */
