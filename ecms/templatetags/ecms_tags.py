@@ -2,7 +2,7 @@
 Template tags to request ECMS content in the template
 """
 from ecms.models import CmsObject, CmsSite
-from django.template import Template, TemplateSyntaxError, Library, Node, Context
+from django.template import Template, TemplateSyntaxError, Library, Node, Context, Variable
 from django.template.loader import get_template
 from ecms.navigation import CmsObjectNavigationNode
 
@@ -31,10 +31,10 @@ def _parse_ecms_sub_menu(parser, token):
 @register.tag(name='render_ecms_region')
 def _parse_ecms_region(parser, token):
     try:
-        (tag_name, region_name) = token.split_contents()
+        (tag_name, region_var_name) = token.split_contents()
     except ValueError:
         raise TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
-    return EcmsRegionNode(region_name)
+    return EcmsRegionNode(region_var_name)
 
 
 @register.tag(name='get_ecms_vars')
@@ -107,14 +107,15 @@ class EcmsRegionNode(Node):
     """
     Template Node for a region.
     """
-    def __init__(self, region_name):
-        self.region_name = region_name
+    def __init__(self, region_var_name):
+        self.region_name = region_var_name
 
     def render(self, context):
         page  = _ecms_get_current_page(context)
-        items = page.regions[self.region_name]
+        region_name = Variable(self.region_name).resolve(context)
+        items = page.regions[region_name]
         if not items:
-            return "<!-- no items in region '%s' -->" % self.region_name
+            return "<!-- no items in region '%s' -->" % region_name
         else:
             return items.render()   # is CmsPageItemList.render()
 
