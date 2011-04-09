@@ -1,5 +1,25 @@
 """
 Database model for django-enterprise-cms
+
+It defines the following classes:
+
+* CmsSite
+  The Site object, with additional properties
+
+* CmsObject
+  A item node. Can be an HTML page, image, etc..
+
+* CmsLayout
+  The layout of a page, which has regions and a template.
+
+* CmsRegion
+  The region in a template
+
+* CmsPageItem
+  An item (or "widget") which can be displayed in a region. For example
+
+  * CmsTextItem  - HTML text
+
 """
 from django.db import models
 from django.contrib.auth.models import User
