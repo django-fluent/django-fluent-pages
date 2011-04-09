@@ -472,7 +472,7 @@ class CmsPageItem(models.Model):
         Overwritten representation, so Django still displays short representations
         while subclasses may display the full text with __unicode__
         """
-        return '<%s: #%d, region=%s, content=%s>' % (self.__class__.__name__, self.id, self.region, smart_str(truncatewords(strip_tags(unicode(self)), 10)))
+        return '<%s: #%d, region=%s, content=%s>' % (self.__class__.__name__, self.id or 0, self.region, smart_str(truncatewords(strip_tags(unicode(self)), 10)))
 
 
     def render(self):
