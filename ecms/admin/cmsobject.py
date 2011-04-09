@@ -1,23 +1,14 @@
 from django.contrib import admin
 from django import forms
-from django.db import models, transaction
 from django.conf import settings
 from django.conf.urls.defaults import patterns
 
 # Core objects
-from django.http import Http404
-from django.forms.models import inlineformset_factory
-from django.core.exceptions import PermissionDenied
+from django.contrib.admin.options import StackedInline
 
 # Many small imports
-from django.contrib.admin.util import unquote
-from django.forms.formsets import all_valid
 from django.views.decorators.csrf import csrf_protect
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_unicode
-from django.utils.functional import curry
-from django.utils.html import escape
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
 # Other libs
@@ -78,7 +69,25 @@ class CmsObjectAdminForm(forms.ModelForm):
         return cleaned_data
 
 
-class ItemEditorForm(forms.ModelForm):
+class CmsPageItemInline(StackedInline):
+    """
+    Custom ``InlineModelAdmin`` subclass used for content types.
+    """
+
+    max_num = 1
+    extra = 1
+    fk_name = 'parent'
+    can_delete = False   # Get rid of that checkbox in the fieldset.
+    template = 'admin/ecms/cmsobject/cmspageitem_inline.html'
+
+    def __init__(self, *args, **kwargs):
+        super(CmsPageItemInline, self).__init__(*args, **kwargs)
+
+        self.verbose_name_plural = \
+            u'---- CMS Inline: %s' % (self.verbose_name_plural,)
+
+
+class CmsPageItemForm(forms.ModelForm):
     """
     The base form for custom pageitem types.
     """
@@ -131,9 +140,38 @@ class CmsObjectAdmin(MPTTModelAdmin):
     radio_fields = {'status': admin.HORIZONTAL}
 
 
+    # ---- Inline insertion ----
+
+    def __init__(self, model, admin_site):
+        super(CmsObjectAdmin, self).__init__(model, admin_site)
+
+        # Add inline instances for ECMS content inlines
+        # This code is based on FeinCMS, (c) Simon Meers, BSD licensed
+        for InlineType in self.get_ecms_inlines():
+            inline_instance = InlineType(self.model, self.admin_site)
+            self.inline_instances.append(inline_instance)
+
+
+    def get_ecms_inlines(self):
+        """
+        Dynamically generate genuine django inlines for registered content types.
+        """
+        inlines = []
+        for PageItemType in [CmsTextItem]:    # self.model._ec_content_types:
+            # Create a new Type that inherits CmsPageItemInline
+            base = (CmsPageItemInline,)
+            name = '%s_AutoInline' % PageItemType.__name__
+            attrs = {
+                '__module__': self.model.__module__,
+                'model': PageItemType,
+                'form': getattr(PageItemType, 'ecms_item_editor_form', CmsPageItemForm),
+            }
+
+            inlines.append(type(name, base, attrs))
+        return inlines
+
 
     # ---- Extra Ajax views ----
-
 
     def get_urls(self):
         """
@@ -176,317 +214,6 @@ class CmsObjectAdmin(MPTTModelAdmin):
         obj.in_navigation = True
 
         obj.save()
-
-
-    @csrf_protect_m
-    @transaction.commit_on_success
-    def add_view(self, request, form_url='', extra_context=None):
-        """
-        Overwritten entire 'add' view.
-
-        This function complements ``change_view`` to save custom objects (e.g. ``CmsPageItem`` objects).
-        """
-        model = self.model
-        opts = model._meta
-
-        if not self.has_add_permission(request):
-            raise PermissionDenied
-
-        # NOTE: Fields *MUST* be set to None to avoid breaking `django.contrib.admin.options`.
-        # ModelAdmin's default get_form() issues a `fields = flatten_fieldsets()` which
-        # generates a very abbreviated field list causing KeyErrors during clean() / save()
-
-        ModelForm = self.get_form(request, fields=None)  # see note in change_view about fields=None.
-        inline_formset_types = self._get_inline_formset_types(request)
-
-        # Each CmsObject can hold several sub objects of various types.
-        # These are all processed as FormSet collections.
-
-        # Get the forms + FormSets per content type.
-        formsets = []
-        parent_object = None
-        if request.method == 'POST':
-            form = ModelForm(request.POST, request.FILES)
-
-            if form.is_valid():
-                new_object = self.save_form(request, form, change=False)
-                form_validated = True
-            else:
-                new_object = self.model()
-                form_validated = False
-
-            # Get all ECMS inlines
-            inline_formsets = [
-                FormSetClass(request.POST, request.FILES, instance=new_object, prefix=PageItemType.__name__.lower())
-                for PageItemType, FormSetClass in inline_formset_types
-            ]
-
-            # Get all standard admin inlines
-            prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request), self.inline_instances):
-                prefix = FormSet.get_default_prefix()
-                prefixes[prefix] = prefixes.get(prefix, 0) + 1
-                if prefixes[prefix] != 1:
-                    prefix = "%s-%s" % (prefix, prefixes[prefix])
-                formset = FormSet(data=request.POST, files=request.FILES,
-                                  instance=new_object,
-                                  save_as_new=request.POST.has_key("_saveasnew"),
-                                  prefix=prefix, queryset=inline.queryset(request))
-                formsets.append(formset)
-
-            # Store
-            if all_valid(formsets) and form_validated:
-                form.save_m2m()
-                self.save_model(request, new_object, form, change=False)
-                for formset in inline_formsets:
-                    formset.save()
-
-                for formset in formsets:
-                    self.save_formset(request, form, formset, change=False)
-
-                # Do the proper redirect
-                self.log_addition(request, new_object)
-                return self.response_add(request, new_object)
-
-            # View current
-            parent_object = new_object.parent
-        else:
-            # Prepare the dict of initial data from the request.
-            # We have to special-case M2Ms as a list of comma-separated PKs.
-            # This also allows setting the parent id.
-            initial = dict(request.GET.items())
-            for k in initial:
-                try:
-                    f = opts.get_field(k)
-                except models.FieldDoesNotExist:
-                    continue
-                if isinstance(f, models.ManyToManyField):
-                    initial[k] = initial[k].split(",")
-
-            # The first page becomes the homepage by default.
-            if not CmsObject.objects.count():
-                initial['override_url'] = '/'
-
-            # Get form and ecms inlines
-            form = ModelForm(initial=initial)
-            dummy_object = self.model()
-
-            if initial.has_key('parent'):
-                parent_object = self.model.objects.get(pk=int(initial['parent']))
-
-            # Get all ECMS inlines
-            inline_formsets = [
-                FormSetClass(instance=dummy_object, prefix=PageItemType.__name__.lower())
-                for PageItemType, FormSetClass in inline_formset_types
-            ]
-
-            # Get all standard admin inlines
-            prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request),
-                                       self.inline_instances):
-                prefix = FormSet.get_default_prefix()
-                prefixes[prefix] = prefixes.get(prefix, 0) + 1   # track follow-up number per formset type
-                if prefixes[prefix] != 1:
-                    prefix = "%s-%s" % (prefix, prefixes[prefix])
-                formset = FormSet(instance=dummy_object, prefix=prefix,
-                                  queryset=inline.queryset(request))
-                formsets.append(formset)
-
-        # Build admin form around the normal model form
-        # It wraps the form to offer features like fieldsets.
-        adminForm = admin.helpers.AdminForm(
-            form,
-            list(self.get_fieldsets(request)),
-            self.prepopulated_fields,
-            self.get_readonly_fields(request),
-            model_admin=self
-        )
-        media = self.media + adminForm.media
-
-        # Get the standard admin inlines
-        inline_admin_formsets = []
-        for inline, formset in zip(self.inline_instances, formsets):
-            fieldsets = list(inline.get_fieldsets(request))
-            readonly = list(inline.get_readonly_fields(request))
-            inline_admin_formset = admin.helpers.InlineAdminFormSet(inline, formset, fieldsets, readonly, model_admin=self)
-            inline_admin_formsets.append(inline_admin_formset)
-            media = media + inline_admin_formset.media
-
-        context = {
-            'title': _('Add %s') % force_unicode(opts.verbose_name),
-            'adminform': adminForm,
-            'is_popup': request.REQUEST.has_key('_popup'),
-            'show_delete': False,
-            'parent_object': parent_object,
-            'media': mark_safe(media),
-            'inline_ecms_formsets': inline_formsets,
-            'inline_admin_formsets': inline_admin_formsets,
-            #'errors': helpers.AdminErrorList(form, formsets),  # exposed in standard change_view, not here.
-            'root_path': self.admin_site.root_path,
-            'app_label': opts.app_label,
-        }
-        context.update(extra_context or {})
-
-        return self.render_change_form(request, context, form_url=form_url, add=True)
-
-
-    @csrf_protect_m
-    @transaction.commit_on_success
-    def change_view(self, request, object_id, extra_context=None):
-        """
-        Overwritten entire 'change' view.
-
-        The standard change view made it hard to save custom objects (e.g. ``CmsPageItem`` objects).
-        """
-        model = self.model
-        opts = model._meta
-
-        # This block of code is largely inspired and based on FeinCMS
-        # (c) Matthias Kestenholz, BSD licensed
-
-        # Get the object
-        obj = self.get_object(request, unquote(object_id))
-        if not self.has_change_permission(request, obj):
-            raise PermissionDenied
-        if obj is None:
-            raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {'name': force_unicode(opts.verbose_name), 'key': escape(object_id)})
-
-        ModelForm = self.get_form(request, obj, fields=None)  # see add_view for note about fields=None, it prevents errors during clean() / save()
-        inline_formset_types = self._get_inline_formset_types(request, instance=obj)
-
-        # Get the forms + FormSets per content type.
-        formsets = []
-        if request.method == 'POST':
-            form = ModelForm(request.POST, request.FILES, instance=obj)
-
-            if form.is_valid():
-                new_object = self.save_form(request, form, change=True)
-                form_validated = True
-            else:
-                new_object = obj
-                form_validated = False
-
-            # Get all ECMS inlines
-            inline_formsets = [
-                FormSetClass(request.POST, request.FILES, instance=obj, prefix=PageItemType.__name__.lower())
-                for PageItemType, FormSetClass in inline_formset_types
-            ]
-
-            # Get all standard admin inlines
-            prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request, new_object),
-                                       self.inline_instances):
-                prefix = FormSet.get_default_prefix()
-                prefixes[prefix] = prefixes.get(prefix, 0) + 1   # track follow-up number per formset type
-                if prefixes[prefix] != 1:
-                    prefix = "%s-%s" % (prefix, prefixes[prefix])
-                formset = FormSet(request.POST, request.FILES,
-                                  instance=new_object, prefix=prefix,
-                                  queryset=inline.queryset(request))
-
-                formsets.append(formset)
-
-            # Store
-            if all_valid(inline_formsets+formsets) and form_validated:
-                form.save_m2m()
-                for formset in inline_formsets:
-                    formset.save()
-
-                self.save_model(request, new_object, form, change=True)
-                for formset in formsets:
-                    self.save_formset(request, form, formset, change=True)
-
-                # Do the proper redirect
-                change_message = self.construct_change_message(request, form, formsets+inline_formsets)
-                self.log_change(request, new_object, change_message)
-                return self.response_change(request, new_object)
-
-        else:
-            # Get form and ecms inlines
-            form = ModelForm(instance=obj)
-
-            # Get all ECMS inlines
-            inline_formsets = [
-                FormSetClass(instance=obj, prefix=PageItemType.__name__.lower())
-                for PageItemType, FormSetClass in inline_formset_types
-            ]
-
-            # Get all standard admin inlines
-            prefixes = {}
-            for FormSet, inline in zip(self.get_formsets(request, obj),
-                                       self.inline_instances):
-                prefix = FormSet.get_default_prefix()
-                prefixes[prefix] = prefixes.get(prefix, 0) + 1   # track follow-up number per formset type
-                if prefixes[prefix] != 1:
-                    prefix = "%s-%d" % (prefix, prefixes[prefix])
-                formset = FormSet(instance=obj, prefix=prefix,
-                                  queryset=inline.queryset(request))
-                formsets.append(formset)
-
-        # Build admin form around the normal model form
-        # It wraps the form to offer features like fieldsets.
-        adminForm = admin.helpers.AdminForm(
-            form,
-            list(self.get_fieldsets(request)),
-            self.prepopulated_fields,
-            self.get_readonly_fields(request),
-            model_admin=self
-        )
-        media = self.media + adminForm.media
-
-        # Get the standard admin inlines
-        inline_admin_formsets = []
-        for inline, formset in zip(self.inline_instances, formsets):
-            fieldsets = list(inline.get_fieldsets(request, obj))
-            readonly  = list(inline.get_readonly_fields(request, obj))
-            inline_admin_formset = admin.helpers.InlineAdminFormSet(inline, formset, fieldsets, readonly, model_admin=self)
-            inline_admin_formsets.append(inline_admin_formset)
-            media = media + inline_admin_formset.media
-
-        context = {
-            'title': _('Change %s') % force_unicode(opts.verbose_name),
-            'adminform': adminForm,
-            'object_id': object_id,
-            'original': obj,
-            'parent_object': obj.parent,
-            'is_popup': request.REQUEST.has_key('_popup'),
-            'media': mark_safe(media),
-            'inline_ecms_formsets': inline_formsets,
-            'inline_admin_formsets': inline_admin_formsets,
-            #'errors': admin.helpers.AdminErrorList(adminForm, formsets),  # exposed in standard change_view, not here.
-            'root_path': self.admin_site.root_path,
-            'app_label': opts.app_label,
-        }
-        context.update(extra_context or {})
-
-        return self.render_change_form(request, context, change=True, obj=obj)
-
-
-    def _get_inline_formset_types(self, request, instance=None):
-        """
-        Generate a formset type for every concrete content type
-        returns: [ (Type, FormSetType), (Type, FormSetType) ]
-
-        Every pageitem type can override the form, to use. It will fallback to the ItemEditorForm
-        the formfield_callback specifies the FormField object per DB field. curry() prepends args.
-        """
-        return [
-            ( # Tuple:
-                PageItemType,
-                inlineformset_factory(
-                    self.model,        # Parent model
-                    PageItemType,      # Child model
-                    extra=1,
-                    max_num=1,         # for now it is.
-                    fk_name='parent',  # be explicit about the foreign key, so no auto detection is needed.
-                    can_delete=False,  # hide delete checkbox
-
-                    # The form is either an ItemEditorForm, or custom defined.
-                    form=getattr(PageItemType, 'ecms_item_editor_form', ItemEditorForm),
-                    formfield_callback=curry(self.formfield_for_dbfield, request=request)
-                    )
-            ) for PageItemType in [CmsTextItem]  # self.model._get_supported_page_item_types()
-        ]
 
 
     # ---- list actions ----

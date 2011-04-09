@@ -1,0 +1,20 @@
+  <div id="{{ inline_admin_formset.formset.rel_name }}">
+    <div class="header">
+      {{ inline_admin_formset.formset.management_form }}
+    </div>
+
+    {% for form in inline_admin_formset.formset.forms %}
+      {{ form.errors }}
+      <div id="{{ formset.rel_name }}_item_{{ forloop.counter0 }}">
+        {% for field in form %}
+          {% if field.is_hidden %}
+            {{ field }}
+          {% else %}
+            <div class="form-row{% if field.errors %} errors{% endif %}">
+              {{ field }}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>

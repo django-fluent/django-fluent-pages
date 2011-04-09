@@ -118,29 +118,9 @@
 {# The inlines are defined here so the information is available in the page. #}
 {# Visually however, they are reorganized across the various region tabs #}
 <div id="inlines" style="display: none;">
-{% for formset in inline_ecms_formsets %}
-  <div id="{{ formset.rel_name }}">
-    <div class="header">
-      {{ formset.management_form }}
-    </div>
-
-    {% for form in formset.forms %}
-      {{ form.errors }}
-      <div id="{{ formset.rel_name }}_item_{{ forloop.counter0 }}">
-        {% for field in form %}
-          {% if field.is_hidden %}
-            {{ field }}
-          {% else %}
-            <div class="form-row{% if field.errors %} errors{% endif %}">
-              {{ field }}
-            </div>
-          {% endif %}
-        {% endfor %}
-        {# wysiwyg_editor "id_cmstextitem-0-text" #}
-      </div>
-    {% endfor %}
-  </div>
-{% endfor %}
+  {% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+  {% endfor %}
 </div><!-- /inlines -->
 
 </form>
