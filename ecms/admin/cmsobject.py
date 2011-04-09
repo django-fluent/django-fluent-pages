@@ -40,15 +40,15 @@ class CmsObjectAdminForm(forms.ModelForm):
         Extend valiation of the form, checking whether the URL is unique.
         Returns all fields which are valid.
         """
+        # As of Django 1.3, only valid fields are passed in cleaned_data.
         cleaned_data = super(CmsObjectAdminForm, self).clean()
 
         # See if the current
-        current_id = None
         other_objects = CmsObject.objects.all()
 
-        if 'id' in self.initial:
+        if self.instance and self.instance.id:
             # Editing an existing page
-            current_id = self.initial['id']
+            current_id = self.instance.id
             other_objects = other_objects.exclude(id=current_id)
             parent = CmsObject.objects.get(pk=current_id).parent
         else:
@@ -57,14 +57,14 @@ class CmsObjectAdminForm(forms.ModelForm):
 
         # If fields are filled in, and still valid, check for unique URL.
         # Determine new URL (note: also done in CmsObject model..)
-        if cleaned_data['override_url']:
+        if cleaned_data.get('override_url'):
             new_url = cleaned_data['override_url']
 
             if other_objects.filter(_cached_url=new_url).count():
                 self._errors['override_url'] = self.error_class([_('This URL is already taken by an other page.')])
                 del cleaned_data['override_url']
 
-        elif cleaned_data['slug']:
+        elif cleaned_data.get('slug'):
             new_slug = cleaned_data['slug']
             if parent:
                 new_url = '%s%s/' % (parent._cached_url, new_slug)

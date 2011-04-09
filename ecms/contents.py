@@ -5,7 +5,7 @@ These objects only return the relevant data for the contents
 in a fixed, minimalistic, API so template designers can focus on that.
 """
 import UserDict
-from django.template import mark_safe
+from django.utils.safestring import mark_safe
 
 
 class CmsObjectRegionDict(UserDict.DictMixin):
