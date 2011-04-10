@@ -47,7 +47,7 @@
   function onReady()
   {
     // Simple events
-    $("#ecms-tabnav a").click( onTabClick );
+    $("#ecms-tabnav a").mousedown( onTabMouseDown ).click( onTabClick );
     $("input.ecms-plugin-add-button").click( onAddButtonClick );
 
     // Init layout selector
@@ -185,7 +185,7 @@
 
       // Fetch the node reference as it was added to the DOM.
       fs_item = tab_content.children("#" + itemId);
-      dom_region.items[ordering] = fs_item;
+      dom_region.items[i] = fs_item;
 
       // Re-enable the item
       set_input_values(fs_item, values);
@@ -398,7 +398,7 @@
 
     // Rebind event
     var tab_links = $("#ecms-tabnav > li.ecms-region > a");
-    tab_links.click( onTabClick );
+    tab_links.mousedown( onTabMouseDown ).click( onTabClick );
 
     // Migrate formset items.
     // The previous old tabs can be removed afterwards.
@@ -456,6 +456,11 @@
     var tabmain = $("#ecms-tabmain");
     tabmain.children(".ecms-region-oldtab").remove();
 
+    // Remove empty/obsolete dom regions
+    for(var i in dom_regions)
+      if(dom_regions[i].items.length == 0)
+        delete dom_regions[i];
+
     // After children height recalculations / wysiwyg initialisation, restore auto height.
     setTimeout( function() { tabmain.css("height", ''); }, 100 );
   }
@@ -466,10 +471,8 @@
   /**
    * Tab button click
    */
-  function onTabClick(event)
+  function onTabMouseDown(event)
   {
-    event.preventDefault();
-
     var nav   = $("#ecms-tabnav li");
     var panes = $("#ecms-tabmain .ecms-tab");
     var thisnav = $(event.target).parent("li");
@@ -487,6 +490,12 @@
     // Auto focus on first editor.
     var firstField = activePane.find(".yui-editor-editable-container:first > iframe, .form-row :input:first").eq(0);
     firstField.focus();
+  }
+
+  function onTabClick(event)
+  {
+    // Prevent navigating to the href.
+    event.preventDefault();
   }
 
 
