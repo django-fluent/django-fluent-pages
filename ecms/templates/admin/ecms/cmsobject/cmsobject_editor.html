@@ -10,9 +10,16 @@
 <script type="text/javascript">
   // Pass database data to the admin.js file.
   var regions   = [ {% for region in original.layout.regions.all %}{ key: '{{ region.key|escapejs }}', title: '{{ region.title|escapejs }}', role: '{{ region.role|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
-  var formsets  = [ {% for formset in inline_ecms_formsets %}{name: '{{ formset.rel_name|escapejs }}', auto_id: '{{ formset.auto_id|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
+  var itemtypes = { {% for fs in inline_admin_formsets %}'{{ fs.opts.type_name|escapejs }}': {
+                      type: '{{ fs.opts.type_name|escapejs }}',
+                      name: '{{ fs.opts.name|escapejs }}',
+                      prefix: '{{ fs.formset.prefix|escapejs }}',
+                      rel_name: '{{ fs.formset.rel_name|escapejs }}',
+                      auto_id: '{{ fs.formset.auto_id|escapejs }}'
+                    }{% if not forloop.last %}, {% endif %}
+                  {% endfor %}};
   ecms_admin.setRegions( regions );
-  ecms_admin.setFormSets( formsets )
+  ecms_admin.setItemTypes( itemtypes );
 </script>{% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
@@ -63,6 +70,7 @@
 {% endfor %}
 
 <div id="ecms-tabbar"{% if not original.layout %} style="display:none"{% endif %}>
+  {# tab navigation #}
   <ul id="ecms-tabnav" class="ecms-clearfix">
     {% for region in original.layout.regions.all %}
     <li class="ecms-region{% if forloop.first %} active{% endif %}"><a href="#tab-region-{{ region.key }}">{{ region.title }}</a></li>
@@ -73,23 +81,32 @@
   </ul>
 
   <div id="ecms-tabmain">
+
+    {# all the region tabs #}
     {% for region in original.layout.regions.all %}
-
     <div class="ecms-tab ecms-region-tab{% if forloop.first %} ecms-tab-active{% endif %}" id="tab-region-{{ region.key }}">
-
       <div class="ecms-region-empty">
         {% trans "Region empty" %}
       </div>
-
-      {# todo: currently hardcode the pageitem editor #}
+      <div class="ecms-tab-content">
+      </div>
+      <div class="ecms-tab-controls">
+        <select>{% for fs in inline_admin_formsets %}
+          <option value="{{ fs.opts.type_name }}">{{ fs.opts.name }}</option>
+          {% endfor %}
+        </select>
+        <input data-region="{{ region.key }}" class="button ecms-plugin-add-button" type="button" value="{% trans "Add" %}" />
+      </div>
     </div>
-
     {% endfor %}
 
+    {# this is a "lost+found" bucket for layout switching #}
     <div class="ecms-tab" id="tab-orphaned">
-
+      <div class="ecms-tab-content">
+      </div>
     </div>
 
+    {# all remaining fieldsets #}
     <div class="ecms-tab" id="tab-properties">
       <div id="ecms-fieldset-secondary">
 
@@ -115,9 +132,9 @@
 {% prepopulated_fields_js %}
 
 
-{# The inlines are defined here so the information is available in the page. #}
-{# Visually however, they are reorganized across the various region tabs #}
-<div id="inlines" style="display: none;">
+{# The inlines are defined here so the information is available in the DOM. #}
+{# Visually the inline items are reorganized across the various region tabs #}
+<div id="inlines" style="xxdisplay: none;">
   {% for inline_admin_formset in inline_admin_formsets %}
     {% include inline_admin_formset.opts.template %}
   {% endfor %}

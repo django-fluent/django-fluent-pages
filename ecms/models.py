@@ -500,6 +500,8 @@ class CmsTextItem(CmsPageItem):
     """A snippet of text to display on a page"""
     text = models.TextField(_('text'), blank=True)
 
+    ecms_admin_form_template = "admin/ecms/cmstextitem/admin_form.html"
+
     class Meta:
         verbose_name = _('Text item')
         verbose_name_plural = _('Text items')

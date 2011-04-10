@@ -74,10 +74,8 @@ class CmsPageItemInline(StackedInline):
     Custom ``InlineModelAdmin`` subclass used for content types.
     """
 
-    max_num = 1
-    extra = 1
+    extra = 0
     fk_name = 'parent'
-    can_delete = False   # Get rid of that checkbox in the fieldset.
     template = 'admin/ecms/cmsobject/cmspageitem_inline.html'
 
     def __init__(self, *args, **kwargs):
@@ -159,12 +157,16 @@ class CmsObjectAdmin(MPTTModelAdmin):
         inlines = []
         for PageItemType in [CmsTextItem]:    # self.model._ec_content_types:
             # Create a new Type that inherits CmsPageItemInline
+            # Read the static fields of the ItemType to override default appearance.
             base = (CmsPageItemInline,)
             name = '%s_AutoInline' % PageItemType.__name__
             attrs = {
                 '__module__': self.model.__module__,
                 'model': PageItemType,
-                'form': getattr(PageItemType, 'ecms_item_editor_form', CmsPageItemForm),
+                'form': getattr(PageItemType, 'ecms_admin_form', CmsPageItemForm),
+                'name': PageItemType._meta.verbose_name,
+                'type_name': PageItemType.__name__,
+                'ecms_admin_form_template': getattr(PageItemType, 'ecms_admin_form_template', "admin/ecms/cmspageitem/admin_form.html")
             }
 
             inlines.append(type(name, base, attrs))

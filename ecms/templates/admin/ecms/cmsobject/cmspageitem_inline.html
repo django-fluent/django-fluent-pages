@@ -1,20 +1,26 @@
-  <div id="{{ inline_admin_formset.formset.rel_name }}">
-    <div class="header">
-      {{ inline_admin_formset.formset.management_form }}
-    </div>
+{% load i18n %}
+  <div id="{{ inline_admin_formset.formset.prefix }}-group" class="inline-group">
+    {{ inline_admin_formset.formset.management_form }}
+    {{ inline_admin_formset.formset.non_form_errors }}
 
-    {% for form in inline_admin_formset.formset.forms %}
-      {{ form.errors }}
-      <div id="{{ formset.rel_name }}_item_{{ forloop.counter0 }}">
-        {% for field in form %}
-          {% if field.is_hidden %}
-            {{ field }}
-          {% else %}
-            <div class="form-row{% if field.errors %} errors{% endif %}">
-              {{ field }}
-            </div>
-          {% endif %}
-        {% endfor %}
+    {# looping in `inline_admin_formset.formset.forms` excludes empty form #}
+    {# looping in `inline_admin_formset` includes the empty placeholder as last item #}
+    {% for inline_admin_form in inline_admin_formset %}
+      {% with inline_admin_form.form as form %}
+      <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+        <div class="ecms-formset-item-controls">
+          <span class="ecms-item-move">move</span>
+          <span class="ecms-item-delete"><a href="#delete">x</a></span>
+        </div>
+
+        {# render the form fields. Each Content Type can override it. Default is "admin/ecms/cmspageitem/admin_form.html". #}
+        {% block formfields %}
+          {% include inline_admin_formset.opts.ecms_admin_form_template %}
+        {% endblock %}
+
+        {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+        {{ inline_admin_form.fk_field.field }}
       </div>
+      {% endwith %}
     {% endfor %}
   </div>

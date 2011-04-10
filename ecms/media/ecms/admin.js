@@ -16,14 +16,18 @@
 
   // Public functions
   var regions   = [];   // [ { key: 'main', title: 'Main', role: 'm' }, { key: 'sidebar', ...} ]
-  var formsets  = [];   // [ { name: "somename_set, auto_id: "id_%s" }, .. ]
+  var itemtypes = [];   // { 'TypeName': { type: "Cms...ItemType", name: "Text item", rel_name: "TypeName_set", auto_id: "id_%s" }, ... }
   window.ecms_admin = {
-    'setRegions':  function(data) { regions   = data; }
-  , 'setFormSets': function(data) { formsets  = data; }
-  }
+    'setRegions':   function(data) { regions   = data; }
+  , 'setItemTypes': function(data) { itemtypes = data; }
+  };
 
-  // Global vars
-  var dom_formsets = {};  // { tab: DOM, items: [ item1, item2 ] }
+  // Cached DOM objects
+  var dom_regions = {};  // { 'region_key': { key: DOM, items: [ item1, item2 ], role: 'm' }, ... }
+  var empty_tab_title = null;
+  var empty_tab = null;
+
+  // Global state
   var has_load_error = false;
   var ajax_root = location.href.substring(0, location.href.indexOf('/cmsobject/') + 11);
 
@@ -42,15 +46,20 @@
   {
     // Simple events
     $("#ecms-tabnav a").click( onTabClick );
+    $("input.ecms-plugin-add-button").click( onAddButtonClick );
 
     // Init layout selector
     var layout_selector = $("#id_layout");
     select_single_option(layout_selector);
     layout_selector.change( onLayoutChange );
 
+    // Get the tab templates
+    empty_tab_title = $("#ecms-tabnav  > .ecms-region:first").clone().removeClass("active");
+    empty_tab       = $("#ecms-tabmain > .ecms-region-tab:first").clone().hide();
+
     // Init items in tabs
-    read_dom_formsets();
-    if( layout_selector.val() != 0 && $("#ecms-tabbar").is(":hidden"))
+    read_dom_regions();
+    if( layout_selector.val() != 0 && $("#ecms-tabbar").is(":hidden") )
     {
       // At Firefox refresh, the form field value was restored,
       // Sync the tab content by fetching the data.
@@ -65,32 +74,27 @@
 
 
   /**
-   * Read all the DOM formsets into the "dom_formsets" variable.
+   * Read all the DOM formsets into the "dom_regions" variable.
    * This information is used in this library to lookup formsets.
    */
-  function read_dom_formsets()
+  function read_dom_regions()
   {
-    var i, region_key, inputs, ordering;
-
     // Find all formset items.
-    // Split them by the region they belong to.
-    var formsets = $("#inlines > div[id$=_set]");
-    var fs_items = formsets.children("div:not(.header)");
-    for(i = 0; i < fs_items.length; i++)
+    // Split them by the region they belong to.key
+    var fs_items = $("#inlines > .inline-group > .inline-related:not(.empty-form)");
+    for(var i = 0; i < fs_items.length; i++)
     {
       // Get formset DOM elements
-      var fs_item = fs_items.eq(i);
-      inputs      = fs_item.find("input");
-      region_key  = inputs.filter("[name$=-region]").addClass("ecms-input-region").val();
-      ordering    = inputs.filter("[name$=-ordering]").addClass("ecms-input-ordering").val();
+      var fs_item      = fs_items.eq(i);
+      var region_input = fs_item.find("input[name$=-region]");
 
-      // Auto create, based on what's found at the page.
-      if(!dom_formsets[region_key])
-        dom_formsets[region_key] = { key: region_key, items: [] };
+      // region_key may be __main__, region.key will be the real one.
+      var region = get_region_by_key(region_input.val());
+      region_input.val(region.key);
 
       // Append item to administration
-      if(!dom_formsets[region_key].items[ordering])
-        dom_formsets[region_key].items[ordering] = fs_item;
+      var dom_region = get_or_create_dom_region(region);
+      dom_regions[region.key].items.push(fs_item);
     }
   }
 
@@ -116,35 +120,35 @@
    */
   function organize_formset_items()
   {
-    var default_region_key = get_region_for_role(REGION_ROLE_MAIN, 1);  // Use first main block in case region is not filled in.
+    var default_region = get_region_for_role(REGION_ROLE_MAIN, 1);  // Use first main block in case region is not filled in.
 
     // Count number of seen tabs per role.
     var roles_seen = {};
     for(var i in regions)
-      roles_seen[regions[i].key] = 0;
+      roles_seen[regions[i].role] = 0;
 
     // Move all items to the tabs.
-    for(var region_key in dom_formsets)
+    for(var region_key in dom_regions)
     {
-      var region = dom_formsets[region_key];
-      roles_seen[region.role]++;
+      var dom_region = dom_regions[region_key];
+      roles_seen[dom_region.role]++;
 
-      if( region.items.length == 0)
+      if( dom_region.items.length == 0)
         continue;
 
       // Find the tab.
       // If the template designer used the same "key", the tab contents is migrated.
       // Otherwise, a fallback tab is found that is used for the same role (it's purpose on the page).
-      var tab = $("#tab-region-" + (region_key || default_region_key));
+      var tab = $("#tab-region-" + (region_key || default_region.key));
       if( tab.length == 0 )
       {
-        var last_occurance = roles_seen[region.role];
-        tab = get_fallback_tab(region.role, last_occurance);
+        var last_occurance = roles_seen[dom_region.role];
+        tab = get_fallback_tab(dom_region.role, last_occurance);
       }
 
       // Fill the tab
       tab.children(".ecms-region-empty").hide();
-      move_items_to_tab(region, tab);
+      move_items_to_tab(dom_region, tab);
     }
   }
 
@@ -152,27 +156,34 @@
   /**
    * Move the items of one region to the given tab.
    */
-  function move_items_to_tab(region, tab)
+  function move_items_to_tab(dom_region, tab)
   {
+    var tab_content = tab.children(".ecms-tab-content");
+    if( tab_content.length == 0)
+    {
+      console.error("Invalid tab, missing tab-content: ", tab);
+      return;
+    }
+
     // Move all items to that tab.
     // Restore item values upon restoring fields.
-    for(var ordering in region.items)
+    for(var ordering in dom_region.items)
     {
-      var item   = region.items[ordering];
-      var itemId = item.attr("id");
+      var fs_item = dom_region.items[ordering];
+      var itemId  = fs_item.attr("id");
 
       // Remove the item.
-      disable_wysiwyg(item);
-      var values = get_input_values(item);
-      tab.append( item.remove() );
+      disable_pageitem(fs_item);
+      var values = get_input_values(fs_item);
+      tab_content.append( fs_item.remove() );
 
       // Fetch the node reference as it was added to the DOM.
-      item = tab.children("#" + itemId);
-      region.items[ordering] = item;
+      fs_item = tab_content.children("#" + itemId);
+      dom_region.items[ordering] = fs_item;
 
       // Re-enable the item
-      set_input_values(item, values);
-      enable_wysiwyg(item);
+      set_input_values(fs_item, values);
+      enable_pageitem(fs_item);
     }
   }
 
@@ -189,7 +200,7 @@
       var region = regions[i];
       if(region.role == role)
       {
-        candidate = region.key;
+        candidate = region;
         itemNr++;
 
         if( itemNr == preferredNr || !preferredNr )
@@ -202,16 +213,45 @@
 
 
   /**
+   * Find the region corresponding with a given key.
+   * The regions are not a loopup object, but array to keep ordering correct.
+   */
+  function get_region_by_key(key)
+  {
+    // Handle default placeholder values
+    if(key == '__main__' || key == '')
+      return get_region_for_role(REGION_ROLE_MAIN, 1);
+
+    // Find the item based on key
+    for(var i = 0; i < regions.length; i++)
+      if(regions[i].key == key)
+        return regions[i];
+
+    return null;
+  }
+
+
+  function get_or_create_dom_region(region)
+  {
+    var dom_region = dom_regions[region.key];
+    if(!dom_region)
+      dom_region = dom_regions[region.key] = { key: region.key, items: [], role: region.role };
+
+    return dom_region;
+  }
+
+
+  /**
    * Get a fallback tab to store an orphaned item.
    */
   function get_fallback_tab(role, last_known_nr)
   {
     // Find the last region which was also the same role.
     var tab = [];
-    var fallback_region_id = get_region_for_role(role || REGION_ROLE_MAIN, last_known_nr);
-    if( fallback_region_id )
+    var fallback_region = get_region_for_role(role || REGION_ROLE_MAIN, last_known_nr);
+    if( fallback_region )
     {
-      tab = $("#tab-region-" + fallback_region_id);
+      tab = $("#tab-region-" + fallback_region.key);
     }
 
     // If none exists, reveal the tab for orphaned items.
@@ -351,8 +391,8 @@
     for( var i = 0, len = regions.length; i < len; i++ )
     {
       var region = regions[i];
-      loading_tab.before( $('<li class="ecms-region"><a href="#tab-region-' + region.key + '">' + region.title + '</a></li>') );
-      tabmain.append( $('<div class="ecms-tab ecms-region-tab" id="tab-region-' + region.key + '"></div>') );
+      loading_tab.before( create_tab_title(region) );
+      tabmain.append( create_tab_content(region) );
     }
 
     // Rebind event
@@ -368,6 +408,22 @@
     // This needs to happen after organize, so orphans tab might be visible
     if( $("#ecms-tabnav > li.active:visible").length == 0 )
       tab_links.eq(0).click();
+  }
+
+
+  function create_tab_title(region)
+  {
+    var title = empty_tab_title.clone();
+    title.find("a").attr("href", '#tab-region-' + region.key).text(region.title);
+    return title;
+  }
+
+
+  function create_tab_content(region)
+  {
+    var tab = empty_tab.clone().attr("id", 'tab-region-' + region.key);
+    tab.find(".ecms-plugin-add-button").attr('data-region', region.key).click( onAddButtonClick );
+    return tab;
   }
 
 
@@ -430,12 +486,93 @@
   }
 
 
+  // -------- Add plugin feature ------
+
+  /**
+   * Add plugin click
+   */
+  function onAddButtonClick(event)
+  {
+    var add_button = $(event.target);
+    var region_key = add_button.attr("data-region");
+    var subtype = add_button.siblings("select").val();
+    add_formset_item( region_key, subtype );
+  }
+
+
+  /**
+   * Add an item to a tab.
+   */
+  function add_formset_item( region_key, subtype )
+  {
+    // The Django admin/media/js/inlines.js API is not public, or easy to use.
+    // Recoded the inline model dynamics.
+
+    var itemtype = itemtypes[subtype];
+    var group_prefix = itemtype.auto_id.replace(/%s/, itemtype.prefix);
+    var region = get_region_by_key(region_key);
+    var dom_region = get_or_create_dom_region(region);
+
+    // Get DOM items
+    var tab_content = $("#tab-region-" + region_key + " > .ecms-tab-content");
+    var empty_item = $("#" + itemtype.prefix + "-empty");
+    var total = $("#" + group_prefix + "-TOTAL_FORMS")[0];
+
+    // Clone the item,
+    var new_index = total.value;
+    var item_id   = itemtype.prefix + "-" + new_index;
+    var extrahtml = empty_item.get_outerHtml().replace(/__prefix__/g, new_index);
+    var newitem = $(extrahtml).removeClass("empty-form").attr("id", item_id)
+
+    // Add it
+    tab_content.append(newitem);
+    var fs_item = $("#" + item_id);
+
+    // Update administration
+    dom_region.items.push(fs_item);
+    total.value++;
+
+    // Configure it
+    var field_prefix = group_prefix + "-" + new_index;
+    $("#" + field_prefix + "-region").debug().val(region_key);
+    $("#" + field_prefix + "-ordering").val(new_index);
+    enable_pageitem(fs_item);
+  }
+
+
+  function enable_pageitem(fs_item)
+  {
+    enable_wysiwyg(fs_item);
+  }
+
+
+  function disable_pageitem(fs_item)
+  {
+    disable_wysiwyg(fs_item);
+  }
+
+
   /**
    * jQuery debug plugin.
    */
   if( !$.fn.debug )
   {
     $.fn.debug = function() { window.console && console.log( this.selector, this ); return this; };
+  }
+
+  /**
+   * jQuery outerHTML plugin
+   * Very simple, and incomplete - but sufficient for here.
+   */
+  $.fn.get_outerHtml = function( html )
+  {
+    if( this.length )
+    {
+      if( this[0].outerHTML )
+        return this[0].outerHTML;
+      else
+        return $("<div>").append( this.clone() ).html();
+    }
   }
 
 })(django.jQuery);

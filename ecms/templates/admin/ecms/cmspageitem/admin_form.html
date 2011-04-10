@@ -1,0 +1,4 @@
+        {{ inline_admin_form.form.errors }}
+        {% for fieldset in inline_admin_form %}
+          {% include "admin/includes/fieldset.html" %}
+        {% endfor %}

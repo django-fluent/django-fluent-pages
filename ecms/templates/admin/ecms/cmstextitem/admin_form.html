@@ -1,0 +1,15 @@
+        {% for fieldset in inline_admin_form %}
+          {% for line in fieldset %}
+            {% for adminfield in line %}
+
+              {% if adminfield.field.is_hidden %}
+                {{ adminfield.field }}
+              {% else %}
+                <div class="form-row{% if adminfield.errors %} errors{% endif %}">
+                  {{ adminfield.field }}
+                </div>
+              {% endif %}
+
+            {% endfor %}
+          {% endfor %}
+        {% endfor %}
