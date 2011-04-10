@@ -20,6 +20,7 @@
                   {% endfor %}};
   ecms_admin.setRegions( regions );
   ecms_admin.setItemTypes( itemtypes );
+  ecms_admin.setInitialValues( {layout_id: {{ original.layout_id|default:0 }}} );
 </script>{% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
@@ -69,7 +70,7 @@
   {% endif %}
 {% endfor %}
 
-<div id="ecms-tabbar"{% if not original.layout %} style="display:none"{% endif %}>
+<div id="ecms-tabbar"{% if not original or not original.layout %} style="display:none"{% endif %}>
   {# tab navigation #}
   <ul id="ecms-tabnav" class="ecms-clearfix">
     {% for region in original.layout.regions.all %}

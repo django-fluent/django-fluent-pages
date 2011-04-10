@@ -15,11 +15,13 @@
   catch(exception) {}
 
   // Public functions
-  var regions   = [];   // [ { key: 'main', title: 'Main', role: 'm' }, { key: 'sidebar', ...} ]
-  var itemtypes = [];   // { 'TypeName': { type: "Cms...ItemType", name: "Text item", rel_name: "TypeName_set", auto_id: "id_%s" }, ... }
+  var regions   = [];       // [ { key: 'main', title: 'Main', role: 'm' }, { key: 'sidebar', ...} ]
+  var itemtypes = [];       // { 'TypeName': { type: "Cms...ItemType", name: "Text item", rel_name: "TypeName_set", auto_id: "id_%s" }, ... }
+  var initial_values = {};  // {layout_id:2}
   window.ecms_admin = {
-    'setRegions':   function(data) { regions   = data; }
-  , 'setItemTypes': function(data) { itemtypes = data; }
+    'setRegions':       function(data) { regions   = data; }
+  , 'setItemTypes':     function(data) { itemtypes = data; }
+  , 'setInitialValues': function(data) { initial_values = data; }
   };
 
   // Cached DOM objects
@@ -57,17 +59,21 @@
     empty_tab_title = $("#ecms-tabnav  > .ecms-region:first").clone().removeClass("active");
     empty_tab       = $("#ecms-tabmain > .ecms-region-tab:first").clone().hide();
 
-    // Init items in tabs
+    // Initialize administration
     read_dom_regions();
-    if( layout_selector.val() != 0 && $("#ecms-tabbar").is(":hidden") )
+
+    // Place items in tabs
+    var selected_layout_id = layout_selector.val() || 0;
+    if( selected_layout_id != initial_values.layout_id )
     {
       // At Firefox refresh, the form field value was restored,
-      // Sync the tab content by fetching the data.
+      // Update the DOM content by fetching the data.
+      $("#ecms-tabbar").hide();
       layout_selector.change();
     }
     else
     {
-      // Normal init, use what we have.
+      // Normal init, server already created all tabs.
       organize_formset_items();
     }
   }
@@ -167,9 +173,9 @@
 
     // Move all items to that tab.
     // Restore item values upon restoring fields.
-    for(var ordering in dom_region.items)
+    for(var i in dom_region.items)
     {
-      var fs_item = dom_region.items[ordering];
+      var fs_item = dom_region.items[i];
       var itemId  = fs_item.attr("id");
 
       // Remove the item.
@@ -335,8 +341,8 @@
    */
   function onLayoutChange(event)
   {
-    var layout = this.value;
-    if( ! layout )
+    var layout_id = this.value;
+    if( ! layout_id )
     {
       $("#ecms-tabbar").slideUp();
       return;
@@ -347,18 +353,13 @@
 
     if( event.originalEvent )
     {
-      // Real change event
+      // Real change event, no manual invocation
       $("#ecms-tabbar").slideDown();
-    }
-    else
-    {
-      // Manual invocation, to restore at refresh
-      $("#ecms-tabbar").show();
     }
 
     // Get layout info.
     $.ajax({
-      url: ajax_root + "get_layout/" + this.value + "/",
+      url: ajax_root + "get_layout/" + layout_id + "/",
       success: onReceivedLayout,
       dataType: 'json',
       error: function(xhr, textStatus, ex) { alert("Internal ECMS error: failed to fetch layout data!"); }    // can't yet rely on $.ajaxError
@@ -408,6 +409,9 @@
     // This needs to happen after organize, so orphans tab might be visible
     if( $("#ecms-tabnav > li.active:visible").length == 0 )
       tab_links.eq(0).click();
+
+    // Show tabbar if still hidden (at first load)
+    $("#ecms-tabbar").show();
   }
 
 
