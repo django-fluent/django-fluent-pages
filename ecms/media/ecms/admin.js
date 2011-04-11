@@ -48,7 +48,8 @@
   {
     // Simple events
     $("#ecms-tabnav a").mousedown( onTabMouseDown ).click( onTabClick );
-    $("input.ecms-plugin-add-button").click( onAddButtonClick );
+    $(".ecms-plugin-add-button").live( 'click', onAddButtonClick );
+    $(".ecms-item-delete").live( 'click', onDeleteClick );
 
     // Init layout selector
     var layout_selector = $("#id_layout");
@@ -426,7 +427,7 @@
   function create_tab_content(region)
   {
     var tab = empty_tab.clone().attr("id", 'tab-region-' + region.key);
-    tab.find(".ecms-plugin-add-button").attr('data-region', region.key).click( onAddButtonClick );
+    tab.find(".ecms-plugin-add-button").attr('data-region', region.key);
     return tab;
   }
 
@@ -551,6 +552,116 @@
     $("#" + field_prefix + "-ordering").val(new_index);
     enable_pageitem(fs_item);
   }
+
+
+  // -------- Delete plugin ------
+
+
+  /**
+   * Delete item click
+   */
+  function onDeleteClick(event)
+  {
+    event.preventDefault();
+    remove_formset_item(event.target);
+  }
+
+
+  function remove_formset_item(child_node)
+  {
+    // Get dom info
+    var current_item = get_formset_item_data(child_node);
+    var itemtype     = current_item.itemtype;
+    var group_prefix = itemtype.auto_id.replace(/%s/, itemtype.prefix);
+    var field_prefix = group_prefix + "-" + current_item.index;
+    var total        = $("#" + group_prefix + "-TOTAL_FORMS")[0];
+    var region_key   = $("#" + field_prefix + "-region")[0].value;
+
+    // Get administration
+    var region       = get_region_by_key( region_key );
+    var dom_region   = dom_regions[region.key];
+    var total_count  = parseInt(total.value);
+
+    // Renumber in reverse order
+    for( var i = current_item.index + 1; i < total_count; i++ )
+    {
+      var fs_item = $("#" + itemtype.prefix + "-" + i);
+      renumber_formset_item(fs_item, itemtype.prefix, i - 1);
+    }
+
+    // And remove item
+    disable_pageitem(current_item.fs_item);
+    current_item.fs_item.remove();
+    total.value--;
+
+    // Remove from node list
+    var raw_node = current_item.fs_item[0];
+    for( i = 0; i < dom_region.items.length; i++ )
+    {
+      if( dom_region.items[i][0] == raw_node)
+      {
+        dom_region.items.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+
+  /**
+   * Get the formset information, by passing a child node.
+   */
+  function get_formset_item_data(child_node)
+  {
+    var fs_item = $(child_node).closest(".inline-related");
+    var ids = fs_item.attr("id").split('-');
+    var prefix = ids[0];
+
+    // Get itemtype
+    var itemtype = null;
+    for(var i in itemtypes)
+    {
+      if( itemtypes[i].prefix == prefix )
+      {
+        itemtype = itemtypes[i];
+        break;
+      }
+    }
+
+    return {
+      fs_item: fs_item,
+      itemtype: itemtype,
+      index: parseInt(ids[1])
+    };
+  }
+
+  // Based on django/contrib/admin/media/js/inlines.js
+  function renumber_formset_item(fs_item, prefix, new_index)
+  {
+    var id_regex = new RegExp("(" + prefix + "-(\\d+|__prefix__))");
+    var replacement = prefix + "-" + new_index;
+
+    // Loop through the nodes.
+    // Getting them all at once turns out to be more efficient, then looping per level.
+    var nodes = fs_item.add( fs_item.find("*") );
+    for( var i = 0; i < nodes.length; i++ )
+    {
+      var node = nodes[i];
+      var $node = $(node);
+
+      var for_attr = $node.attr('for');
+      if( for_attr )
+        $node.attr("for", for_attr.replace(id_regex, replacement));
+
+      if( node.id )
+        node.id = node.id.replace(id_regex, replacement);
+
+      if( node.name )
+        node.name = node.name.replace(id_regex, replacement);
+    }
+  }
+
+
+  // -------- Page item scripts ------
 
 
   function enable_pageitem(fs_item)
