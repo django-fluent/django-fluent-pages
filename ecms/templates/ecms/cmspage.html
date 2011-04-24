@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Powered by Django and Python" />
     <title>{{ ecms_page.title }} - {{ ecms_site.title|default:ecms_site.domain }}</title>
-    <link rel="stylesheet" href="{{ MEDIA_URL }}yoursite/base.css" type="text/css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}yoursite/base.css" type="text/css" />
     {% block scripts %}{% endblock %}
   </head>
 

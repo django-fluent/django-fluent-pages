@@ -2,11 +2,11 @@
 {% load i18n admin_modify adminmedia wysiwyg %}
 
 {% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}ecms/admin.css" />{% endblock %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecms/admin.css" />{% endblock %}
 
 {% block extrahead %}{{ block.super }}
 {% wysiwyg_setup %}
-<script type="text/javascript" src="{{ MEDIA_URL }}ecms/admin.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecms/admin.js"></script>
 <script type="text/javascript">
   // Pass database data to the admin.js file.
   var regions   = [ {% for region in original.layout.regions.all %}{ key: '{{ region.key|escapejs }}', title: '{{ region.title|escapejs }}', role: '{{ region.role|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
