@@ -243,16 +243,17 @@ class CmsObjectAdmin(MPTTModelAdmin):
     actions_column.short_description = _('actions')
 
     def _actions_column(self, cmsobject):
+        assets_root = settings.STATIC_URL or settings.MEDIA_URL
         actions = []
         actions.append(
-            u'<a href="add/?%s=%s" title="%s"><img src="%simg/admin/icon_addlink.gif" width="10" height="10" alt="%s" /></a>' % (
-                self.model._mptt_meta.parent_attr, cmsobject.pk, _('Add child'), settings.ADMIN_MEDIA_PREFIX, _('Add child'))
+            u'<a href="add/?%s=%s" title="%s"><img src="%secms/img/admin/page_new.gif" width="16" height="16" alt="%s" /></a>' % (
+                self.model._mptt_meta.parent_attr, cmsobject.pk, _('Add child'), assets_root, _('Add child'))
             )
 
         if hasattr(cmsobject, 'get_absolute_url') and cmsobject.is_published:
             actions.append(
-                u'<a href="%s" title="%s" target="_blank"><img src="%simg/admin/selector-search.gif" width="16" height="16" alt="%s" /></a>' % (
-                    cmsobject.get_absolute_url(), _('View on site'), settings.ADMIN_MEDIA_PREFIX, _('View on site'))
+                u'<a href="%s" title="%s" target="_blank"><img src="%secms/img/admin/world.gif" width="16" height="16" alt="%s" /></a>' % (
+                    cmsobject.get_absolute_url(), _('View on site'), assets_root, _('View on site'))
                 )
         return actions
 

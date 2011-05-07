@@ -57,7 +57,7 @@ td.actions-column { width: 120px; }
 
 #ecms-tabnav li.active {
   margin-top: 0;
-  background-image: url('img/default-bg.gif');
+  background-image: url('img/admin/default-bg.gif');
   color: #ffffff;
 }
 
