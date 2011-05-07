@@ -53,7 +53,7 @@
     // Simple events
     $("#ecms-tabnav a").mousedown( onTabMouseDown ).click( onTabClick );
     $(".ecms-plugin-add-button").live( 'click', onAddButtonClick );
-    $(".ecms-item-delete").live( 'click', onDeleteClick );
+    $(".ecms-item-delete a").live( 'click', onDeleteClick );
 
     // Init layout selector
     var layout_selector = $("#id_layout");
@@ -599,17 +599,30 @@
     var dom_region   = dom_regions[region.key];
     var total_count  = parseInt(total.value);
 
-    // Renumber in reverse order
-    for( var i = current_item.index + 1; i < total_count; i++ )
+    // Disable item, wysiwyg, etc..
+    disable_pageitem(current_item.fs_item);
+
+    // In case there is a delete checkbox, save it.
+    var delete_checkbox = $("#" + field_prefix + "-DELETE");
+    if( delete_checkbox.length )
     {
-      var fs_item = $("#" + itemtype.prefix + "-" + i);
-      renumber_formset_item(fs_item, itemtype.prefix, i - 1);
+      var id_field = $("#" + field_prefix + "-id").remove().insertAfter(total);
+      delete_checkbox.attr('checked', true).remove().insertAfter(total);
+    }
+    else
+    {
+      // Newly added item, renumber in reverse order
+      for( var i = current_item.index + 1; i < total_count; i++ )
+      {
+        var fs_item = $("#" + itemtype.prefix + "-" + i);
+        renumber_formset_item(fs_item, itemtype.prefix, i - 1);
+      }
+
+      total.value--;
     }
 
     // And remove item
-    disable_pageitem(current_item.fs_item);
     current_item.fs_item.remove();
-    total.value--;
 
     // Remove from node list
     var raw_node = current_item.fs_item[0];

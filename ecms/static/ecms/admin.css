@@ -97,6 +97,13 @@ td.actions-column { width: 120px; }
 #ecms-tabmain .ecms-tab-active { display: block }
 
 
+/* ---- Editor items ---- */
+
+.ecms-item-delete input {
+  display: none;  /* needed for server side, but has special handling in admin.js */
+}
+
+
 /* ---- Rich editor (quick fixes) ---- */
 
 #ecms-tabmain textarea.vLargeTextField {

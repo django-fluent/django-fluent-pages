@@ -10,7 +10,7 @@
       <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
         <div class="ecms-formset-item-controls">
           <span class="ecms-item-move">move</span>
-          <span class="ecms-item-delete"><a href="#delete">x</a></span>
+          <span class="ecms-item-delete"><a href="#delete">x</a>{% if inline_admin_formset.formset.can_delete and inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</span>
         </div>
 
         {# render the form fields. Each Content Type can override it. Default is "admin/ecms/cmspageitem/admin_form.html". #}

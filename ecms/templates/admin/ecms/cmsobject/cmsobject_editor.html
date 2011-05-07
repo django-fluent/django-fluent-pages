@@ -151,7 +151,7 @@
 
 {# The inlines are defined here so the information is available in the DOM. #}
 {# Visually the inline items are reorganized across the various region tabs #}
-<div id="inlines" style="xxdisplay: none;">
+<div id="inlines" style="display: none;">
   {% for inline_admin_formset in inline_admin_formsets %}
     {% include inline_admin_formset.opts.template %}
   {% endfor %}
