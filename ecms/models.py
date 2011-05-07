@@ -510,9 +510,10 @@ class CmsTextItem(CmsPageItem):
         verbose_name_plural = _('Text items')
 
     def __unicode__(self):
-        # No wrapping, but return the full text.
+        # No snippet, but return the full text.
         # works nicer for templates (e.g. mark_safe(main_page_item).
-        return self.text
+        # Included in a DIV, so the next item will be displayed below.
+        return "<div>" + self.text + "</div>"
 
 
 # -------- Legacy mptt support --------
