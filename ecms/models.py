@@ -450,6 +450,9 @@ class CmsPageItem(models.Model):
 
     The item renders itself by overriding ``__unicode__``.
     """
+    # Settings to override
+    ecms_admin_form = None
+    ecms_admin_form_template = "admin/ecms/cmspageitem/admin_form.html"
 
     # Note the validation settings defined here are not reflected automatically
     # in the ecms admin interface because it uses a custom ModelForm to handle these fields.

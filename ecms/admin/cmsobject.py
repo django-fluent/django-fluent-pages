@@ -163,10 +163,10 @@ class CmsObjectAdmin(MPTTModelAdmin):
             attrs = {
                 '__module__': self.model.__module__,
                 'model': PageItemType,
-                'form': getattr(PageItemType, 'ecms_admin_form', CmsPageItemForm),
+                'form': getattr(PageItemType, 'ecms_admin_form', CmsPageItemForm) or CmsPageItemForm,
                 'name': PageItemType._meta.verbose_name,
                 'type_name': PageItemType.__name__,
-                'ecms_admin_form_template': getattr(PageItemType, 'ecms_admin_form_template', "admin/ecms/cmspageitem/admin_form.html")
+                'ecms_admin_form_template': PageItemType.ecms_admin_form_template
             }
 
             inlines.append(type(name, base, attrs))
