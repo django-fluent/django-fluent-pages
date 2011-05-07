@@ -10,6 +10,10 @@
   // Mark the document as JavaScript enabled.
   $(document.documentElement).addClass("ecms-jsenabled");
 
+  // Make debugging possible.
+  var stub = function() {};
+  var console = window.console || {'log': stub, 'error': stub};
+
   // Speed up IE 6, fix background image flickering
   try { document.execCommand("BackgroundImageCache", false, true); }
   catch(exception) {}
@@ -77,6 +81,9 @@
       // Normal init, server already created all tabs.
       organize_formset_items();
     }
+
+    // Starting editor
+    console.log("Initialized editor, regions=", regions, " itemtypes=", itemtypes, " initial_values=", initial_values);
   }
 
 
@@ -397,6 +404,7 @@
     }
 
     // Cache globally
+    console.log("Received regions: ", layout.regions)
     regions = layout.regions;
 
     // Create the appropriate tabs for the regions.
@@ -557,7 +565,7 @@
 
     // Configure it
     var field_prefix = group_prefix + "-" + new_index;
-    $("#" + field_prefix + "-region").debug().val(region_key);
+    $("#" + field_prefix + "-region").val(region_key);
     $("#" + field_prefix + "-ordering").val(new_index);
     enable_pageitem(fs_item);
   }
