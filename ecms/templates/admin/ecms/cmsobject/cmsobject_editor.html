@@ -78,6 +78,7 @@
     {% endfor %}
     <li id="ecms-tabnav-loading" style="display: none"><a href="#">{% trans "Loading layout data..." %}</a></li></li>
     <li id="ecms-tabnav-orphaned" style="display: none"><a href="#tab-orphaned">{% trans "Orphaned content" %}</a></li>
+    <li id="ecms-tabnav-template" style="display: none"><a href="#">EMPTY</a></li></li>
     <li><a href="#tab-properties">{% trans "Properties" %}</a></li>
   </ul>
 
@@ -100,6 +101,22 @@
       </div>
     </div>
     {% endfor %}
+
+    {# Repeated again, as empty placeholder #}
+    <div class="ecms-tab ecms-region-tab" id="tab-template">
+      <div class="ecms-region-empty">
+        {% trans "Region empty" %}
+      </div>
+      <div class="ecms-tab-content">
+      </div>
+      <div class="ecms-tab-controls">
+        <select>{% for fs in inline_admin_formsets %}
+          <option value="{{ fs.opts.type_name }}">{{ fs.opts.name }}</option>
+          {% endfor %}
+        </select>
+        <input data-region="EMPTY" class="button ecms-plugin-add-button" type="button" value="{% trans "Add" %}" />
+      </div>
+    </div>
 
     {# this is a "lost+found" bucket for layout switching #}
     <div class="ecms-tab" id="tab-orphaned">

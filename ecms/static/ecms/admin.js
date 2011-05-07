@@ -57,8 +57,8 @@
     layout_selector.change( onLayoutChange );
 
     // Get the tab templates
-    empty_tab_title = $("#ecms-tabnav  > .ecms-region:first").clone().removeClass("active");
-    empty_tab       = $("#ecms-tabmain > .ecms-region-tab:first").clone().hide();
+    empty_tab_title = $("#ecms-tabnav-template");
+    empty_tab       = $("#tab-template");
 
     // Initialize administration
     read_dom_regions();
@@ -87,8 +87,11 @@
   function read_dom_regions()
   {
     // Find all formset items.
-    // Split them by the region they belong to.key
-    var fs_items = $("#inlines > .inline-group > .inline-related:not(.empty-form)");
+    var all_items   = $("#inlines > .inline-group > .inline-related");
+    var empty_items = all_items.filter(".empty-form");
+    var fs_items    = all_items.filter(":not(.empty-form)");
+
+    // Split formset items by the region they belong to.key
     for(var i = 0; i < fs_items.length; i++)
     {
       // Get formset DOM elements
@@ -102,6 +105,13 @@
       // Append item to administration
       var dom_region = get_or_create_dom_region(region);
       dom_regions[region.key].items.push(fs_item);
+    }
+
+    // Add the empty items to the itemtypes dictionary.
+    for(var i = 0; i < empty_items.length; i++)
+    {
+      var empty_item = get_formset_item_data(empty_items[i]);   // {fs_item, index, itemtype: {..}}
+      empty_item.itemtype.item_template = empty_item.fs_item;
     }
   }
 
@@ -409,7 +419,7 @@
     // Activate first if none active.
     // This needs to happen after organize, so orphans tab might be visible
     if( $("#ecms-tabnav > li.active:visible").length == 0 )
-      tab_links.eq(0).click();
+      tab_links.eq(0).mousedown().mouseup().click();
 
     // Show tabbar if still hidden (at first load)
     $("#ecms-tabbar").show();
@@ -418,9 +428,9 @@
 
   function create_tab_title(region)
   {
-    var title = empty_tab_title.clone();
-    title.find("a").attr("href", '#tab-region-' + region.key).text(region.title);
-    return title;
+    var tabtitle = empty_tab_title.clone().removeAttr("id").addClass("ecms-region").show();
+    tabtitle.find("a").attr("href", '#tab-region-' + region.key).text(region.title);
+    return tabtitle;
   }
 
 
@@ -529,14 +539,13 @@
 
     // Get DOM items
     var tab_content = $("#tab-region-" + region_key + " > .ecms-tab-content");
-    var empty_item = $("#" + itemtype.prefix + "-empty");
     var total = $("#" + group_prefix + "-TOTAL_FORMS")[0];
 
     // Clone the item,
     var new_index = total.value;
     var item_id   = itemtype.prefix + "-" + new_index;
-    var extrahtml = empty_item.get_outerHtml().replace(/__prefix__/g, new_index);
-    var newitem = $(extrahtml).removeClass("empty-form").attr("id", item_id)
+    var newhtml = itemtype.item_template.get_outerHtml().replace(/__prefix__/g, new_index);
+    var newitem = $(newhtml).removeClass("empty-form").attr("id", item_id);
 
     // Add it
     tab_content.append(newitem);
