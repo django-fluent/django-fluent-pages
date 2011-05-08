@@ -35,6 +35,7 @@
 
   // Global state
   var has_load_error = false;
+  var restore_timer = null;
   var ajax_root = location.href.substring(0, location.href.indexOf('/cmsobject/') + 11);
 
   // Constants
@@ -53,7 +54,9 @@
     // Simple events
     $("#ecms-tabnav a").mousedown( onTabMouseDown ).click( onTabClick );
     $(".ecms-plugin-add-button").live( 'click', onAddButtonClick );
-    $(".ecms-item-delete a").live( 'click', onDeleteClick );
+    $(".ecms-item-controls .ecms-item-up").live( 'click', onItemUpClick );
+    $(".ecms-item-controls .ecms-item-down").live( 'click', onItemDownClick );
+    $(".ecms-item-controls .ecms-item-delete a").live( 'click', onDeleteClick );
 
     // Init layout selector
     var layout_selector = $("#id_layout");
@@ -195,21 +198,32 @@
     for(var i in dom_region.items)
     {
       var fs_item = dom_region.items[i];
-      var itemId  = fs_item.attr("id");
-
-      // Remove the item.
-      disable_pageitem(fs_item);
-      var values = get_input_values(fs_item);
-      tab_content.append( fs_item.remove() );
-
-      // Fetch the node reference as it was added to the DOM.
-      fs_item = tab_content.children("#" + itemId);
-      dom_region.items[i] = fs_item;
-
-      // Re-enable the item
-      set_input_values(fs_item, values);
-      enable_pageitem(fs_item);
+      dom_region.items[i] = move_item_to( fs_item, function(fs_item) { tab_content.append(fs_item); } );
     }
+  }
+
+
+  /**
+   * Move an item to a new place.
+   */
+  function move_item_to( fs_item, add_action )
+  {
+    var itemId  = fs_item.attr("id");
+
+    // Remove the item.
+    disable_pageitem(fs_item);   // needed for WYSIWYG editors!
+    var values = get_input_values(fs_item);
+    add_action( fs_item.remove() );
+
+    // Fetch the node reference as it was added to the DOM.
+    fs_item = $("#" + itemId);
+
+    // Re-enable the item
+    set_input_values(fs_item, values);
+    enable_pageitem(fs_item);
+
+    // Return to allow updating the administration
+    return fs_item;
   }
 
 
@@ -575,6 +589,48 @@
   }
 
 
+  // -------- Move plugin ------
+
+
+  function onItemUpClick(event)
+  {
+    event.preventDefault();
+    move_formset_item(event.target, true);
+  }
+
+
+  function onItemDownClick(event)
+  {
+    event.preventDefault();
+    move_formset_item(event.target, false);
+  }
+
+
+  function move_formset_item(child_node, isUp)
+  {
+    var current_item = get_formset_item_data(child_node);
+    var fs_item = current_item.fs_item;
+    var relative = fs_item[isUp ? 'prev' : 'next']("div");
+    if(!relative.length) return;
+
+    // Avoid height flashes by fixating height
+    clearTimeout( restore_timer );
+    var tabmain = $("#ecms-tabmain");
+    tabmain.css("height", tabmain.height() + "px").height();
+    fs_item.css("height", fs_item.height() + "px");
+
+    // Swap
+    fs_item = move_item_to( fs_item, function(fs_item) { fs_item[isUp ? 'insertBefore' : 'insertAfter'](relative); } );
+
+    // Give more then enough time for the YUI editor to restore.
+    // The height won't be changed within 2 seconds at all.
+    restore_timer = setTimeout(function() {
+      fs_item.css("height", '');
+      tabmain.css("height", '');
+    }, 500);
+  }
+
+
   // -------- Delete plugin ------
 
 
@@ -733,4 +789,4 @@
     }
   }
 
-})(django.jQuery);
+})(window.jQuery || django.jQuery);

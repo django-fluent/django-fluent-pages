@@ -8,10 +8,16 @@
     {% for inline_admin_form in inline_admin_formset %}
       {% with inline_admin_form.form as form %}
       <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-        <div class="ecms-formset-item-controls">
-          <span class="ecms-item-move">move</span>
-          <span class="ecms-item-delete"><a href="#delete">x</a>{% if inline_admin_formset.formset.can_delete and inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</span>
-        </div>
+        <h2 class="ecms-formset-item-title">
+          {{ inline_admin_formset.opts.name }}
+          <span class="ecms-item-controls">
+            <span class="ecms-item-move">
+              <a class="ecms-item-up" href="#up">u</a>
+              <a class="ecms-item-down" href="#down">d</a>
+            </span>
+            <span class="ecms-item-delete"><a href="#delete">x</a>{% if inline_admin_formset.formset.can_delete and inline_admin_form.original %}{{ inline_admin_form.deletion_field.field }}{% endif %}</span>
+          </span>
+        </h2>
 
         {# render the form fields. Each Content Type can override it. Default is "admin/ecms/cmspageitem/admin_form.html". #}
         {% block formfields %}
