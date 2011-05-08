@@ -80,9 +80,7 @@ class CmsPageItemInline(StackedInline):
 
     def __init__(self, *args, **kwargs):
         super(CmsPageItemInline, self).__init__(*args, **kwargs)
-
-        self.verbose_name_plural = \
-            u'---- CMS Inline: %s' % (self.verbose_name_plural,)
+        self.verbose_name_plural = u'---- CMS Inline: %s' % (self.verbose_name_plural,)
 
 
 class CmsPageItemForm(forms.ModelForm):
