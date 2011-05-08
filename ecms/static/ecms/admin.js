@@ -29,7 +29,7 @@
   };
 
   // Cached DOM objects
-  var dom_regions = {};  // { 'region_key': { key: DOM, items: [ item1, item2 ], role: 'm' }, ... }
+  var dom_regions = {};  // the formset items by region; { 'region_key': { key: DOM, items: [ item1, item2 ], role: 'm' }, ... }
   var empty_tab_title = null;
   var empty_tab = null;
 
@@ -141,6 +141,7 @@
 
   /**
    * Move all formset items to their appropriate tabs.
+   * The tab is selected based on template key, and role.
    */
   function organize_formset_items()
   {
@@ -320,7 +321,7 @@
 
   function disable_wysiwyg(root)
   {
-    var textareas = root.find("textarea.vLargeTextField").toArray();
+    var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])").toArray();
     for(var i = 0; i < textareas.length; i++)
     {
       var textarea = textareas[i];
@@ -330,7 +331,7 @@
 
   function enable_wysiwyg(root)
   {
-    var textareas = root.find("textarea.vLargeTextField");
+    var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])");
 
     if( ! django_wysiwyg_is_loaded() )
     {
@@ -436,6 +437,7 @@
 
   function create_tab_title(region)
   {
+    // The 'ecms-region' class is not part of the template, to avoid matching the actual tabs.
     var tabtitle = empty_tab_title.clone().removeAttr("id").addClass("ecms-region").show();
     tabtitle.find("a").attr("href", '#tab-region-' + region.key).text(region.title);
     return tabtitle;
@@ -444,7 +446,8 @@
 
   function create_tab_content(region)
   {
-    var tab = empty_tab.clone().attr("id", 'tab-region-' + region.key);
+    // The 'ecms-region-tab' class is not part of the template, to avoid matching the actual tabs.
+    var tab = empty_tab.clone().attr("id", 'tab-region-' + region.key).addClass("ecms-region-tab");
     tab.find(".ecms-plugin-add-button").attr('data-region', region.key);
     return tab;
   }
@@ -453,9 +456,10 @@
   function hide_all_tabs()
   {
     // Replace tab titles with loading sign.
+    // Must avoid copying the template tab too (this is another guard against it).
     $("#ecms-tabnav-loading").show();
     $("#ecms-tabnav-orphaned").hide();
-    $("#ecms-tabnav > li.ecms-region").remove();
+    $("#ecms-tabnav > li.ecms-region:not(#ecms-tabnav-template)").remove();
 
     // set fixed height to avoid scrollbar/footer flashing.
     var tabmain = $("#ecms-tabmain");
@@ -466,14 +470,14 @@
     }
 
     // Hide and mark as old.
-    tabmain.children(".ecms-region-tab").removeClass("ecms-region-tab").addClass("ecms-region-oldtab").attr("id",null).hide();
+    tabmain.children(".ecms-region-tab:not(#tab-template)").removeClass("ecms-region-tab").addClass("ecms-oldtab").removeAttr("id").hide();
   }
 
 
   function remove_old_tabs()
   {
     var tabmain = $("#ecms-tabmain");
-    tabmain.children(".ecms-region-oldtab").remove();
+    tabmain.children(".ecms-oldtab").remove();
 
     // Remove empty/obsolete dom regions
     for(var i in dom_regions)
@@ -711,7 +715,7 @@
    */
   if( !$.fn.debug )
   {
-    $.fn.debug = function() { window.console && console.log( this.selector, this ); return this; };
+    $.fn.debug = function() { window.console && console.log( (arguments[0] || '') + this.selector, this ); return this; };
   }
 
   /**
