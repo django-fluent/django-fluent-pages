@@ -1,7 +1,7 @@
 from django.contrib import admin
 from ecms.models import CmsSite, CmsObject, CmsLayout, CmsRegion
-from ecms.admin.cmsobject import CmsObjectAdmin
-from ecms.admin.cmslayout import CmsLayoutAdmin
+from ecms.admin.cmsobjectadmin import CmsObjectAdmin
+from ecms.admin.cmslayoutadmin import CmsLayoutAdmin
 
 __all__ = ['CmsObjectAdmin', 'CmsLayoutAdmin', 'CmsRegionAdmin']
 
