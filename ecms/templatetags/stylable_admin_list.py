@@ -1,5 +1,11 @@
 """
-ECMS admin_list template tags
+A stylable admin_list
+
+This is a copy of mptt/templatetags/mptt_admin.py to allow another property on admin models:
+
+    list_column_classes
+
+This feature can be activated by extending the template admin/ecms/stylable_change_list.html
 """
 from django.conf import settings
 from django.contrib.admin.views.main import EMPTY_CHANGELIST_VALUE
@@ -18,7 +24,10 @@ from django.contrib.admin.templatetags.admin_list import _boolean_icon, result_h
 
 ###
 # This is a copy of mptt/templatetags/mptt_admin.py
-# Adjusted to freaking rock!
+# It also resembles django/contrib/admin/templatetags/admin_list.py
+#
+# Adjusted to allow the following properties:
+# - list_column_classes
 #
 
 register = Library()
@@ -27,29 +36,42 @@ register = Library()
 MPTT_ADMIN_LEVEL_INDENT = getattr(settings, 'MPTT_ADMIN_LEVEL_INDENT', 10)
 
 
-@register.inclusion_tag("admin/ecms/cmsobject/change_list_results.html")
-def ecms_result_list(cl):
+# Ideally this should be configurable too, provide a function instead of filename.
+@register.inclusion_tag("admin/change_list_results.html")
+def stylable_result_list(cl):
     """
     Displays the headers and data list together
     """
-    return {'cl': cl,
-            'result_headers': list(result_headers(cl)),
-            'results': list(ecms_results(cl))}
+    return {
+        'cl': cl,
+        'result_headers': list(stylable_result_headers(cl)),
+        'results': list(stylable_results(cl))
+    }
 
 
-def ecms_results(cl):
+def stylable_result_headers(cl):
+    # Add a col-fieldname class to the header.
+    for field_name, header in zip(cl.list_display, result_headers(cl)):
+        if header.get('class_attrib'):
+            header['class_attrib'] = mark_safe(header['class_attrib'].replace('class="', 'class="col-%s ' % field_name))
+        else:
+            header['class_attrib'] = mark_safe(' class="col-%s"' % field_name)
+        yield header
+
+
+def stylable_results(cl):
     """
     Collect all rows to display
     """
     if cl.formset:
         for res, form in zip(cl.result_list, cl.formset.forms):
-            yield list(ecms_items_for_result(cl, res, form))
+            yield list(stylable_items_for_result(cl, res, form))
     else:
         for res in cl.result_list:
-            yield list(ecms_items_for_result(cl, res, None))
+            yield list(stylable_items_for_result(cl, res, None))
 
 
-def ecms_items_for_result(cl, result, form):
+def stylable_items_for_result(cl, result, form):
     """
     Return an iterator which returns all columns to display in the list.
     """
@@ -60,7 +82,7 @@ def ecms_items_for_result(cl, result, form):
     mptt_indent_field = _get_mptt_indent_field(cl, result)
 
     # Read any custom properties
-    list_column_classes = getattr(cl.model_admin, 'list_column_classes') or {}
+    list_column_classes = getattr(cl.model_admin, 'list_column_classes', {})
 
     # Parse all fields to display
     for field_name in cl.list_display:
@@ -68,6 +90,7 @@ def ecms_items_for_result(cl, result, form):
         row_classes = []
         f = None
 
+        # This is all standard stuff, refactored to separate methods.
         try:
             f = cl.lookup_opts.get_field(field_name)
         except models.FieldDoesNotExist:
@@ -79,7 +102,7 @@ def ecms_items_for_result(cl, result, form):
         if force_unicode(result_repr) == '':
             result_repr = mark_safe('&nbsp;')
 
-        # Begin custom behavior
+        # Custom part, select row classes
         if field_name == mptt_indent_field:
             level = getattr(result, result._mptt_meta.level_attr)
             row_attr += ' style="padding-left:%spx"' % (5 + MPTT_ADMIN_LEVEL_INDENT * level)
@@ -87,7 +110,6 @@ def ecms_items_for_result(cl, result, form):
         column_class = list_column_classes.get(field_name)
         if column_class:
             row_classes.append(column_class)
-        # End custom
 
         if row_classes:
             row_attr += ' class="%s"' % ' '.join(row_classes)
@@ -132,6 +154,10 @@ def _get_mptt_indent_field(cl, result):
     """
     Find the first field of the list, it will be indented visually.
     """
+    # Allow working with normal models too.
+    if not hasattr(result, '_mptt_meta'):
+        return None
+
     # Taken from mptt_items_for_result() in mptt/templatetags/mptt_admin.py
     mptt_indent_field = None
     for field_name in cl.list_display:

@@ -104,13 +104,6 @@ class CmsObjectAdmin(MPTTModelAdmin):
     actions = ['make_published']
     change_list_template = ["admin/ecms/cmsobject/change_list.html"]
 
-    list_column_classes = {
-        'title':             'title-column',
-        'status_column':     'status-column',
-        'modification_date': 'datetime-column',
-        'actions_column':    'actions-column'
-    }
-
     # Configure edit page:
     form = CmsObjectAdminForm
     change_form_template = ["admin/ecms/cmsobject/cmsobject_editor.html",
