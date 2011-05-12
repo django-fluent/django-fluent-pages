@@ -2,7 +2,7 @@
 Template tags to request ECMS content in the template
 """
 from ecms.models import CmsObject, CmsSite
-from django.template import Template, TemplateSyntaxError, Library, Node, Context, Variable
+from django.template import Template, TemplateSyntaxError, Library, Node, Context, Variable, defaulttags
 from django.template.loader import get_template
 from ecms.navigation import CmsObjectNavigationNode
 
@@ -12,6 +12,25 @@ register = Library()
 
 # ---- Template node parsing ----
 
+def _parse_token_kwargs(parser, token, allowed_fields):
+    """
+    Parse the template arguments in kwargs syntax.
+    Returns a dictionary with FilterExpression objects.
+    """
+    bits = token.split_contents()
+    remaining_bits = bits[1:]
+    kwargs = defaulttags.token_kwargs(remaining_bits, parser)
+
+    # Validate the allowed arguments, to make things easier for template developers
+    for name in kwargs:
+        if name not in allowed_fields:
+            raise AttributeError("The option %s=... cannot be used in '%s'.\nPossible options are: %s." % (name, bits[0], ", ".join(allowed_fields)))
+    return kwargs
+
+
+def _resolve_token_kwargs(kwargs, context):
+    return dict([(key, val.resolve(context)) for key, val in kwargs.iteritems()])
+
 
 @register.tag(name='render_ecms_breadcrumb')
 def _parse_ecms_breadcrumb(parser, token):
@@ -20,12 +39,8 @@ def _parse_ecms_breadcrumb(parser, token):
 
 @register.tag(name='render_ecms_menu')
 def _parse_ecms_menu(parser, token):
-    return EcmsTopLevelMenuNode()
-
-
-@register.tag(name='render_ecms_sub_menu')
-def _parse_ecms_sub_menu(parser, token):
-    return EcmsSubMenuNode()
+    kwargs = _parse_token_kwargs(parser, token, ('max_depth',))
+    return EcmsMenuNode(**kwargs)
 
 
 @register.tag(name='render_ecms_region')
@@ -49,9 +64,15 @@ def _parse_get_ecms_vars(parser, token):
 
 
 class SimpleInclusionNode(Node):
+    """
+    Base class to render a template tag with a template.
+    """
     template_name = None
 
-    def get_context_data(self, context):
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def get_context_data(self, context, token_kwargs):
         raise NotImplementedError()
 
     def render(self, context):
@@ -60,8 +81,11 @@ class SimpleInclusionNode(Node):
             tpl = get_template(self.template_name)
             self.nodelist = tpl.nodelist
 
+        # Resolve token kwargs
+        token_kwargs = _resolve_token_kwargs(self.kwargs, context)
+
         # Render the node
-        data = self.get_context_data(context)
+        data = self.get_context_data(context, token_kwargs)
         new_context = Context(data, autoescape=context.autoescape)
         return self.nodelist.render(new_context)
 
@@ -72,35 +96,27 @@ class EcmsBreadcrumbNode(SimpleInclusionNode):
     """
     template_name = 'ecms/parts/breadcrumb.html'
 
-    def get_context_data(self, context):
+    def get_context_data(self, context, token_kwargs):
         page  = _ecms_get_current_page(context)  # CmsObject()
         items = page.breadcrumb # list(CmsObject)
 
         return {'breadcrumb': items}
 
 
-class EcmsTopLevelMenuNode(SimpleInclusionNode):
+class EcmsMenuNode(SimpleInclusionNode):
     """
     Template Node for topmenu
     """
-    template_name = 'ecms/parts/toplevel_menu.html'
+    template_name = 'ecms/parts/menu.html'
 
-    def get_context_data(self, context):
+    def get_context_data(self, context, token_kwargs):
         # Get page
         page      = _ecms_get_current_page(context)
         top_pages = CmsObject.objects.toplevel_navigation(current_page=page)
 
         # Make iterable context
-        menu_items = [CmsObjectNavigationNode(page) for page in top_pages]
+        menu_items = [CmsObjectNavigationNode(page, **token_kwargs) for page in top_pages]
         return {'menu_items': menu_items}
-
-
-class EcmsSubMenuNode(Node):
-    """
-    Template Node for submenu.
-    """
-    def render(self, context):
-        page = _ecms_get_current_page(context)
 
 
 class EcmsRegionNode(Node):
