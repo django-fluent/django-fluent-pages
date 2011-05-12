@@ -148,8 +148,6 @@
    */
   function organize_formset_items()
   {
-    var default_region = get_region_for_role(REGION_ROLE_MAIN, 1);  // Use first main block in case region is not filled in.
-
     // Count number of seen tabs per role.
     var roles_seen = {};
     for(var i in regions)
@@ -164,17 +162,8 @@
       if( dom_region.items.length == 0)
         continue;
 
-      // Find the tab.
-      // If the template designer used the same "key", the tab contents is migrated.
-      // Otherwise, a fallback tab is found that is used for the same role (it's purpose on the page).
-      var tab = $("#tab-region-" + (region_key || default_region.key));
-      if( tab.length == 0 )
-      {
-        var last_occurance = roles_seen[dom_region.role];
-        tab = get_fallback_tab(dom_region.role, last_occurance);
-      }
-
       // Fill the tab
+      var tab = get_tab_for_region(region_key);
       tab.children(".ecms-region-empty").hide();
       move_items_to_tab(dom_region, tab);
     }
@@ -277,6 +266,28 @@
       dom_region = dom_regions[region.key] = { key: region.key, items: [], role: region.role };
 
     return dom_region;
+  }
+
+
+  function get_tab_for_region(region_key)
+  {
+    if(! region_key)
+    {
+      var default_region = get_region_for_role(REGION_ROLE_MAIN, 1);  // Use first main block in case region is not filled in.
+      region_key = default_region.key;
+    }
+
+    // Find the tab.
+    // If the template designer used the same "key", the tab contents is migrated.
+    // Otherwise, a fallback tab is found that is used for the same role (it's purpose on the page).
+    var tab = $("#tab-region-" + region_key);
+    if( tab.length == 0 )
+    {
+      var last_occurance = roles_seen[dom_region.role];
+      tab = get_fallback_tab(dom_region.role, last_occurance);
+    }
+
+    return tab;
   }
 
 
@@ -576,6 +587,7 @@
     // Add it
     tab_content.append(newitem);
     var fs_item = $("#" + item_id);
+    tab_content.siblings(".ecms-region-empty").hide();
 
     // Update administration
     dom_region.items.push(fs_item);
@@ -693,6 +705,12 @@
         dom_region.items.splice(i, 1);
         break;
       }
+    }
+
+    if( dom_region.items.length == 0 )
+    {
+      var tab = get_tab_for_region(region.key);
+      tab.children(".ecms-region-empty").show();
     }
   }
 
