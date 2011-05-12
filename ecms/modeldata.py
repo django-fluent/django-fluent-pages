@@ -1,4 +1,6 @@
 """
+Extra classes accesable via the models.
+
 The data model to walk through the site contents.
 
 These objects only return the relevant data for the contents

@@ -37,7 +37,7 @@ from django_wysiwyg import clean_html, sanitize_html
 
 from ecms import appsettings
 from ecms.managers import CmsSiteManager, CmsObjectManager
-from ecms.contents import CmsObjectRegionDict, CmsPageItemList
+from ecms.modeldata import CmsObjectRegionDict, CmsPageItemList
 import mptt
 import types
 
