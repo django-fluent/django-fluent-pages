@@ -30,11 +30,24 @@ class NavigationNode(object):
     title = property(_not_implemented)
     url = property(_not_implemented)
     is_active = property(_not_implemented)
+    level = property(_not_implemented)
     parent = property(_not_implemented)
     children = property(_not_implemented)
     has_children = property(_not_implemented)
 
     # TODO: active trail item
+
+    # --- Compatibility with mptt recursetree
+    # If it looks like a duck and quacks like a duck, it must be a duck.
+    # http://docs.python.org/glossary.html#term-duck-typing
+
+    def get_children(self):
+        """Provided for compatibility with mptt recursetree"""
+        return self.children
+
+    def get_level(self):
+        """Provided for compatibility with mptt recursetree"""
+        return self.level
 
 
 class CmsObjectNavigationNode(NavigationNode):
@@ -59,7 +72,7 @@ class CmsObjectNavigationNode(NavigationNode):
     title = property(lambda self: self._page.title)
     url = property(lambda self: self._page.url)
     is_active = property(lambda self: self._page.is_current)
-    level = property(lambda self: self.page.level)
+    level = property(lambda self: self._page.level)
 
     @property
     def parent(self):
@@ -82,14 +95,3 @@ class CmsObjectNavigationNode(NavigationNode):
         if not self._children and (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
             #children = self._page.get_children()  # Via MPTT
             self._children = self._page.children.in_navigation()  # Via RelatedManager
-
-    # --- Compatibility with mptt recursetree
-    # If it looks like a duck and quacks like a duck, it must be a duck.
-    # http://docs.python.org/glossary.html#term-duck-typing
-
-    def get_children(self):
-        """Provided for compatibility with mptt recursetree"""
-        return self.children
-
-    def get_level(self):
-        return self._page.get_level()
