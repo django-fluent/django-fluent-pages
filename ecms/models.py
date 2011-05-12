@@ -256,8 +256,14 @@ class CmsObject(MPTTModel):
     def _is_published(self):
         return self.status == self.PUBLISHED
 
-    def is_draft(self):
+    def _is_draft(self):
         return self.status == self.DRAFT
+
+    def _is_first_child(self):
+        return self.is_root_node() or (self.parent and (self.lft == self.parent.lft + 1))
+
+    def _is_last_child(self):
+        return self.is_root_node() or (self.parent and (self.rght + 1 == self.parent.rght))
 
 
     # Map to properties (also for templates)
@@ -268,6 +274,8 @@ class CmsObject(MPTTModel):
     breadcrumb = property(_get_breadcrumb)
     url = property(get_absolute_url)
     is_published = property(_is_published)
+    is_first_child = property(_is_first_child)
+    is_last_child = property(_is_last_child)
 
 
     # ---- Page rendering ----

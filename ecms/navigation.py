@@ -4,9 +4,9 @@ The data model to walk through the site navigation.
 These objects only return the relevant data for the menu/breadcrumb
 in a fixed, minimalistic, API so template designers can focus on that.
 
-To walk through the site content programmatically, use the CmsObject directly.
+To walk through the site content in programmatic fashion, use the CmsObject directly.
 It offers properties such as `parent` and `children` (a RelatedManager),
-and methods such as `get_parent()` and `get_children()` through the `MPTTModel` base class
+and methods such as `get_parent()` and `get_children()` through the `MPTTModel` base class.
 """
 
 
@@ -48,11 +48,13 @@ class CmsObjectNavigationNode(NavigationNode):
         self._page = page
         self._parent_node = parent_node
         self._children = None
+        self._level = page.level
 
     slug = property(lambda self: self._page.slug)
     title = property(lambda self: self._page.title)
     url = property(lambda self: self._page.url)
     is_active = property(lambda self: self._page.is_current)
+    level = property(lambda self: self._level)
 
     @property
     def parent(self):
@@ -76,3 +78,14 @@ class CmsObjectNavigationNode(NavigationNode):
         if not self._children:
             #children = self._page.get_children()  # Via MPTT
             self._children = self._page.children.in_navigation()  # Via RelatedManager
+
+    # --- Compatibility with mptt recursetree
+    # If it looks like a duck and quacks like a duck, it must be a duck.
+    # http://docs.python.org/glossary.html#term-duck-typing
+
+    def get_children(self):
+        """Provided for compatibility with mptt recursetree"""
+        return self.children
+
+    def get_level(self):
+        return self._level

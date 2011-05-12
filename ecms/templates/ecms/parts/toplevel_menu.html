@@ -1,14 +1,9 @@
-{% if menu_items %}
+{% load mptt_tags %}{% if menu_items %}
 <ul>
-{% for item in menu_items %}
-  <li class="{% if item.is_active %}active{% endif %}{% if forloop.last %} last{% endif %}">
-    <a href="{{ item.url }}">{{ item.title }}</a>
-    {% for item in item.children %}
-    {% if forloop.first %}<ul>{% endif %}
-      <li class="{% if item.is_active %}active{% endif %}{% if forloop.last %} last{% endif %}"><a href="{{ item.url }}">{{ item.title }}</a></li>
-    {% if forloop.last %}</ul>{% endif %}
-    {% endfor %}
-  </li>
-{% endfor %}
+  {% recursetree menu_items %}{# node is a CmdObject #}
+  <li class="{% if node.is_active %}active{% endif %}{% if node.is_last_child %} last{% endif %}">
+    <a href="{{ node.url }}">{{ node.title }}</a>
+    {% if children %}<ul>{{ children }}</ul>{% endif %}
+  </li>{% endrecursetree %}
 </ul>
 {% endif %}
