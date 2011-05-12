@@ -121,8 +121,12 @@ class CmsObjectAdmin(MPTTModelAdmin):
             'fields': ('slug', 'keywords', 'description'),
             #'classes': ('collapse',),
         }),
+        (_('Menu structure'), {
+            'fields': ('sort_order', 'parent', 'in_navigation'),
+            #'classes': ('collapse',),
+        }),
         (_('Publication settings'), {
-            'fields': ('publication_date', 'expire_date', 'parent', 'sort_order', 'override_url'),
+            'fields': ('publication_date', 'expire_date', 'override_url'),
             #'classes': ('collapse',),
         }),
     )
@@ -202,10 +206,6 @@ class CmsObjectAdmin(MPTTModelAdmin):
         """Automatically store the user in the author field."""
         if not change:
             obj.author = request.user
-
-        # Set default values for hidden fields.
-        obj.in_navigation = True
-
         obj.save()
 
 
