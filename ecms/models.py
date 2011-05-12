@@ -27,14 +27,15 @@ from django.contrib.sites.models import Site
 from django.conf import settings
 
 # Util functions
-from django.core.validators import validate_slug
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import commit_on_success
 from django.template.defaultfilters import truncatewords
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
+from django_wysiwyg import clean_html, sanitize_html
 
+from ecms import appsettings
 from ecms.managers import CmsSiteManager, CmsObjectManager
 from ecms.contents import CmsObjectRegionDict, CmsPageItemList
 import mptt
@@ -522,6 +523,16 @@ class CmsTextItem(CmsPageItem):
         # works nicer for templates (e.g. mark_safe(main_page_item).
         # Included in a DIV, so the next item will be displayed below.
         return "<div>" + self.text + "</div>"
+
+    def save(self, *args, **kwargs):
+        # Cleanup the HTML if requested
+        if appsettings.ECMS_CLEAN_HTML:
+            self.text = clean_html(self.text)
+        if appsettings.ECMS_SANITIZE_HTML:
+            self.text = sanitize_html(self.text)
+
+        super(CmsPageItem, self).save(*args, **kwargs)
+
 
 
 # -------- Legacy mptt support --------

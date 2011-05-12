@@ -5,3 +5,5 @@ django-mptt==0.4.2
 django-wysiwyg==0.1.0
 # Optional for admin_tools:
 feedparser==4.1
+# Optional for ECMS_CLEAN_HTML:
+# html5lib or pytidylib
