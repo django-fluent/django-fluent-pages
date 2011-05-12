@@ -14,7 +14,8 @@ The following named URLs are defined:
 By Appending @admin to an URL, the request will be redirected to the admin URL of the page.
 """
 from django.conf.urls.defaults import *
-from ecms.views.cmspageview import CmsPageView, CmsPageAdminRedirect
+from ecms.views import CmsPageView, CmsPageAdminRedirect
+
 
 # The URLs of the cmspage are forced to end with a slash,
 # so django will redirect /admin will redirect to /admin/.
