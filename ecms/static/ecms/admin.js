@@ -361,7 +361,7 @@
     for(var i = 0; i < textareas.length; i++)
     {
       var textarea = textareas[i];
-      django_wysiwyg_disable("e:" + textarea.name);
+      django_wysiwyg.disable("e:" + textarea.name);
     }
   }
 
@@ -369,7 +369,7 @@
   {
     var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])").debug();
 
-    if( ! django_wysiwyg_is_loaded() )
+    if( ! django_wysiwyg.is_loaded() )
     {
       textareas.show();
 
@@ -387,7 +387,7 @@
     for(var i = 0; i < textareas.length; i++)
     {
       var textarea = textareas[i];
-      django_wysiwyg_enable("e:" + textarea.name, textarea.id);
+      django_wysiwyg.enable("e:" + textarea.name, textarea.id);
     }
   }
 
