@@ -367,13 +367,16 @@
 
   function enable_wysiwyg(root)
   {
-    var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])");
+    var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])").debug();
 
     if( ! django_wysiwyg_is_loaded() )
     {
+      textareas.show();
+
+      // Show an error message, but just once.
       if( ! has_load_error )
       {
-        textareas.before("<p><em style='color:#cc3333'>Unable to load WYSIWYG editor, is the system connected to the Internet?</em></p>").show();
+        textareas.before("<p><em style='color:#cc3333'>Unable to load WYSIWYG editor, is the system connected to the Internet?</em></p>");
         has_load_error = true;
       }
 
