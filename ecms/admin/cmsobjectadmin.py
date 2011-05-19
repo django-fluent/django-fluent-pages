@@ -77,6 +77,7 @@ class CmsPageItemInline(StackedInline):
     extra = 0
     fk_name = 'parent'
     template = 'admin/ecms/cmsobject/cmspageitem_inline.html'
+    ordering = ('sort_order',)
 
     def __init__(self, *args, **kwargs):
         super(CmsPageItemInline, self).__init__(*args, **kwargs)
@@ -86,10 +87,10 @@ class CmsPageItemInline(StackedInline):
 class CmsPageItemForm(forms.ModelForm):
     """
     The base form for custom pageitem types.
+    All other forms are dynamically generated from this base class.
     """
     region = forms.CharField(widget=forms.HiddenInput(), required=False)
-    ordering = forms.IntegerField(widget=forms.HiddenInput(), initial=1)
-    pass
+    sort_order = forms.IntegerField(widget=forms.HiddenInput(), initial=1)
 
 
 class CmsObjectAdmin(MPTTModelAdmin):

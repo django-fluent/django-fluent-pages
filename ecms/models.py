@@ -466,7 +466,7 @@ class CmsPageItem(models.Model):
     # Note the validation settings defined here are not reflected automatically
     # in the ecms admin interface because it uses a custom ModelForm to handle these fields.
     parent = models.ForeignKey(CmsObject)
-    sort_order = models.IntegerField(editable=False, default=1)
+    sort_order = models.IntegerField(default=1)
     region = models.CharField(max_length=128, default='__main__')
 
 

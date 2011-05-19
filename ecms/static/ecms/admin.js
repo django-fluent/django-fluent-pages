@@ -52,6 +52,7 @@
   function onReady()
   {
     // Simple events
+    $("#cmsobject_form").debug().submit( onFormSubmit );
     $("#ecms-tabnav a").mousedown( onTabMouseDown ).click( onTabClick );
     $(".ecms-plugin-add-button").live( 'click', onAddButtonClick );
     $(".ecms-item-controls .ecms-item-up").live( 'click', onItemUpClick );
@@ -87,6 +88,16 @@
 
     // Starting editor
     console.log("Initialized editor, regions=", regions, " itemtypes=", itemtypes, " initial_values=", initial_values);
+  }
+
+
+  function onFormSubmit(event)
+  {
+    var tabs = $("#ecms-tabmain > .ecms-region-tab");
+    for(var i = 0; i < tabs.length; i++)
+    {
+      update_sort_order(tabs.eq(i));
+    }
   }
 
 
@@ -242,7 +253,7 @@
 
   /**
    * Find the region corresponding with a given key.
-   * The regions are not a loopup object, but array to keep ordering correct.
+   * The regions are not a loopup object, but array to keep sort_order correct.
    */
   function get_region_by_key(key)
   {
@@ -596,7 +607,7 @@
     // Configure it
     var field_prefix = group_prefix + "-" + new_index;
     $("#" + field_prefix + "-region").val(region_key);
-    $("#" + field_prefix + "-ordering").val(new_index);
+    $("#" + field_prefix + "-sort_order").val(new_index);
     enable_pageitem(fs_item);
   }
 
@@ -633,6 +644,7 @@
 
     // Swap
     fs_item = move_item_to( fs_item, function(fs_item) { fs_item[isUp ? 'insertBefore' : 'insertAfter'](relative); } );
+    update_sort_order(fs_item.closest(".ecms-region-tab"));
 
     // Give more then enough time for the YUI editor to restore.
     // The height won't be changed within 2 seconds at all.
@@ -640,6 +652,17 @@
       fs_item.css("height", '');
       tabmain.css("height", '');
     }, 500);
+  }
+
+
+  function update_sort_order(tab)
+  {
+    // Can just assign the order in which it exists in the DOM.
+    var sort_order = tab.find("input[id$=-sort_order]").debug();
+    for(var i = 0; i < sort_order.length; i++)
+    {
+      sort_order[i].value = i;
+    }
   }
 
 
