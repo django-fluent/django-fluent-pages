@@ -33,7 +33,7 @@ from django.template.defaultfilters import truncatewords
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
-from django_wysiwyg import clean_html, sanitize_html
+from django_wysiwyg.utils import clean_html, sanitize_html
 
 from ecms import appsettings
 from ecms.managers import CmsSiteManager, CmsObjectManager
