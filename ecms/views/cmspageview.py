@@ -2,8 +2,8 @@
 The view to display CMS content.
 """
 import re
-from django.core import urlresolvers
 from ecms.models import CmsObject
+from ecms.admin.utils import get_page_admin_url
 from django.views.generic import DetailView, RedirectView
 
 
@@ -33,7 +33,7 @@ class CmsPageAdminRedirect(RedirectView):
         path = self.kwargs.get('path', self.request.path) or ''
         try:
             page = CmsObject.objects.get_for_path(path)
-            return urlresolvers.reverse('admin:ecms_cmsobject_change', args=(page.id,))
+            return get_page_admin_url(page)
         except CmsObject.DoesNotExist:
             # Back to page without @admin, display the error there.
             return '/' + re.sub('@[^@]+/?$', '', path)
