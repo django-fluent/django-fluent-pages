@@ -1,11 +1,15 @@
 """
 A stylable admin_list
 
-This is a copy of mptt/templatetags/mptt_admin.py to allow another property on admin models:
+This is a rewritten version of ``mptt/templatetags/mptt_admin.py`` which allows
+more styling of the admin list throughout the ModelAdmin class.
+By default, each column header will get a ``col-FIELD_NAME`` class,
+allowing to set the widths of the column from CSS.
 
-    list_column_classes
+Furthermore, the ModelAdmin can add the property ``list_column_classes``
+to the class, to define custom classes for a column.
 
-This feature can be activated by extending the template admin/ecms/stylable_change_list.html
+This feature can be activated by simply extending the template stylable/admin/change_list.html
 """
 from django.conf import settings
 from django.contrib.admin.views.main import EMPTY_CHANGELIST_VALUE
@@ -21,22 +25,21 @@ from django.template import Library
 
 from django.contrib.admin.templatetags.admin_list import _boolean_icon, result_headers
 
+# While this is based on mptt/templatetags/mptt_admin.py,
+# and django/contrib/admin/templatetags/admin_list.py,
+# much has been changed, simplified, and refactored for clarity.
+# What used to be one big method, is now split into several.
 
-###
-# This is a copy of mptt/templatetags/mptt_admin.py
-# It also resembles django/contrib/admin/templatetags/admin_list.py
-#
-# Adjusted to allow the following properties:
-# - list_column_classes
-#
 
+# Expose template tags
 register = Library()
 
-
+# Get app settings
 MPTT_ADMIN_LEVEL_INDENT = getattr(settings, 'MPTT_ADMIN_LEVEL_INDENT', 10)
 
 
-# Ideally this should be configurable too, provide a function instead of filename.
+# Ideally the template name should be configurable too, provide a function instead of filename.
+# For now, just reuse the existing admin template for the list contents.
 @register.inclusion_tag("admin/change_list_results.html")
 def stylable_result_list(cl):
     """
@@ -50,7 +53,11 @@ def stylable_result_list(cl):
 
 
 def stylable_result_headers(cl):
-    # Add a col-fieldname class to the header.
+    """
+    Reuse the existing result_headers() iterator,
+    and add a `col-FIELD_NAME` class to the header.
+    cl = The django ChangeList object
+    """
     for field_name, header in zip(cl.list_display, result_headers(cl)):
         if header.get('class_attrib'):
             header['class_attrib'] = mark_safe(header['class_attrib'].replace('class="', 'class="col-%s ' % field_name))
@@ -63,6 +70,7 @@ def stylable_results(cl):
     """
     Collect all rows to display
     """
+    # yield was used for convenience, and kept as is.
     if cl.formset:
         for res, form in zip(cl.result_list, cl.formset.forms):
             yield list(stylable_items_for_result(cl, res, form))
@@ -74,15 +82,16 @@ def stylable_results(cl):
 def stylable_items_for_result(cl, result, form):
     """
     Return an iterator which returns all columns to display in the list.
+    This method is based on items_for_result(), yet completely refactored.
     """
     first = True
     pk = cl.lookup_opts.pk.attname
 
-    # figure out which field to indent
-    mptt_indent_field = _get_mptt_indent_field(cl, result)
-
     # Read any custom properties
     list_column_classes = getattr(cl.model_admin, 'list_column_classes', {})
+
+    # figure out which field to indent
+    mptt_indent_field = _get_mptt_indent_field(cl, result)
 
     # Parse all fields to display
     for field_name in cl.list_display:
@@ -91,18 +100,11 @@ def stylable_items_for_result(cl, result, form):
         f = None
 
         # This is all standard stuff, refactored to separate methods.
-        try:
-            f = cl.lookup_opts.get_field(field_name)
-        except models.FieldDoesNotExist:
-            # Field does not exist. It can be a method for example.
-            result_repr = _get_non_field_repr(cl, result, field_name)
-        else:
-            result_repr, row_classes = _get_field_repr(cl, result, f)
-
+        result_repr, row_classes = _get_column_repr(cl, result, field_name)
         if force_unicode(result_repr) == '':
             result_repr = mark_safe('&nbsp;')
 
-        # Custom part, select row classes
+        # Custom stuff, select row classes
         if field_name == mptt_indent_field:
             level = getattr(result, result._mptt_meta.level_attr)
             row_attr += ' style="padding-left:%spx"' % (5 + MPTT_ADMIN_LEVEL_INDENT * level)
@@ -114,7 +116,7 @@ def stylable_items_for_result(cl, result, form):
         if row_classes:
             row_attr += ' class="%s"' % ' '.join(row_classes)
 
-        # If list_display_links not defined, add the link tag to the first field
+        # Add the link tag to the first field, or use list_display_links if it's defined.
         if (first and not cl.list_display_links) or field_name in cl.list_display_links:
             table_tag = ('th' if first else 'td')
             first = False
@@ -135,9 +137,9 @@ def stylable_items_for_result(cl, result, form):
             yield mark_safe(u'<%s%s><a href="%s"%s>%s</a></%s>' % \
                 (table_tag, row_attr, url, link_attr, conditional_escape(result_repr), table_tag))
         else:
-            # By default the fields come from ModelAdmin.list_editable, but if we pull
-            # the fields out of the form instead of list_editable custom admins
-            # can provide fields on a per request basis
+            # By default the fields come from ModelAdmin.list_editable,
+            # but if we pull the fields out of the form instead,
+            # custom ModelAdmin instances can provide fields on a per request basis
             if form and field_name in form.fields:
                 bf = form[field_name]
                 result_repr = mark_safe(force_unicode(bf.errors) + force_unicode(bf))
@@ -153,8 +155,8 @@ def stylable_items_for_result(cl, result, form):
 def _get_mptt_indent_field(cl, result):
     """
     Find the first field of the list, it will be indented visually.
+    Allow working with normal models too.
     """
-    # Allow working with normal models too.
     if not hasattr(result, '_mptt_meta'):
         return None
 
@@ -176,19 +178,33 @@ def _get_mptt_indent_field(cl, result):
     return mptt_indent_field
 
 
+def _get_column_repr(cl, result, field_name):
+    """
+    Get the string representation for a column item.
+    This can be a model field, callable or property.
+    """
+    try:
+        f = cl.lookup_opts.get_field(field_name)
+    except models.FieldDoesNotExist:
+        return _get_non_field_repr(cl, result, field_name)  # Field not found (maybe a function)
+    else:
+        return _get_field_repr(cl, result, f)  # Standard field
+
+
 def _get_non_field_repr(cl, result, field_name):
     """
     Render the visual representation of a column
     which does not refer to a field in the model
     """
-    # For non-field list_display values, the value is either a method,
-    # property or returned via a callable.
+    # For non-field list_display values, the value is either:
+    # - a method
+    # - a attribute of the ModelAdmin
+    # - a property or method of the model.
     try:
         if callable(field_name):
             attr = field_name
             value = attr(result)
-        elif hasattr(cl.model_admin, field_name) and \
-           not field_name == '__str__' and not field_name == '__unicode__':
+        elif hasattr(cl.model_admin, field_name) and not field_name in ('__str__', '__unicode__'):
             attr = getattr(cl.model_admin, field_name)
             value = attr(result)
         else:
@@ -198,9 +214,9 @@ def _get_non_field_repr(cl, result, field_name):
             else:
                 value = attr
 
+        # Parse special attributes of the item
         allow_tags = getattr(attr, 'allow_tags', False)
         boolean = getattr(attr, 'boolean', False)
-
         if boolean:
             allow_tags = True
             result_repr = _boolean_icon(value)
@@ -209,7 +225,6 @@ def _get_non_field_repr(cl, result, field_name):
 
     except (AttributeError, ObjectDoesNotExist):
         result_repr = EMPTY_CHANGELIST_VALUE
-
     else:
         # Strip HTML tags in the resulting text, except if the
         # function has an "allow_tags" attribute set to True.
@@ -218,7 +233,7 @@ def _get_non_field_repr(cl, result, field_name):
         else:
             result_repr = mark_safe(result_repr)
 
-    return result_repr
+    return result_repr, None
 
 
 def _get_field_repr(cl, result, f):
@@ -249,7 +264,7 @@ def _get_field_repr(cl, result, f):
 
     elif isinstance(f, models.BooleanField) \
       or isinstance(f, models.NullBooleanField):
-        # Booleans are special: We use images.
+        # Booleans are special: using images.
         result_repr = _boolean_icon(field_val)
 
     elif isinstance(f, models.DecimalField):
