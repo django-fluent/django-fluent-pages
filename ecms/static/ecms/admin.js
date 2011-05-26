@@ -174,7 +174,8 @@
         continue;
 
       // Fill the tab
-      var tab = get_tab_for_region(region_key);
+      var last_occurance = roles_seen[dom_region.role];
+      var tab = get_tab_for_region(region_key, last_occurance);
       tab.children(".ecms-region-empty").hide();
       move_items_to_tab(dom_region, tab);
     }
@@ -192,6 +193,8 @@
       console.error("Invalid tab, missing tab-content: ", tab);
       return;
     }
+
+    console.log("move_items_to_tab:", dom_region, tab);
 
     // Move all items to that tab.
     // Restore item values upon restoring fields.
@@ -280,7 +283,7 @@
   }
 
 
-  function get_tab_for_region(region_key)
+  function get_tab_for_region(region_key, last_known_nr)
   {
     if(! region_key)
     {
@@ -294,8 +297,8 @@
     var tab = $("#tab-region-" + region_key);
     if( tab.length == 0 )
     {
-      var last_occurance = roles_seen[dom_region.role];
-      tab = get_fallback_tab(dom_region.role, last_occurance);
+      var dom_region = dom_regions[region_key];
+      tab = get_fallback_tab(dom_region.role, last_known_nr);
     }
 
     return tab;
@@ -444,7 +447,7 @@
     }
 
     // Cache globally
-    console.log("Received regions: ", layout.regions)
+    console.log("Received regions: ", layout.regions, "dom_regions=", dom_regions )
     regions = layout.regions;
 
     // Create the appropriate tabs for the regions.
@@ -735,7 +738,7 @@
 
     if( dom_region.items.length == 0 )
     {
-      var tab = get_tab_for_region(region.key);
+      var tab = get_tab_for_region(region.key, 0);
       tab.children(".ecms-region-empty").show();
     }
   }
