@@ -6,6 +6,10 @@ var ecms_plugins = {};
   var has_load_error = false;
   var restore_timer = null;
 
+  // Allow debugging
+  var stub = function() {};
+  var console = window.console || {'log': stub, 'error': stub};
+
 
   ecms_plugins.init = function()
   {
@@ -366,5 +370,22 @@ var ecms_plugins = {};
     ecms_text_plugin.disable_wysiwyg(fs_item);
   }
 
+
+  // -------- Extra jQuery plugin ------
+
+  /**
+   * jQuery outerHTML plugin
+   * Very simple, and incomplete - but sufficient for here.
+   */
+  $.fn.get_outerHtml = function( html )
+  {
+    if( this.length )
+    {
+      if( this[0].outerHTML )
+        return this[0].outerHTML;
+      else
+        return $("<div>").append( this.clone() ).html();
+    }
+  }
 
 })(window.jQuery || django.jQuery);

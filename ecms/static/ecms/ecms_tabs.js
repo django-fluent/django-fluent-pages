@@ -7,6 +7,10 @@ var ecms_tabs = {};
   var empty_tab_title = null;
   var empty_tab = null;
 
+  // Allow debugging
+  var stub = function() {};
+  var console = window.console || {'log': stub, 'error': stub};
+
 
   ecms_tabs.init = function()
   {
