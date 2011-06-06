@@ -1,5 +1,5 @@
-/*
-  Extra functions for the ECMS admin interface customisations
+/**
+ * Main setup for the ecms admin interface.
  */
 
 

@@ -52,6 +52,19 @@ var ecms_tabs = {};
   }
 
 
+  ecms_tabs.get_tabs = function()
+  {
+    var tabs = $("#ecms-tabmain > .ecms-region-tab");
+
+    // Wrap in objects too, for consistent API usage.
+    var tab_objects = [];
+    for(var i = 0; i < tabs.length; i++)
+      tab_objects.push(ecms_tabs._get_object_for_tab(tab));
+
+    return tab_objects;
+  }
+
+
   ecms_tabs._get_object_for_tab = function(tab)
   {
     return {
@@ -113,8 +126,8 @@ var ecms_tabs = {};
     for( var i = 0, len = regions.length; i < len; i++ )
     {
       var region = regions[i];
-      loading_tab.before( ecms_tabs.create_tab_title(region) );
-      tabmain.append( ecms_tabs.create_tab_content(region) );
+      loading_tab.before( ecms_tabs._create_tab_title(region) );
+      tabmain.append( ecms_tabs._create_tab_content(region) );
     }
 
     // Rebind event
@@ -123,20 +136,14 @@ var ecms_tabs = {};
 
     // Migrate formset items.
     // The previous old tabs can be removed afterwards.
-    ecms_plugins.organize_formset_items();
-    ecms_tabs.remove_old_tabs();
-
-    // Activate first if none active.
-    // This needs to happen after organize, so orphans tab might be visible
-    if( $("#ecms-tabnav > li.active:visible").length == 0 )
-      tab_links.eq(0).mousedown().mouseup().click();
-
-    // Show tabbar if still hidden (at first load)
-    ecms_tabs.show();
+    ecms_plugins.move_items_to_tabs();
+    ecms_tabs._remove_old_tabs();
+    ecms_tabs._ensure_active_tab(tab_links.eq(0));
+    ecms_tabs.show(); // Show tabbar if still hidden (at first load)
   }
 
 
-  ecms_tabs.create_tab_title = function(region)
+  ecms_tabs._create_tab_title = function(region)
   {
     // The 'ecms-region' class is not part of the template, to avoid matching the actual tabs.
     var tabtitle = empty_tab_title.clone().removeAttr("id").addClass("ecms-region").show();
@@ -145,7 +152,7 @@ var ecms_tabs = {};
   }
 
 
-  ecms_tabs.create_tab_content = function(region)
+  ecms_tabs._create_tab_content = function(region)
   {
     // The 'ecms-region-tab' class is not part of the template, to avoid matching the actual tabs.
     var tab = empty_tab.clone().attr("id", 'tab-region-' + region.key).addClass("ecms-region-tab");
@@ -189,11 +196,21 @@ var ecms_tabs = {};
     }
 
     // Hide and mark as old.
-    tabmain.children(".ecms-region-tab:not(#tab-template)").removeClass("ecms-region-tab").addClass("ecms-oldtab").removeAttr("id").hide();
+    var all_tabs = tabmain.children(".ecms-region-tab:not(#tab-template)");
+    all_tabs.removeClass("ecms-region-tab").addClass("ecms-oldtab").removeAttr("id").hide();
   }
 
 
-  ecms_tabs.remove_old_tabs = function()
+  ecms_tabs._ensure_active_tab = function(fallback_tab_link)
+  {
+    // Activate the fallback item (first) if none active.
+    // This needs to happen after organize, so orphans tab might be visible
+    if( $("#ecms-tabnav > li.active:visible").length == 0 )
+      fallback_tab_link.mousedown().mouseup().click();
+  }
+
+
+  ecms_tabs._remove_old_tabs = function()
   {
     var tabmain = $("#ecms-tabmain");
     tabmain.children(".ecms-oldtab").remove();
@@ -241,9 +258,15 @@ var ecms_tabs = {};
     nav.removeClass("active");
     thisnav.addClass("active");
 
+    ecms_tabs._focus_first_input(activePane);
+  }
+
+
+  ecms_tabs._focus_first_input = function(root)
+  {
     // Auto focus on first editor.
     // This can either be an iframe (WYSIWYG editor), or normal input field.
-    var firstField = activePane.find(".yui-editor-editable-container:first > iframe, .form-row :input:first").eq(0);
+    var firstField = root.find(".yui-editor-editable-container:first > iframe, .form-row :input:first").eq(0);
     firstField.focus();
   }
 

@@ -1,3 +1,9 @@
+/**
+ * This file deals with the internal DOM manipulations inside a single tab;
+ * namely the plugin ("item types") which are added, reordered, and removed there.
+ *
+ * The formset items are organized in tabs per placeholder area, which are initiated by ecms_tabs.
+ */
 var ecms_plugins = {};
 
 (function($){
@@ -28,7 +34,7 @@ var ecms_plugins = {};
     if( ! ecms_layouts.fetch_layout_on_refresh() )
     {
       // Normal init, server already created all tabs.
-      ecms_plugins.organize_formset_items();
+      ecms_plugins.move_items_to_tabs();
     }
   }
 
@@ -37,7 +43,7 @@ var ecms_plugins = {};
    * Move all formset items to their appropriate tabs.
    * The tab is selected based on template key, and role.
    */
-  ecms_plugins.organize_formset_items = function()
+  ecms_plugins.move_items_to_tabs = function()
   {
     // Count number of seen tabs per role.
     var roles_seen = {};
@@ -57,12 +63,9 @@ var ecms_plugins = {};
       var last_occurance = roles_seen[dom_region.role];
       var tab = ecms_tabs.get_tab_for_region(region_key, last_occurance);
 
-      tab.empty_message.hide();
       ecms_plugins.move_items_to_tab(dom_region, tab);
     }
   }
-
-
 
 
   /**
@@ -85,6 +88,9 @@ var ecms_plugins = {};
       var fs_item = dom_region.items[i];
       dom_region.items[i] = ecms_plugins._move_item_to( fs_item, function(fs_item) { tab.content.append(fs_item); } );
     }
+
+    if( dom_region.items.length )
+      tab.empty_message.hide();
   }
 
 
@@ -205,11 +211,11 @@ var ecms_plugins = {};
   ecms_plugins.onItemDownClick = function(event)
   {
     event.preventDefault();
-    ecms_plugins.move_formset_item(event.target, false);
+    ecms_plugins.swap_formset_item(event.target, false);
   }
 
 
-  ecms_plugins.move_formset_item = function(child_node, isUp)
+  ecms_plugins.swap_formset_item = function(child_node, isUp)
   {
     var current_item = ecms_data.get_formset_item_data(child_node);
     var fs_item = current_item.fs_item;
@@ -217,14 +223,15 @@ var ecms_plugins = {};
     if(!relative.length) return;
 
     // Avoid height flashes by fixating height
+    // FIXME: this breaks encapsulation of the tabbar control. Yet it is pretty easy this way.
     clearTimeout( restore_timer );
     var tabmain = $("#ecms-tabmain");
-    tabmain.css("height", tabmain.height() + "px").height();
+    tabmain.css("height", tabmain.height() + "px");
     fs_item.css("height", fs_item.height() + "px");
 
     // Swap
     fs_item = ecms_plugins._move_item_to( fs_item, function(fs_item) { fs_item[isUp ? 'insertBefore' : 'insertAfter'](relative); } );
-    ecms_plugins.update_sort_order(fs_item.closest(".ecms-region-tab"));
+    ecms_plugins._update_sort_order(fs_item.closest(".ecms-tab-content"));
 
     // Give more then enough time for the YUI editor to restore.
     // The height won't be changed within 2 seconds at all.
@@ -237,10 +244,10 @@ var ecms_plugins = {};
 
   ecms_plugins.onFormSubmit = function(event)
   {
-    var tabs = $("#ecms-tabmain > .ecms-region-tab");
+    var tabs = ecms_tabs.get_tabs();
     for(var i = 0; i < tabs.length; i++)
     {
-      ecms_plugins.update_sort_order(tabs.eq(i));
+      ecms_plugins.update_sort_order(tabs[i]);
     }
   }
 
@@ -248,7 +255,7 @@ var ecms_plugins = {};
   ecms_plugins.update_sort_order = function(tab)
   {
     // Can just assign the order in which it exists in the DOM.
-    var sort_order = tab.find("input[id$=-sort_order]").debug();
+    var sort_order = tab.content.find("input[id$=-sort_order]");
     for(var i = 0; i < sort_order.length; i++)
     {
       sort_order[i].value = i;
@@ -273,26 +280,21 @@ var ecms_plugins = {};
   {
     // Get dom info
     var current_item = ecms_data.get_formset_item_data(child_node);
+    var dominfo      = ecms_plugins._get_formset_dom_info(current_item);
     var itemtype     = current_item.itemtype;
-    var group_prefix = itemtype.auto_id.replace(/%s/, itemtype.prefix);
-    var field_prefix = group_prefix + "-" + current_item.index;
-    var total        = $("#" + group_prefix + "-TOTAL_FORMS")[0];
-    var region_key   = $("#" + field_prefix + "-region")[0].value;
 
     // Get administration
-    var region       = ecms_data.get_region_by_key( region_key );
-    var dom_region   = dom_regions[region.key];
-    var total_count  = parseInt(total.value);
+    var region       = ecms_data.get_region_by_key( dominfo.region_key );
+    var total_count  = parseInt(dominfo.total_forms.value);
 
     // Disable item, wysiwyg, etc..
     ecms_plugins.disable_pageitem(current_item.fs_item);
 
     // In case there is a delete checkbox, save it.
-    var delete_checkbox = $("#" + field_prefix + "-DELETE");
-    if( delete_checkbox.length )
+    if( dominfo.delete_checkbox.length )
     {
-      var id_field = $("#" + field_prefix + "-id").remove().insertAfter(total);
-      delete_checkbox.attr('checked', true).remove().insertAfter(total);
+      var id_field = dominfo.id_field.remove().insertAfter(dominfo.total_forms);
+      dominfo.delete_checkbox.attr('checked', true).remove().insertAfter(dominfo.total_forms);
     }
     else
     {
@@ -303,28 +305,39 @@ var ecms_plugins = {};
         ecms_plugins._renumber_formset_item(fs_item, itemtype.prefix, i - 1);
       }
 
-      total.value--;
+      dominfo.total_forms.value--;
     }
 
     // And remove item
     current_item.fs_item.remove();
 
-    // Remove from node list
-    var raw_node = current_item.fs_item[0];
-    for( i = 0; i < dom_region.items.length; i++ )
-    {
-      if( dom_region.items[i][0] == raw_node)
-      {
-        dom_region.items.splice(i, 1);
-        break;
-      }
-    }
-
-    if( dom_region.items.length == 0 )
+    // Remove from node list, if all removed, show empty tab message.
+    if( ecms_data.remove_dom_item(region.key, current_item))
     {
       var tab = ecms_tabs.get_tab_for_region(region.key, 0);
       tab.empty_message.show();
     }
+  }
+
+
+  ecms_plugins._get_formset_dom_info = function(current_item)
+  {
+    var itemtype     = current_item.itemtype;
+    var group_prefix = itemtype.auto_id.replace(/%s/, itemtype.prefix);
+    var field_prefix = group_prefix + "-" + current_item.index;
+
+    return {
+      // for debugging
+      root: current_item.fs_item,
+
+      // management form item
+      total_forms: $("#" + group_prefix + "-TOTAL_FORMS")[0],
+
+      // Item fields
+      id_field: $("#" + field_prefix + "-id"),
+      delete_checkbox: $("#" + field_prefix + "-DELETE"),
+      region_key: $("#" + field_prefix + "-region")[0].value
+    };
   }
 
 

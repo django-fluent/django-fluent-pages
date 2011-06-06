@@ -1,4 +1,14 @@
+/**
+ * This file deals with the lowest data layer / data administration of the backend editor.
+ *
+ * It tracks the following items:
+ * - regions        = definitions of various placeholder area's
+ * - itemtypes      = metadata of formset item types
+ * - dom_regions    = formset DOM items indexed by region
+ * - initial_values = initial form values (to detect browser changes on refresh)
+ */
 var ecms_data = {};
+
 
 (function($)
 {
@@ -10,7 +20,7 @@ var ecms_data = {};
   };
 
   // Stored data
-  // TODO: make dom_regions private
+  // FIXME: make dom_regions private.
   window.dom_regions = {};  // the formset items by region; { 'region_key': { key: DOM, items: [ item1, item2 ], role: 'm' }, ... }
 
   // Public data (also for debugging)
@@ -148,6 +158,23 @@ var ecms_data = {};
     for(var i in dom_regions)
       if(dom_regions[i].items.length == 0)
         delete dom_regions[i];
+  }
+
+
+  ecms_data.remove_dom_item = function(region_key, item_data)
+  {
+    var dom_region = dom_regions[region_key];
+    var raw_node   = item_data.fs_item[0];
+    for( i = 0; i < dom_region.items.length; i++ )
+    {
+      if( dom_region.items[i][0] == raw_node)
+      {
+        dom_region.items.splice(i, 1);
+        break;
+      }
+    }
+
+    return dom_region.items.length == 0;
   }
 
 })(window.jQuery || django.jQuery);

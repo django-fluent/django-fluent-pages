@@ -1,3 +1,7 @@
+/**
+ * This file deals with the high level layout switching / fetching layout info.
+ * When a new layout is fetched, it is passed to ecms_tabs to rebuild the tabs.
+ */
 var ecms_layouts = {};
 
 (function($)
