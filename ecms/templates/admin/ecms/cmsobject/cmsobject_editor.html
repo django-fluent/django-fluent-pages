@@ -7,6 +7,11 @@
 {% block extrahead %}{{ block.super }}
 {% wysiwyg_setup %}
 <script type="text/javascript" src="{{ STATIC_URL }}ecms/admin.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_data.js"></script>{# this is why they invented compression #}
+<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_tabs.js"></script>{# clear code, but good deployment #}
+<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_layouts.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_plugins.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_text_plugin.js"></script>
 <script type="text/javascript">
   // Pass database data to the admin.js file.
   var regions   = [ {% for region in original.layout.regions.all %}{ key: '{{ region.key|escapejs }}', title: '{{ region.title|escapejs }}', role: '{{ region.role|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
