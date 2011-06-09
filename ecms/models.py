@@ -33,9 +33,7 @@ from django.template.defaultfilters import truncatewords
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
-from django_wysiwyg.utils import clean_html, sanitize_html
 
-from ecms import appsettings
 from ecms.managers import CmsSiteManager, CmsObjectManager
 from ecms.modeldata import CmsObjectRegionDict, CmsPageItemList
 import mptt
@@ -450,7 +448,7 @@ class CmsRegion(models.Model):
         verbose_name_plural = _('Layout regions')
 
 
-# -------- Page contents--------
+# -------- Page contents --------
 
 
 class CmsPageItem(models.Model):
@@ -459,9 +457,6 @@ class CmsPageItem(models.Model):
 
     The item renders itself by overriding ``__unicode__``.
     """
-    # Settings to override
-    ecms_admin_form = None
-    ecms_admin_form_template = "admin/ecms/cmspageitem/admin_form.html"
 
     # Note the validation settings defined here are not reflected automatically
     # in the ecms admin interface because it uses a custom ModelForm to handle these fields.
@@ -506,32 +501,6 @@ class CmsPageItem(models.Model):
 
     # While being abstrct, still have the DoesNotExist object:
     DoesNotExist = types.ClassType('DoesNotExist', (ObjectDoesNotExist,), {})
-
-
-class CmsTextItem(CmsPageItem):
-    """A snippet of text to display on a page"""
-    text = models.TextField(_('text'), blank=True)
-
-    ecms_admin_form_template = "admin/ecms/cmstextitem/admin_form.html"
-
-    class Meta:
-        verbose_name = _('Text item')
-        verbose_name_plural = _('Text items')
-
-    def __unicode__(self):
-        # No snippet, but return the full text.
-        # works nicer for templates (e.g. mark_safe(main_page_item).
-        # Included in a DIV, so the next item will be displayed below.
-        return "<div>" + self.text + "</div>"
-
-    def save(self, *args, **kwargs):
-        # Cleanup the HTML if requested
-        if appsettings.ECMS_CLEAN_HTML:
-            self.text = clean_html(self.text)
-        if appsettings.ECMS_SANITIZE_HTML:
-            self.text = sanitize_html(self.text)
-
-        super(CmsPageItem, self).save(*args, **kwargs)
 
 
 

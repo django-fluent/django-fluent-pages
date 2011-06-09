@@ -13,7 +13,8 @@ from django.utils.translation import gettext_lazy as _
 
 # Other libs
 from mptt.admin import MPTTModelAdmin   # mptt 0.4
-from ecms.models import CmsObject, CmsTextItem, CmsLayout
+from ecms.models import CmsObject, CmsLayout
+from ecms import extensions
 from vdboor.ajax import JsonResponse
 
 csrf_protect_m = method_decorator(csrf_protect)
@@ -69,6 +70,32 @@ class CmsObjectAdminForm(forms.ModelForm):
         return cleaned_data
 
 
+def get_pageitem_inlines():
+    """
+    Dynamically generate genuine django inlines for registered content types.
+    """
+    inlines = []
+    for PluginType in extensions.get_plugin_classes():  # self.model._supported_...()
+        PageItemType = PluginType.model
+
+        # Create a new Type that inherits CmsPageItemInline
+        # Read the static fields of the ItemType to override default appearance.
+        # This code is based on FeinCMS, (c) Simon Meers, BSD licensed
+        base = (CmsPageItemInline,)
+        name = '%s_AutoInline' %  PageItemType.__name__
+        attrs = {
+            '__module__': PluginType.__module__,
+            'model': PageItemType,
+            'form': PluginType.admin_form or extensions.CmsPageItemForm,
+            'name': PageItemType._meta.verbose_name,
+            'type_name': PageItemType.__name__,
+            'ecms_admin_form_template': PluginType.admin_form_template
+        }
+
+        inlines.append(type(name, base, attrs))
+    return inlines
+
+
 class CmsPageItemInline(StackedInline):
     """
     Custom ``InlineModelAdmin`` subclass used for content types.
@@ -82,15 +109,6 @@ class CmsPageItemInline(StackedInline):
     def __init__(self, *args, **kwargs):
         super(CmsPageItemInline, self).__init__(*args, **kwargs)
         self.verbose_name_plural = u'---- CMS Inline: %s' % (self.verbose_name_plural,)
-
-
-class CmsPageItemForm(forms.ModelForm):
-    """
-    The base form for custom pageitem types.
-    All other forms are dynamically generated from this base class.
-    """
-    region = forms.CharField(widget=forms.HiddenInput(), required=False)
-    sort_order = forms.IntegerField(widget=forms.HiddenInput(), initial=1)
 
 
 class CmsObjectAdmin(MPTTModelAdmin):
@@ -136,37 +154,27 @@ class CmsObjectAdmin(MPTTModelAdmin):
 
     # ---- Inline insertion ----
 
+
     def __init__(self, model, admin_site):
         super(CmsObjectAdmin, self).__init__(model, admin_site)
-
-        # Add inline instances for ECMS content inlines
-        # This code is based on FeinCMS, (c) Simon Meers, BSD licensed
-        for InlineType in self.get_ecms_inlines():
-            inline_instance = InlineType(self.model, self.admin_site)
-            self.inline_instances.append(inline_instance)
+        self._initialized_inlines = False
 
 
-    def get_ecms_inlines(self):
-        """
-        Dynamically generate genuine django inlines for registered content types.
-        """
-        inlines = []
-        for PageItemType in [CmsTextItem]:    # self.model._ec_content_types:
-            # Create a new Type that inherits CmsPageItemInline
-            # Read the static fields of the ItemType to override default appearance.
-            base = (CmsPageItemInline,)
-            name = '%s_AutoInline' % PageItemType.__name__
-            attrs = {
-                '__module__': self.model.__module__,
-                'model': PageItemType,
-                'form': getattr(PageItemType, 'ecms_admin_form', CmsPageItemForm) or CmsPageItemForm,
-                'name': PageItemType._meta.verbose_name,
-                'type_name': PageItemType.__name__,
-                'ecms_admin_form_template': PageItemType.ecms_admin_form_template
-            }
+    def get_form(self, request, obj=None, **kwargs):
+        self._initialize_ecms_inlines()   # delayed the initialisation a bit
+        return super(CmsObjectAdmin, self).get_form(request, obj, **kwargs)
 
-            inlines.append(type(name, base, attrs))
-        return inlines
+
+    def _initialize_ecms_inlines(self):
+        # Calling it too early places more stress on the Django load mechanisms.
+        # e.g. load_middleware() -> import ecms.admin.utils -> processes __init__
+        #      -> registers this model -> enter __init__ above -> start looking for plugins -> ImportError
+        if not self._initialized_inlines:
+            for InlineType in get_pageitem_inlines():
+                inline_instance = InlineType(self.model, self.admin_site)
+                self.inline_instances.append(inline_instance)
+
+            self._initialized_inlines = True
 
 
     # ---- Extra Ajax views ----
