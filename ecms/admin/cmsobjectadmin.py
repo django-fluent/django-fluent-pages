@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from mptt.admin import MPTTModelAdmin   # mptt 0.4
 from ecms.models import CmsObject, CmsLayout
 from ecms import extensions
-from vdboor.ajax import JsonResponse
+from ecms.utils.ajax import JsonResponse
 
 csrf_protect_m = method_decorator(csrf_protect)
 

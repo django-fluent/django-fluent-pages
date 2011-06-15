@@ -7,7 +7,7 @@ from django.conf import settings
 
 # Import objects
 from django.http import Http404
-from vdboor.managers import DecoratorManager
+from ecms.utils.db import DecoratorManager
 from django.contrib.sites.models import Site
 
 # Util functions
