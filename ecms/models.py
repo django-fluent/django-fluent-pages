@@ -36,21 +36,9 @@ from django.utils.translation import ugettext_lazy as _
 
 from ecms.managers import CmsSiteManager, CmsObjectManager
 from ecms.modeldata import CmsObjectRegionDict, CmsPageItemList
-import mptt
+from mptt.models import MPTTModel
 import types
 
-
-# -------- Init code --------
-
-# MPTT 0.3
-MPTTModel = models.Model
-
-try:
-    # MPTT 0.4.
-    # placed below MPTT 0.3 definition so IDE's detect the base class properly.
-    from mptt.models import MPTTModel
-except ImportError:
-    pass
 
 def _get_current_site():
     return CmsSite.objects.get_current()
@@ -501,12 +489,4 @@ class CmsPageItem(models.Model):
 
     # While being abstrct, still have the DoesNotExist object:
     DoesNotExist = types.ClassType('DoesNotExist', (ObjectDoesNotExist,), {})
-
-
-
-# -------- Legacy mptt support --------
-
-if hasattr(mptt, 'register'):
-    # MPTT 0.3 legacy support
-    mptt.register(CmsObject)
 
