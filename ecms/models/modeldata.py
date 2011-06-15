@@ -1,7 +1,6 @@
 """
-Extra classes accesable via the models.
-
 The data model to walk through the site contents.
+These classes are accesable via the models.
 
 These objects only return the relevant data for the contents
 in a fixed, minimalistic, API so template designers can focus on that.

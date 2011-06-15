@@ -1,5 +1,5 @@
 """
-Database model for django-enterprise-cms
+Database model for the CMS
 
 It defines the following classes:
 
@@ -7,7 +7,7 @@ It defines the following classes:
   The Site object, with additional properties
 
 * CmsObject
-  A item node. Can be an HTML page, image, etc..
+  A item node. Can be an HTML page, image, symlink, etc..
 
 * CmsLayout
   The layout of a page, which has regions and a template.
@@ -16,9 +16,9 @@ It defines the following classes:
   The region in a template
 
 * CmsPageItem
-  An item (or "widget") which can be displayed in a region. For example
+  An item (or "widget") which can be displayed in a region. For example:
 
-  * CmsTextItem  - HTML text
+  * CmsTextItem  - HTML text (found in cmsplugins.text.models)
 
 """
 from django.db import models
@@ -34,8 +34,8 @@ from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 
-from ecms.managers import CmsSiteManager, CmsObjectManager
-from ecms.modeldata import CmsObjectRegionDict, CmsPageItemList
+from ecms.models.managers import CmsSiteManager, CmsObjectManager
+from ecms.models.modeldata import CmsObjectRegionDict, CmsPageItemList
 from mptt.models import MPTTModel
 import types
 
@@ -49,7 +49,8 @@ def _get_current_site():
 
 class CmsSite(Site):
     """
-    A CmsSite holds all global settings for a site
+    A wrapper for the standard Site object, to include all global settings for a site (e.g. Google Analytics ID).
+    This provides a clean interface for template designers.
     """
 
     # Template properties
@@ -73,6 +74,7 @@ class CmsSite(Site):
     objects = CmsSiteManager()
 
     class Meta:
+        app_label = 'ecms'
         verbose_name = _('Site Settings')
         verbose_name_plural = _('Site Settings')
 
@@ -128,6 +130,7 @@ class CmsObject(MPTTModel):
     objects = CmsObjectManager()
 
     class Meta:
+        app_label = 'ecms'
         ordering = ('lft', 'sort_order', 'title')
         verbose_name = _('Page')
         verbose_name_plural = _('Pages')
@@ -397,6 +400,7 @@ class CmsLayout(models.Model):
         return self.title
 
     class Meta:
+        app_label = 'ecms'
         ordering = ('title',)
         verbose_name = _('Layout')
         verbose_name_plural = _('Layouts')
@@ -431,6 +435,7 @@ class CmsRegion(models.Model):
         return self.key + ': ' + self.title
 
     class Meta:
+        app_label = 'ecms'
         ordering = ('title',)
         verbose_name = _('Layout region')
         verbose_name_plural = _('Layout regions')
@@ -489,4 +494,3 @@ class CmsPageItem(models.Model):
 
     # While being abstrct, still have the DoesNotExist object:
     DoesNotExist = types.ClassType('DoesNotExist', (ObjectDoesNotExist,), {})
-

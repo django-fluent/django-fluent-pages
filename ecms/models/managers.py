@@ -1,22 +1,17 @@
 """
-The manager class for the Enterprise-CMS models
+The manager class for the CMS models
 """
-# Import namespaces
 from django.db import models
 from django.conf import settings
-
-# Import objects
+from django.contrib.sites.models import Site
+from django.forms.models import model_to_dict
 from django.http import Http404
 from ecms.utils.db import DecoratorManager
-from django.contrib.sites.models import Site
-
-# Util functions
-from django.forms.models import model_to_dict
 
 
 class CmsSiteManager(models.Manager):
     """
-    Extra methods attached to ```CmsSites.objects```
+    Extra methods attached to ```CmsSite.objects```
     """
 
     def get_current(self, request=None):
@@ -40,7 +35,7 @@ class CmsSiteManager(models.Manager):
 
 class CmsObjectManager(DecoratorManager):
     """
-    Extra methods attached to ```CmsObjects.objects```
+    Extra methods attached to ```CmsObject.objects```
     """
 
     def get_for_path_or_404(self, path):

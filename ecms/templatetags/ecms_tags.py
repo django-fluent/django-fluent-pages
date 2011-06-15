@@ -4,7 +4,7 @@ Template tags to request ECMS content in the template
 from ecms.models import CmsObject, CmsSite
 from django.template import Template, TemplateSyntaxError, Library, Node, Context, Variable, defaulttags
 from django.template.loader import get_template
-from ecms.navigation import CmsObjectNavigationNode
+from ecms.models.navigation import CmsObjectNavigationNode
 
 # Export the tags
 register = Library()
