@@ -9,15 +9,15 @@
     {% block scripts %}{% endblock %}
   </head>
 
-  <body id="theme" class="cmspage-{{ ecms_page.slug }}">
+  <body id="cmspage-{{ ecms_page.slug }}">
     <div id="wrapper">
-      <div id="fullpage">
+      <div id="fullpage" class="clearfix">
         <div id="header">
           <h1><a href="{{ ecms_site.url }}">{{ ecms_site.title|default:ecms_site.domain }}</a></h1>
         </div>
 
-        <div id="menu">
-          {% render_ecms_menu %}
+        <div id="menu" class="clearfix">
+          {% render_ecms_menu max_depth=2 %}
         </div><!-- /menu -->
 
         <div id="mainarea">
@@ -28,7 +28,7 @@
 
           <h1 class="pagetitle">{% block pagetitle %}{{ ecms_page.title }}{% endblock %}</h1>
           <div id="content">
-            {%block content %}{{ ecms_page.page_items }}{% endblock %}
+            {%block content %}{% render_ecms_region "main" %}{% endblock %}
           </div><!-- /content -->
 
         </div><!-- /mainarea -->
