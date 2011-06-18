@@ -36,6 +36,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ecms.models.managers import CmsSiteManager, CmsObjectManager
 from ecms.models.modeldata import CmsObjectRegionDict, CmsPageItemList
+from ecms import appsettings
 from mptt.models import MPTTModel
 import types
 
@@ -380,7 +381,7 @@ class CmsLayout(models.Model):
 
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
     title = models.CharField(_('title'), max_length=255)
-    template_path = models.FilePathField('template file', path=settings.TEMPLATE_DIRS[0], match=r'.*\.html$', recursive=True)
+    template_path = models.FilePathField('template file', path=appsettings.ECMS_TEMPLATE_DIR, match=r'.*\.html$', recursive=True)
     #regions = a RelatedManager
     #no children
     #unique
