@@ -1,1 +1,0 @@
-minicms_site/manage.py
