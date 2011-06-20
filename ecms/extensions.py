@@ -87,7 +87,7 @@ class PluginPool(object):
             try:
                 import_module('.ecms_plugins', app)
             except ImportError, e:
-                if "ecms_plugins" not in e.message:
+                if "ecms_plugins" not in str(e):
                     raise   # import error is a level deeper.
                 else:
                     pass
