@@ -29,32 +29,69 @@ class EcmsPlugin(object):
 
 # -------- API to access plugins --------
 
+class PluginAlreadyRegistered(Exception):
+    pass
 
-def get_plugin_classes():
+
+class PluginPool(object):
     """
-    Return the list of all plugin classes which are loaded.
+    The central administration of plugins.
     """
-    _import_plugins()
-    return EcmsPlugin.__subclasses__()
+    # This is mostly inspired by Django CMS,
+    # (c) Django CMS developers, BSD licensed.
+
+    def __init__(self):
+        self.plugins = {}
+        self.detected = False
+
+    def register(self, plugin):
+        """
+        Make a plugin known by the CMS.
+
+        If a plugin is already registered, this will raise PluginAlreadyRegistered.
+        """
+        # While plugins can be easily detected via EcmsPlugin.__subclasses__(),
+        # this is A) magic, and B) less explicit. Having to do an explicit register
+        # ensures future compatibility with other API's like reversion.
+        assert issubclass(plugin, EcmsPlugin), "The plugin must inherit from `CMSPluginBase`"
+        plugin_name = plugin.__name__
+        if plugin_name in self.plugins:
+            raise PluginAlreadyRegistered("[%s] a plugin with this name is already registered" % plugin_name)
+        self.plugins[plugin_name] = plugin
 
 
-_loaded_plugins = False
+    def get_plugin_classes(self):
+        """
+        Return the list of all plugin classes which are loaded.
+        """
+        self._import_plugins()
+        return self.plugins.values()
 
-def _import_plugins():
-    """
-    Internal function, ensure all plugin packages are imported.
-    """
-    global _loaded_plugins
-    if _loaded_plugins:
-        return
 
-    for app in settings.INSTALLED_APPS:
-        try:
-            import_module('.ecms_plugins', app)
-        except ImportError, e:
-            if "ecms_plugins" not in e.message:
-                raise   # import error is a level deeper.
-            else:
-                pass
+    def get_page_item_classes(self):
+        """
+        Return all page item models which are exposed by plugins.
+        """
+        self._import_plugins()
+        return [plugin.model for plugin in self.plugins.values()]
 
-    _loaded_plugins = True
+
+    def _import_plugins(self):
+        """
+        Internal function, ensure all plugin packages are imported.
+        """
+        if self.detected:
+            return
+
+        for app in settings.INSTALLED_APPS:
+            try:
+                import_module('.ecms_plugins', app)
+            except ImportError, e:
+                if "ecms_plugins" not in e.message:
+                    raise   # import error is a level deeper.
+                else:
+                    pass
+
+        self.detected = True
+
+plugin_pool = PluginPool()

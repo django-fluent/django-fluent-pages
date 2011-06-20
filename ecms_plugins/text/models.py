@@ -13,9 +13,7 @@ class CmsTextItem(CmsPageItem):
         verbose_name = _('Text item')
         verbose_name_plural = _('Text items')
 
-    def __unicode__(self):
-        # No snippet, but return the full text.
-        # works nicer for templates (e.g. mark_safe(main_page_item).
+    def render(self):
         # Included in a DIV, so the next item will be displayed below.
         return "<div>" + self.text + "</div>"
 

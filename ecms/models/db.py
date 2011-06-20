@@ -15,30 +15,20 @@ It defines the following classes:
 * CmsRegion
   The region in a template
 
-* CmsPageItem
-  An item (or "widget") which can be displayed in a region. For example:
-
-  * CmsTextItem  - HTML text (found in cmsplugins.text.models)
-
+The page items are derived from ``CmsPageItem``, which
+is an abstract model defined in ``ecms.models.pluginmodel``.
 """
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.conf import settings
-
-# Util functions
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.transaction import commit_on_success
-from django.template.defaultfilters import truncatewords
 from django.utils.encoding import smart_str
-from django.utils.html import strip_tags
 from django.utils.translation import ugettext_lazy as _
 
 from ecms.models.managers import CmsSiteManager, CmsObjectManager
 from ecms.models.modeldata import CmsObjectRegionDict, CmsPageItemList
 from ecms import appsettings
 from mptt.models import MPTTModel
-import types
 
 
 def _get_current_site():
@@ -179,7 +169,8 @@ class CmsObject(MPTTModel):
         Return the supported page item types which the page can display.
         The returnvalue is an array of types, all derived from CmsPageItem.
         """
-        return CmsPageItem.__subclasses__()
+        from ecms.extensions import plugin_pool
+        return plugin_pool.get_page_item_classes()
 
 
     def _get_page_items(self):
@@ -441,57 +432,3 @@ class CmsRegion(models.Model):
         verbose_name = _('Layout region')
         verbose_name_plural = _('Layout regions')
 
-
-# -------- Page contents --------
-
-
-class CmsPageItem(models.Model):
-    """
-    A ```PageItem``` is a content part which is displayed at the page.
-
-    The item renders itself by overriding ``__unicode__``.
-    """
-
-    # Note the validation settings defined here are not reflected automatically
-    # in the ecms admin interface because it uses a custom ModelForm to handle these fields.
-    parent = models.ForeignKey(CmsObject)
-    sort_order = models.IntegerField(default=1)
-    region = models.CharField(max_length=128, default='__main__')
-
-
-    def save(self, *args, **kwargs):
-        """
-        Make sure the region is set to '__main__' when nothing is filled in.
-        """
-        if not self.region:
-            self.region = '__main__'
-        super(CmsPageItem, self).save(*args, **kwargs)
-
-
-    def __repr__(self):
-        """
-        Overwritten representation, so Django still displays short representations
-        while subclasses may display the full text with __unicode__
-        """
-        return '<%s: #%d, region=%s, content=%s>' % (self.__class__.__name__, self.id or 0, self.region, smart_str(truncatewords(strip_tags(unicode(self)), 10)))
-
-
-    def render(self):
-        """
-        By default, the unicode string is rendered.
-        """
-        return unicode(self)
-
-
-    def __unicode__(self):
-        return _(u"{No rendering defined for class '%s'}" % self.__class__.__name__)
-
-
-    class Meta:
-        ordering = ('parent', 'sort_order')
-        verbose_name = _('CMS Page item')
-        verbose_name_plural = _('CMS Page items')
-        abstract = True
-
-    # While being abstrct, still have the DoesNotExist object:
-    DoesNotExist = types.ClassType('DoesNotExist', (ObjectDoesNotExist,), {})

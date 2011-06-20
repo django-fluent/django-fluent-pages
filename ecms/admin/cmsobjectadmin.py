@@ -75,7 +75,7 @@ def get_pageitem_inlines():
     Dynamically generate genuine django inlines for registered content types.
     """
     inlines = []
-    for PluginType in extensions.get_plugin_classes():  # self.model._supported_...()
+    for PluginType in extensions.plugin_pool.get_plugin_classes():  # self.model._supported_...()
         PageItemType = PluginType.model
 
         # Create a new Type that inherits CmsPageItemInline
