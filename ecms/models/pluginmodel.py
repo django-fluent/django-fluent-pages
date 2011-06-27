@@ -68,7 +68,10 @@ class CmsPageItem(models.Model):
     def __unicode__(self):
         # No snippet, but return the full text.
         # works nicer for templates (e.g. mark_safe(main_page_item).
-        return unicode(self.render())
+        try:
+            return unicode(self.render())
+        except Exception, e:
+            return '<exception in render(): %s>' % e
 
 
     class Meta:
