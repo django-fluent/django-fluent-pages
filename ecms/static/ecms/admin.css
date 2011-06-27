@@ -147,6 +147,12 @@ thead th.col-actions_column { width: 120px; }
 }
 
 
+/* ---- Fieldset fixes ---- */
+
+.form-row.has-hidden-field {
+    display: none;
+}
+
 
 /* ---- Rich editor (quick fixes) ---- */
 

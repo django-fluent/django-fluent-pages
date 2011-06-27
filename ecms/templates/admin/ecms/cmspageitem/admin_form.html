@@ -1,4 +1,4 @@
         {{ inline_admin_form.form.errors }}
         {% for fieldset in inline_admin_form %}
-          {% include "admin/includes/fieldset.html" %}
+          {% include "admin/ecms/fieldset.html" %}{# a admin/includes/fieldset.html that supports hidden fields #}
         {% endfor %}
