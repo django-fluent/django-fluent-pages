@@ -1,10 +1,21 @@
 """
-Special classes to extend the CMS, e.g. plugins.
+Special classes to extend the CMS; e.g. plugins.
+
+The extension mechanism is provided for projects that benefit
+from a tighter integration then the Django URLconf can provide.
 """
 from django.conf import settings
 from django import forms
 from django.utils.importlib import import_module
 from ecms.models import CmsPageItem
+
+# The API uses a registration system.
+# While plugins can be easily detected via ``__subclasses__()``, this is more magic and less explicit.
+# Having to do an explicit register ensures future compatibility with other API's like reversion.
+#
+# This mechanism is mostly inspired by Django CMS,
+# which nice job at defining a clear extension model.
+# (c) Django CMS developers, BSD licensed.
 
 
 class CmsPageItemForm(forms.ModelForm):
@@ -26,6 +37,21 @@ class EcmsPlugin(object):
     admin_form_template = "admin/ecms/cmspageitem/admin_form.html"
 
 
+# -------- Some utils --------
+
+def _import_app_submodules(submodule):
+    """
+    Look for a submodule is a series of packages, e.g. ".ecms_plugins" in all INSTALLED_APPS.
+    """
+    for app in settings.INSTALLED_APPS:
+        try:
+            import_module('.' + submodule, app)
+        except ImportError, e:
+            if submodule not in str(e):
+                raise   # import error is a level deeper.
+            else:
+                pass
+
 
 # -------- API to access plugins --------
 
@@ -37,8 +63,6 @@ class PluginPool(object):
     """
     The central administration of plugins.
     """
-    # This is mostly inspired by Django CMS,
-    # (c) Django CMS developers, BSD licensed.
 
     def __init__(self):
         self.plugins = {}
@@ -50,14 +74,11 @@ class PluginPool(object):
 
         If a plugin is already registered, this will raise PluginAlreadyRegistered.
         """
-        # While plugins can be easily detected via EcmsPlugin.__subclasses__(),
-        # this is A) magic, and B) less explicit. Having to do an explicit register
-        # ensures future compatibility with other API's like reversion.
         assert issubclass(plugin, EcmsPlugin), "The plugin must inherit from `CMSPluginBase`"
-        plugin_name = plugin.__name__
-        if plugin_name in self.plugins:
-            raise PluginAlreadyRegistered("[%s] a plugin with this name is already registered" % plugin_name)
-        self.plugins[plugin_name] = plugin
+        name = plugin.__name__
+        if name in self.plugins:
+            raise PluginAlreadyRegistered("[%s] a plugin with this name is already registered" % name)
+        self.plugins[name] = plugin
 
 
     def get_plugin_classes(self):
@@ -82,16 +103,7 @@ class PluginPool(object):
         """
         if self.detected:
             return
-
-        for app in settings.INSTALLED_APPS:
-            try:
-                import_module('.ecms_plugins', app)
-            except ImportError, e:
-                if "ecms_plugins" not in str(e):
-                    raise   # import error is a level deeper.
-                else:
-                    pass
-
+        _import_app_submodules("ecms_plugins")
         self.detected = True
 
 plugin_pool = PluginPool()
