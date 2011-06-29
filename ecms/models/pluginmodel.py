@@ -22,7 +22,7 @@ class CmsPageItemMetaClass(ModelBase):
         db_table  = new_class._meta.db_table
         app_label = new_class._meta.app_label
 
-        if db_table.startswith(app_label + '_'):
+        if db_table.startswith(app_label + '_') and name != 'CmsPageItem':
             model_name = db_table[len(app_label)+1:]
             new_class._meta.db_table = "ecmsplugin_%s_%s" % (app_label, model_name)
 
