@@ -88,9 +88,9 @@ def get_pageitem_inlines():
         attrs = {
             '__module__': PluginType.__module__,
             'model': PageItemType,
+            'type_name': PageItemType.__name__,
             'form': PluginType.admin_form or extensions.CmsPageItemForm,
             'name': PageItemType._meta.verbose_name,
-            'type_name': PageItemType.__name__,
             'plugin': plugin,
             'ecms_admin_form_template': PluginType.admin_form_template
         }
@@ -111,7 +111,11 @@ class CmsPageItemInline(StackedInline):
     ordering = ('sort_order',)
 
     # overwritten by subtype
+    name = None
     plugin = None
+    type_name = None
+    ecms_admin_form_template = None
+
 
     def __init__(self, *args, **kwargs):
         super(CmsPageItemInline, self).__init__(*args, **kwargs)
