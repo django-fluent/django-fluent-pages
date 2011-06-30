@@ -7,7 +7,7 @@
     {# looping in `inline_admin_formset` includes the empty placeholder as last item #}
     {% for inline_admin_form in inline_admin_formset %}
       {% with inline_admin_form.form as form %}
-      <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+      <div class="inline-related inline-{{ inline_admin_form.model_admin.type_name }}{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
         <h2 class="ecms-formset-item-title">
           {{ inline_admin_formset.opts.name }}
           <span class="ecms-item-controls">

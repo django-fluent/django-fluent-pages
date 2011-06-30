@@ -153,6 +153,17 @@ var ecms_data = {};
   }
 
 
+  /**
+   * Verify that a given item type exists.
+   */
+  ecms_data.get_formset_itemtype = function(typename)
+  {
+    if( $.isEmptyObject(ecms_data.itemtypes) )
+      throw new Error("Call to get_formset_itemtype() too early, data is not initialized yet.");
+    return ecms_data.itemtypes[typename];
+  }
+
+
   ecms_data.cleanup_empty_regions = function()
   {
     for(var i in dom_regions)

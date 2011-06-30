@@ -1,9 +1,9 @@
-var ecms_text_plugin = {};
-
 (function($){
 
+  var has_load_error = false;
 
-  ecms_text_plugin.disable_wysiwyg = function(root)
+
+  function disable_wysiwyg(root)
   {
     var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])").toArray();
     for(var i = 0; i < textareas.length; i++)
@@ -14,7 +14,7 @@ var ecms_text_plugin = {};
   }
 
 
-  ecms_text_plugin.enable_wysiwyg = function(root)
+  function enable_wysiwyg(root)
   {
     var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])").debug();
 
@@ -38,6 +38,13 @@ var ecms_text_plugin = {};
       var textarea = textareas[i];
       django_wysiwyg.enable("e:" + textarea.name, textarea.id);
     }
-}
+  }
+
+
+  // Make sure the WYSIWYG editor is loaded for our models.
+  ecms_plugins.register_view_handler('CmsTextItem', {
+    'enable': enable_wysiwyg,
+    'disable': disable_wysiwyg
+  })
 
 })(window.jQuery || django.jQuery);

@@ -2,16 +2,12 @@
 {% load i18n admin_modify adminmedia wysiwyg %}
 
 {% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecms/admin.css" />{% endblock %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecms/admin.css" />
+{{ form.media.css }}
+{% endblock %}
 
 {% block extrahead %}{{ block.super }}
 {% wysiwyg_setup %}
-<script type="text/javascript" src="{{ STATIC_URL }}ecms/admin.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_data.js"></script>{# this is why they invented compression #}
-<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_tabs.js"></script>{# clear code, but good deployment #}
-<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_layouts.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_plugins.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}ecms/ecms_text_plugin.js"></script>
 <script type="text/javascript">
   // Pass database data to the admin.js file.
   var regions   = [ {% for region in original.layout.regions.all %}{ key: '{{ region.key|escapejs }}', title: '{{ region.title|escapejs }}', role: '{{ region.role|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
@@ -26,7 +22,9 @@
   ecms_admin.setRegions( regions );
   ecms_admin.setItemTypes( itemtypes );
   ecms_admin.setInitialValues( {layout_id: {{ original.layout_id|default:0 }}} );
-</script>{% endblock %}
+</script>
+{{ form.media.js }}
+{% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">

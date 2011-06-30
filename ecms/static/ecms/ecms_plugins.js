@@ -16,6 +16,9 @@ var ecms_plugins = {};
   var stub = function() {};
   var console = window.console || {'log': stub, 'error': stub};
 
+  // Settings
+  var plugin_handlers = {};
+
 
   ecms_plugins.init = function()
   {
@@ -370,17 +373,41 @@ var ecms_plugins = {};
 
   // -------- Page item scripts ------
 
+  /**
+   * Register a class which can update the appearance of a plugin
+   * when it is loaded in the DOM tree.
+   */
+  ecms_plugins.register_view_handler = function(model_typename, view_handler)
+  {
+    var typename = model_typename;
+    if( plugin_handlers[ typename ] )
+      throw new Error("Plugin already registered: " + typename);
+    //if( ecms_data.get_formset_itemtype( typename ) == null )
+    //  throw new Error("Plugin Model type unknown: " + typename);
+
+    plugin_handlers[ typename ] = view_handler;
+  }
+
+
+  ecms_plugins.get_view_handler = function(fs_item)
+  {
+    var itemdata = ecms_data.get_formset_item_data(fs_item);
+    var itemtype = itemdata.itemtype.type;
+    return plugin_handlers[ itemtype ];
+  }
+
 
   ecms_plugins.enable_pageitem = function(fs_item)
   {
-    // TODO: add a registry for the enable/disable pageitem types.
-    ecms_text_plugin.enable_wysiwyg(fs_item);
+    var view_handler = ecms_plugins.get_view_handler(fs_item);
+    if( view_handler ) view_handler.enable(fs_item);
   }
 
 
   ecms_plugins.disable_pageitem = function(fs_item)
   {
-    ecms_text_plugin.disable_wysiwyg(fs_item);
+    var view_handler = ecms_plugins.get_view_handler(fs_item);
+    if( view_handler ) view_handler.disable(fs_item);
   }
 
 

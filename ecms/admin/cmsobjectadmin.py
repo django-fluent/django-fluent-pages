@@ -76,7 +76,8 @@ def get_pageitem_inlines():
     """
     inlines = []
     for PluginType in extensions.plugin_pool.get_plugin_classes():  # self.model._supported_...()
-        PageItemType = PluginType.model
+        plugin = PluginType()
+        PageItemType = plugin.model
 
         # Create a new Type that inherits CmsPageItemInline
         # Read the static fields of the ItemType to override default appearance.
@@ -89,6 +90,7 @@ def get_pageitem_inlines():
             'form': PluginType.admin_form or extensions.CmsPageItemForm,
             'name': PageItemType._meta.verbose_name,
             'type_name': PageItemType.__name__,
+            'plugin': plugin,
             'ecms_admin_form_template': PluginType.admin_form_template
         }
 
@@ -101,6 +103,7 @@ class CmsPageItemInline(StackedInline):
     Custom ``InlineModelAdmin`` subclass used for content types.
     """
 
+    # inline settings
     extra = 0
     fk_name = 'parent'
     template = 'admin/ecms/cmsobject/cmspageitem_inline.html'
@@ -150,6 +153,21 @@ class CmsObjectAdmin(MPTTModelAdmin):
         }),
     )
     radio_fields = {'status': admin.HORIZONTAL}
+
+    # These files need to be loaded before the other plugin code,
+    # making plugin development easy (can assume everything is present).
+    class Media:
+        js = (
+            'ecms/admin.js',
+            'ecms/ecms_data.js',
+            'ecms/ecms_tabs.js',
+            'ecms/ecms_layouts.js',
+            'ecms/ecms_plugins.js'
+        )
+        css = {
+            'screen': ('ecms/admin.css',)
+        }
+
 
 
     # ---- Inline insertion ----
