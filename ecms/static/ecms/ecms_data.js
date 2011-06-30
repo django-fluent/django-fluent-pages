@@ -114,7 +114,7 @@ var ecms_data = {};
   {
     // Handle default placeholder values
     if(key == '__main__' || key == '')
-      return get_region_for_role(ecms_data.REGION_ROLE_MAIN, 1);
+      return ecms_data.get_region_for_role(ecms_data.REGION_ROLE_MAIN, 1);
 
     // Find the item based on key
     for(var i = 0; i < regions.length; i++)
