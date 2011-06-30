@@ -3,7 +3,7 @@ Definition of the plugin.
 """
 from __future__ import absolute_import
 from ecms.extensions import EcmsPlugin, plugin_pool
-from ecms_plugins.text.models import CmsTextItem
+from ecms_plugins.text.models import CmsTextItem   # absolute import failed?
 
 
 class EcmsTextPlugin(EcmsPlugin):
