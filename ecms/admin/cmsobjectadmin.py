@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django import forms
+from django.forms.widgets import media_property
 from django.conf import settings
 from django.conf.urls.defaults import patterns
 
@@ -109,9 +110,19 @@ class CmsPageItemInline(StackedInline):
     template = 'admin/ecms/cmsobject/cmspageitem_inline.html'
     ordering = ('sort_order',)
 
+    # overwritten by subtype
+    plugin = None
+
     def __init__(self, *args, **kwargs):
         super(CmsPageItemInline, self).__init__(*args, **kwargs)
         self.verbose_name_plural = u'---- CMS Inline: %s' % (self.verbose_name_plural,)
+
+    @property
+    def media(self):
+        media = super(CmsPageItemInline, self).media
+        if self.plugin:
+            media += self.plugin.media  # form fields first, plugin afterwards
+        return media
 
 
 class CmsObjectAdmin(MPTTModelAdmin):

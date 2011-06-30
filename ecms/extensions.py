@@ -30,6 +30,7 @@ class EcmsPlugin(object):
     """
     The base class for a plugin, defining the settings.
     """
+    __metaclass__ = forms.MediaDefiningClass
 
     # Settings to override
     model = CmsPageItem
