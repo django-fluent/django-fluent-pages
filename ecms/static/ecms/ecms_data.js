@@ -136,11 +136,11 @@ var ecms_data = {};
 
     // Get itemtype
     var itemtype = null;
-    for(var i in itemtypes)
+    for(var i in ecms_data.itemtypes)
     {
-      if( itemtypes[i].prefix == prefix )
+      if( ecms_data.itemtypes[i].prefix == prefix )
       {
-        itemtype = itemtypes[i];
+        itemtype = ecms_data.itemtypes[i];
         break;
       }
     }
