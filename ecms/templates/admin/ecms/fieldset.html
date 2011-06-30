@@ -8,7 +8,7 @@
     {% for line in fieldset %}
         {# the form-row class has a has-hidden-field in advance of https://code.djangoproject.com/ticket/11277 getting merged to trunk #}
         <div class="form-row{% if line.fields|length_is:'1' and line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% if field.field.is_hidden %} has-hidden-field{% endif %}{% endfor %}">
-            {% if line.fields|length_is:'1' %}{{ line.errors }}{% endif %}
+            {% if line.fields|length_is:'1' %}{{ line.errors|linebreaksbr }}{% endif %}
             {% for field in line %}
                 <div{% if not line.fields|length_is:'1' %} class="field-box{% if not field.is_readonly and field.errors %} errors{% endif %}"{% endif %}>
                     {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
