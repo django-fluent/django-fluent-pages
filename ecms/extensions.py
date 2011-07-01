@@ -6,6 +6,7 @@ from a tighter integration then the Django URLconf can provide.
 """
 from django.conf import settings
 from django import forms
+from django.utils.html import linebreaks, escape
 from django.utils.importlib import import_module
 from ecms.models import CmsPageItem
 
@@ -52,6 +53,13 @@ def _import_app_submodules(submodule):
                 raise   # import error is a level deeper.
             else:
                 pass
+
+
+def render_error(error):
+    return '<div style="color: red; border: 1px solid red; padding: 5px;">' \
+              '<p><strong>Error:</strong></p>' \
+              + linebreaks(escape(str(error))) + \
+           '</div>'
 
 
 # -------- API to access plugins --------

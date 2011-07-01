@@ -2,8 +2,7 @@ from __future__ import absolute_import
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.utils.html import escape, linebreaks
-from ecms.extensions import CmsPageItemForm
+from ecms.extensions import CmsPageItemForm, render_error
 from ecms.models import CmsPageItem
 from ecms_plugins.markup import appsettings, backend
 
@@ -38,10 +37,7 @@ class MarkupItem(CmsPageItem):
         try:
             html = backend.render_text(self.text, self.language)
         except Exception, e:
-            html = '<div style="color: red; border: 1px solid red; padding: 5px;">' \
-                      '<p><strong>Error:</strong></p>' \
-                      + linebreaks(escape(str(e))) + \
-                   '</div>'
+            html = render_error(e)
 
         # Included in a DIV, so the next item will be displayed below.
         return "<div>" + html + "</div>"
