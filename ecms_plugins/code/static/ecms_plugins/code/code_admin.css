@@ -1,0 +1,4 @@
+
+#ecms-tabmain .inline-CodeItem textarea.vLargeTextField {
+  font-family: Consolas, monospace;  /* allow the OS to come up with something better then Courier New */
+}
