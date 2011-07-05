@@ -10,7 +10,6 @@ class CodeItem(CmsPageItem):
 
     code = models.TextField(_('Code'))
     language = models.CharField(_('Language'), max_length=50, choices=backend.LANGUAGE_CHOICES, default=appsettings.ECMS_CODE_DEFAULT_LANGUAGE)
-    style = models.CharField(max_length=50, choices=backend.STYLE_CHOICES, default=appsettings.ECMS_CODE_DEFAULT_STYLE)
     linenumbers = models.BooleanField(_('Show line numbers'), default=appsettings.ECMS_CODE_DEFAULT_LINE_NUMBERS)
 
     class Meta:
@@ -18,4 +17,6 @@ class CodeItem(CmsPageItem):
         verbose_name_plural = _('Sourcecode items')
 
     def render(self):
-        return backend.render_code(self)
+        # Style is not stored in the model,
+        # it needs to be a side-wide setting (maybe even in the theme)
+        return backend.render_code(self, style_name=appsettings.ECMS_CODE_DEFAULT_STYLE)
