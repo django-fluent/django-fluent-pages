@@ -41,7 +41,7 @@ class EcmsPlugin(object):
 
 # -------- Some utils --------
 
-def _import_app_submodules(submodule):
+def _import_apps_submodule(submodule):
     """
     Look for a submodule is a series of packages, e.g. ".ecms_plugins" in all INSTALLED_APPS.
     """
@@ -112,7 +112,7 @@ class PluginPool(object):
         """
         if self.detected:
             return
-        _import_app_submodules("ecms_plugins")
+        _import_apps_submodule("ecms_plugins")
         self.detected = True
 
 plugin_pool = PluginPool()
