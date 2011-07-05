@@ -8,6 +8,7 @@ from django.conf import settings
 from django import forms
 from django.utils.html import linebreaks, escape
 from django.utils.importlib import import_module
+from django.utils.translation import ugettext as _
 from ecms.models import CmsPageItem
 
 # The API uses a registration system.
@@ -57,9 +58,7 @@ def _import_apps_submodule(submodule):
 
 def render_error(error):
     return '<div style="color: red; border: 1px solid red; padding: 5px;">' \
-              '<p><strong>Error:</strong></p>' \
-              + linebreaks(escape(str(error))) + \
-           '</div>'
+              '<p><strong>%s</strong></p>%s</div>' % (_('Error:'), linebreaks(escape(str(error))))
 
 
 # -------- API to access plugins --------
