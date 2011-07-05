@@ -37,11 +37,24 @@ class CmsPageItem(models.Model):
     """
     __metaclass__ = CmsPageItemMetaClass
 
+    # Currently the model has a connection back to the plugin, because it makes a lot of things easier
+    # for the internal framework. For example, rendering the item while having a model.
+    # That allows the render() function to be at the plugin itself.
+    # The value is set by register()
+    _ecms_plugin = None
+
     # Note the validation settings defined here are not reflected automatically
     # in the ecms admin interface because it uses a custom ModelForm to handle these fields.
     parent = models.ForeignKey(CmsObject)
     sort_order = models.IntegerField(default=1)
     region = models.CharField(max_length=128, default='__main__')
+
+    @property
+    def plugin(self):
+        """
+        Access the parent plugin which renders this model.
+        """
+        return self._ecms_plugin
 
 
     def save(self, *args, **kwargs):
@@ -61,15 +74,11 @@ class CmsPageItem(models.Model):
         return '<%s: #%d, region=%s, content=%s>' % (self.__class__.__name__, self.id or 0, self.region, smart_str(truncatewords(strip_tags(unicode(self)), 10)))
 
 
-    def render(self):
-        return unicode(_(u"{No rendering defined for class '%s'}" % self.__class__.__name__))
-
-
     def __unicode__(self):
         # No snippet, but return the full text.
         # works nicer for templates (e.g. mark_safe(main_page_item).
         try:
-            return unicode(self.render())
+            return unicode(self.plugin.render(self))
         except Exception, e:
             return '<exception in render(): %s>' % e
 

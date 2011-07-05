@@ -13,10 +13,6 @@ class CmsTextItem(CmsPageItem):
         verbose_name = _('Text item')
         verbose_name_plural = _('Text items')
 
-    def render(self):
-        # Included in a DIV, so the next item will be displayed below.
-        return '<div class="text">' + self.text + '</div>\n'
-
     def save(self, *args, **kwargs):
         # Cleanup the HTML if requested
         if appsettings.ECMS_CLEAN_HTML:

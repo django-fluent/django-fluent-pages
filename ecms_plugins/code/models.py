@@ -15,8 +15,3 @@ class CodeItem(CmsPageItem):
     class Meta:
         verbose_name = _('Sourcecode')
         verbose_name_plural = _('Sourcecode items')
-
-    def render(self):
-        # Style is not stored in the model,
-        # it needs to be a side-wide setting (maybe even in the theme)
-        return backend.render_code(self, style_name=appsettings.ECMS_CODE_DEFAULT_STYLE)

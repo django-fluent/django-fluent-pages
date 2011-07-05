@@ -39,6 +39,22 @@ class EcmsPlugin(object):
     admin_form = CmsPageItemForm
     admin_form_template = "admin/ecms/cmspageitem/admin_form.html"
 
+    @classmethod
+    def get_model_instances(cls, page):
+        """
+        Return the model instances the plugin has added at the page.
+        """
+        return cls.model.objects.filter(parent=page)
+
+
+    @classmethod
+    def render(cls, instance):
+        """
+        The rendering/view function that displays a plugin model instance.
+        It is recommended to wrap the output in a <div> object, so the item is not inlined after the previous plugin.
+        """
+        return unicode(_(u"{No rendering defined for class '%s'}" % cls.__name__))
+
 
 # -------- Some utils --------
 
@@ -83,9 +99,13 @@ class PluginPool(object):
         If a plugin is already registered, this will raise PluginAlreadyRegistered.
         """
         assert issubclass(plugin, EcmsPlugin), "The plugin must inherit from `CMSPluginBase`"
+        assert issubclass(plugin.model, CmsPageItem), "The plugin model must inherit from `CmsPageItem`"
+
         name = plugin.__name__
         if name in self.plugins:
             raise PluginAlreadyRegistered("[%s] a plugin with this name is already registered" % name)
+
+        plugin.model._ecms_plugin = plugin   # makes things a lot easier down the road (at rendering).
         self.plugins[name] = plugin
 
 

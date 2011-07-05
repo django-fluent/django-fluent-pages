@@ -164,25 +164,25 @@ class CmsObject(MPTTModel):
         return self._cached_url
 
 
-    def _get_supported_page_item_types(self):
+    def _get_supported_plugin_types(self):
         """
         Return the supported page item types which the page can display.
         The returnvalue is an array of types, all derived from CmsPageItem.
         """
         from ecms.extensions import plugin_pool
-        return plugin_pool.get_page_item_classes()
+        return plugin_pool.get_plugin_classes()
 
 
-    def _get_page_items(self):
+    def _get_all_page_items(self):
         """
-        Return all page items which are associated with the page.
+        Return all models which are associated with the page.
         This is a list of different object types, all inheriting from ``CmsPageItem``.
         """
         if not self._cached_page_items:
             items = []
             # Get all items per object type.
-            for ItemType in self.supported_page_item_types:
-                query = ItemType.objects.filter(parent=self.id)
+            for PluginType in self.supported_plugin_types:
+                query = PluginType.get_model_instances(page=self)
                 items.extend(query)
 
             # order by region, wrap in CmsPageItemList so it can be rendered
@@ -204,7 +204,7 @@ class CmsObject(MPTTModel):
             # Therefore, read them all, and construct a dict-like object which provides
             # an API to read the data through a structured interface.
             regions = self.layout.regions.only("key", "role")
-            all_page_items = self._get_page_items()
+            all_page_items = self._get_all_page_items()
             self._cached_region_dict = CmsObjectRegionDict(regions, all_page_items)
 
         return self._cached_region_dict
@@ -249,8 +249,8 @@ class CmsObject(MPTTModel):
 
 
     # Map to properties (also for templates)
-    supported_page_item_types = property(_get_supported_page_item_types)
-    page_items = property(_get_page_items)
+    supported_plugin_types = property(_get_supported_plugin_types)
+    all_page_items = property(_get_all_page_items)
     regions = property(_get_regions)
     main_page_items = property(_get_main_page_items)
     breadcrumb = property(_get_breadcrumb)

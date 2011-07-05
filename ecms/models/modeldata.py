@@ -67,7 +67,7 @@ class CmsPageItemList(list):
         if not self:
             str = u'<!-- no items in this region -->'
         else:
-            str = ''.join(item.render() for item in self)
+            str = ''.join(item.plugin.render(item) for item in self)
         return mark_safe(str)
 
     def __unicode__(self):

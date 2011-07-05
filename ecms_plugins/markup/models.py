@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from ecms.extensions import CmsPageItemForm, render_error
+from ecms.extensions import CmsPageItemForm
 from ecms.models import CmsPageItem
 from ecms_plugins.markup import appsettings, backend
 
@@ -32,12 +32,3 @@ class MarkupItem(CmsPageItem):
     class Meta:
         verbose_name = _('Markup text item')
         verbose_name_plural = _('Markup text items')
-
-    def render(self):
-        try:
-            html = backend.render_text(self.text, self.language)
-        except Exception, e:
-            html = render_error(e)
-
-        # Included in a DIV, so the next item will be displayed below.
-        return '<div class="markup">' + html + '</div>\n'

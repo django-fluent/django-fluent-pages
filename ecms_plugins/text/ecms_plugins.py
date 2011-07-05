@@ -14,5 +14,10 @@ class EcmsTextPlugin(EcmsPlugin):
         js = ('ecms_plugins/text/text_admin.js',)
         css = {'screen': ('ecms_plugins/text/text_admin.css',)}
 
+    @classmethod
+    def render(cls, instance):
+        # Included in a DIV, so the next item will be displayed below.
+        return '<div class="text">' + instance.text + '</div>\n'
+
 
 plugin_pool.register(EcmsTextPlugin)
