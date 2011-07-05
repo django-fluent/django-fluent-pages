@@ -40,4 +40,4 @@ class MarkupItem(CmsPageItem):
             html = render_error(e)
 
         # Included in a DIV, so the next item will be displayed below.
-        return "<div>" + html + "</div>"
+        return '<div class="markup">' + html + '</div>\n'

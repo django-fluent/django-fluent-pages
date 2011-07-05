@@ -27,6 +27,6 @@ def render_code(instance, style_name='default'):
     css = formatter.get_style_defs()
 
     # Included in a DIV, so the next item will be displayed below.
-    return '<div><style type="text/css">' + css + '</style>\n<pre>' + html + '</pre></div>\n'
+    return '<div class="code"><style type="text/css">' + css + '</style>\n<pre>' + html + '</pre></div>\n'
 
 # TODO: Make code rendering more efficient, have one style definition in the head of the page!

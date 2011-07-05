@@ -15,7 +15,7 @@ class CmsTextItem(CmsPageItem):
 
     def render(self):
         # Included in a DIV, so the next item will be displayed below.
-        return "<div>" + self.text + "</div>"
+        return '<div class="text">' + self.text + '</div>\n'
 
     def save(self, *args, **kwargs):
         # Cleanup the HTML if requested
