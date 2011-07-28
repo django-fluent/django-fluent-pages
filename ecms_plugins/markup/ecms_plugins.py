@@ -9,6 +9,7 @@ from ecms_plugins.markup import backend
 
 class EcmsMarkupPlugin(EcmsPlugin):
     model = MarkupItem
+    category = 'programming'
     admin_form = MarkupItemForm
     #admin_form_template = "admin/ecms_plugins/markup/admin_form.html"
 

@@ -19,6 +19,14 @@ from ecms.models import CmsPageItem
 # which nice job at defining a clear extension model.
 # (c) Django CMS developers, BSD licensed.
 
+PLUGIN_CATEGORIES = {
+    None: '',
+    'text': _('Text'),
+    'media': _('Media'),
+    'programming': _('Programming'),
+    'advanced': _('Advanced'),
+    'unknown': _('Unknown'),
+}
 
 class CmsPageItemForm(forms.ModelForm):
     """
@@ -38,6 +46,24 @@ class EcmsPlugin(object):
     model = CmsPageItem
     admin_form = CmsPageItemForm
     admin_form_template = "admin/ecms/cmspageitem/admin_form.html"
+    category = None
+
+
+    @property
+    def verbose_name(self):
+        """
+        Return the title for the plugin.
+        """
+        return self.model._meta.verbose_name
+
+
+    @property
+    def type_name(self):
+        """
+        Return the classname of the model.
+        """
+        return self.model.__name__
+
 
     @classmethod
     def get_model_instances(cls, page):

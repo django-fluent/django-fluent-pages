@@ -13,5 +13,5 @@ class CodeItem(CmsPageItem):
     linenumbers = models.BooleanField(_('Show line numbers'), default=appsettings.ECMS_CODE_DEFAULT_LINE_NUMBERS)
 
     class Meta:
-        verbose_name = _('Sourcecode')
-        verbose_name_plural = _('Sourcecode items')
+        verbose_name = _('Sourcecode listing')
+        verbose_name_plural = _('Sourcecode listings')

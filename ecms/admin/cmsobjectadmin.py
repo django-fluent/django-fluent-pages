@@ -15,6 +15,8 @@ from django.utils.translation import gettext_lazy as _
 from mptt.admin import MPTTModelAdmin   # mptt 0.4
 from ecms.models import CmsObject, CmsLayout
 from ecms import extensions
+from ecms.admin.utils import get_pageitem_categories
+from ecms.extensions  import PLUGIN_CATEGORIES
 from ecms.utils.ajax import JsonResponse
 
 csrf_protect_m = method_decorator(csrf_protect)
@@ -87,9 +89,9 @@ def get_pageitem_inlines():
         attrs = {
             '__module__': PluginType.__module__,
             'model': PageItemType,
-            'type_name': PageItemType.__name__,
+            'type_name': plugin.type_name,
             'form': PluginType.admin_form or extensions.CmsPageItemForm,
-            'name': PageItemType._meta.verbose_name,
+            'name': plugin.verbose_name,
             'plugin': plugin,
             'ecms_admin_form_template': PluginType.admin_form_template
         }
@@ -242,6 +244,17 @@ class CmsObjectAdmin(MPTTModelAdmin):
 
 
     # ---- Hooking into show/save ----
+
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        """Include plugin meta information, in the context."""
+        plugins = extensions.plugin_pool.get_plugin_classes()
+        categories = get_pageitem_categories(plugins)
+        categories = dict((PLUGIN_CATEGORIES[k], v) for k, v in categories.iteritems())  # replace ID with title
+        context['add_plugin_categories'] = categories
+
+        # And go with standard stuff
+        return super(CmsObjectAdmin, self).render_change_form(request, context, add, change, form_url, obj)
+
 
     def save_model(self, request, obj, form, change):
         """Automatically store the user in the author field."""

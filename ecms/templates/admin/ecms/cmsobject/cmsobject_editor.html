@@ -89,35 +89,17 @@
     {# all the region tabs #}
     {% for region in original.layout.regions.all %}
     <div class="ecms-tab ecms-region-tab{% if forloop.first %} ecms-tab-active{% endif %}" id="tab-region-{{ region.key }}">
-      <div class="ecms-region-empty">
-        {% trans "Region empty" %}
-      </div>
-      <div class="ecms-tab-content">
-      </div>
-      <div class="ecms-tab-controls">
-        <select>{% for fs in inline_admin_formsets %}
-          <option value="{{ fs.opts.type_name }}">{{ fs.opts.name }}</option>
-          {% endfor %}
-        </select>
-        <input data-region="{{ region.key }}" class="button ecms-plugin-add-button" type="button" value="{% trans "Add" %}" />
-      </div>
+      {% with region_key=region.key %}
+        {% include "admin/ecms/cmsobject/regiontab.html" %}
+      {% endwith %}
     </div>
     {% endfor %}
 
     {# Repeated again, as empty placeholder #}
     <div class="ecms-tab" id="tab-template">
-      <div class="ecms-region-empty">
-        {% trans "Region empty" %}
-      </div>
-      <div class="ecms-tab-content">
-      </div>
-      <div class="ecms-tab-controls">
-        <select>{% for fs in inline_admin_formsets %}
-          <option value="{{ fs.opts.type_name }}">{{ fs.opts.name }}</option>
-          {% endfor %}
-        </select>
-        <input data-region="EMPTY" class="button ecms-plugin-add-button" type="button" value="{% trans "Add" %}" />
-      </div>
+      {% with region_key='EMPTY' %}
+        {% include "admin/ecms/cmsobject/regiontab.html" %}
+      {% endwith %}
     </div>
 
     {# this is a "lost+found" bucket for layout switching #}

@@ -8,6 +8,7 @@ from . import appsettings, backend
 
 class EcmsCodePlugin(EcmsPlugin):
     model = CodeItem
+    category = 'programming'
 
     class Media:
         css = {'screen': ('ecms_plugins/code/code_admin.css',)}
