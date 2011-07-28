@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django import forms
-from django.forms.widgets import media_property
 from django.conf import settings
 from django.conf.urls.defaults import patterns
 
@@ -200,8 +199,8 @@ class CmsObjectAdmin(MPTTModelAdmin):
 
     def _initialize_ecms_inlines(self):
         # Calling it too early places more stress on the Django load mechanisms.
-        # e.g. load_middleware() -> import ecms.admin.utils -> processes __init__
-        #      -> registers this model -> enter __init__ above -> start looking for plugins -> ImportError
+        # e.g. load_middleware() -> import ecms.admin.utils -> processes __init__.py ->
+        #      admin.site.register(CmsObjectAdmin) -> CmsObjectAdmin::__init__() -> start looking for plugins -> ImportError
         if not self._initialized_inlines:
             for InlineType in get_pageitem_inlines():
                 inline_instance = InlineType(self.model, self.admin_site)
