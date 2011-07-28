@@ -72,6 +72,7 @@ Include these settings::
 
     ADMIN_TOOLS_INDEX_DASHBOARD = 'ecms_dashboard.dashboard.EcmsIndexDashboard'
     ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'ecms_dashboard.dashboard.EcmsAppIndexDashboard'
+    ADMIN_TOOLS_MENU = 'ecms_dashboard.menu.EcmsMenu'
     ECMS_DASHBOARD_APP_ICONS = {}
 
 The ECMS_DASHBOARD_APP_ICONS is a dictionary that allows you to define extra icons

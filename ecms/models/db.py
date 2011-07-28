@@ -169,8 +169,11 @@ class CmsObject(MPTTModel):
         Return the supported page item types which the page can display.
         The returnvalue is an array of types, all derived from CmsPageItem.
         """
-        from ecms.extensions import plugin_pool
-        return plugin_pool.get_plugin_classes()
+        # Enumerate what all regions allow, that's what this page can render.
+        types = []
+        for region in self.layout.regions.all():
+            types += region.supported_plugin_types
+        return list(set(types))
 
 
     def _get_all_page_items(self):
@@ -421,6 +424,16 @@ class CmsRegion(models.Model):
     title = models.CharField(_('tab title'), max_length=255)
     inherited = models.BooleanField(_('use parent contents by default'), editable=False, blank=True)
     role = models.CharField(_('role'), max_length=1, choices=ROLES, default=MAIN)
+
+
+    @property
+    def supported_plugin_types(self):
+        """
+        Return which plugins this region can render.
+        """
+        from ecms.extensions import plugin_pool
+        all_classes = plugin_pool.get_plugin_classes()
+        return all_classes
 
 
     def __unicode__(self):
