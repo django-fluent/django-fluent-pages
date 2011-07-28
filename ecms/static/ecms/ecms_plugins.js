@@ -84,11 +84,14 @@ var ecms_plugins = {};
 
     console.log("move_items_to_tab:", dom_region, tab);
 
+    // Reorder in accordance to the sorting order.
+    ecms_plugins._sort_items( dom_region.items );
+
     // Move all items to that tab.
     // Restore item values upon restoring fields.
-    for(var i in dom_region.items)
+    for(i in dom_region.items)
     {
-      var fs_item = dom_region.items[i];
+      fs_item = dom_region.items[i];
       dom_region.items[i] = ecms_plugins._move_item_to( fs_item, function(fs_item) { tab.content.append(fs_item); } );
     }
 
@@ -265,6 +268,20 @@ var ecms_plugins = {};
       sort_order[i].value = i;
     }
   }
+
+
+  ecms_plugins._sort_items = function(items)
+  {
+    // The sort_order field is likely top-level, but the fieldset html can place it anywhere.
+    for( var i in items)
+    {
+      var fs_item = items[i];
+      fs_item._sort_order = parseInt(fs_item.find("input[id$=-sort_order]:first").val());
+    }
+
+    items.sort(function(a, b) { return a._sort_order - b._sort_order; });
+  }
+
 
 
   // -------- Delete plugin ------
