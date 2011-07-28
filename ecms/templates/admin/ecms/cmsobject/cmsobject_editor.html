@@ -1,11 +1,6 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_modify adminmedia wysiwyg %}
 
-{% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}ecms/admin.css" />
-{{ form.media.css }}
-{% endblock %}
-
 {% block extrahead %}{{ block.super }}
 {% wysiwyg_setup %}
 <script type="text/javascript">
@@ -23,7 +18,6 @@
   ecms_admin.setItemTypes( itemtypes );
   ecms_admin.setInitialValues( {layout_id: {{ original.layout_id|default:0 }}} );
 </script>
-{{ form.media.js }}
 {% endblock %}
 
 {% block breadcrumbs %}{% if not is_popup %}
