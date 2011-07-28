@@ -6,6 +6,8 @@ from ecms.extensions import CmsPageItemForm
 from ecms.models import CmsPageItem
 from ecms_plugins.markup import appsettings, backend
 
+_configuredlanguageName = backend.LANGUAGE_NAMES.get(appsettings.ECMS_MARKUP_LANGUAGE)
+
 
 class MarkupItemForm(CmsPageItemForm):
     """
@@ -24,11 +26,11 @@ class MarkupItem(CmsPageItem):
     A snippet of markup (restructuredtext, markdown, or textile) to display at a page.
     """
 
-    text = models.TextField(_('markup'), blank=True)
+    text = models.TextField(_('markup'))
 
     # Store the language to keep rendering intact while switching settings.
-    language = models.CharField(_('Language'), max_length=30, editable=False, default=appsettings.ECMS_MARKUP_LANGUAGE, choices=backend.LANGUAGE_NAMES)
+    language = models.CharField(_('Language'), max_length=30, editable=False, default=appsettings.ECMS_MARKUP_LANGUAGE, choices=backend.LANGUAGE_CHOICES)
 
     class Meta:
-        verbose_name = _('Markup text item')
-        verbose_name_plural = _('Markup text items')
+        verbose_name = _('%s item') % _configuredlanguageName
+        verbose_name_plural = _('%s items') % _configuredlanguageName

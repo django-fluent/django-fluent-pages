@@ -1,5 +1,12 @@
 """
-Definition of the plugin.
+Markup plugin, rendering human readable formatted text to HTML.
+
+This plugin supports several markup languages:
+
+  reStructuredText: Used for Python documentation.
+  Markdown: Used for GitHub and Stackoverflow comments (both have a dialect/extended version)
+  Textile: A extensive markup format, also used in Redmine and partially in Basecamp.
+
 """
 from __future__ import absolute_import
 from ecms.extensions import EcmsPlugin, plugin_pool, render_error
@@ -11,7 +18,7 @@ class EcmsMarkupPlugin(EcmsPlugin):
     model = MarkupItem
     category = 'programming'
     admin_form = MarkupItemForm
-    #admin_form_template = "admin/ecms_plugins/markup/admin_form.html"
+    admin_form_template = "admin/ecms_plugins/markup/admin_form.html"
 
     @classmethod
     def render(cls, instance):

@@ -9,10 +9,16 @@ from django.contrib.markup.templatetags import markup
 from django.utils.safestring import SafeData
 from ecms_plugins.markup import appsettings
 
+_languageNames = {
+    'restructuredtext': 'reStructuredText',
+    'markdown': 'Markdown',
+    'textile': 'Textile',
+}
 
 # Copy, and allow adding more options.
 SUPPORTED_LANGUAGES = dict(markup.register.filters.iteritems())
-LANGUAGE_NAMES = [(n, n) for n in SUPPORTED_LANGUAGES.keys()]
+LANGUAGE_CHOICES = [(n, _languageNames.get(n, n.capitalize())) for n in SUPPORTED_LANGUAGES.keys()]
+LANGUAGE_NAMES = dict(LANGUAGE_CHOICES)
 
 
 def render_text(text, language=None):
