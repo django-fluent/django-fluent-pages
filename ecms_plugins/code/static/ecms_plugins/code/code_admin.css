@@ -1,4 +1,16 @@
 
 #ecms-tabmain .inline-CodeItem textarea.vLargeTextField {
-  font-family: Consolas, monospace;  /* allow the OS to come up with something better then Courier New */
+  /* allow the OS to come up with something better then Courier New */
+  font-family: "Consolas", "Menlo", "Monaco", "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
+  padding: 5px; /* 3px is standard */
+  width: 606px;
+}
+
+#ecms-tabmain .inline-CodeItem .ecms-code-form-row {
+  border: 0;
+  padding-bottom: 0;
+}
+
+#ecms-tabmain .inline-CodeItem .code-linenumbers {
+  padding-top: 3px;
 }

@@ -1,0 +1,47 @@
+{% for fieldset in inline_admin_form %}
+{% for line in fieldset %}{% for field in line %}{% if field.field.is_hidden %}
+  {{ field.field }}{# render all hidden fields top level, compacter and easier to debug #}
+{% endif %}{% endfor %}{% endfor %}
+
+    {% with form=inline_admin_form.form %}{# NOTE: gets raw form, without bold admin labels #}
+    <fieldset class="module aligned {{ fieldset.classes }}">
+      <div class="form-row ecms-code-form-row">
+        {% if form.code.errors %}{{ form.code.errors }}{% endif %}
+        {{ form.code }}
+      </div>
+      <div class="form-row">
+        {{ form.language.errors }}
+        <span class="field-box">
+          <label for="{{ form.language.auto_id }}" class="required">{{ form.language.label }}:</label>
+          {{ form.language }}
+        </span>
+        <span class="field-box code-linenumbers">
+          {{ form.linenumbers }}
+          <label for="{{ form.linenumbers.auto_id }}" class="vCheckboxLabel">{{ form.linenumbers.label }}</label>
+        </span>
+      </div>
+    </fieldset>
+
+        <div class="form-row{% if line.fields|length_is:'1' and line.errors %} errors{% endif %}{% for field in line %} {{ field.field.name }}{% if field.field.is_hidden %} has-hidden-field{% endif %}{% endfor %}">
+            {% if line.fields|length_is:'1' %}{{ line.errors|linebreaksbr }}{% endif %}
+            {% for field in line %}{% if not field.field.is_hidden %}
+                <div{% if not line.fields|length_is:'1' %} class="field-box{% if not field.is_readonly and field.errors %} errors{% endif %}"{% endif %}>
+                    {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                    {% if field.is_checkbox %}
+                        {{ field.field }}{{ field.label_tag }}
+                    {% else %}
+                        {% if field.field.name != 'code' %}{{ field.label_tag }}{% endif %}
+                        {% if field.is_readonly %}
+                            <p>{{ field.contents }}</p>
+                        {% else %}
+                            {{ field.field }}
+                        {% endif %}
+                    {% endif %}
+                    {% if field.field.help_text %}
+                        <p class="help">{{ field.field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+            {% endif %}{% endfor %}
+        </div>
+    {% endwith %}
+{% endfor %}
