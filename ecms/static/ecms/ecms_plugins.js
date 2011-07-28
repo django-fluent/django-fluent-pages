@@ -233,8 +233,9 @@ var ecms_plugins = {};
     fs_item.css("height", fs_item.height() + "px");
 
     // Swap
+    var tab = ecms_tabs.get_tab_for_item( fs_item );
     fs_item = ecms_plugins._move_item_to( fs_item, function(fs_item) { fs_item[isUp ? 'insertBefore' : 'insertAfter'](relative); } );
-    ecms_plugins._update_sort_order(fs_item.closest(".ecms-tab-content"));
+    ecms_plugins.update_sort_order(tab);
 
     // Give more then enough time for the YUI editor to restore.
     // The height won't be changed within 2 seconds at all.

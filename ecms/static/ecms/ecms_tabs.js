@@ -52,6 +52,13 @@ var ecms_tabs = {};
   }
 
 
+  ecms_tabs.get_tab_for_item = function(fs_item)
+  {
+    var tab = fs_item.closest(".ecms-tab-content");
+    return ecms_tabs._get_object_for_tab(tab)
+  }
+
+
   ecms_tabs.get_tabs = function()
   {
     var tabs = $("#ecms-tabmain > .ecms-region-tab");
@@ -59,7 +66,7 @@ var ecms_tabs = {};
     // Wrap in objects too, for consistent API usage.
     var tab_objects = [];
     for(var i = 0; i < tabs.length; i++)
-      tab_objects.push(ecms_tabs._get_object_for_tab(tab));
+      tab_objects.push(ecms_tabs._get_object_for_tab(tabs.eq(i)));
 
     return tab_objects;
   }
