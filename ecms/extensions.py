@@ -43,7 +43,7 @@ class EcmsPlugin(object):
     __metaclass__ = forms.MediaDefiningClass
 
     # Settings to override
-    model = CmsPageItem
+    model = None  # CmsPageItem derived
     admin_form = CmsPageItemForm
     admin_form_template = "admin/ecms/cmspageitem/admin_form.html"
     category = None
@@ -124,8 +124,9 @@ class PluginPool(object):
 
         If a plugin is already registered, this will raise PluginAlreadyRegistered.
         """
-        assert issubclass(plugin, EcmsPlugin), "The plugin must inherit from `CMSPluginBase`"
-        assert issubclass(plugin.model, CmsPageItem), "The plugin model must inherit from `CmsPageItem`"
+        assert issubclass(plugin, EcmsPlugin) and plugin.__name__ != 'EcmsPlugin', "The plugin must inherit from `EcmsPlugin`"
+        assert plugin.model, "The plugin has no model defined"
+        assert issubclass(plugin.model, CmsPageItem) and plugin.model.__name__ != 'CmsPageItem', "The plugin model must inherit from `CmsPageItem`"
 
         name = plugin.__name__
         if name in self.plugins:
