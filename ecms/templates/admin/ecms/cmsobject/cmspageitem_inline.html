@@ -8,8 +8,8 @@
     {% for inline_admin_form in inline_admin_formset %}
       {% with inline_admin_form.form as form %}
       <div class="inline-related inline-{{ inline_admin_form.model_admin.type_name }}{% if forloop.last %} empty-form last-related{% endif %}" id="{{ inline_admin_formset.formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-        <h2 class="ecms-formset-item-title">
-          {{ inline_admin_formset.opts.name }}
+        <h2 class="ecms-formset-item-title ecms-clearfix">
+          <span class="title">{{ inline_admin_formset.opts.name }}</span>
           <span class="ecms-item-controls">
             <span class="ecms-item-move">
               <a class="ecms-item-up" href="#up">u</a>
