@@ -1,6 +1,22 @@
 (function($){
 
   var has_load_error = false;
+  var is_first_init = true;
+
+
+  // A bit of a HACK, maybe needs migration later on:
+  function init_wysiwyg()
+  {
+    if( ! is_first_init ) return;
+    is_first_init = false;
+
+    // Extra customizations for the YUI editor
+    if( window.django_wysiwyg_editor_config && window.YAHOO )
+    {
+      window.django_wysiwyg_editor_config.height = "150px";
+      window.django_wysiwyg_editor_config.autoHeight = true;
+    }
+  }
 
 
   function disable_wysiwyg(root)
@@ -16,6 +32,7 @@
 
   function enable_wysiwyg(root)
   {
+    init_wysiwyg();
     var textareas = root.find("textarea.vLargeTextField:not([id=~__prefix__])").debug();
 
     if( ! django_wysiwyg.is_loaded() )
