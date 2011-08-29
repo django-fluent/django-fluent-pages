@@ -6,6 +6,7 @@ from a tighter integration then the Django URLconf can provide.
 """
 from django.conf import settings
 from django import forms
+from django.template.loader import render_to_string
 from django.utils.html import linebreaks, escape
 from django.utils.importlib import import_module
 from django.utils.translation import ugettext as _
@@ -46,6 +47,7 @@ class EcmsPlugin(object):
     model = None  # CmsPageItem derived
     admin_form = CmsPageItemForm
     admin_form_template = "admin/ecms/cmspageitem/admin_form.html"
+    render_template = None
     category = None
 
 
@@ -78,8 +80,20 @@ class EcmsPlugin(object):
         """
         The rendering/view function that displays a plugin model instance.
         It is recommended to wrap the output in a <div> object, so the item is not inlined after the previous plugin.
+
+        To render a plugin, either override this function, or specify the ``render_template`` variable,
+        and optionally override ``get_context()``.
         """
-        return unicode(_(u"{No rendering defined for class '%s'}" % cls.__name__))
+        if cls.render_template:
+            return render_to_string(cls.render_template, cls.get_context(instance))
+        else:
+            return unicode(_(u"{No rendering defined for class '%s'}" % cls.__name__))
+
+
+    @classmethod
+    def get_context(cls, instance):
+        return {'instance': instance}
+
 
 
 # -------- Some utils --------
