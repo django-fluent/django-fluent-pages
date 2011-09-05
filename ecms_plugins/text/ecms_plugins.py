@@ -15,7 +15,7 @@ class EcmsTextPlugin(EcmsPlugin):
         css = {'screen': ('ecms_plugins/text/text_admin.css',)}
 
     @classmethod
-    def render(cls, instance):
+    def render(cls, instance, request, **kwargs):
         # Included in a DIV, so the next item will be displayed below.
         return '<div class="text">' + instance.text + '</div>\n'
 

@@ -10,7 +10,7 @@ class GistPlugin(EcmsPlugin):
     category = 'programming'
 
     @classmethod
-    def render(cls, instance):
+    def render(cls, instance, request, **kwargs):
         url = 'http://gist.github.com/%s.js' % int(instance.gist_id)
         if instance.filename:
             url += '?file=' + urllib2.quote(instance.filename)

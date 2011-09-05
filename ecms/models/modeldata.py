@@ -12,9 +12,6 @@ from django.utils.safestring import mark_safe
 class CmsObjectRegionDict(UserDict.DictMixin):
     """
     A dictionary for to access the active page items through regions.
-
-    This object is used by ``CmsObject`` to provide the following syntax in the template:
-    {{ ecms_page.regions.main }}
     """
     def __init__(self, regions, all_page_items):
         self._regions = regions
@@ -59,17 +56,13 @@ class CmsObjectRegionDict(UserDict.DictMixin):
 
 
 class CmsPageItemList(list):
-    def render(self):
-        """
-        Render all items, this is typically used in templates:
-        {{ ecms_page.regions.main }}  <-- points to a CmsPageItemList
-        """
+    def render(self, request):
         if not self:
             str = u'<!-- no items in this region -->'
         else:
-            str = ''.join(item.plugin.render(item) for item in self)
+            str = ''.join(pageitem.plugin._render_pageitem(pageitem, request) for pageitem in self)
         return mark_safe(str)
 
-    def __unicode__(self):
-        # so {{ ecms_page.main_page_items }} also works directly.
-        return self.render()
+    # Previously, a __unicode__() made it possible to render a item
+    # as {{ ecms_page.regions.main }}. However, this has no access to
+    # the request object, which is essential for more advanced functions.

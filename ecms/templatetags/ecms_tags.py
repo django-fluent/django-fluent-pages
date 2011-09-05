@@ -127,13 +127,16 @@ class EcmsRegionNode(Node):
         self.region_name = region_var_name
 
     def render(self, context):
-        page  = _ecms_get_current_page(context)
+        request = _ecms_get_request(context)
+        page = _ecms_get_current_page(context)
+
+        # Get the region
         region_name = Variable(self.region_name).resolve(context)
         items = page.regions[region_name]  # is CmsObjectRegionDict
         if not items:
             return "<!-- no items in region '%s' -->" % region_name
         else:
-            return items.render()   # is CmsPageItemList.render()
+            return items.render(request)   # is CmsPageItemList.render()
 
 
 class EcmsGetVarsNode(Node):

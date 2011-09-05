@@ -21,7 +21,7 @@ class EcmsMarkupPlugin(EcmsPlugin):
     admin_form_template = "admin/ecms_plugins/markup/admin_form.html"
 
     @classmethod
-    def render(cls, instance):
+    def render(cls, instance, request, **kwargs):
         try:
             html = backend.render_text(instance.text, instance.language)
         except Exception, e:

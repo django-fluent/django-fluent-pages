@@ -6,6 +6,8 @@ from a tighter integration then the Django URLconf can provide.
 """
 from django.conf import settings
 from django import forms
+from django.core import context_processors
+from django.template.context import Context
 from django.template.loader import render_to_string
 from django.utils.html import linebreaks, escape
 from django.utils.importlib import import_module
@@ -28,6 +30,27 @@ PLUGIN_CATEGORIES = {
     'advanced': _('Advanced'),
     'unknown': _('Unknown'),
 }
+
+# Some standard request processors to use in the plugins,
+# Naturally, you want STATIC_URL to be available in plugins.
+_STANDARD_REQUEST_CONTEXT_PROCESSORS = (
+    context_processors.request,
+    context_processors.static,
+    context_processors.media,
+    context_processors.i18n,
+)
+
+class EcmsPluginContext(Context):
+    """
+    A template Context class similar to RequestContext, that enters some prefilled data.
+    """
+    def __init__(self, request, dict=None, current_app=None):
+        # If there is any reason to site-global context processors for plugins,
+        # I'd like to know the usecase, and it could be implemented here.
+        Context.__init__(self, dict, current_app=current_app)
+        for processor in _STANDARD_REQUEST_CONTEXT_PROCESSORS:
+            self.update(processor(request))
+
 
 class CmsPageItemForm(forms.ModelForm):
     """
@@ -76,7 +99,14 @@ class EcmsPlugin(object):
 
 
     @classmethod
-    def render(cls, instance):
+    def _render_pageitem(cls, instance, request):
+        # Internal wrapper for render(), to allow updating the method signature easily.
+        # It also happens to really simplify code navigation.
+        return cls.render(instance=instance, request=request)
+
+
+    @classmethod
+    def render(cls, instance, request, **kwargs):
         """
         The rendering/view function that displays a plugin model instance.
         It is recommended to wrap the output in a <div> object, so the item is not inlined after the previous plugin.
@@ -85,14 +115,18 @@ class EcmsPlugin(object):
         and optionally override ``get_context()``.
         """
         if cls.render_template:
-            return render_to_string(cls.render_template, cls.get_context(instance))
+            context = cls.get_context(instance, request)
+            return render_to_string(cls.render_template, context, context_instance=EcmsPluginContext(request))
         else:
             return unicode(_(u"{No rendering defined for class '%s'}" % cls.__name__))
 
 
     @classmethod
-    def get_context(cls, instance):
-        return {'instance': instance}
+    def get_context(cls, instance, request, **kwargs):
+        return {
+            'instance': instance,
+            'ecms_page': instance.parent,
+        }
 
 
 
