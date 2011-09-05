@@ -9,6 +9,7 @@ ECMS_CLEAN_HTML = getattr(settings, 'ECMS_CLEAN_HTML', False)
 ECMS_SANITIZE_HTML = getattr(settings, 'ECMS_SANITIZE_HTML', False)
 
 ECMS_TEMPLATE_DIR = getattr(settings, 'ECMS_TEMPLATE_DIR', settings.TEMPLATE_DIRS[0] if settings.TEMPLATE_DIRS else None)
+ECMS_RELATIVE_TEMPLATE_DIR = getattr(settings, 'ECMS_RELATIVE_TEMPLATE_DIR', True)
 
 
 

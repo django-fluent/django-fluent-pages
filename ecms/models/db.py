@@ -24,6 +24,7 @@ from django.contrib.sites.models import Site
 from django.db.transaction import commit_on_success
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
+from ecms.models.fields import TemplateFilePathField
 
 from ecms.models.managers import CmsSiteManager, CmsObjectManager
 from ecms.models.modeldata import CmsObjectRegionDict, CmsPageItemList
@@ -375,7 +376,7 @@ class CmsLayout(models.Model):
 
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
     title = models.CharField(_('title'), max_length=255)
-    template_path = models.FilePathField('template file', path=appsettings.ECMS_TEMPLATE_DIR, match=r'.*\.html$', recursive=True)
+    template_path = TemplateFilePathField('template file', path=appsettings.ECMS_TEMPLATE_DIR)
     #regions = a RelatedManager
     #no children
     #unique
