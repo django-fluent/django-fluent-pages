@@ -215,8 +215,8 @@ def _ecms_get_request(context):
 
     This enforces the use of a RequestProcessor, e.g.
 
-        render_to_response("page.html", context, context_instance=RequestProcessor(request))
+        render_to_response("page.html", context, context_instance=RequestContext(request))
     """
-    assert context.has_key('request'), "ECMS functions require a 'request' object in the context, is RequestProcessor not used?"
+    assert context.has_key('request'), "ECMS functions require a 'request' object in the context, is RequestContext not used?"
     return context['request']
 
