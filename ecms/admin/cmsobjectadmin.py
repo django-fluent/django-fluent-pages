@@ -250,7 +250,19 @@ class CmsObjectAdmin(MPTTModelAdmin):
         plugins = extensions.plugin_pool.get_plugin_classes()
         categories = get_pageitem_categories(plugins)
         categories = dict((PLUGIN_CATEGORIES[k], v) for k, v in categories.iteritems())  # replace ID with title
-        context['add_plugin_categories'] = categories
+
+        # Get parent object for breadcrumb
+        parent_object = None
+        parent_id = request.REQUEST.get('parent')
+        if add and parent_id:
+            parent_object = CmsObject.objects.get(pk=int(parent_id))
+        elif change:
+            parent_object = obj.parent
+
+        context.update({
+            'add_plugin_categories': categories,
+            'parent_object': parent_object,
+        })
 
         # And go with standard stuff
         return super(CmsObjectAdmin, self).render_change_form(request, context, add, change, form_url, obj)
