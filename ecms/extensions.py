@@ -26,6 +26,7 @@ PLUGIN_CATEGORIES = {
     None: '',
     'text': _('Text'),
     'media': _('Media'),
+    'interactivity': _('Interactivity'),
     'programming': _('Programming'),
     'advanced': _('Advanced'),
     'unknown': _('Unknown'),
@@ -36,6 +37,7 @@ PLUGIN_CATEGORIES = {
 _STANDARD_REQUEST_CONTEXT_PROCESSORS = (
     context_processors.request,
     context_processors.static,
+    context_processors.csrf,
     context_processors.media,
     context_processors.i18n,
 )
