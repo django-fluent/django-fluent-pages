@@ -116,11 +116,17 @@ class EcmsPlugin(object):
         To render a plugin, either override this function, or specify the ``render_template`` variable,
         and optionally override ``get_context()``.
         """
-        if cls.render_template:
-            context = cls.get_context(instance, request)
-            return render_to_string(cls.render_template, context, context_instance=EcmsPluginContext(request))
+        render_template = cls.get_render_template(instance, request, **kwargs)
+        if render_template:
+            context = cls.get_context(instance, request, **kwargs)
+            return render_to_string(render_template, context, context_instance=EcmsPluginContext(request))
         else:
             return unicode(_(u"{No rendering defined for class '%s'}" % cls.__name__))
+
+
+    @classmethod
+    def get_render_template(cls, instance, request, **kwargs):
+        return cls.render_template
 
 
     @classmethod
