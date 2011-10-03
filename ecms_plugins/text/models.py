@@ -6,7 +6,9 @@ from ecms import appsettings
 
 
 class CmsTextItem(CmsPageItem):
-    """A snippet of text to display on a page"""
+    """
+    A snippet of HTML text to display on a page.
+    """
     text = models.TextField(_('text'), blank=True)
 
     class Meta:

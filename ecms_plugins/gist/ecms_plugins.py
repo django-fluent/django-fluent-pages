@@ -1,9 +1,11 @@
 """
 Plugin for rendering Gist snippets, hosted by Github.
 """
+from __future__ import absolute_import
+from django.utils.http import urlquote
 from ecms.extensions import EcmsPlugin, plugin_pool
-from .models import GistItem
-import urllib2
+from ecms_plugins.gist.models import GistItem
+
 
 class GistPlugin(EcmsPlugin):
     model = GistItem
@@ -11,11 +13,11 @@ class GistPlugin(EcmsPlugin):
 
     @classmethod
     def render(cls, instance, request, **kwargs):
-        url = 'http://gist.github.com/%s.js' % int(instance.gist_id)
+        url = u'http://gist.github.com/{0}.js'.format(instance.gist_id)
         if instance.filename:
-            url += '?file=' + urllib2.quote(instance.filename)
+            url += u'?file={0}'.format(urlquote(instance.filename))
 
-        return '<script src="%s"></script>' % url
+        return u'<script src="{0}"></script>'.format(url)
 
 
 plugin_pool.register(GistPlugin)
