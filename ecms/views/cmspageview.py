@@ -24,6 +24,10 @@ class CmsPageView(DetailView):
     def get_template_names(self):
         return [self.object.layout.template_path]
 
+    def post(self, request, *args, **kwargs):
+        """Allow POST requests (for forms) to the page."""
+        return self.get(request, *args, **kwargs)
+
 
 class CmsPageAdminRedirect(RedirectView):
     """
