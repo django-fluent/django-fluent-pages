@@ -5,7 +5,7 @@
       <div class="ecms-tab-content">
       </div>
       <div class="ecms-tab-controls">
-        <select>{% for category_name, plugins in add_plugin_categories.items %}
+        <select>{% for category_name, plugins in add_plugin_categories %}
           {% if category_name %}<optgroup label="{{ category_name }}">{% endif %}
             {% for plugin in plugins %}
               <option value="{{ plugin.type_name }}">{{ plugin.verbose_name }}</option>

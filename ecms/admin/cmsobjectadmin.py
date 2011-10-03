@@ -249,7 +249,8 @@ class CmsObjectAdmin(MPTTModelAdmin):
         """Include plugin meta information, in the context."""
         plugins = extensions.plugin_pool.get_plugin_classes()
         categories = get_pageitem_categories(plugins)
-        categories = dict((PLUGIN_CATEGORIES[k], v) for k, v in categories.iteritems())  # replace ID with title
+        categories_list = [(PLUGIN_CATEGORIES[k], v) for k, v in categories.iteritems()]  # replace ID with title
+        categories_list.sort(key=lambda item: item[0])
 
         # Get parent object for breadcrumb
         parent_object = None
@@ -260,7 +261,7 @@ class CmsObjectAdmin(MPTTModelAdmin):
             parent_object = obj.parent
 
         context.update({
-            'add_plugin_categories': categories,
+            'add_plugin_categories': categories_list,
             'parent_object': parent_object,
         })
 
