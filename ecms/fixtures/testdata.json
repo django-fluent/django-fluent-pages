@@ -1,0 +1,6 @@
+[{"pk": 1, "model": "ecms.cmssite", "fields": {}},
+ {"pk": 2, "model": "ecms.cmsobject", "fields": {"status": "p", "rght": 2, "level": 0, "layout": 1, "description": "", "parent": null, "title": "test_subpage1", "expire_date": null, "tree_id": 1, "override_url": "", "creation_date": "2011-10-06 19:24:12", "lft": 1, "sort_order": 1, "author": 1, "publication_date": null, "keywords": "", "parent_site": 1, "in_navigation": true, "_cached_url": "/test_subpage1/", "slug": "test_subpage1", "modification_date": "2011-10-06 19:24:12"}},
+ {"pk": 1, "model": "ecms.cmsobject", "fields": {"status": "p", "rght": 2, "level": 0, "layout": 1, "description": "", "parent": null, "title": "Welcome", "expire_date": null, "tree_id": 2, "override_url": "/", "creation_date": "2010-11-30 18:11:37", "lft": 1, "sort_order": 1, "author": 1, "publication_date": null, "keywords": "", "parent_site": 1, "in_navigation": true, "_cached_url": "/", "slug": "welcome", "modification_date": "2010-11-30 18:52:49"}},
+ {"pk": 1, "model": "ecms.cmslayout", "fields": {"template_path": "ecms/cmspage.html", "key": "simple", "title": "Simple Layout"}},
+ {"pk": 1, "model": "ecms.cmsregion", "fields": {"role": "m", "inherited": false, "layout": 1, "key": "main", "title": "Main content"}}
+]
