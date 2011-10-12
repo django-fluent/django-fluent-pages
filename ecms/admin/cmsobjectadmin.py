@@ -269,11 +269,11 @@ class CmsObjectAdmin(MPTTModelAdmin):
         return super(CmsObjectAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
 
-    def save_model(self, request, obj, form, change):
-        """Automatically store the user in the author field."""
+    def save_model(self, request, cmsobject, form, change):
+        # Automatically store the user in the author field.
         if not change:
-            obj.author = request.user
-        obj.save()
+            cmsobject.author = request.user
+        cmsobject.save()
 
 
     # ---- list actions ----
