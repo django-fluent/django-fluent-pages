@@ -18,9 +18,10 @@ It defines the following classes:
 The page items are derived from ``CmsPageItem``, which
 is an abstract model defined in ``ecms.models.pluginmodel``.
 """
-from django.db import models
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.db import models
 from django.db.transaction import commit_on_success
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
@@ -162,7 +163,11 @@ class CmsObject(MPTTModel):
         """
         Return the URL to this page.
         """
-        return self._cached_url
+        # cached_url always points to the URL within the URL config root.
+        # when the application is mounted at a subfolder, or the 'cms.urls' config
+        # is included at a sublevel, it needs to be prepended.
+        root = reverse('ecms-page').rstrip('/')
+        return root + self._cached_url
 
 
     def _get_supported_plugin_types(self):
