@@ -1,3 +1,8 @@
+{# The blocks in this file are added on purpose, for plugins to extend from. #}
+        {% block before_fieldsets %}{% endblock %}
+        {% block fieldsets %}
         {% for fieldset in inline_admin_form %}
           {% include "admin/ecms/fieldset.html" %}{# a admin/includes/fieldset.html that supports hidden fields #}
         {% endfor %}
+        {% endblock %}
+        {% block after_fieldsets %}{% endblock %}
