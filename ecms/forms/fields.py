@@ -2,6 +2,7 @@
 Extra form fields.
 """
 from django import forms
+from django.core.urlresolvers import reverse
 from ecms import appsettings
 import os
 
@@ -29,4 +30,30 @@ class TemplateFilePathField(forms.FilePathField):
             # If setting is disabled, turn relative path back to abs.
             if not os.path.isabs(value):
                 value = os.path.join(self.path, value)
+        return value
+
+
+class RelativeRootPathField(forms.CharField):
+    """
+    A ``CharField`` which returns stored URL values relative to the ecms-pages root.
+    """
+    def prepare_value(self, value):
+        """
+        Convert the database/model value to the displayed value.
+        Adds the root of the CMS pages.
+        """
+        if value and value.startswith('/'):  # value is None for add page.
+            root = reverse('ecms-page').rstrip('/')
+            value = root + value
+        return value
+
+    def to_python(self, value):
+        """
+        Convert the displayed value to the database/model value.
+        Removes the root of the CMS pages.
+        """
+        root = reverse('ecms-page').rstrip('/')
+        value = super(RelativeRootPathField, self).to_python(value)
+        if root and value.startswith(root):
+            value = value[len(root):]
         return value

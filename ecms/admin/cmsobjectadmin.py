@@ -16,6 +16,7 @@ from mptt.admin import MPTTModelAdmin   # mptt 0.4
 from ecms.models import CmsObject, CmsLayout
 from ecms import extensions
 from ecms.admin.utils import get_pageitem_categories
+from ecms.forms.fields import RelativeRootPathField
 from ecms.extensions  import PLUGIN_CATEGORIES
 from ecms.utils.ajax import JsonResponse
 
@@ -26,8 +27,23 @@ class CmsObjectAdminForm(forms.ModelForm):
     """
     The admin form for the main fields (the ``CmsObject`` object).
     """
+
+    # Using a separate formfield to display the full URL in the override_url field:
+    # - The override_url is stored relative to the URLConf root,
+    #   which makes the site easily portable to another path or root.
+    # - Users don't have to know or care about this detail.
+    #   They only see the absolute external URLs, so make the input reflect that as well.
+    override_url = RelativeRootPathField(max_length=300, required=False)
+
     class Meta:
         model = CmsObject
+
+    def __init__(self, *args, **kwargs):
+        super(CmsObjectAdminForm, self).__init__(*args, **kwargs)
+        # Copy the fields/labels from the model field, to avoid repeating the labels.
+        modelfield = [f for f in CmsObject._meta.fields if f.name == 'override_url'][0]
+        self.fields['override_url'].label = modelfield.verbose_name
+        self.fields['override_url'].help_text = modelfield.help_text
 
     def clean(self):
         """
