@@ -16,10 +16,10 @@ First install the module, preferably in a virtual environment::
 Configuration
 -------------
 
-Next, create a project which uses the CMS:
+Next, create a project which uses the CMS::
 
-* cd ..
-* django-admin.py startproject ecmsdemo
+    cd ..
+    django-admin.py startproject ecmsdemo
 
 It should have the following settings::
 

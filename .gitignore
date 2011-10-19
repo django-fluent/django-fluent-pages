@@ -4,3 +4,4 @@
 .project
 .pydevproject
 .idea/workspace.xml
+docs/_build/
