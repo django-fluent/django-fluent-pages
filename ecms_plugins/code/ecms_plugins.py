@@ -18,7 +18,7 @@ class EcmsCodePlugin(EcmsPlugin):
     def render(cls, instance, request, **kwargs):
         # Style is not stored in the model,
         # it needs to be a side-wide setting (maybe even in the theme)
-        return backend.render_code(instance, style_name=appsettings.ECMS_CODE_DEFAULT_STYLE)
+        return backend.render_code(instance, style_name=appsettings.ECMS_CODE_STYLE)
 
 
 plugin_pool.register(EcmsCodePlugin)

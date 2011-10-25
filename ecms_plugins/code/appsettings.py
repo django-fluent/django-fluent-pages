@@ -31,7 +31,7 @@ _defaultShortlist = (
 )
 
 ECMS_CODE_DEFAULT_LANGUAGE = getattr(settings, "ECMS_CODE_DEFAULT_LANGUAGE", '')
-ECMS_CODE_DEFAULT_STYLE = getattr(settings, 'ECMS_CODE_DEFAULT_STYLE', 'default')
+ECMS_CODE_STYLE = getattr(settings, 'ECMS_CODE_STYLE', 'default')
 ECMS_CODE_DEFAULT_LINE_NUMBERS = getattr(settings, 'ECMS_CODE_DEFAULT_LINE_NUMBERS', False)
 ECMS_CODE_SHORTLIST = getattr(settings, 'ECMS_CODE_SHORTLIST', _defaultShortlist)
 ECMS_CODE_SHORTLIST_ONLY = getattr(settings, 'ECMS_CODE_SHORTLIST_ONLY', False)
