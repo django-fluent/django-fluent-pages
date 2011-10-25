@@ -122,12 +122,14 @@ This setup adds the following features:
 * A custom dashboard and menu for the administration interface.
 * An administration toolbar in the frontend website.
 * Additional content plugins:
+
  * Code highlight
  * Gist snippets (code hosted by Github)
  * reStructuredText markup
  * Raw HTML
  * Comments area, using `django.contrib.comments`.
  * Form designer, display forms build with `django-form-designer`.
+
 * An administration interface for comments.
 * A more advanced HTML editor, with code cleanup.
 
