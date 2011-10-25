@@ -19,15 +19,50 @@ which describes all the necessary steps to install django-ecms and configure it 
 For more detailed information about how to install and how to customize django-ecms,
 read through the documentation listed below.
 
-Contents:
+
+Getting started
+---------------
 
 .. toctree::
    :maxdepth: 2
 
    quickstart
    installation
-   configuration
-   customization
-   integration
-   contributing
-   testing
+
+
+Optional modules
+----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   modules/ecms_admin_overlay
+   modules/ecms_dashboard
+
+Content plugins
+---------------
+
+Standard plugins:
+
+.. toctree::
+   :maxdepth: 2
+
+   plugins/text
+
+Interactivity:
+
+.. toctree::
+   :maxdepth: 2
+
+   plugins/commentsarea
+   plugins/formdesignerlink
+
+Programming:
+
+.. toctree::
+   :maxdepth: 2
+
+   plugins/code
+   plugins/gist
+   plugins/markup
+   plugins/rawhtml
