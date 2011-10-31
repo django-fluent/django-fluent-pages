@@ -38,6 +38,7 @@ Optional modules
 
    modules/ecms_admin_overlay
    modules/ecms_dashboard
+   modules/ecms_comments
 
 Content plugins
 ---------------
