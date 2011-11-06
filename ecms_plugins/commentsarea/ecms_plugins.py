@@ -18,6 +18,7 @@ The least you need to do, is:
 from __future__ import absolute_import
 from ecms.extensions import EcmsPlugin, plugin_pool
 from ecms_plugins.commentsarea.models import CmsCommentsAreaItem
+from ecms_plugins.commentsarea import appsettings
 
 
 class EcmsCommentsAreaPlugin(EcmsPlugin):

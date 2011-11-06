@@ -1,5 +1,7 @@
-{% load comments %}
+{% load commentsarea_tags %}
+
 {% render_comment_list for ecms_page %}
+
 {% if instance.allow_new %}
   {% render_comment_form for ecms_page %}
 {% else %}
