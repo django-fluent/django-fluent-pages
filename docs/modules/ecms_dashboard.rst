@@ -57,17 +57,17 @@ The available settings are:
 
 .. code-block:: python
 
-  ECMS_DASHBOARD_APP_ICONS = {
-      'cms/page': 'ecms_dashboard/oxygen/internet-web-browser.png',
-  }
+    ECMS_DASHBOARD_APP_ICONS = {
+        'cms/page': 'internet-web-browser.png',
+    }
 
-  ECMS_DASHBOARD_DEFAULT_ICON = 'ecms_dashboard/oxygen/unknown.png'
+    ECMS_DASHBOARD_DEFAULT_ICON = 'unknown.png'
 
-  ECMS_DASHBOARD_APP_GROUPS = (
-      (_('CMS'), ('*',)),
-      (_('Interactivity'), ('zinnia.*', 'django.contrib.comments.*', 'form_designer.*')),
-      (_('Administration'), ('django.contrib.auth.*', 'django.contrib.sites.*', 'registration.*', 'google_analytics.*',)),
-  )
+    ECMS_DASHBOARD_APP_GROUPS = (
+        (_('CMS'), ('*',)),
+        (_('Interactivity'), ('zinnia.*', 'django.contrib.comments.*', 'form_designer.*')),
+        (_('Administration'), ('django.contrib.auth.*', 'django.contrib.sites.*', 'registration.*', 'google_analytics.*',)),
+    )
 
 
 ECMS_DASHBOARD_APP_ICONS
@@ -75,7 +75,8 @@ ECMS_DASHBOARD_APP_ICONS
 
 A dictionary of the `app/model`, and the associated icon.
 For a few commonly know applications, icons are already provided.
-The icon paths are relative to the ``STATIC_URL`` (or ``MEDIA_URL``) defined in the settings.
+The icon paths are relative to the icon theme URL (typically `STATIC_URL`/ecms_dashboard/`themename`/),
+or ``STATIC_URL`` (or ``MEDIA_URL``) folder defined in the settings.
 
 Any key defined in ``settings.py`` overrides the default.
 
@@ -83,7 +84,8 @@ ECMS_DASHBOARD_DEFAULT_ICON
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In case a suitable icon is not found, this icon is used.
-The icon path is relative to the ``STATIC_URL`` (or ``MEDIA_URL``) defined in the settings.
+The icon path is relative to the icon theme URL,
+or ``STATIC_URL`` (or ``MEDIA_URL``) folder defined in the settings.
 
 ECMS_DASHBOARD_APP_GROUPS
 ~~~~~~~~~~~~~~~~~~~~~~~~~
