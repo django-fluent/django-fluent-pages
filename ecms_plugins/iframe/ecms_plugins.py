@@ -13,7 +13,7 @@ class IframePlugin(EcmsPlugin):
 
     @classmethod
     def render(cls, instance, request, **kwargs):
-        return u'<iframe src="{src}" width="{width}" height="{height}"></iframe>'.format(
+        return u'<iframe class="iframe" src="{src}" width="{width}" height="{height}"></iframe>'.format(
             src=escape(instance.src),
             width=instance.width,
             height=instance.height

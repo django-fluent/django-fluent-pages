@@ -14,7 +14,6 @@ class IframeItem(CmsPageItem):
     """
     An ``<iframe>`` that is displayed at the page..
     """
-    title = models.CharField(_("Title"), max_length=300)
     src = models.URLField(_("Page URL"))
     width = models.CharField(_("Width"), max_length=10, validators=[_validate_size], default="100%", help_text=_("Specify the size in pixels, or a percentage of the container area size."))
     height = models.CharField(_("Height"), max_length=10, validators=[_validate_size], default="600", help_text=_("Specify the size in pixels."))
@@ -24,4 +23,4 @@ class IframeItem(CmsPageItem):
         verbose_name_plural = _("Iframes")
 
     def __unicode__(self):
-        return self.title
+        return self.src
