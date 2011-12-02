@@ -26,6 +26,7 @@ PLUGIN_CATEGORIES = {
     None: '',
     'text': _('Text'),
     'media': _('Media'),
+    'online-services': _("Online services"),
     'interactivity': _('Interactivity'),
     'programming': _('Programming'),
     'advanced': _('Advanced'),
