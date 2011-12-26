@@ -26,73 +26,6 @@ thead th.col-modification_date { width: 14em; }
 thead th.col-actions_column { width: 120px; }
 
 
-/* ---- Editor Tabbar ---- */
-
-#ecms-tabnav {
-  margin: 0;
-  padding: 0;
-}
-
-#ecms-tabnav li {
-  float: left;
-  display: inline;
-  list-style-position: inside;
-
-  margin: 3px 0 0 0;
-  min-width: 100px;
-  border-top: 1px solid #ccc;
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-
-  font-weight: bold;
-  font-size: 12px;
-  background-image: none;
-
-  color: #333333;
-}
-
-#ecms-tabnav li.active {
-  margin-top: 0;
-  background-image: url('img/admin/default-bg.gif');
-  color: #ffffff;
-}
-
-#ecms-tabnav a {
-  outline: 0;
-  display: block;
-  cursor: pointer;
-}
-
-#ecms-tabnav a {
-  padding: 5px 14px 5px 12px;
-  height: 13px;
-}
-
-#ecms-tabnav li.active a {
-  padding-top: 6px;
-  padding-bottom: 7px;
-}
-
-* html #ecms-tabnav li.active a { height: 1%;    } /* IE 6 */
-*+html #ecms-tabnav li.active a { min-height: 0; } /* IE 7 */
-
-#ecms-tabnav li.active a {
-  color: #fff;
-}
-
-#ecms-tabmain {
-  padding: 10px;
-  margin: 0 0 10px 0;
-  border: 1px solid #ccc;
-}
-
-
-/* default tabbar appearance */
-
-.ecms-tab { display: none }
-#ecms-tabmain .ecms-tab-active { display: block }
-
-
 /* ---- Editor items ---- */
 
 .inline-related h2.ecms-formset-item-title {
@@ -108,50 +41,6 @@ thead th.col-actions_column { width: 120px; }
   border-bottom: 1px solid #7CA0C7;
   padding: 2px 2px 1px 2px;
 }
-
-.ecms-item-controls {
-  float: right;
-  margin-right: 5px;
-  font-size: 0;
-  line-height: 0;
-}
-
-.ecms-item-delete input {
-  display: none;  /* needed for server side, but has special handling in admin.js */
-}
-
-.ecms-item-move {
-  float: left;
-}
-
-.ecms-item-delete {
-  float: left;
-}
-
-.ecms-item-move a {
-  float: left;
-  width: 16px;
-  height: 16px;
-  margin-left: 2px;
-  background-repeat: no-repeat;
-  outline: 0;
-}
-
-.ecms-item-up   { background-image: url(img/admin/arrow_up.gif); }
-.ecms-item-down { background-image: url(img/admin/arrow_down.gif); }
-
-.inline-related:first-child .ecms-item-up { display: none; }
-.inline-related:last-child  .ecms-item-down { display: none; }
-
-.ecms-item-delete a {
-  float: left;
-  width: 10px;
-  height: 10px;
-  padding: 3px;  /* to become 16x16 */
-  background: url(img/admin/icon_deletelink.gif) no-repeat 50% 50%;
-  outline: 0;
-}
-
 
 /* ---- Fieldset fixes ---- */
 

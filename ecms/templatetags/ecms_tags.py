@@ -2,8 +2,9 @@
 Template tags to request ECMS content in the template
 """
 from ecms.models import CmsObject, CmsSite
-from django.template import Template, TemplateSyntaxError, Library, Node, Context, Variable, defaulttags
+from django.template import TemplateSyntaxError, Library, Node, Context, defaulttags
 from django.template.loader import get_template
+from fluent_contents.templatetags.placeholder_tags import PagePlaceholderNode
 from ecms.models.navigation import CmsObjectNavigationNode
 
 # Export the tags
@@ -49,7 +50,13 @@ def _parse_ecms_region(parser, token):
         (tag_name, region_var_name) = token.split_contents()
     except ValueError:
         raise TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
-    return EcmsRegionNode(region_var_name)
+
+    # TODO: proper parsing of meta_kwargs
+    return EcmsRegionNode(
+        parent_expr=parser.compile_filter('ecms_page'),
+        slot_expr=parser.compile_filter(region_var_name),
+        meta_kwargs={},
+    )
 
 
 @register.tag(name='get_ecms_vars')
@@ -119,24 +126,11 @@ class EcmsMenuNode(SimpleInclusionNode):
         return {'menu_items': menu_items}
 
 
-class EcmsRegionNode(Node):
+class EcmsRegionNode(PagePlaceholderNode):
     """
     Template Node for a region.
     """
-    def __init__(self, region_var_name):
-        self.region_name = region_var_name
-
-    def render(self, context):
-        request = _ecms_get_request(context)
-        page = _ecms_get_current_page(context)
-
-        # Get the region
-        region_name = Variable(self.region_name).resolve(context)
-        items = page.regions[region_name]  # is CmsObjectRegionDict
-        if not items:
-            return "<!-- no items in region '%s' -->" % region_name
-        else:
-            return items.render(request)   # is CmsPageItemList.render()
+    pass
 
 
 class EcmsGetVarsNode(Node):

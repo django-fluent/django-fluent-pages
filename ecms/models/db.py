@@ -28,9 +28,9 @@ from django.utils.translation import ugettext_lazy as _
 from ecms.models.fields import TemplateFilePathField
 
 from ecms.models.managers import CmsSiteManager, CmsObjectManager
-from ecms.models.modeldata import CmsObjectRegionDict, CmsPageItemList
 from ecms import appsettings
 from mptt.models import MPTTModel
+from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 
 
 def _get_current_site():
@@ -89,8 +89,6 @@ class CmsObject(MPTTModel):
         (DRAFT, _('Draft')),
     )
 
-    # Some content types
-
     # Standard metadata
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
@@ -118,6 +116,10 @@ class CmsObject(MPTTModel):
 
     # Caching
     _cached_url = models.CharField(_('Cached URL'), max_length=300, blank=True, editable=False, default='', db_index=True)
+
+    # Access to fluent-contents via the model
+    placeholder_set = PlaceholderRelation()
+    contentitem_set = ContentItemRelation()
 
     # Django settings
     objects = CmsObjectManager()
@@ -151,10 +153,7 @@ class CmsObject(MPTTModel):
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
         self._original_cached_url = self._cached_url
-        self._cached_page_items = None
-        self._cached_main_items = None
         self._cached_ancestors = None
-        self._cached_region_dict = None
         self.is_current = None    # Can be defined by mark_current()
         self.is_onpath = None     # is an ancestor of the current node (part of the "menu trail").
 
@@ -168,67 +167,6 @@ class CmsObject(MPTTModel):
         # is included at a sublevel, it needs to be prepended.
         root = reverse('ecms-page').rstrip('/')
         return root + self._cached_url
-
-
-    def _get_supported_plugin_types(self):
-        """
-        Return the supported page item types which the page can display.
-        The returnvalue is an array of types, all derived from CmsPageItem.
-        """
-        # Enumerate what all regions allow, that's what this page can render.
-        types = []
-        for region in self.layout.regions.all():
-            types += region.supported_plugin_types
-        return list(set(types))
-
-
-    def _get_all_page_items(self):
-        """
-        Return all models which are associated with the page.
-        This is a list of different object types, all inheriting from ``CmsPageItem``.
-        """
-        if not self._cached_page_items:
-            items = []
-            # Get all items per object type.
-            for PluginType in self.supported_plugin_types:
-                query = PluginType.get_model_instances(page=self)
-                items.extend(query)
-
-            # order by region, wrap in CmsPageItemList so it can be rendered
-            # directly using {{ ecms_page.page_items }}
-            items.sort(key=lambda x: x.sort_order)
-            self._cached_page_items = CmsPageItemList(items)
-
-        return self._cached_page_items
-
-
-    def _get_regions(self):
-        """
-        Access the region information.
-
-        This allows template tags like {{ ecms_page.regions.main }}
-        """
-        if not self._cached_region_dict:
-            # Assume all regions will be read (why else would you include regions in a layout)
-            # Therefore, read them all, and construct a dict-like object which provides
-            # an API to read the data through a structured interface.
-            regions = self.layout.regions.only("key", "role")
-            all_page_items = self._get_all_page_items()
-            self._cached_region_dict = CmsObjectRegionDict(regions, all_page_items)
-
-        return self._cached_region_dict
-
-
-    def _get_main_page_items(self):
-        """
-        Return the main page items.
-        """
-        if not self._cached_main_items:
-            main_keys  = [region.key for region in self.layout.regions.filter(role=CmsRegion.MAIN).only("key")] + ['__main__']
-            main_items = [item for item in self.page_items if item.region in main_keys]
-            self._cached_main_items = CmsPageItemList(main_items)  # should already be ordered properly
-
-        return self._cached_main_items
 
 
     def _get_breadcrumb(self):
@@ -258,10 +196,6 @@ class CmsObject(MPTTModel):
 
 
     # Map to properties (also for templates)
-    supported_plugin_types = property(_get_supported_plugin_types)
-    all_page_items = property(_get_all_page_items)
-    regions = property(_get_regions)
-    main_page_items = property(_get_main_page_items)
     breadcrumb = property(_get_breadcrumb)
     url = property(get_absolute_url)
     is_published = property(_is_published)
@@ -405,49 +339,3 @@ class CmsLayout(models.Model):
         ordering = ('title',)
         verbose_name = _('Layout')
         verbose_name_plural = _('Layouts')
-
-
-class CmsRegion(models.Model):
-    """
-    A ```CmsRegion``` is a part of a ```CmsLayout```.
-    It defines a specific area of the page where content can be entered.
-    """
-
-    # The 'role' field is useful for migrations,
-    # e.g. moving from a 2-col layout to a 3-col layout.
-    # Based on the role of a pageitem, meaningful conversions can be made.
-    MAIN = 'm'
-    SIDEBAR = 's'
-    RELATED = 'r'
-    ROLES = (
-        (MAIN, _('Main content')),
-        (SIDEBAR, _('Sidebar content')),
-        (RELATED, _('Related content'))
-    )
-
-    layout = models.ForeignKey(CmsLayout, related_name='regions', verbose_name=_('Layout'))
-    key = models.SlugField(_('Template key'), help_text=_("A short name to identify the region in the template code"))
-    title = models.CharField(_('tab title'), max_length=255)
-    inherited = models.BooleanField(_('use parent contents by default'), editable=False, blank=True)
-    role = models.CharField(_('role'), max_length=1, choices=ROLES, default=MAIN)
-
-
-    @property
-    def supported_plugin_types(self):
-        """
-        Return which plugins this region can render.
-        """
-        from ecms.extensions import plugin_pool
-        all_classes = plugin_pool.get_plugin_classes()
-        return all_classes
-
-
-    def __unicode__(self):
-        return self.key + ': ' + self.title
-
-    class Meta:
-        app_label = 'ecms'
-        ordering = ('title',)
-        verbose_name = _('Layout region')
-        verbose_name_plural = _('Layout regions')
-

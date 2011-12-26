@@ -1,8 +1,0 @@
-{% load disqus_tags %}
-
-{% if instance.allow_new %}
-  {% disqus_dev %}
-  {% disqus_show_comments %}
-{% else %}
-  {% include "ecms_plugins/disqusarea/comments_closed.html" %}
-{% endif %}

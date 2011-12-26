@@ -2,25 +2,16 @@ from django.contrib import admin
 from django import forms
 from django.conf import settings
 from django.conf.urls.defaults import patterns
-
-# Core objects
-from django.contrib.admin.options import StackedInline
-
-# Many small imports
-from django.views.decorators.csrf import csrf_protect
-from django.utils.decorators import method_decorator
+from django.template.loader import get_template
 from django.utils.translation import gettext_lazy as _
 
 # Other libs
 from mptt.admin import MPTTModelAdmin   # mptt 0.4
 from ecms.models import CmsObject, CmsLayout
-from ecms import extensions
-from ecms.admin.utils import get_pageitem_categories
 from ecms.forms.fields import RelativeRootPathField
-from ecms.extensions  import PLUGIN_CATEGORIES
 from ecms.utils.ajax import JsonResponse
-
-csrf_protect_m = method_decorator(csrf_protect)
+from fluent_contents.admin import PlaceholderEditorAdminMixin
+from fluent_contents.analyzer import get_template_placeholder_data
 
 
 class CmsObjectAdminForm(forms.ModelForm):
@@ -88,65 +79,7 @@ class CmsObjectAdminForm(forms.ModelForm):
         return cleaned_data
 
 
-def get_pageitem_inlines():
-    """
-    Dynamically generate genuine django inlines for registered content types.
-    """
-    inlines = []
-    for PluginType in extensions.plugin_pool.get_plugin_classes():  # self.model._supported_...()
-        plugin = PluginType()
-        PageItemType = plugin.model
-
-        # Create a new Type that inherits CmsPageItemInline
-        # Read the static fields of the ItemType to override default appearance.
-        # This code is based on FeinCMS, (c) Simon Meers, BSD licensed
-        base = (CmsPageItemInline,)
-        name = '%s_AutoInline' %  PageItemType.__name__
-        attrs = {
-            '__module__': PluginType.__module__,
-            'model': PageItemType,
-            'type_name': plugin.type_name,
-            'form': PluginType.admin_form or extensions.CmsPageItemForm,
-            'name': plugin.verbose_name,
-            'plugin': plugin,
-            'ecms_admin_form_template': PluginType.admin_form_template
-        }
-
-        inlines.append(type(name, base, attrs))
-    return inlines
-
-
-class CmsPageItemInline(StackedInline):
-    """
-    Custom ``InlineModelAdmin`` subclass used for content types.
-    """
-
-    # inline settings
-    extra = 0
-    fk_name = 'parent'
-    template = 'admin/ecms/cmsobject/cmspageitem_inline.html'
-    ordering = ('sort_order',)
-
-    # overwritten by subtype
-    name = None
-    plugin = None
-    type_name = None
-    ecms_admin_form_template = None
-
-
-    def __init__(self, *args, **kwargs):
-        super(CmsPageItemInline, self).__init__(*args, **kwargs)
-        self.verbose_name_plural = u'---- CMS Inline: %s' % (self.verbose_name_plural,)
-
-    @property
-    def media(self):
-        media = super(CmsPageItemInline, self).media
-        if self.plugin:
-            media += self.plugin.media  # form fields first, plugin afterwards
-        return media
-
-
-class CmsObjectAdmin(MPTTModelAdmin):
+class CmsObjectAdmin(PlaceholderEditorAdminMixin, MPTTModelAdmin):
     """
     The admin screen for the ``CmsObject`` object, with lots of customisations.
     """
@@ -173,15 +106,15 @@ class CmsObjectAdmin(MPTTModelAdmin):
         }),
         (_('SEO settings'), {
             'fields': ('slug', 'keywords', 'description'),
-            #'classes': ('collapse',),
+            'classes': ('collapse',),
         }),
         (_('Menu structure'), {
             'fields': ('sort_order', 'parent', 'in_navigation'),
-            #'classes': ('collapse',),
+            'classes': ('collapse',),
         }),
         (_('Publication settings'), {
             'fields': ('publication_date', 'expire_date', 'override_url'),
-            #'classes': ('collapse',),
+            'classes': ('collapse',),
         }),
     )
     radio_fields = {'status': admin.HORIZONTAL}
@@ -191,40 +124,28 @@ class CmsObjectAdmin(MPTTModelAdmin):
     class Media:
         js = (
             'ecms/admin.js',
-            'ecms/ecms_data.js',
-            'ecms/ecms_tabs.js',
-            'ecms/ecms_layouts.js',
-            'ecms/ecms_plugins.js'
+            'ecms/ecms_layouts.js'
         )
         css = {
             'screen': ('ecms/admin.css',)
         }
 
 
-
-    # ---- Inline insertion ----
-
-
-    def __init__(self, model, admin_site):
-        super(CmsObjectAdmin, self).__init__(model, admin_site)
-        self._initialized_inlines = False
+    # ---- fluent-contents integration ----
 
 
-    def get_form(self, request, obj=None, **kwargs):
-        self._initialize_ecms_inlines()   # delayed the initialisation a bit
-        return super(CmsObjectAdmin, self).get_form(request, obj, **kwargs)
+    def get_placeholder_data(self, request, obj):
+        template = self.get_page_template(obj)
+        return get_template_placeholder_data(template)
 
 
-    def _initialize_ecms_inlines(self):
-        # Calling it too early places more stress on the Django load mechanisms.
-        # e.g. load_middleware() -> import ecms.admin.utils -> processes __init__.py ->
-        #      admin.site.register(CmsObjectAdmin) -> CmsObjectAdmin::__init__() -> start looking for plugins -> ImportError
-        if not self._initialized_inlines:
-            for InlineType in get_pageitem_inlines():
-                inline_instance = InlineType(self.model, self.admin_site)
-                self.inline_instances.append(inline_instance)
-
-            self._initialized_inlines = True
+    def get_page_template(self, cmsobject):
+        if not cmsobject:
+            # Add page. start with default template.
+            return CmsLayout.objects.all()[0].get_template()
+        else:
+            # Change page, honor template of object.
+            return cmsobject.layout.get_template()
 
 
     # ---- Extra Ajax views ----
@@ -262,12 +183,6 @@ class CmsObjectAdmin(MPTTModelAdmin):
     # ---- Hooking into show/save ----
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        """Include plugin meta information, in the context."""
-        plugins = extensions.plugin_pool.get_plugin_classes()
-        categories = get_pageitem_categories(plugins)
-        categories_list = [(PLUGIN_CATEGORIES[k], v) for k, v in categories.iteritems()]  # replace ID with title
-        categories_list.sort(key=lambda item: item[0])
-
         # Get parent object for breadcrumb
         parent_object = None
         parent_id = request.REQUEST.get('parent')
@@ -277,7 +192,6 @@ class CmsObjectAdmin(MPTTModelAdmin):
             parent_object = obj.parent
 
         context.update({
-            'add_plugin_categories': categories_list,
             'parent_object': parent_object,
         })
 

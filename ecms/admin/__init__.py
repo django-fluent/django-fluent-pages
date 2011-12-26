@@ -1,9 +1,9 @@
 from django.contrib import admin
-from ecms.models import CmsSite, CmsObject, CmsLayout, CmsRegion
+from ecms.models import CmsSite, CmsObject, CmsLayout
 from ecms.admin.cmsobjectadmin import CmsObjectAdmin
 from ecms.admin.cmslayoutadmin import CmsLayoutAdmin
 
-__all__ = ['CmsObjectAdmin', 'CmsLayoutAdmin', 'CmsRegionAdmin']
+__all__ = ['CmsObjectAdmin', 'CmsLayoutAdmin']
 
 
 # -------- Model registration --------

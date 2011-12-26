@@ -37,33 +37,5 @@ Optional modules
    :maxdepth: 2
 
    modules/ecms_admin_overlay
-   modules/ecms_dashboard
    modules/ecms_comments
 
-Content plugins
----------------
-
-Standard plugins:
-
-.. toctree::
-   :maxdepth: 2
-
-   plugins/text
-
-Interactivity:
-
-.. toctree::
-   :maxdepth: 2
-
-   plugins/commentsarea
-   plugins/formdesignerlink
-
-Programming:
-
-.. toctree::
-   :maxdepth: 2
-
-   plugins/code
-   plugins/gist
-   plugins/markup
-   plugins/rawhtml

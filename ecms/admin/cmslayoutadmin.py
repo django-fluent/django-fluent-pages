@@ -1,16 +1,8 @@
 """
-Admin screen for a region (``CmsRegion`` object).
+Admin screen for a layout (=template with metadata).
 """
 from django.contrib import admin
-from ecms.models import CmsRegion
 
-
-class CmsRegionInline(admin.TabularInline):
-    model = CmsRegion
-    extra = 1
-    fieldsets = (
-        (None, { 'fields': ('title', 'key', 'role'), }),
-    )
 
 class CmsLayoutAdmin(admin.ModelAdmin):
     # Config list page:
@@ -18,4 +10,3 @@ class CmsLayoutAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, { 'fields': ('title', 'key', 'template_path'), }),
     )
-    inlines = [CmsRegionInline]

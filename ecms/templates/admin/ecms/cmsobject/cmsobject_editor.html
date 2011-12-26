@@ -1,22 +1,10 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_modify adminmedia wysiwyg %}
+{% load i18n admin_modify adminmedia %}
 
 {% block extrahead %}{{ block.super }}
-{% wysiwyg_setup %}
 <script type="text/javascript">
   // Pass database data to the admin.js file.
-  var regions   = [ {% for region in original.layout.regions.all %}{ key: '{{ region.key|escapejs }}', title: '{{ region.title|escapejs }}', role: '{{ region.role|escapejs }}' }{% if not forloop.last %}, {% endif %}{% endfor %} ];
-  var itemtypes = { {% for fs in inline_admin_formsets %}'{{ fs.opts.type_name|escapejs }}': {
-                      type: '{{ fs.opts.type_name|escapejs }}',
-                      name: '{{ fs.opts.name|escapejs }}',
-                      prefix: '{{ fs.formset.prefix|escapejs }}',
-                      rel_name: '{{ fs.formset.rel_name|escapejs }}',
-                      auto_id: '{{ fs.formset.auto_id|escapejs }}'
-                    }{% if not forloop.last %}, {% endif %}
-                  {% endfor %}};
-  ecms_admin.setRegions( regions );
-  ecms_admin.setItemTypes( itemtypes );
-  ecms_admin.setInitialValues( {layout_id: {{ original.layout_id|default:0 }}} );
+  // ecms_admin.setInitialValues( {layout_id: {{ original.layout_id|default:0 }}} );
 </script>
 {% endblock %}
 
@@ -55,68 +43,31 @@
 {% endif %}
 </div>
 
-
 {# Different layout for fieldsets:  #}
-{# - Display first fieldset on top. #}
-{# - remaining in a properties tab. #}
 
+{# first fieldset #}
 {% for fieldset in adminform %}
-  {% if forloop.first %}
-  {% include "admin/includes/fieldset.html" %}
-  {% endif %}
+  {% if forloop.first %}{% include "admin/includes/fieldset.html" %}{% endif %}
 {% endfor %}
 
-<div id="ecms-tabbar"{% if not original or not original.layout %} style="display:none"{% endif %}>
-  {# tab navigation #}
-  <ul id="ecms-tabnav" class="ecms-clearfix">
-    {% for region in original.layout.regions.all %}
-    <li class="ecms-region{% if forloop.first %} active{% endif %}"><a href="#tab-region-{{ region.key }}">{{ region.title }}</a></li>
-    {% endfor %}
-    <li id="ecms-tabnav-loading" style="display: none"><a href="#">{% trans "Loading layout data..." %}</a></li></li>
-    <li id="ecms-tabnav-orphaned" style="display: none"><a href="#tab-orphaned">{% trans "Orphaned content" %}</a></li>
-    <li id="ecms-tabnav-template" style="display: none"><a href="#">EMPTY</a></li></li>
-    <li><a href="#tab-properties">{% trans "Properties" %}</a></li>
-  </ul>
+{# inlines, for django-fluent-contents #}
+<div id="inlines">
+  {% for inline_admin_formset in inline_admin_formsets %}
+    {% include inline_admin_formset.opts.template %}
+  {% endfor %}
+</div><!-- /inlines -->
 
-  <div id="ecms-tabmain" class="module">
 
-    {# all the region tabs #}
-    {% for region in original.layout.regions.all %}
-    <div class="ecms-tab ecms-region-tab{% if forloop.first %} ecms-tab-active{% endif %}" id="tab-region-{{ region.key }}">
-      {% with region_key=region.key %}
-        {% include "admin/ecms/cmsobject/regiontab.html" %}
-      {% endwith %}
-    </div>
-    {% endfor %}
-
-    {# Repeated again, as empty placeholder #}
-    <div class="ecms-tab" id="tab-template">
-      {% with region_key='EMPTY' %}
-        {% include "admin/ecms/cmsobject/regiontab.html" %}
-      {% endwith %}
-    </div>
-
-    {# this is a "lost+found" bucket for layout switching #}
-    <div class="ecms-tab" id="tab-orphaned">
-      <div class="ecms-tab-content">
-      </div>
-    </div>
-
-    {# all remaining fieldsets #}
     <div class="ecms-tab" id="tab-properties">
       <div id="ecms-fieldset-secondary">
 
+        {# all remaining fieldsets #}
         {% for fieldset in adminform %}
-          {% if not forloop.first%}
-          {% include "admin/includes/fieldset.html" %}
-          {% endif %}
+          {% if not forloop.first %}{% include "admin/includes/fieldset.html" %}{% endif %}
         {% endfor %}
 
       </div><!-- /ecms-fieldset-secondary -->
     </div>
-
-  </div><!-- /ecms-tabmain -->
-</div><!-- /ecms-tabbar -->
 
 {% submit_row %}
 
@@ -127,14 +78,6 @@
 {# JavaScript for prepopulated fields #}
 {% prepopulated_fields_js %}
 
-
-{# The inlines are defined here so the information is available in the DOM. #}
-{# Visually the inline items are reorganized across the various region tabs #}
-<div id="inlines" style="display: none;">
-  {% for inline_admin_formset in inline_admin_formsets %}
-    {% include inline_admin_formset.opts.template %}
-  {% endfor %}
-</div><!-- /inlines -->
 
 </form>
 

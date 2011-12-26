@@ -12,7 +12,6 @@ There are several sub packages:
 
 # Like django.db.models, or django.forms,
 # have everything split into several packages
-from ecms.models.db import CmsSite, CmsObject, CmsLayout, CmsRegion
-from ecms.models.pluginmodel import CmsPageItem
+from ecms.models.db import CmsSite, CmsObject, CmsLayout
 
-__all__ = ['CmsSite', 'CmsObject', 'CmsLayout', 'CmsRegion', 'CmsPageItem']
+__all__ = ['CmsSite', 'CmsObject', 'CmsLayout']
