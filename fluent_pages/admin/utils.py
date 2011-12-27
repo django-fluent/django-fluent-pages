@@ -2,14 +2,14 @@
 Extra utilities related to the admin
 """
 from django.core import urlresolvers
-from fluent_pages.models.db import CmsObject
+from fluent_pages.models.db import Page
 
 
 def get_page_admin_url(page):
     """
     Return the admin URL for a page.
     """
-    return urlresolvers.reverse('admin:fluent_pages_cmsobject_change', args=(page.id,))
+    return urlresolvers.reverse('admin:fluent_pages_page_change', args=(page.id,))
 
 
 def get_current_edited_page(request):
@@ -20,5 +20,5 @@ def get_current_edited_page(request):
     match = urlresolvers.resolve(request.path_info)
     if match.namespace == 'admin' and match.url_name == 'fluent_pages_cmsobject_change':
         page_id = int(match.args[0])
-        return CmsObject.objects.get(pk=page_id)
+        return Page.objects.get(pk=page_id)
     return None

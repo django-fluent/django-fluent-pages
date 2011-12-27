@@ -2,7 +2,7 @@
 The view to display CMS content.
 """
 import re
-from fluent_pages.models import CmsObject
+from fluent_pages.models import Page
 from fluent_pages.admin.utils import get_page_admin_url
 from django.views.generic import DetailView, RedirectView
 
@@ -11,7 +11,7 @@ class CmsPageView(DetailView):
     """
     The view which displays a CMS page.
     """
-    model = CmsObject
+    model = Page
 
     def get_object(self, queryset=None):
         path = self.kwargs.get('path', self.request.path) or ''
@@ -36,8 +36,8 @@ class CmsPageAdminRedirect(RedirectView):
     def get_redirect_url(self, **kwargs):
         path = self.kwargs.get('path', self.request.path) or ''
         try:
-            page = CmsObject.objects.get_for_path(path)
+            page = Page.objects.get_for_path(path)
             return get_page_admin_url(page)
-        except CmsObject.DoesNotExist:
+        except Page.DoesNotExist:
             # Back to page without @admin, display the error there.
             return '/' + re.sub('@[^@]+/?$', '', path)

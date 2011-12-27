@@ -2,13 +2,24 @@
 The manager class for the CMS models
 """
 from django.http import Http404
-from fluent_pages.utils.db import DecoratorManager
+from mptt.managers import TreeManager
+from polymorphic import PolymorphicManager
+from polymorphic.query import PolymorphicQuerySet
+from fluent_pages.utils.db import DecoratingQuerySet
 
 
-class CmsObjectManager(DecoratorManager):
+class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
+    pass
+
+
+class UrlNodeManager(TreeManager, PolymorphicManager):
     """
     Extra methods attached to ```CmsObject.objects```
     """
+
+    def __init__(self, *args, **kwargs):
+        PolymorphicManager.__init__(self, UrlNodeQuerySet, *args, **kwargs)
+
 
     def get_for_path_or_404(self, path):
         """
@@ -42,8 +53,8 @@ class CmsObjectManager(DecoratorManager):
         """
         Return only published pages
         """
-        from fluent_pages.models import CmsObject   # the import can't be globally, that gives a circular dependency
-        return self.get_query_set().filter(status=CmsObject.PUBLISHED)
+        from fluent_pages.models import UrlNode   # the import can't be globally, that gives a circular dependency
+        return self.get_query_set().filter(status=UrlNode.PUBLISHED)
 
 
     def in_navigation(self):

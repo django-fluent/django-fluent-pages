@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from django.conf import settings
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.test import TestCase
-from fluent_pages.models.db import CmsObject
+from fluent_pages.models.db import Page
 
 @contextmanager
 def script_name(newpath):
@@ -51,7 +51,7 @@ class EcmsUrlTests(TestCase):
 
     def test_get_for_path(self):
         # TODO: apply reverse() to support different URLconf layouts.
-        subpage = CmsObject.objects.get_for_path(self.subpage1_url)
+        subpage = Page.objects.get_for_path(self.subpage1_url)
         self.assertIsNotNone(subpage)
         self.assertEquals(subpage.get_absolute_url(), self.subpage1_url, "Page at {0} has invalid absolute URL".format(self.subpage1_url))
         self.assertEquals(self.client.get(self.root_url).status_code, 200, "Page at {0} should be found.".format(self.root_url))
@@ -59,7 +59,7 @@ class EcmsUrlTests(TestCase):
 
     def test_get_for_path_script_name(self):
         with script_name('/_test_subdir_/'):
-            subpage = CmsObject.objects.get_for_path(self.subpage1_url)
+            subpage = Page.objects.get_for_path(self.subpage1_url)
             self.assertIsNotNone(subpage)
             self.assertEquals(subpage.get_absolute_url(), '/_test_subdir_' + self.subpage1_url, "CmsObject.get_absolute_url() should take changes to SCRIPT_NAME into account (got: {0}).".format(subpage.get_absolute_url()))
             self.assertEquals(self.client.get(self.root_url).status_code, 200, "Page at {0} should be found.".format(self.root_url))

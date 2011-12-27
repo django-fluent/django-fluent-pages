@@ -9,18 +9,20 @@ It defines the following classes:
 * CmsLayout
   The layout of a page, which has regions and a template.
 """
+from Tix import Tree
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.transaction import commit_on_success
-from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
-from fluent_pages.models.fields import TemplateFilePathField
+from mptt.models import MPTTModel, MPTTModelBase, TreeForeignKey
+from polymorphic import PolymorphicModel
+from polymorphic.base import PolymorphicModelBase
 
-from fluent_pages.models.managers import CmsObjectManager
+from fluent_pages.models.fields import TemplateFilePathField
+from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from mptt.models import MPTTModel
 from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 
 
@@ -28,41 +30,36 @@ def _get_current_site():
     return Site.objects.get_current()
 
 
+class URLNodeMetaClass(MPTTModelBase, PolymorphicModelBase):
+    pass
 
-class CmsObject(MPTTModel):
+
+class UrlNode(MPTTModel, PolymorphicModel):
     """
-    A ```CmsObject``` represents one tree node (e.g. HTML page, or blog entry) of the site.
+    The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
     """
+    __metaclass__ = URLNodeMetaClass
 
     # Some publication states
     DRAFT = 'd'
     PUBLISHED = 'p'
-    EXPIRED = 'e'
-    HIDDEN = 'h'
     STATUSES = (
         (PUBLISHED, _('Published')),
-        (HIDDEN, _('Hidden')),
         (DRAFT, _('Draft')),
     )
 
-    # Standard metadata
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager
 
-    # SEO fields, misc
-    keywords = models.CharField(_('keywords'), max_length=255, blank=True)
-    description = models.CharField(_('description'), max_length=255, blank=True)
-    sort_order = models.IntegerField(editable=True, default=1)
-
     # Publication information
-    layout = models.ForeignKey('CmsLayout', verbose_name=_('Layout'))
     status = models.CharField(_('status'), max_length=1, choices=STATUSES, default=DRAFT)
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, help_text=_('''When the page should go live, status must be "Published".'''))
     expire_date = models.DateTimeField(_('publication end date'), null=True, blank=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=True)
+    sort_order = models.IntegerField(default=1)
     override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
 
     # Metadata
@@ -73,39 +70,27 @@ class CmsObject(MPTTModel):
     # Caching
     _cached_url = models.CharField(_('Cached URL'), max_length=300, blank=True, editable=False, default='', db_index=True)
 
-    # Access to fluent-contents via the model
-    placeholder_set = PlaceholderRelation()
-    contentitem_set = ContentItemRelation()
-
     # Django settings
-    objects = CmsObjectManager()
+    objects = UrlNodeManager()
 
     class Meta:
         app_label = 'fluent_pages'
         ordering = ('lft', 'sort_order', 'title')
-        verbose_name = _('Page')
-        verbose_name_plural = _('Pages')
+        verbose_name = _('URL Node')
+        verbose_name_plural = _('URL Nodes')
 
     class MPTTMeta:
         order_insertion_by = 'title'
 
     def __unicode__(self):
-        return self.title
-
-
-    def __repr__(self):
-        """
-        Overwritten representation, so Django still displays short representations
-        while subclasses may display the full text with __unicode__
-        """
-        return '<%s#%d: %s; %s>' % (self.__class__.__name__, (self.id or 0), self._cached_url, smart_str(self.title))
+        return self.title or self.slug
 
 
     # ---- Extra properties ----
 
 
     def __init__(self, *args, **kwargs):
-        super(CmsObject, self).__init__(*args, **kwargs)
+        super(UrlNode, self).__init__(*args, **kwargs)
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
         self._original_cached_url = self._cached_url
@@ -159,22 +144,6 @@ class CmsObject(MPTTModel):
     is_last_child = property(_is_last_child)
 
 
-    # ---- Page rendering ----
-
-
-    def get_template_context(self):
-        """
-        Return all context variables required to render a page properly.
-
-        This includes the ``ecms_page`` and ``ecms_site`` variables.
-        """
-        context = {
-            'ecms_page': self,
-            'ecms_site': self.parent_site
-        }
-        return context
-
-
     # ---- Custom behavior ----
 
     # This code runs in a transaction since it's potentially editing a lot of records (all decendant urls).
@@ -186,11 +155,11 @@ class CmsObject(MPTTModel):
         # Store this object
         self._make_slug_unique()
         self._update_cached_url()
-        super(CmsObject, self).save(*args, **kwargs)
+        super(UrlNode, self).save(*args, **kwargs)
 
         # Update others
         self._update_decendant_urls()
-        return super(CmsObject, self).save(*args, **kwargs)
+        return super(UrlNode, self).save(*args, **kwargs)
 
 
     # Following of the principles for "clean code"
@@ -204,7 +173,7 @@ class CmsObject(MPTTModel):
         origslug = self.slug
         dupnr = 1
         while True:
-            others = CmsObject.objects.filter(parent=self.parent, slug=self.slug)
+            others = Page.objects.filter(parent=self.parent, slug=self.slug)
             if self.pk:
                 others = others.exclude(pk=self.pk)
 
@@ -258,7 +227,48 @@ class CmsObject(MPTTModel):
             cached_page_urls[subobject.id] = subobject._cached_url
 
             # call base class, do not recurse
-            super(CmsObject, subobject).save()
+            super(Page, subobject).save()
+
+
+
+class Page(UrlNode):
+    """
+    A ```Page``` represents one HTML page of the site.
+    """
+
+    # Standard metadata
+    layout = models.ForeignKey('CmsLayout', verbose_name=_('Layout'))
+
+    # Access to fluent-contents via the model
+    placeholder_set = PlaceholderRelation()
+    contentitem_set = ContentItemRelation()
+
+    # SEO fields
+    keywords = models.CharField(_('keywords'), max_length=255, blank=True)
+    description = models.CharField(_('description'), max_length=255, blank=True)
+
+    objects = UrlNodeManager()
+
+    class Meta:
+        app_label = 'fluent_pages'
+        verbose_name = _('Page')
+        verbose_name_plural = _('Pages')
+
+
+    # ---- Page rendering ----
+
+
+    def get_template_context(self):
+        """
+        Return all context variables required to render a page properly.
+
+        This includes the ``ecms_page`` and ``ecms_site`` variables.
+        """
+        context = {
+            'ecms_page': self,
+            'ecms_site': self.parent_site
+        }
+        return context
 
 
 # -------- Page layout models --------

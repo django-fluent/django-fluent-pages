@@ -4,7 +4,7 @@ Template tags to request ECMS content in the template
 from django.contrib.sites.models import Site
 from django.template import TemplateSyntaxError, Library, Node, Context, defaulttags
 from django.template.loader import get_template
-from fluent_pages.models import CmsObject
+from fluent_pages.models import Page
 from fluent_contents.templatetags.placeholder_tags import PagePlaceholderNode
 from fluent_pages.models.navigation import CmsObjectNavigationNode
 
@@ -120,7 +120,7 @@ class EcmsMenuNode(SimpleInclusionNode):
     def get_context_data(self, context, token_kwargs):
         # Get page
         page      = _get_current_page(context)
-        top_pages = CmsObject.objects.toplevel_navigation(current_page=page)
+        top_pages = Page.objects.toplevel_navigation(current_page=page)
 
         # Make iterable context
         menu_items = [CmsObjectNavigationNode(page, **token_kwargs) for page in top_pages]
@@ -154,13 +154,13 @@ class EcmsGetVarsNode(Node):
         try:
             current_page = _get_current_page(context)
             current_site = current_page.parent_site
-        except CmsObject.DoesNotExist:
+        except Page.DoesNotExist:
             # Detect current site
             request = _get_request(context)
             current_site = Site.objects.get_current(request)
 
             # Allow {% render_ecms_menu %} to operate.
-            dummy_page = CmsObject(title='', in_navigation=False, override_url=request.path, status=CmsObject.HIDDEN, parent_site=current_site)
+            dummy_page = Page(title='', in_navigation=False, override_url=request.path, status=Page.HIDDEN, parent_site=current_site)
             request._ecms_current_page = dummy_page
 
         # Automatically add 'ecms_site', allows "default:ecms_site.domain" to work.
@@ -194,10 +194,10 @@ def _get_current_page(context):
         except KeyError:
             try:
                 # Then try looking up environmental properties.
-                request._ecms_current_page = CmsObject.objects.get_for_path(request.path)
-            except CmsObject.DoesNotExist, e:
+                request._ecms_current_page = Page.objects.get_for_path(request.path)
+            except Page.DoesNotExist, e:
                 # Be descriptive. This saves precious developer time.
-                raise CmsObject.DoesNotExist("Could not detect current page.\n"
+                raise Page.DoesNotExist("Could not detect current page.\n"
                                              "- " + unicode(e) + "\n"
                                              "- No context variable named 'ecms_page' found.")
 
