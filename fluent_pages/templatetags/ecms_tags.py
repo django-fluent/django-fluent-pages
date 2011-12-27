@@ -102,7 +102,7 @@ class EcmsBreadcrumbNode(SimpleInclusionNode):
     """
     Template node for breadcrumb.
     """
-    template_name = 'ecms/parts/breadcrumb.html'
+    template_name = 'fluent_pages/parts/breadcrumb.html'
 
     def get_context_data(self, context, token_kwargs):
         page  = _get_current_page(context)  # CmsObject()
@@ -115,7 +115,7 @@ class EcmsMenuNode(SimpleInclusionNode):
     """
     Template Node for topmenu
     """
-    template_name = 'ecms/parts/menu.html'
+    template_name = 'fluent_pages/parts/menu.html'
 
     def get_context_data(self, context, token_kwargs):
         # Get page

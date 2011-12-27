@@ -89,12 +89,12 @@ class CmsObjectAdmin(PlaceholderEditorAdminMixin, MPTTModelAdmin):
     #list_filter = ('status', 'parent')
     search_fields = ('slug', 'title')
     actions = ['make_published']
-    change_list_template = ["admin/ecms/cmsobject/change_list.html"]
+    change_list_template = ["admin/fluent_pages/cmsobject/change_list.html"]
 
     # Configure edit page:
     form = CmsObjectAdminForm
-    change_form_template = ["admin/ecms/cmsobject/cmsobject_editor.html",
-                            "admin/ecms/cmsobject_editor.html",
+    change_form_template = ["admin/fluent_pages/cmsobject/cmsobject_editor.html",
+                            "admin/fluent_pages/cmsobject_editor.html",
                             ]
 
     # Config add/edit:
@@ -123,11 +123,11 @@ class CmsObjectAdmin(PlaceholderEditorAdminMixin, MPTTModelAdmin):
     # making plugin development easy (can assume everything is present).
     class Media:
         js = (
-            'ecms/admin.js',
-            'ecms/ecms_layouts.js'
+            'fluent_pages/admin.js',
+            'fluent_pages/ecms_layouts.js'
         )
         css = {
-            'screen': ('ecms/admin.css',)
+            'screen': ('fluent_pages/admin.css',)
         }
 
 
@@ -234,13 +234,13 @@ class CmsObjectAdmin(PlaceholderEditorAdminMixin, MPTTModelAdmin):
         assets_root = settings.STATIC_URL or settings.MEDIA_URL
         actions = []
         actions.append(
-            u'<a href="add/?%s=%s" title="%s"><img src="%secms/img/admin/page_new.gif" width="16" height="16" alt="%s" /></a>' % (
+            u'<a href="add/?%s=%s" title="%s"><img src="%sfluent_pages/img/admin/page_new.gif" width="16" height="16" alt="%s" /></a>' % (
                 self.model._mptt_meta.parent_attr, cmsobject.pk, _('Add child'), assets_root, _('Add child'))
             )
 
         if hasattr(cmsobject, 'get_absolute_url') and cmsobject.is_published:
             actions.append(
-                u'<a href="%s" title="%s" target="_blank"><img src="%secms/img/admin/world.gif" width="16" height="16" alt="%s" /></a>' % (
+                u'<a href="%s" title="%s" target="_blank"><img src="%sfluent_pages/img/admin/world.gif" width="16" height="16" alt="%s" /></a>' % (
                     cmsobject.get_absolute_url(), _('View on site'), assets_root, _('View on site'))
                 )
         return actions
