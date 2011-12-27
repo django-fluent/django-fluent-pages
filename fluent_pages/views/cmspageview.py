@@ -2,8 +2,8 @@
 The view to display CMS content.
 """
 import re
-from ecms.models import CmsObject
-from ecms.admin.utils import get_page_admin_url
+from fluent_pages.models import CmsObject
+from fluent_pages.admin.utils import get_page_admin_url
 from django.views.generic import DetailView, RedirectView
 
 

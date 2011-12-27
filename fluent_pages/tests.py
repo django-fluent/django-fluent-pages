@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from django.conf import settings
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.test import TestCase
-from ecms.models.db import CmsObject
+from fluent_pages.models.db import CmsObject
 
 @contextmanager
 def script_name(newpath):

@@ -1,5 +1,5 @@
 from django.db import models
-from ecms import forms
+from fluent_pages import forms
 
 
 class TemplateFilePathField(models.FilePathField):

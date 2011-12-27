@@ -14,9 +14,6 @@ It defines the following classes:
 
 * CmsRegion
   The region in a template
-
-The page items are derived from ``CmsPageItem``, which
-is an abstract model defined in ``ecms.models.pluginmodel``.
 """
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -25,10 +22,10 @@ from django.db import models
 from django.db.transaction import commit_on_success
 from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
-from ecms.models.fields import TemplateFilePathField
+from fluent_pages.models.fields import TemplateFilePathField
 
-from ecms.models.managers import CmsSiteManager, CmsObjectManager
-from ecms import appsettings
+from fluent_pages.models.managers import CmsSiteManager, CmsObjectManager
+from fluent_pages import appsettings
 from mptt.models import MPTTModel
 from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 
@@ -67,7 +64,7 @@ class CmsSite(Site):
     objects = CmsSiteManager()
 
     class Meta:
-        app_label = 'ecms'
+        app_label = 'fluent_pages'
         verbose_name = _('Site Settings')
         verbose_name_plural = _('Site Settings')
 
@@ -125,7 +122,7 @@ class CmsObject(MPTTModel):
     objects = CmsObjectManager()
 
     class Meta:
-        app_label = 'ecms'
+        app_label = 'fluent_pages'
         ordering = ('lft', 'sort_order', 'title')
         verbose_name = _('Page')
         verbose_name_plural = _('Pages')
@@ -315,7 +312,7 @@ class CmsLayout(models.Model):
 
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
     title = models.CharField(_('title'), max_length=255)
-    template_path = TemplateFilePathField('template file', path=appsettings.ECMS_TEMPLATE_DIR)
+    template_path = TemplateFilePathField('template file', path=appsettings.FLUENT_PAGES_TEMPLATE_DIR)
     #regions = a RelatedManager
     #no children
     #unique
@@ -335,7 +332,7 @@ class CmsLayout(models.Model):
         return self.title
 
     class Meta:
-        app_label = 'ecms'
+        app_label = 'fluent_pages'
         ordering = ('title',)
         verbose_name = _('Layout')
         verbose_name_plural = _('Layouts')

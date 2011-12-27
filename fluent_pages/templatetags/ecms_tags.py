@@ -1,11 +1,11 @@
 """
 Template tags to request ECMS content in the template
 """
-from ecms.models import CmsObject, CmsSite
+from fluent_pages.models import CmsObject, CmsSite
 from django.template import TemplateSyntaxError, Library, Node, Context, defaulttags
 from django.template.loader import get_template
 from fluent_contents.templatetags.placeholder_tags import PagePlaceholderNode
-from ecms.models.navigation import CmsObjectNavigationNode
+from fluent_pages.models.navigation import CmsObjectNavigationNode
 
 # Export the tags
 register = Library()
@@ -104,7 +104,7 @@ class EcmsBreadcrumbNode(SimpleInclusionNode):
     template_name = 'ecms/parts/breadcrumb.html'
 
     def get_context_data(self, context, token_kwargs):
-        page  = _ecms_get_current_page(context)  # CmsObject()
+        page  = _get_current_page(context)  # CmsObject()
         items = page.breadcrumb # list(CmsObject)
 
         return {'breadcrumb': items}
@@ -118,7 +118,7 @@ class EcmsMenuNode(SimpleInclusionNode):
 
     def get_context_data(self, context, token_kwargs):
         # Get page
-        page      = _ecms_get_current_page(context)
+        page      = _get_current_page(context)
         top_pages = CmsObject.objects.toplevel_navigation(current_page=page)
 
         # Make iterable context
@@ -151,11 +151,11 @@ class EcmsGetVarsNode(Node):
         current_page = None
 
         try:
-            current_page = _ecms_get_current_page(context)
+            current_page = _get_current_page(context)
             current_site = current_page.parent_site
         except CmsObject.DoesNotExist:
             # Detect current site
-            request = _ecms_get_request(context)
+            request = _get_request(context)
             current_site = CmsSite.objects.get_current(request)
 
             # Allow {% render_ecms_menu %} to operate.
@@ -177,11 +177,11 @@ class EcmsGetVarsNode(Node):
 
 # ---- Util functions ----
 
-def _ecms_get_current_page(context):
+def _get_current_page(context):
     """
     Fetch the current page.
     """
-    request = _ecms_get_request(context)
+    request = _get_request(context)
 
     # This is a load-on-demand attribute, to allow calling the ecms template tags outside the standard view.
     # When the current page is not specified, do auto-detection.
@@ -203,7 +203,7 @@ def _ecms_get_current_page(context):
     return request._ecms_current_page  # is a CmsObject
 
 
-def _ecms_get_request(context):
+def _get_request(context):
     """
     Fetch the request from the context.
 

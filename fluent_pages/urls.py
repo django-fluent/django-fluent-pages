@@ -4,7 +4,7 @@ The URLs to serve the CMS.
 They can be included using:
 
     urlpatterns += patterns('',
-        url(r'', include('ecms.urls'))
+        url(r'', include('fluent_pages.urls'))
     )
 
 The following named URLs are defined:
@@ -14,14 +14,14 @@ The following named URLs are defined:
 By Appending @admin to an URL, the request will be redirected to the admin URL of the page.
 """
 from django.conf.urls.defaults import *
-from ecms.views import CmsPageView, CmsPageAdminRedirect
+from fluent_pages.views import CmsPageView, CmsPageAdminRedirect
 
 
 # The URLs of the cmspage are forced to end with a slash,
 # so django will redirect /admin will redirect to /admin/.
 # The same trick also needs to be used in the main site
 # which includes this file. Otherwise a rule matched after all.
-urlpatterns = patterns('ecms.views',
+urlpatterns = patterns('fluent_pages.views',
     url(r'^(?P<path>.*)@admin$', CmsPageAdminRedirect.as_view(), name='ecms-admin-redirect'),
     url(r'^$|^(?P<path>.*/)$', CmsPageView.as_view(), name='ecms-page')
 )

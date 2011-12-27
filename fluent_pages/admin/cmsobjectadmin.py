@@ -7,9 +7,9 @@ from django.utils.translation import gettext_lazy as _
 
 # Other libs
 from mptt.admin import MPTTModelAdmin   # mptt 0.4
-from ecms.models import CmsObject, CmsLayout
-from ecms.forms.fields import RelativeRootPathField
-from ecms.utils.ajax import JsonResponse
+from fluent_pages.models import CmsObject, CmsLayout
+from fluent_pages.forms.fields import RelativeRootPathField
+from fluent_pages.utils.ajax import JsonResponse
 from fluent_contents.admin import PlaceholderEditorAdminMixin
 from fluent_contents.analyzer import get_template_placeholder_data
 

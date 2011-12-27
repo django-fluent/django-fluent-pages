@@ -7,11 +7,11 @@ Installation
 
 First install the module, preferably in a virtual environment::
 
-    mkvirtualenv ecms --no-site-packages
-    workon ecms
-    git clone https://git.edoburu.nl/git/edoburu/django-ecms.git
-    cd django-ecms
-    python setup.py install
+    mkvirtualenv fluent --no-site-packages
+    workon fluent
+    git clone https://github.com/edoburu/django-fluent-pages.git
+    cd django-fluent-pages
+    pip install .
 
 Configuration
 -------------
@@ -19,22 +19,20 @@ Configuration
 Next, create a project which uses the CMS::
 
     cd ..
-    django-admin.py startproject ecmsdemo
+    django-admin.py startproject fluentdemo
 
 It should have the following settings::
 
     INSTALLED_APPS += (
         # The CMS apps
-        'ecms',
-        'ecms_admin_overlay',
-        'ecms_media',
+        'fluent_pages',
+        'fluent_contents',
 
         # The CMS content plugins
-        'ecms_plugins.text',
+        'fluent_contents.plugins.text',
 
         # Support libs
         'mptt',
-        'admin_overlay',
         'django_wysiwyg',
 
         # enable the admin
@@ -43,14 +41,14 @@ It should have the following settings::
 
     DJANGO_WYSIWYG_FLAVOR = "yui_advanced"
 
-Note each CMS application is optional. Only ``ecms`` is required.
+Note each CMS application is optional. Only ``fluent_pages`` and ``fluent_contents`` are required.
 The remaining apps add additional functionality to the system,
 such as the custom dashboard or a media browser.
 
 In ``urls.py``::
 
     urlpatterns += patterns('',
-        url(r'', include('ecms.urls'))
+        url(r'', include('fluent_pages.urls'))
     )
 
 The database can be created afterwards::

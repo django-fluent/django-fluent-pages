@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.forms.models import model_to_dict
 from django.http import Http404
-from ecms.utils.db import DecoratorManager
+from fluent_pages.utils.db import DecoratorManager
 
 
 class CmsSiteManager(models.Manager):
@@ -20,7 +20,7 @@ class CmsSiteManager(models.Manager):
         """
         # TODO: base current site on request host header.
 
-        from ecms.models import CmsSite   # the import can't be globally, that gives a circular dependency
+        from fluent_pages.models import CmsSite   # the import can't be globally, that gives a circular dependency
         id = settings.SITE_ID
         try:
             return CmsSite.objects.get(pk=id)
@@ -70,7 +70,7 @@ class CmsObjectManager(DecoratorManager):
         """
         Return only published pages
         """
-        from ecms.models import CmsObject   # the import can't be globally, that gives a circular dependency
+        from fluent_pages.models import CmsObject   # the import can't be globally, that gives a circular dependency
         return self.get_query_set().filter(status=CmsObject.PUBLISHED)
 
 
