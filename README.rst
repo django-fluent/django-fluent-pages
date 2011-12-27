@@ -27,7 +27,6 @@ It should have the following settings::
         # The CMS apps
         'ecms',
         'ecms_admin_overlay',
-        'ecms_dashboard',
         'ecms_media',
 
         # The CMS content plugins
@@ -39,10 +38,6 @@ It should have the following settings::
         'django_wysiwyg',
 
         # enable the admin
-        'admin_tools',     # for staticfiles
-        'admin_tools.theming',
-        'admin_tools.menu',
-        'admin_tools.dashboard',
         'django.contrib.admin',
     )
 
