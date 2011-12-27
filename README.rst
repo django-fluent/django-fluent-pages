@@ -64,23 +64,3 @@ The database can be created afterwards::
     ./manage.py loaddata welcome
     ./manage.py runserver
 
-Using the custom dashboard
---------------------------
-
-The CMS has a custom admin dashboard, which can be enabled optionally.
-Include these settings::
-
-    ADMIN_TOOLS_INDEX_DASHBOARD = 'ecms_dashboard.dashboard.EcmsIndexDashboard'
-    ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'ecms_dashboard.dashboard.EcmsAppIndexDashboard'
-    ADMIN_TOOLS_MENU = 'ecms_dashboard.menu.EcmsMenu'
-    ECMS_DASHBOARD_APP_ICONS = {}
-
-The ECMS_DASHBOARD_APP_ICONS is a dictionary that allows you to define extra icons
-for your own modules, and overwrite default settings. For example::
-
-    ECMS_DASHBOARD_APP_ICONS = {
-        'auth/user': settings.MEDIA_URL + "icons/user.png"
-    }
-
-The icon is expected to be 48x48 pixels.
-
