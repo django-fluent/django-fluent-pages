@@ -1,9 +1,10 @@
 """
 Template tags to request ECMS content in the template
 """
-from fluent_pages.models import CmsObject, CmsSite
+from django.contrib.sites.models import Site
 from django.template import TemplateSyntaxError, Library, Node, Context, defaulttags
 from django.template.loader import get_template
+from fluent_pages.models import CmsObject
 from fluent_contents.templatetags.placeholder_tags import PagePlaceholderNode
 from fluent_pages.models.navigation import CmsObjectNavigationNode
 
@@ -156,7 +157,7 @@ class EcmsGetVarsNode(Node):
         except CmsObject.DoesNotExist:
             # Detect current site
             request = _get_request(context)
-            current_site = CmsSite.objects.get_current(request)
+            current_site = Site.objects.get_current(request)
 
             # Allow {% render_ecms_menu %} to operate.
             dummy_page = CmsObject(title='', in_navigation=False, override_url=request.path, status=CmsObject.HIDDEN, parent_site=current_site)

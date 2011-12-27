@@ -12,6 +12,6 @@ There are several sub packages:
 
 # Like django.db.models, or django.forms,
 # have everything split into several packages
-from fluent_pages.models.db import CmsSite, CmsObject, CmsLayout
+from fluent_pages.models.db import CmsObject, CmsLayout
 
-__all__ = ['CmsSite', 'CmsObject', 'CmsLayout']
+__all__ = ['CmsObject', 'CmsLayout']

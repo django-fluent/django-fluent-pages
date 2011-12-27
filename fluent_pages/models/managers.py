@@ -1,36 +1,8 @@
 """
 The manager class for the CMS models
 """
-from django.db import models
-from django.conf import settings
-from django.contrib.sites.models import Site
-from django.forms.models import model_to_dict
 from django.http import Http404
 from fluent_pages.utils.db import DecoratorManager
-
-
-class CmsSiteManager(models.Manager):
-    """
-    Extra methods attached to ```CmsSite.objects```
-    """
-
-    def get_current(self, request=None):
-        """
-        Return the current site.
-        """
-        # TODO: base current site on request host header.
-
-        from fluent_pages.models import CmsSite   # the import can't be globally, that gives a circular dependency
-        id = settings.SITE_ID
-        try:
-            return CmsSite.objects.get(pk=id)
-        except CmsSite.DoesNotExist:
-            # Create CmsSite object on demand, populate with existing site values
-            # so nothing is overwritten with empty values
-            site = Site.objects.get_current()
-            wrapper = CmsSite(**model_to_dict(site))
-            wrapper.save()
-            return wrapper
 
 
 class CmsObjectManager(DecoratorManager):

@@ -3,17 +3,11 @@ Database model for the CMS
 
 It defines the following classes:
 
-* CmsSite
-  The Site object, with additional properties
-
 * CmsObject
   A item node. Can be an HTML page, image, symlink, etc..
 
 * CmsLayout
   The layout of a page, which has regions and a template.
-
-* CmsRegion
-  The region in a template
 """
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -24,49 +18,14 @@ from django.utils.encoding import smart_str
 from django.utils.translation import ugettext_lazy as _
 from fluent_pages.models.fields import TemplateFilePathField
 
-from fluent_pages.models.managers import CmsSiteManager, CmsObjectManager
+from fluent_pages.models.managers import CmsObjectManager
 from fluent_pages import appsettings
 from mptt.models import MPTTModel
 from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 
 
 def _get_current_site():
-    return CmsSite.objects.get_current()
-
-
-# -------- Site structure --------
-
-
-class CmsSite(Site):
-    """
-    A wrapper for the standard Site object, to include all global settings for a site (e.g. Google Analytics ID).
-    This provides a clean interface for template designers.
-    """
-
-    # Template properties
-    def _get_title(self):
-        """
-        Return the title of the site.
-        """
-        return self.name
-
-    def _get_url(self):
-        """
-        Return the root/home URL of the site.
-        """
-        return '/'
-
-    title = property(_get_title)
-    url = property(_get_url)
-
-
-    # Django stuff
-    objects = CmsSiteManager()
-
-    class Meta:
-        app_label = 'fluent_pages'
-        verbose_name = _('Site Settings')
-        verbose_name_plural = _('Site Settings')
+    return Site.objects.get_current()
 
 
 
@@ -90,7 +49,7 @@ class CmsObject(MPTTModel):
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
     parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
-    parent_site = models.ForeignKey(CmsSite, editable=False, default=_get_current_site)
+    parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager
 
     # SEO fields, misc
