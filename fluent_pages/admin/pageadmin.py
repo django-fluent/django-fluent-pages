@@ -30,13 +30,19 @@ class PageAdmin(PlaceholderEditorAdminMixin, UrlNodeAdmin):
 
     def get_placeholder_data(self, request, obj):
         template = self.get_page_template(obj)
-        return get_template_placeholder_data(template)
+        if not template:
+            return []
+        else:
+            return get_template_placeholder_data(template)
 
 
     def get_page_template(self, page):
         if not page:
             # Add page. start with default template.
-            return CmsLayout.objects.all()[0].get_template()
+            try:
+                return CmsLayout.objects.all()[0].get_template()
+            except IndexError:
+                return None
         else:
             # Change page, honor template of object.
             return page.layout.get_template()

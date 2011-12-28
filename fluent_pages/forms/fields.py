@@ -24,7 +24,7 @@ class TemplateFilePathField(forms.FilePathField):
         """
         if appsettings.FLUENT_PAGES_RELATIVE_TEMPLATE_DIR:
             # Turn old absolute paths into relative paths.
-            if os.path.isabs(value) and value.startswith(self.path):
+            if value and os.path.isabs(value) and value.startswith(self.path):
                 value = value[len(self.path):].lstrip('/')
         else:
             # If setting is disabled, turn relative path back to abs.
