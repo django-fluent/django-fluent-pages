@@ -4,7 +4,11 @@
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript">
   // Pass database data to the admin.js file.
-  // ecms_admin.setInitialValues( {layout_id: {{ original.layout_id|default:0 }}} );
+  (function($) {
+    $.fn.ready(function() {
+      fluent_layouts.init( {{ original.layout_id|default:0 }} );
+    });
+  })(window.jQuery || django.jQuery);
 </script>
 {% endblock %}
 

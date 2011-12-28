@@ -1,4 +1,6 @@
 from django.conf.urls.defaults import patterns
+from django.http import HttpResponse
+from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdminMixin
 from fluent_contents.analyzer import get_template_placeholder_data
@@ -23,6 +25,9 @@ class PageAdmin(PlaceholderEditorAdminMixin, UrlNodeAdmin):
     change_form_template = ["admin/fluent_pages/page/page_editor.html",
                             "admin/fluent_pages/page.html",
                             ]
+
+    class Media:
+        js = ('fluent_pages/fluent_layouts.js',)
 
 
     # ---- fluent-contents integration ----
@@ -68,13 +73,19 @@ class PageAdmin(PlaceholderEditorAdminMixin, UrlNodeAdmin):
         try:
             layout = CmsLayout.objects.get(pk=id)
         except CmsLayout.DoesNotExist:
-            return JsonResponse(None)
+            json = {'success': False, 'error': 'Layout not found'}
+            status = 404
+        else:
+            template = layout.get_template()
+            placeholders = get_template_placeholder_data(template)
 
-        json = {
-            'id': layout.id,
-            'key': layout.key,
-            'title': layout.title,
-            'regions': [{ 'key': r.key, 'title': r.title, 'role': r.role} for r in layout.regions.only('key', 'title', 'role')]
-        }
+            status = 200
+            json = {
+                'id': layout.id,
+                'key': layout.key,
+                'title': layout.title,
+                'placeholders': [p.as_dict() for p in placeholders],
+            }
 
-        return JsonResponse(json)
+        jsonstr = simplejson.dumps(json)
+        return HttpResponse(jsonstr, content_type='application/json', status=status)
