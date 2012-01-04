@@ -23,7 +23,7 @@ class JsonResponse(HttpResponse):
     """
     A convenient HttpResponse class, which encodes the response in JSON format.
     """
-    def __init__(self, jsondata):
+    def __init__(self, jsondata, status=200):
         self.jsondata = jsondata
         jsonstr = to_json(jsondata)
-        super(JsonResponse, self).__init__(jsonstr, content_type='application/javascript')
+        super(JsonResponse, self).__init__(jsonstr, content_type='application/javascript', status=status)

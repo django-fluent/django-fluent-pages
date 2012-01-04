@@ -1,6 +1,4 @@
 from django.conf.urls.defaults import patterns
-from django.http import HttpResponse
-from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdminMixin
 from fluent_contents.analyzer import get_template_placeholder_data
@@ -87,5 +85,4 @@ class PageAdmin(PlaceholderEditorAdminMixin, UrlNodeAdmin):
                 'placeholders': [p.as_dict() for p in placeholders],
             }
 
-        jsonstr = simplejson.dumps(json)
-        return HttpResponse(jsonstr, content_type='application/json', status=status)
+        return JsonResponse(json, status=status)
