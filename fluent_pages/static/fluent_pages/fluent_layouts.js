@@ -9,20 +9,20 @@ var fluent_layouts = {};
   var ajax_root = location.href.substring(0, location.href.indexOf('/fluent_pages/page/') + 19);
   var initial_layout_id = null;
 
+  $.fn.ready( onReady );
+
+
 
   /**
    * Initialize this component,
    * bind events and select the first option if there is only one.
    */
-  fluent_layouts.init = function(real_initial_layout_id)
+  function onReady()
   {
     var layout_selector = $("#id_layout");
     fluent_layouts._select_single_option( layout_selector );
     layout_selector.change( fluent_layouts.onLayoutChange );
-
-    // Firefox will restore form values at refresh.
-    // Know what the real initial value was.
-    initial_layout_id = real_initial_layout_id
+    cp_plugins.on_init_layout( fluent_layouts.fetch_layout_on_refresh );
   }
 
 
@@ -30,16 +30,14 @@ var fluent_layouts = {};
   {
     var layout_selector = $("#id_layout");
 
-    // Place items in tabs
+    // Firefox will restore form values at refresh.
+    // In case this happens, fetch the newly selected layout
     var selected_layout_id = layout_selector.val() || 0;
+    var initial_layout_id = layout_selector.attr('data-original-value');
     if( selected_layout_id != initial_layout_id )
     {
-      // At Firefox refresh, the form field value was restored,
-      // Update the DOM content by fetching the data.
       cp_tabs.hide();
       layout_selector.change();
-
-      console.log("<select> box updated on load, fetching new layout; old=", initial_layout_id, "new=", selected_layout_id);
       return true;
     }
 
@@ -66,6 +64,8 @@ var fluent_layouts = {};
    */
   fluent_layouts.onLayoutChange = function(event)
   {
+    // TODO: Avoid accessing direct API, have a proper documented external interface.
+
     var layout_id = this.value;
     if( ! layout_id )
     {

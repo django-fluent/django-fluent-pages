@@ -1,17 +1,6 @@
 {% extends "admin/change_form.html" %}
 {% load i18n admin_modify adminmedia %}
 
-{% block extrahead %}{{ block.super }}
-<script type="text/javascript">
-  // Pass database data to the admin.js file.
-  (function($) {
-    $.fn.ready(function() {
-      fluent_layouts.init( {{ original.layout_id|default:0 }} );
-    });
-  })(window.jQuery || django.jQuery);
-</script>
-{% endblock %}
-
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
      <a href="../../../">{% trans "Home" %}</a> &rsaquo;

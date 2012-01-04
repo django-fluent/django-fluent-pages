@@ -3,7 +3,8 @@ from django.utils.translation import ugettext_lazy as _
 from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdminMixin
 from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_pages.admin.urlnodeadmin import UrlNodeAdmin
-from fluent_pages.models.db import CmsLayout
+from fluent_pages.forms.widgets import LayoutSelector
+from fluent_pages.models.db import CmsLayout, Page
 from fluent_pages.utils.ajax import JsonResponse
 
 
@@ -52,6 +53,13 @@ class PageAdmin(PlaceholderEditorAdminMixin, UrlNodeAdmin):
 
 
     # ---- Extra Ajax views ----
+
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'layout':
+            kwargs['widget'] = LayoutSelector
+        return super(PageAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
     def get_urls(self):
         """
