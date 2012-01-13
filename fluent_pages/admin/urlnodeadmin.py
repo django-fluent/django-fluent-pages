@@ -1,9 +1,6 @@
 from django.contrib import admin
-from django import forms
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-
-# Other libs
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import MPTTAdminForm
 from fluent_pages.models import UrlNode
@@ -78,7 +75,7 @@ class UrlNodeAdminForm(MPTTAdminForm):
 
 class UrlNodeAdmin(MPTTModelAdmin):
     """
-    The admin screen for the ``UrlNode`` object.
+    The admin screen for the ``UrlNode`` objects.
     """
 
     # Config list page:
@@ -86,24 +83,32 @@ class UrlNodeAdmin(MPTTModelAdmin):
     #list_filter = ('status', 'parent')
     search_fields = ('slug', 'title')
     actions = ['make_published']
-    change_list_template = ["admin/fluent_pages/urlnode/change_list.html"]
+    change_list_template = None  # Restore Django's default search behavior, no admin/mptt_change_list.html
+
+
+    # Expose fieldsets for subclasses to reuse
+    FIELDSET_GENERAL = (None, {
+        'fields': ('title', 'slug', 'status',),
+    })
+    FIELDSET_MENU = (_('Menu structure'), {
+        'fields': ('sort_order', 'parent', 'in_navigation'),
+        'classes': ('collapse',),
+    })
+    FIELDSET_PUBLICATION = (_('Publication settings'), {
+        'fields': ('publication_date', 'expire_date', 'override_url'),
+        'classes': ('collapse',),
+    })
+
 
     # Config add/edit:
-    base_form = UrlNodeAdminForm
     prepopulated_fields = { 'slug': ('title',), }
     raw_id_fields = ['parent']
-    fieldsets = (
-        (None, {
-            'fields': ('title', 'slug', 'status',),
-        }),
-        (_('Menu structure'), {
-            'fields': ('sort_order', 'parent', 'in_navigation'),
-            'classes': ('collapse',),
-        }),
-        (_('Publication settings'), {
-            'fields': ('publication_date', 'expire_date', 'override_url'),
-            'classes': ('collapse',),
-        }),
+
+    base_form = UrlNodeAdminForm
+    base_fieldsets = (
+        FIELDSET_GENERAL,
+        FIELDSET_MENU,
+        FIELDSET_PUBLICATION
     )
     radio_fields = {'status': admin.HORIZONTAL}
 
@@ -130,12 +135,47 @@ class UrlNodeAdmin(MPTTModelAdmin):
         return super(UrlNodeAdmin, self).get_form(request, obj, **kwargs)
 
 
+    def get_fieldsets(self, request, obj=None):
+        # If subclass declares fieldsets, this is respected
+        if self.declared_fieldsets:
+            return super(UrlNodeAdmin, self).get_fieldsets(request, obj)
+
+        # Have a reasonable default fieldsets.
+        other_fields = self.get_subclass_fields(request, obj)
+
+        if other_fields:
+            return (
+               self.base_fieldsets[0],
+               (_("Contents"), {'fields': other_fields}),
+            ) + self.base_fieldsets[1:]
+        else:
+            return self.base_fieldsets
+
+
+    def get_subclass_fields(self, request, obj=None):
+        # Find out how many fields would really be on the form,
+        # if it weren't restricted by declared fields.
+        exclude = list(self.exclude or [])
+        exclude.extend(self.get_readonly_fields(request, obj))
+
+        # By not declaring the fields them in the base class,
+        # get_form() will populate the form with all available fields.
+        form = self.get_form(request, obj, exclude=exclude)
+        subclass_fields = form.base_fields.keys() + list(self.get_readonly_fields(request, obj))
+
+        # Find which fields are not part of the common fields.
+        for fieldset in self.base_fieldsets:
+            for field in fieldset[1]['fields']:
+                subclass_fields.remove(field)
+        return subclass_fields
+
+
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         # Get parent object for breadcrumb
         parent_object = None
         parent_id = request.REQUEST.get('parent')
         if add and parent_id:
-            parent_object = UrlNode.objects.non_polymorphic().get(pk=int(parent_id))
+            parent_object = UrlNode.objects.get(pk=int(parent_id))  # is polymorphic
         elif change:
             parent_object = obj.parent
 

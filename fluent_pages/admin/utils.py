@@ -2,7 +2,7 @@
 Extra utilities related to the admin
 """
 from django.core import urlresolvers
-from fluent_pages.models.db import Page
+from fluent_pages.models import UrlNode
 
 
 def get_page_admin_url(page):
@@ -18,7 +18,7 @@ def get_current_edited_page(request):
     Returns None if the is no page being edited.
     """
     match = urlresolvers.resolve(request.path_info)
-    if match.namespace == 'admin' and match.url_name == 'fluent_pages_cmsobject_change':
+    if match.namespace == 'admin' and match.url_name == 'fluent_pages_page_change':
         page_id = int(match.args[0])
-        return Page.objects.get(pk=page_id)
+        return UrlNode.objects.get(pk=page_id)
     return None

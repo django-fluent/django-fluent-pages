@@ -10,6 +10,7 @@ It defines the following classes:
   The layout of a page, which has regions and a template.
 """
 from Tix import Tree
+from django.core.exceptions import FieldError
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -19,11 +20,9 @@ from django.utils.translation import ugettext_lazy as _
 from mptt.models import MPTTModel, MPTTModelBase, TreeForeignKey
 from polymorphic import PolymorphicModel
 from polymorphic.base import PolymorphicModelBase
-
 from fluent_pages.models.fields import TemplateFilePathField
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 
 
 def _get_current_site():
@@ -31,7 +30,24 @@ def _get_current_site():
 
 
 class URLNodeMetaClass(MPTTModelBase, PolymorphicModelBase):
-    pass
+    """
+    Metaclass for all plugin models.
+
+    Set db_table if it has not been customized.
+    """
+    # Inspired by from Django-CMS, (c) , BSD licensed.
+
+    def __new__(mcs, name, bases, attrs):
+        new_class = super(URLNodeMetaClass, mcs).__new__(mcs, name, bases, attrs)
+
+        # Update the table name.
+        if name not in ['UrlNode', 'Page']:
+            meta = new_class._meta
+            if meta.db_table.startswith(meta.app_label + '_'):
+                model_name = meta.db_table[len(meta.app_label)+1:]
+                meta.db_table = "pagetype_{0}_{1}".format(meta.app_label, model_name)
+
+        return new_class
 
 
 class UrlNode(MPTTModel, PolymorphicModel):
@@ -50,7 +66,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
-    parent = models.ForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager
 
@@ -77,13 +93,15 @@ class UrlNode(MPTTModel, PolymorphicModel):
         app_label = 'fluent_pages'
         ordering = ('lft', 'sort_order', 'title')
         verbose_name = _('URL Node')
-        verbose_name_plural = _('URL Nodes')
+        verbose_name_plural = _('URL Nodes')  # Using Urlnode here makes it's way to the admin pages too.
 
     class MPTTMeta:
         order_insertion_by = 'title'
 
     def __unicode__(self):
-        return self.title or self.slug
+        # This looks pretty nice on the delete page.
+        # All other models derive from Page, so they get good titles in the breadcrumb.
+        return unicode(self.get_absolute_url())
 
 
     # ---- Extra properties ----
@@ -173,7 +191,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
         origslug = self.slug
         dupnr = 1
         while True:
-            others = Page.objects.filter(parent=self.parent, slug=self.slug)
+            others = UrlNode.objects.filter(parent=self.parent, slug=self.slug).non_polymorphic()
             if self.pk:
                 others = others.exclude(pk=self.pk)
 
@@ -227,56 +245,43 @@ class UrlNode(MPTTModel, PolymorphicModel):
             cached_page_urls[subobject.id] = subobject._cached_url
 
             # call base class, do not recurse
-            super(Page, subobject).save()
+            super(UrlNode, subobject).save()
 
 
 
 class Page(UrlNode):
     """
-    A ```Page``` represents one HTML page of the site.
+    The base class for all all :class:`UrlNode` subclasses that display pages.
     """
+    class Meta:
+        app_label = 'fluent_pages'
+        proxy = True
+        verbose_name = _('Page')
+        verbose_name_plural = _('Pages')
 
-    # Standard metadata
-    layout = models.ForeignKey('CmsLayout', verbose_name=_('Layout'))
+    def __unicode__(self):
+        return self.title or self.slug
 
-    # Access to fluent-contents via the model
-    placeholder_set = PlaceholderRelation()
-    contentitem_set = ContentItemRelation()
 
+
+class HtmlPage(Page):
+    """
+    The base fields for a HTML page of the web site.
+    """
     # SEO fields
     keywords = models.CharField(_('keywords'), max_length=255, blank=True)
     description = models.CharField(_('description'), max_length=255, blank=True)
 
-    objects = UrlNodeManager()
+#    objects = UrlNodeManager()
 
     class Meta:
-        app_label = 'fluent_pages'
-        verbose_name = _('Page')
-        verbose_name_plural = _('Pages')
+        abstract = True
 
 
-    # ---- Page rendering ----
 
-
-    def get_template_context(self):
-        """
-        Return all context variables required to render a page properly.
-
-        This includes the ``ecms_page`` and ``ecms_site`` variables.
-        """
-        context = {
-            'ecms_page': self,
-            'ecms_site': self.parent_site
-        }
-        return context
-
-
-# -------- Page layout models --------
-
-
-class CmsLayout(models.Model):
+class PageLayout(models.Model):
     """
-    A ```CmsLayout``` object defines a layout of a page; which content blocks are available.
+    A ```PageLayout``` object defines a layout of a page; which content blocks are available.
     """
 
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))

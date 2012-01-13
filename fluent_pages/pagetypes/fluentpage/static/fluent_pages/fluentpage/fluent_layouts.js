@@ -2,11 +2,14 @@
  * This file deals with the high level layout switching / fetching layout info.
  * When a new layout is fetched, it is passed to the cp_tabs to rebuild the tabs.
  */
-var fluent_layouts = {};
+var fluent_layouts = {
+    'ct_id': null,
+};
 
 (function($)
 {
-  var ajax_root = location.href.substring(0, location.href.indexOf('/fluent_pages/page/') + 19);
+  var app_root = location.href.indexOf('/fluent_pages/') + 14;
+  var ajax_root = location.href.substring(0, location.href.indexOf('/', app_root) + 1);
   var initial_layout_id = null;
 
   $.fn.ready( onReady );
@@ -90,7 +93,7 @@ var fluent_layouts = {};
   {
     // Get layout info.
     $.ajax({
-      url: ajax_root + "get_layout/" + parseInt(layout_id) + "/",
+      url: ajax_root + "get_layout/" + parseInt(layout_id) + "/?ct_id=" + parseInt(fluent_layouts.ct_id),
       success: function(layout, textStatus, xhr)
       {
         // Ask to update the tabs!
