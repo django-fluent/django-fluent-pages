@@ -1,32 +1,12 @@
-{% extends "admin/change_form.html" %}
+{% extends "admin/fluent_pages/page/change_form.html" %}
 {% load i18n admin_modify adminmedia %}
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript">fluent_layouts.ct_id = {{ content_type_id }};</script>
 {% endblock %}
 
-{% block breadcrumbs %}{% if not is_popup %}
-<div class="breadcrumbs">
-     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
-     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
-     {% if has_change_permission %}<a href="../">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
-     {% for p in parent_object.breadcrumb %}
-       <a href="../{{ p.id }}/">{{ p.title }}</a> &rsaquo;
-     {% endfor %}
-     {% if add %}{% trans "Add" %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}
-</div>
-{% endif %}{% endblock %}
-
 {% block content %}<div id="content-main">
-{# overrule toolbar #}
-{% block object-tools %}
-{% if change and not is_popup %}
-  <ul class="object-tools">
-    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
-    {% if original.is_published %}<li><a href="{{ original.url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
-  </ul>
-{% endif %}
-{% endblock %}
+{% block object-tools %}{{ block.super }}{% endblock %}
 
 <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
 <div>
@@ -75,8 +55,6 @@
 {# JavaScript for prepopulated fields #}
 {% prepopulated_fields_js %}
 
-
 </form>
-
 </div><!-- /content-main -->
 {% endblock %}

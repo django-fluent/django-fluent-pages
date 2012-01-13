@@ -1,9 +1,13 @@
 from django.contrib import admin
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import MPTTAdminForm
-from fluent_pages.models import UrlNode
+from fluent_pages.models import UrlNode, Page
 from fluent_pages.forms.fields import RelativeRootPathField
 
 
@@ -179,12 +183,49 @@ class UrlNodeAdmin(MPTTModelAdmin):
         elif change:
             parent_object = obj.parent
 
+        # Improve the breadcrumb
+        base_opts = Page._meta
+        base_app_label = base_opts.app_label
         context.update({
             'parent_object': parent_object,
+            'app_label': base_app_label,
+            'base_opts': base_opts,
         })
 
-        # And go with standard stuff
-        return super(UrlNodeAdmin, self).render_change_form(request, context, add, change, form_url, obj)
+        # Standard stuff, with a slight twist that couldn't be overwritten.
+        # The template is searched in both the derived class and base class paths.
+        opts = self.model._meta
+        app_label = opts.app_label
+        ordered_objects = opts.get_ordered_objects()
+        context.update({
+            'add': add,
+            'change': change,
+            'has_add_permission': self.has_add_permission(request),
+            'has_change_permission': self.has_change_permission(request, obj),
+            'has_delete_permission': self.has_delete_permission(request, obj),
+            'has_file_field': True, # FIXME - this should check if form or formsets have a FileField,
+            'has_absolute_url': hasattr(self.model, 'get_absolute_url'),
+            'ordered_objects': ordered_objects,
+            'form_url': mark_safe(form_url),
+            'opts': opts,
+            'content_type_id': ContentType.objects.get_for_model(self.model).id,
+            'save_as': self.save_as,
+            'save_on_top': self.save_on_top,
+            'root_path': self.admin_site.root_path,
+        })
+        if add and self.add_form_template is not None:
+            form_template = self.add_form_template
+        else:
+            form_template = self.change_form_template
+        context_instance = RequestContext(request, current_app=self.admin_site.name)
+        return render_to_response(form_template or [
+            "admin/%s/%s/change_form.html" % (app_label, opts.object_name.lower()),
+            "admin/%s/change_form.html" % app_label,
+            # Added:
+            "admin/%s/%s/change_form.html" % (base_app_label, base_opts.object_name.lower()),
+            "admin/%s/change_form.html" % base_app_label,
+            "admin/change_form.html"
+        ], context, context_instance=context_instance)
 
 
     def save_model(self, request, obj, form, change):

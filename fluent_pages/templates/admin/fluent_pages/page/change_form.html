@@ -1,0 +1,25 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_modify adminmedia %}
+
+{# fix breadcrumb #}
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../../">{{ app_label|capfirst|escape }}</a> &rsaquo;
+     {% if has_change_permission %}<a href="../">{{ base_opts.verbose_name_plural|default:opts.verbose_name_plural|capfirst }}</a>{% else %}{{ base_opts.verbose_name_plural|default:opts.verbose_name_plural|capfirst }}{% endif %} &rsaquo;
+     {% for p in parent_object.breadcrumb %}
+       <a href="../{{ p.id }}/">{{ p.title }}</a> &rsaquo;
+     {% endfor %}
+     {% if add %}{% trans "Add" %} {{ base_opts.verbose_name|default:opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endif %}{% endblock %}
+
+{# overrule toolbar #}
+{% block object-tools %}
+{% if change and not is_popup %}
+  <ul class="object-tools">
+    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+    {% if original.is_published %}<li><a href="{{ original.url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
+  </ul>
+{% endif %}
+{% endblock %}
