@@ -13,10 +13,12 @@ class BreadcrumbScope(Node):
         # To insert it in the template, the entire render_change_form() and delete_view() have to copied and adjusted.
         # Instead, overwrite them here.
         base_opts = self.base_opts.resolve(context)
-        new_vars = {
-            'app_label': base_opts.app_label,  # What this is all about
-            'opts': base_opts,
-        }
+        new_vars = {}
+        if base_opts and not isinstance(base_opts, basestring):
+            new_vars = {
+                'app_label': base_opts.app_label,  # What this is all about
+                'opts': base_opts,
+            }
 
         d = context.push()
         d.update(new_vars)
