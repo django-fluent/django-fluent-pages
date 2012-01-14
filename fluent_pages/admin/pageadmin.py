@@ -1,11 +1,14 @@
-from fluent_pages.admin.urlnodeadmin import UrlNodeAdmin
+from fluent_pages.admin.urlnodeadmin import UrlNodeAdmin, UrlNodeAdminForm
+
+class PageAdminForm(UrlNodeAdminForm):
+    pass
 
 
 class PageAdmin(UrlNodeAdmin):
     """
     The base class for pages
     """
-    pass
+    base_form = PageAdminForm
 
     # This class may be extended in the future.
     # Currently it's a tagging placeholder

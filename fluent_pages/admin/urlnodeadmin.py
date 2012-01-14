@@ -123,14 +123,22 @@ class UrlNodeAdmin(MPTTModelAdmin):
         }
 
 
-    # ---- Hooking into show/save ----
+    def save_model(self, request, obj, form, change):
+        # Automatically store the user in the author field.
+        if not change:
+            obj.author = request.user
+        obj.save()
+
+
+
+    # ---- Improving the form/fieldset default display ----
 
 
     def get_form(self, request, obj=None, **kwargs):
         # The django admin validation requires the form to have a 'class Meta: model = ..'
         # attribute, or it will complain that the fields are missing.
-        # However, this enforces all derived types to redefine the model too,
-        # because they need to explicitly set the model again.
+        # However, this enforces all derived ModelAdmin classes to redefine the model as well,
+        # because they need to explicitly set the model again - it will stick with the base model.
         #
         # Instead, pass the form unchecked here, because the standard ModelForm will just work.
         # If the derived class sets the model explicitly, respect that setting.
@@ -144,7 +152,8 @@ class UrlNodeAdmin(MPTTModelAdmin):
         if self.declared_fieldsets:
             return super(UrlNodeAdmin, self).get_fieldsets(request, obj)
 
-        # Have a reasonable default fieldsets.
+        # Have a reasonable default fieldsets,
+        # where the subclass fields are automatically included.
         other_fields = self.get_subclass_fields(request, obj)
 
         if other_fields:
@@ -162,7 +171,7 @@ class UrlNodeAdmin(MPTTModelAdmin):
         exclude = list(self.exclude or [])
         exclude.extend(self.get_readonly_fields(request, obj))
 
-        # By not declaring the fields them in the base class,
+        # By not declaring the fields/form in the base class,
         # get_form() will populate the form with all available fields.
         form = self.get_form(request, obj, exclude=exclude)
         subclass_fields = form.base_fields.keys() + list(self.get_readonly_fields(request, obj))
@@ -172,6 +181,66 @@ class UrlNodeAdmin(MPTTModelAdmin):
             for field in fieldset[1]['fields']:
                 subclass_fields.remove(field)
         return subclass_fields
+
+
+
+    # ---- list actions ----
+
+    STATUS_ICONS = (
+        (UrlNode.PUBLISHED, 'img/admin/icon-yes.gif'),
+        (UrlNode.DRAFT,     'img/admin/icon-unknown.gif'),
+    )
+
+    def status_column(self, urlnode):
+        status = urlnode.status
+        title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
+        icon  = [rec[1] for rec in self.STATUS_ICONS  if rec[0] == status].pop()
+        return u'<img src="{admin}{icon}" width="10" height="10" alt="{title}" title="{title}" />'.format(
+            admin=settings.ADMIN_MEDIA_PREFIX, icon=icon, title=title)
+
+    status_column.allow_tags = True
+    status_column.short_description = _('Status')
+
+
+    def actions_column(self, urlnode):
+        return u' '.join(self._actions_column_icons(urlnode))
+
+    actions_column.allow_tags = True
+    actions_column.short_description = _('actions')
+
+
+    def _actions_column_icons(self, urlnode):
+        actions = [
+            u'<a href="add/?{parentattr}={id}" title="{title}"><img src="{static}fluent_pages/img/admin/page_new.gif" width="16" height="16" alt="{title}" /></a>'.format(
+                parentattr=self.model._mptt_meta.parent_attr, id=urlnode.pk, title=_('Add child'), static=settings.STATIC_URL)
+        ]
+
+        if hasattr(urlnode, 'get_absolute_url') and urlnode.is_published:
+            actions.append(
+                u'<a href="{url}" title="{title}" target="_blank"><img src="{static}fluent_pages/img/admin/world.gif" width="16" height="16" alt="{title}" /></a>'.format(
+                    url=urlnode.get_absolute_url(), title=_('View on site'), static=settings.STATIC_URL)
+                )
+        return actions
+
+
+    # ---- Custom actions ----
+
+    def make_published(self, request, queryset):
+        rows_updated = queryset.update(status=UrlNode.PUBLISHED)
+
+        if rows_updated == 1:
+            message = "1 page was marked as published."
+        else:
+            message = "{0} pages were marked as published.".format(rows_updated)
+        self.message_user(request, message)
+
+
+    make_published.short_description = _("Mark selected objects as published")
+
+
+
+    # ---- Fixing the breadcrumb and templates ----
+
 
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
@@ -226,64 +295,3 @@ class UrlNodeAdmin(MPTTModelAdmin):
             "admin/%s/change_form.html" % base_app_label,
             "admin/change_form.html"
         ], context, context_instance=context_instance)
-
-
-    def save_model(self, request, obj, form, change):
-        # Automatically store the user in the author field.
-        if not change:
-            obj.author = request.user
-        obj.save()
-
-
-    # ---- list actions ----
-
-    STATUS_ICONS = (
-        (UrlNode.PUBLISHED, 'img/admin/icon-yes.gif'),
-        (UrlNode.DRAFT,     'img/admin/icon-unknown.gif'),
-    )
-
-    def status_column(self, urlnode):
-        status = urlnode.status
-        title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
-        icon  = [rec[1] for rec in self.STATUS_ICONS  if rec[0] == status].pop()
-        return u'<img src="%s%s" width="10" height="10" alt="%s" title="%s" />' % (settings.ADMIN_MEDIA_PREFIX, icon, title, title)
-
-    status_column.allow_tags = True
-    status_column.short_description = _('Status')
-
-
-    def actions_column(self, urlnode):
-        return u' '.join(self._actions_column(urlnode))
-
-    actions_column.allow_tags = True
-    actions_column.short_description = _('actions')
-
-    def _actions_column(self, urlnode):
-        assets_root = settings.STATIC_URL or settings.MEDIA_URL
-        actions = []
-        actions.append(
-            u'<a href="add/?%s=%s" title="%s"><img src="%sfluent_pages/img/admin/page_new.gif" width="16" height="16" alt="%s" /></a>' % (
-                self.model._mptt_meta.parent_attr, urlnode.pk, _('Add child'), assets_root, _('Add child'))
-            )
-
-        if hasattr(urlnode, 'get_absolute_url') and urlnode.is_published:
-            actions.append(
-                u'<a href="%s" title="%s" target="_blank"><img src="%sfluent_pages/img/admin/world.gif" width="16" height="16" alt="%s" /></a>' % (
-                    urlnode.get_absolute_url(), _('View on site'), assets_root, _('View on site'))
-                )
-        return actions
-
-
-    # ---- Custom actions ----
-
-    def make_published(self, request, queryset):
-        rows_updated = queryset.update(status=UrlNode.PUBLISHED)
-
-        if rows_updated == 1:
-            message = "1 page was marked as published."
-        else:
-            message = "%s pages were marked as published." % rows_updated
-        self.message_user(request, message)
-
-
-    make_published.short_description = _("Mark selected objects as published")
