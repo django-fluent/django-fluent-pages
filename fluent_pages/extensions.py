@@ -14,7 +14,7 @@ from django.contrib import admin
 from django.core.exceptions import ImproperlyConfigured
 from django.template.response import TemplateResponse
 from django.utils.importlib import import_module
-from fluent_pages.admin import UrlNodeAdmin
+from fluent_pages.admin import PageAdmin
 from fluent_pages.models import UrlNode
 
 __all__ = ('PageTypePlugin', 'plugin_pool')
@@ -35,7 +35,7 @@ class PageTypePlugin(object):
     model = None
 
     #: The modeladmin instance to customize the screen.
-    model_admin = UrlNodeAdmin
+    model_admin = PageAdmin
 
     #: The template to render the frontend HTML output.
     render_template = None

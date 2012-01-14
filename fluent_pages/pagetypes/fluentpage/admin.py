@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns
 from django.utils.translation import ugettext_lazy as _
-from fluent_pages.admin.urlnodeadmin import UrlNodeAdmin
+from fluent_pages.admin import PageAdmin
 from fluent_pages.forms.widgets import LayoutSelector
 from fluent_pages.models import PageLayout
 from fluent_pages.utils.ajax import JsonResponse
@@ -8,17 +8,17 @@ from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdminMixin
 from fluent_contents.analyzer import get_template_placeholder_data
 
 
-class FluentPageAdmin(PlaceholderEditorAdminMixin, UrlNodeAdmin):
+class FluentPageAdmin(PlaceholderEditorAdminMixin, PageAdmin):
     fieldsets = (
         (None, {
-            'fields': UrlNodeAdmin.FIELDSET_GENERAL[1]['fields'] + ('layout',),
+            'fields': PageAdmin.FIELDSET_GENERAL[1]['fields'] + ('layout',),
         }),
         (_('SEO settings'), {
             'fields': ('keywords', 'description'),
             'classes': ('collapse',),
         }),
-        UrlNodeAdmin.FIELDSET_MENU,
-        UrlNodeAdmin.FIELDSET_PUBLICATION,
+        PageAdmin.FIELDSET_MENU,
+        PageAdmin.FIELDSET_PUBLICATION,
     )
 
     change_form_template = ["admin/fluent_pages/page/page_editor.html",

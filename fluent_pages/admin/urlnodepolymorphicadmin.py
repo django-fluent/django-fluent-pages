@@ -181,7 +181,7 @@ class UrlNodePolymorphicAdmin(UrlNodeAdmin):
             'root_path': self.admin_site.root_path,
         })
         context_instance = RequestContext(request, current_app=self.admin_site.name)
-        return render_to_response(self.change_form_template or [
+        return render_to_response(self.add_type_template or [
             "admin/%s/%s/add_type_form.html" % (app_label, opts.object_name.lower()),
             "admin/%s/add_type_form.html" % app_label,
             "admin/add_type_form.html"
