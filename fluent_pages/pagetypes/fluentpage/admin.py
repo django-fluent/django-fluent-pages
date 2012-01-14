@@ -27,6 +27,9 @@ class FluentPageAdmin(PlaceholderEditorAdminMixin, PageAdmin):
 
     class Media:
         js = ('fluent_pages/fluentpage/fluent_layouts.js',)
+        css = {
+            'screen': ('fluent_pages/fluentpage/admin.css',),
+        }
 
 
     # ---- fluent-contents integration ----

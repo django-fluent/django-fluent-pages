@@ -1,22 +1,6 @@
 /*
-  Extra CSS for the ECMS admin interface customisations
+  Extra CSS for the fluent-pages admin interface customisations
  */
-
-
-/* ---- Clearfix ---- */
-
-.ecms-clearfix:after {
-  content:      ".";
-  font-size:    0;
-  line-height:  0;
-  display:      block;
-  height:       0;  
-  clear:        both;
-  visibility:   hidden;
-}
-
-* html .ecms-clearfix { height:     1%; } /* 1% of nothing makes IE 6 do the right thing. */
-*+html .ecms-clearfix { min-height: 0;  } /* and IE7 has new tricks to trigger hasLayout. */
 
 
 /* ---- List display ---- */
@@ -24,26 +8,3 @@
 thead th.col-status_column { width: 80px; }
 thead th.col-modification_date { width: 14em; }
 thead th.col-actions_column { width: 120px; }
-
-
-/* ---- Editor items ---- */
-
-.inline-related h2.ecms-formset-item-title {
-  /* only keep the controls */
-  background: none;
-  padding: 0;
-  margin:  10px 0 0 0;
-  font-size: 12px;
-  color: #7CA0C7;
-}
-
-.inline-related h2.ecms-formset-item-title span.title {
-  border-bottom: 1px solid #7CA0C7;
-  padding: 2px 2px 1px 2px;
-}
-
-/* ---- Fieldset fixes ---- */
-
-.form-row.has-hidden-field {
-    display: none;
-}

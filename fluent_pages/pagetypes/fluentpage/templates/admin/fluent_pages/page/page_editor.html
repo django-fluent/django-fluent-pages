@@ -28,7 +28,7 @@
 {% endfor %}
 
 {# inlines, for django-fluent-contents #}
-<div id="inlines">
+<div id="fluent_contents_inlines">
   {% for inline_admin_formset in inline_admin_formsets %}
     {% include inline_admin_formset.opts.template %}
   {% endfor %}
