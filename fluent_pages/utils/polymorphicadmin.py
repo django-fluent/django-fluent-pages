@@ -154,9 +154,13 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
         """
         Display a choice form to select which page type to add.
         """
+        extra_qs = ''
+        if request.META['QUERY_STRING']:
+            extra_qs = '&' + request.META['QUERY_STRING']
+
         choices = self.get_polymorphic_type_choices()
         if len(choices) == 1:
-            return HttpResponseRedirect('?ct_id={0}'.format(choices[0][0]))
+            return HttpResponseRedirect('?ct_id={0}{1}'.format(choices[0][0], extra_qs))
 
         # Create form
         form = self.add_type_form(
@@ -166,7 +170,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
         form.fields['ct_id'].choices = choices
 
         if form.is_valid():
-            return HttpResponseRedirect('?ct_id={0}'.format(form.cleaned_data['ct_id']))
+            return HttpResponseRedirect('?ct_id={0}{1}'.format(form.cleaned_data['ct_id'], extra_qs))
 
         # Wrap in all admin layout
         fieldsets = ((None, {'fields': ('ct_id',)}),)
