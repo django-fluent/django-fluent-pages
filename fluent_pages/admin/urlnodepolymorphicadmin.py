@@ -51,7 +51,7 @@ class UrlNodePolymorphicAdmin(UrlNodeAdmin):
         # The views are already checked for permissions, so ensure the model is a derived object.
         # Otherwise, it would open all admin views to users who can edit the base object.
         if not issubclass(model_class, self.base_model):
-            raise PermissionDenied("Invalid model '{0}.{1}', must derive from UrlNode.".format(*ct.natural_key()))
+            raise PermissionDenied("Invalid model '{0}.{1}', must derive from {name}.".format(*ct.natural_key(), name=self.base_model.__name__))
 
         return page_type_pool.get_model_admin(model_class)
 

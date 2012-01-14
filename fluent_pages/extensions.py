@@ -158,7 +158,7 @@ class PageTypePool(object):
         # Duct-Typing does not suffice here, avoid hard to debug problems by upfront checks.
         assert issubclass(plugin, PageTypePlugin), "The plugin must inherit from `PageTypePlugin`"
         assert plugin.model, "The plugin has no model defined"
-        assert issubclass(plugin.model, UrlNode), "The plugin model must inherit from `ContentItem`"
+        assert issubclass(plugin.model, UrlNode), "The plugin model must inherit from `UrlNode` or `Page`."
 
         name = plugin.__name__
         if name in self.plugins:
