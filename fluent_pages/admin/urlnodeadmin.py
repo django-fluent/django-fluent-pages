@@ -1,8 +1,9 @@
-from django.contrib import admin
 from django.conf import settings
+from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from mptt.admin import MPTTModelAdmin
 from mptt.forms import MPTTAdminForm
+from fluent_pages.utils.polymorphicadmin import PolymorphedModelAdmin
 from fluent_pages.models import UrlNode
 from fluent_pages.forms.fields import RelativeRootPathField
 
@@ -73,10 +74,14 @@ class UrlNodeAdminForm(MPTTAdminForm):
 
 
 
-class UrlNodeAdmin(MPTTModelAdmin):
+class UrlNodeAdmin(PolymorphedModelAdmin, MPTTModelAdmin):
     """
+    The internal machinery
     The admin screen for the ``UrlNode`` objects.
     """
+    base_model = UrlNode
+    base_form = UrlNodeAdminForm
+
 
     # Config list page:
     list_display = ('title', 'status_column', 'modification_date', 'actions_column')
@@ -99,18 +104,15 @@ class UrlNodeAdmin(MPTTModelAdmin):
         'classes': ('collapse',),
     })
 
-
     # Config add/edit:
     prepopulated_fields = { 'slug': ('title',), }
     raw_id_fields = ['parent']
-
-    base_model = UrlNode
-    base_form = UrlNodeAdminForm
     base_fieldsets = (
         FIELDSET_GENERAL,
         FIELDSET_MENU,
         FIELDSET_PUBLICATION
     )
+
     radio_fields = {'status': admin.HORIZONTAL}
 
 
@@ -127,22 +129,7 @@ class UrlNodeAdmin(MPTTModelAdmin):
         obj.save()
 
 
-
     # ---- Improving the form/fieldset default display ----
-
-
-    def get_form(self, request, obj=None, **kwargs):
-        # The django admin validation requires the form to have a 'class Meta: model = ..'
-        # attribute, or it will complain that the fields are missing.
-        # However, this enforces all derived ModelAdmin classes to redefine the model as well,
-        # because they need to explicitly set the model again - it will stick with the base model.
-        #
-        # Instead, pass the form unchecked here, because the standard ModelForm will just work.
-        # If the derived class sets the model explicitly, respect that setting.
-        if self.form == UrlNodeAdmin.form:
-            kwargs['form'] = self.base_form
-        return super(UrlNodeAdmin, self).get_form(request, obj, **kwargs)
-
 
     def get_fieldsets(self, request, obj=None):
         # If subclass declares fieldsets, this is respected
@@ -178,7 +165,6 @@ class UrlNodeAdmin(MPTTModelAdmin):
             for field in fieldset[1]['fields']:
                 subclass_fields.remove(field)
         return subclass_fields
-
 
 
     # ---- list actions ----
@@ -220,8 +206,6 @@ class UrlNodeAdmin(MPTTModelAdmin):
         return actions
 
 
-    # ---- Custom actions ----
-
     def make_published(self, request, queryset):
         rows_updated = queryset.update(status=UrlNode.PUBLISHED)
 
@@ -236,44 +220,8 @@ class UrlNodeAdmin(MPTTModelAdmin):
 
 
 
-    # ---- Fixing the breadcrumb and templates ----
 
-
-    @property
-    def change_form_template(self):
-        opts = self.model._meta
-        app_label = opts.app_label
-
-        base_opts = self.base_model._meta
-        base_app_label = base_opts.app_label
-
-        return [
-            "admin/%s/%s/change_form.html" % (app_label, opts.object_name.lower()),
-            "admin/%s/change_form.html" % app_label,
-            # Added:
-            "admin/%s/%s/change_form.html" % (base_app_label, base_opts.object_name.lower()),
-            "admin/%s/change_form.html" % base_app_label,
-            "admin/change_form.html"
-        ]
-
-
-    @property
-    def delete_confirmation_template(self):
-        opts = self.model._meta
-        app_label = opts.app_label
-
-        base_opts = self.base_model._meta
-        base_app_label = base_opts.app_label
-
-        return [
-            "admin/%s/%s/delete_confirmation.html" % (app_label, opts.object_name.lower()),
-            "admin/%s/delete_confirmation.html" % app_label,
-            # Added:
-            "admin/%s/%s/delete_confirmation.html" % (base_app_label, base_opts.object_name.lower()),
-            "admin/%s/delete_confirmation.html" % base_app_label,
-            "admin/delete_confirmation.html"
-        ]
-
+    # ---- Pass parent_object to templates ----
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         # Get parent object for breadcrumb
@@ -285,13 +233,10 @@ class UrlNodeAdmin(MPTTModelAdmin):
             parent_object = obj.parent
 
         # Improve the breadcrumb
-        base_opts = self.base_model._meta
         context.update({
             'parent_object': parent_object,
-            'base_opts': base_opts,
         })
 
-        # ModelAdminTemplateExtension.render_change_form() is slightly modified to allow app_label to be overwritten.
         return super(UrlNodeAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
 
 
@@ -305,10 +250,8 @@ class UrlNodeAdmin(MPTTModelAdmin):
             pass
 
         # Improve the breadcrumb
-        base_opts = self.base_model._meta
         extra_context = {
             'parent_object': parent_object,
-            'base_opts': base_opts,
         }
         extra_context.update(context or {})
 
