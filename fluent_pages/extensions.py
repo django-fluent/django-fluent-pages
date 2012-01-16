@@ -17,7 +17,9 @@ from django.utils.importlib import import_module
 from fluent_pages.admin import PageAdmin
 from fluent_pages.models import UrlNode
 
-__all__ = ('PageTypePlugin', 'plugin_pool')
+__all__ = (
+    'PageTypePlugin', 'PageTypeAlreadyRegistered', 'PageTypeNotFound', 'PageTypePool', 'page_type_pool'
+)
 
 
 
