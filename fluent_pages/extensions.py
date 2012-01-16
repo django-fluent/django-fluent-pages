@@ -17,6 +17,7 @@ from django.template.response import TemplateResponse
 from django.utils.importlib import import_module
 from fluent_pages.admin import PageAdmin
 from fluent_pages.models import UrlNode
+from threading import Lock
 
 __all__ = (
     'PageTypePlugin', 'PageTypeAlreadyRegistered', 'PageTypeNotFound', 'PageTypePool', 'page_type_pool'
@@ -148,6 +149,7 @@ class PageTypePool(object):
     """
     The central administration of plugins.
     """
+    scanLock = Lock()
 
     def __init__(self):
         self.plugins = {}
@@ -260,8 +262,19 @@ class PageTypePool(object):
         """
         if self.detected:
             return
-        _import_apps_submodule("page_type_plugins")
-        self.detected = True
+
+        # In some cases, plugin scanning may start during a request.
+        # Make sure there is only one thread scanning for plugins.
+        self.scanLock.acquire()
+        if self.detected:
+            return  # previous threaded released + completed
+
+        try:
+            _import_apps_submodule("page_type_plugins")
+        finally:
+            self.detected = True
+            self.scanLock.release()
+
 
 #: The global plugin pool, a instance of the :class:`PluginPool` class.
 page_type_pool = PageTypePool()
