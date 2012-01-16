@@ -128,7 +128,12 @@ class UrlNode(MPTTModel, PolymorphicModel):
         return root + self._cached_url
 
 
-    def _get_breadcrumb(self):
+    # Map to properties (also for templates)
+    url = property(get_absolute_url)
+
+
+    @property
+    def breadcrumb(self):
         """
         Return the breadcrumb; all parent pages leading to the current page, including current page itself.
         """
@@ -141,25 +146,24 @@ class UrlNode(MPTTModel, PolymorphicModel):
         return nodes
 
 
-    def _is_published(self):
+    @property
+    def is_published(self):
         return self.status == self.PUBLISHED
 
-    def _is_draft(self):
+    @property
+    def is_draft(self):
         return self.status == self.DRAFT
 
-    def _is_first_child(self):
+
+    @property
+    def is_first_child(self):
         return self.is_root_node() or (self.parent and (self.lft == self.parent.lft + 1))
 
-    def _is_last_child(self):
+
+    @property
+    def is_last_child(self):
         return self.is_root_node() or (self.parent and (self.rght + 1 == self.parent.rght))
 
-
-    # Map to properties (also for templates)
-    breadcrumb = property(_get_breadcrumb)
-    url = property(get_absolute_url)
-    is_published = property(_is_published)
-    is_first_child = property(_is_first_child)
-    is_last_child = property(_is_last_child)
 
 
     # ---- Custom behavior ----
