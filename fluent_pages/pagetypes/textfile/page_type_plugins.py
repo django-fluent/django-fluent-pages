@@ -5,6 +5,7 @@ from fluent_pages.pagetypes.textfile.models import TextFile
 
 class TextFilePlugin(PageTypePlugin):
     model = TextFile
+    is_file = True
 
     def get_response(self, request, textfile, **kwargs):
         content_type = textfile.content_type

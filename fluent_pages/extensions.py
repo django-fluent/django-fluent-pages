@@ -11,6 +11,7 @@ Having to do an explicit register ensures future compatibility with other API's 
 from django import forms
 from django.conf import settings
 from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.template.response import TemplateResponse
 from django.utils.importlib import import_module
@@ -44,6 +45,12 @@ class PageTypePlugin(object):
 
     #: The class to use by default for the response
     response_class = TemplateResponse
+
+    #: Whether the page type represents a file (no slash or children)
+    is_file = False
+
+    #: Whether the page type allows to have children (unless `is_file`` is true)
+    can_have_children = True
 
 
     @property
@@ -147,6 +154,9 @@ class PageTypePool(object):
         self.plugin_for_model = {}
         self.detected = False
         self.admin_site = admin.AdminSite()
+        self._file_types = None
+        self._folder_types = None
+
 
     def register(self, plugin):
         """
@@ -165,6 +175,10 @@ class PageTypePool(object):
         name = plugin.__name__
         if name in self.plugins:
             raise PageTypeAlreadyRegistered("[%s] a plugin with this name is already registered" % name)
+
+        # Reset some caches
+        self._folder_types = None
+        self._file_types = None
 
         # Make a single static instance, similar to ModelAdmin.
         plugin_instance = plugin()
@@ -216,6 +230,28 @@ class PageTypePool(object):
             return self.admin_site._registry[model_class]
         except KeyError:
             raise PageTypeNotFound("No ModelAdmin found for model '{0}'.".format(model_class.__name__))
+
+
+    def get_file_types(self):
+        if self._file_types is None:
+            ct_ids = []
+            for plugin in self.get_plugins():
+                if plugin.is_file:
+                    ct_ids.append(ContentType.objects.get_for_model(plugin.model).id)
+            self._file_types = ct_ids  # file_types is reset during plugin scan.
+
+        return self._file_types
+
+
+    def get_folder_types(self):
+        if self._folder_types is None:
+            ct_ids = []
+            for plugin in self.get_plugins():
+                if plugin.can_have_children and not plugin.is_file:
+                    ct_ids.append(ContentType.objects.get_for_model(plugin.model).id)
+            self._folder_types = ct_ids  # folder_types is reset during plugin scan.
+
+        return self._folder_types
 
 
     def _import_plugins(self):

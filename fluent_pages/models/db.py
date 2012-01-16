@@ -9,8 +9,7 @@ It defines the following classes:
 * CmsLayout
   The layout of a page, which has regions and a template.
 """
-from Tix import Tree
-from django.core.exceptions import FieldError
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -27,6 +26,23 @@ from fluent_pages import appsettings
 
 def _get_current_site():
     return Site.objects.get_current()
+
+
+def _validate_parent(parent):
+    from fluent_pages.extensions import page_type_pool
+    if not parent:
+        return
+    elif isinstance(parent, (int, long)):
+        parent = UrlNode.objects.non_polymorphic().values('polymorphic_ctype').get(pk=parent)
+        if parent['polymorphic_ctype'] in page_type_pool.get_folder_types():
+            return
+    elif isinstance(parent, UrlNode):
+        if parent.can_have_children:
+            return
+    else:
+        raise ValueError("Unknown parent value")
+
+    raise ValidationError(_("The selected page cannot have sub pages."))
 
 
 class URLNodeMetaClass(MPTTModelBase, PolymorphicModelBase):
@@ -66,9 +82,9 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
-    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'))  # related_name created a 'children' property.
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), validators=[_validate_parent])
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
-    #children = a RelatedManager
+    #children = a RelatedManager by 'parent'
 
     # Publication information
     status = models.CharField(_('status'), max_length=1, choices=STATUSES, default=DRAFT)
@@ -150,6 +166,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
     def is_published(self):
         return self.status == self.PUBLISHED
 
+
     @property
     def is_draft(self):
         return self.status == self.DRAFT
@@ -164,6 +181,25 @@ class UrlNode(MPTTModel, PolymorphicModel):
     def is_last_child(self):
         return self.is_root_node() or (self.parent and (self.rght + 1 == self.parent.rght))
 
+
+    @property
+    def is_file(self):
+        return self.plugin.is_file
+
+
+    @property
+    def can_have_children(self):
+        plugin = self.plugin
+        return plugin.can_have_children and not plugin.is_file
+
+
+    @property
+    def plugin(self):
+        """
+        Access the parent plugin which renders this model.
+        """
+        from fluent_pages.extensions import page_type_pool
+        return page_type_pool.get_plugin_by_model(self.__class__)
 
 
     # ---- Custom behavior ----
@@ -216,6 +252,8 @@ class UrlNode(MPTTModel, PolymorphicModel):
         # determine own URL
         if self.override_url:
             self._cached_url = self.override_url
+        elif self.is_file:
+            self._cached_url = u'/%s' % self.slug
         elif self.is_root_node():
             self._cached_url = u'/%s/' % self.slug
         else:
@@ -235,9 +273,12 @@ class UrlNode(MPTTModel, PolymorphicModel):
             return
 
         # Keep cache
-        cached_page_urls = {self.id: self._cached_url}
+        cached_page_urls = {
+            self.id: self._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
+        }
 
-        # Update all sub objects
+        # Update all sub objects.
+        # even if can_have_children is false, ensure a consistent state for the URL structure
         subobjects = self.get_descendants().order_by('lft')
         for subobject in subobjects:
             # Set URL, using cache for parent URL.

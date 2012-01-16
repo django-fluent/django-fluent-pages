@@ -85,10 +85,16 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
 
 
     def _actions_column_icons(self, urlnode):
-        actions = [
-            u'<a href="add/?{parentattr}={id}" title="{title}"><img src="{static}fluent_pages/img/admin/page_new.gif" width="16" height="16" alt="{title}" /></a>'.format(
-                parentattr=self.model._mptt_meta.parent_attr, id=urlnode.pk, title=_('Add child'), static=settings.STATIC_URL)
-        ]
+        empty_img = u'<span><img src="{static}fluent_pages/img/admin/blank.gif" width="16" height="16" alt=""/></span>'.format(static=settings.STATIC_URL)
+
+        actions = []
+        if urlnode.can_have_children:
+            actions.append(
+                u'<a href="add/?{parentattr}={id}" title="{title}"><img src="{static}fluent_pages/img/admin/page_new.gif" width="16" height="16" alt="{title}" /></a>'.format(
+                    parentattr=self.model._mptt_meta.parent_attr, id=urlnode.pk, title=_('Add child'), static=settings.STATIC_URL)
+                )
+        else:
+            actions.append(empty_img)
 
         if hasattr(urlnode, 'get_absolute_url') and urlnode.is_published:
             actions.append(
