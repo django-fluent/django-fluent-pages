@@ -144,8 +144,15 @@ class UrlNode(MPTTModel, PolymorphicModel):
         return root + self._cached_url
 
 
-    # Map to properties (also for templates)
-    url = property(get_absolute_url)
+    @property
+    def url(self):
+        """
+        The URL of the page, provided for template code.
+        """
+        # Mapped to property for templates.
+        # Not done directly using url = property(get_absolute_url),
+        # so get_absolute_url() can be overwritten.
+        return self.get_absolute_url()
 
 
     @property
