@@ -10,3 +10,4 @@ class PageLayoutAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, { 'fields': ('title', 'key', 'template_path'), }),
     )
+    prepopulated_fields = {'key': ('title',)}
