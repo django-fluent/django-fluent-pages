@@ -4,11 +4,11 @@ from fluent_pages.admin import PageAdmin
 from fluent_pages.forms.widgets import LayoutSelector
 from fluent_pages.models import PageLayout
 from fluent_pages.utils.ajax import JsonResponse
-from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdminMixin
+from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 
 
-class FluentPageAdmin(PlaceholderEditorAdminMixin, PageAdmin):
+class FluentPageAdmin(PlaceholderEditorAdmin, PageAdmin):
     fieldsets = (
         (None, {
             'fields': PageAdmin.FIELDSET_GENERAL[1]['fields'] + ('layout',),
