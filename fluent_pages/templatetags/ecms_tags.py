@@ -157,10 +157,10 @@ class EcmsGetVarsNode(Node):
         except UrlNode.DoesNotExist:
             # Detect current site
             request = _get_request(context)
-            current_site = Site.objects.get_current(request)
+            current_site = Site.objects.get_current()
 
             # Allow {% render_ecms_menu %} to operate.
-            dummy_page = UrlNode(title='', in_navigation=False, override_url=request.path, status=UrlNode.HIDDEN, parent_site=current_site)
+            dummy_page = UrlNode(title='', in_navigation=False, override_url=request.path, status=UrlNode.DRAFT, parent_site=current_site)
             request._ecms_current_page = dummy_page
 
         # Automatically add 'ecms_site', allows "default:ecms_site.domain" to work.
