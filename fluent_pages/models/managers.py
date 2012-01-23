@@ -44,13 +44,12 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
         Raises CmsObject.DoesNotExist when the item is not found.
         """
         # Normalize slashes
-        stripped = path.lstrip('/')
-        stripped = stripped and u'/%s' % stripped or '/'
+        path = '/{0}'.format(path)
 
         try:
-            return self.published().get(_cached_url=stripped)
+            return self.published().get(_cached_url=path)
         except self.model.DoesNotExist:
-            raise self.model.DoesNotExist("No published {0} found for the path '{1}'".format(self.model.__name__, stripped))
+            raise self.model.DoesNotExist("No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
 
     def published(self):
