@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import RegexURLResolver
 from django.template.response import TemplateResponse
 from django.utils.importlib import import_module
 from fluent_pages.admin import PageAdmin
@@ -52,6 +53,13 @@ class PageTypePlugin(object):
 
     #: Whether the page type allows to have children (unless `is_file`` is true)
     can_have_children = True
+
+    #: Set the URLs which the page serves provides the current node. Can either be a URLconf module, or inline pattern list.
+    urls = None
+
+
+    def __init__(self):
+        self._url_resolver = None
 
 
     @property
@@ -110,6 +118,27 @@ class PageTypePlugin(object):
             'page': page,
             'site': page.parent_site,
         }
+
+
+    def get_url_resolver(self):
+        """
+        Return the URL patterns of the page type.
+        """
+        if self._url_resolver is None:
+            if self.urls is None:
+                return None
+            elif isinstance(self.urls, basestring):
+                mod = import_module(self.urls)
+                if not hasattr(mod, 'urlpatterns'):
+                    raise ImproperlyConfigured("URLConf `{0}` has no urlpatterns attribute".format(self.urls))
+                patterns = getattr(mod, 'urlpatterns')
+            elif isinstance(self.urls, (list, tuple)):
+                patterns = self.urls
+            else:
+                raise ImproperlyConfigured("Invalid value for '{0}.urls', must be string, list or tuple.".format(self.__class__.__name__))
+
+            self._url_resolver = RegexURLResolver(r'^/', patterns)
+        return self._url_resolver
 
 
 
@@ -254,6 +283,24 @@ class PageTypePool(object):
             self._folder_types = ct_ids  # folder_types is reset during plugin scan.
 
         return self._folder_types
+
+
+    def get_url_pattern_types(self):
+        """
+        Return the page content types which can provide URL patterns.
+        """
+        if self._url_types is None:
+            self._url_types = [plugin.type_id for plugin in self.get_url_pattern_plugins()]
+
+        return self._url_types
+
+
+    def get_url_pattern_plugins(self):
+        plugins = []
+        for plugin in self.get_plugins():
+            if plugin.urls is not None:
+                plugins.append(plugin)
+        return plugins
 
 
     def _import_plugins(self):

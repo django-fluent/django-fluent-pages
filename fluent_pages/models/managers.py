@@ -15,7 +15,7 @@ class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
 
 class UrlNodeManager(TreeManager, PolymorphicManager):
     """
-    Extra methods attached to ```CmsObject.objects```
+    Extra methods attached to ``UrlNode.objects`` and ``Page.objects``.
     """
 
     def __init__(self, *args, **kwargs):
@@ -39,9 +39,9 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
 
     def get_for_path(self, path):
         """
-        Return the CmsObject for the given path.
+        Return the UrlNode for the given path.
 
-        Raises CmsObject.DoesNotExist when the item is not found.
+        Raises UrlNode.DoesNotExist when the item is not found.
         """
         # Normalize slashes
         path = '/{0}'.format(path)
@@ -49,6 +49,27 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
         try:
             return self.published().get(_cached_url=path)
         except self.model.DoesNotExist:
+            raise self.model.DoesNotExist("No published {0} found for the path '{1}'".format(self.model.__name__, path))
+
+
+    def best_match_for_path(self, path):
+        """
+        Return the UrlNode that is the closest parent to the given path.
+
+        UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
+        """
+        # from FeinCMS:
+        paths = ['/']
+        if path:
+            tokens = path.split('/')
+            paths += ['/%s/' % '/'.join(tokens[:i]) for i in range(1, len(tokens)+1)]
+
+        try:
+            return self.published() \
+                       .filter(_cached_url__in=paths) \
+                       .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
+                       .order_by('-_url_length')[0]
+        except IndexError:
             raise self.model.DoesNotExist("No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
 
