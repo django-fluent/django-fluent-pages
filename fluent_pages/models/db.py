@@ -9,8 +9,8 @@ It defines the following classes:
 * CmsLayout
   The layout of a page, which has regions and a template.
 """
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError, ImproperlyConfigured
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db import models
@@ -140,7 +140,10 @@ class UrlNode(MPTTModel, PolymorphicModel):
         # cached_url always points to the URL within the URL config root.
         # when the application is mounted at a subfolder, or the 'cms.urls' config
         # is included at a sublevel, it needs to be prepended.
-        root = reverse('ecms-page').rstrip('/')
+        try:
+            root = reverse('ecms-page').rstrip('/')
+        except NoReverseMatch:
+            raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
         return root + self._cached_url
 
 
