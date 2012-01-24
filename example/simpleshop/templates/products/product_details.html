@@ -1,0 +1,12 @@
+{% extends "theme1/base.html" %}
+
+{% block main %}
+    <h1>{{ product.title }}</h1>
+    <div class="description">
+    {{ product.description|linebreaks }}
+    </div>
+
+    {% if product.image %}<p><img src="{{ product.image.url }}" width="{{ product.image.width }}" height="{{ product.image.height }}" alt="{{ product.title }}" /></p>{% endif %}
+    <p><strong class="price">&euro; {{ product.price|floatformat:2 }}</strong></p>
+
+{% endblock %}

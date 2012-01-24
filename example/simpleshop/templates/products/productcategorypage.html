@@ -1,0 +1,22 @@
+{% extends "theme1/base.html" %}
+
+{% block headtitle %}{{ page.title }}{% endblock %}
+
+{% block main %}
+  <h1>{{ page.title }}</h1>
+  <p>
+    Contents of the category: {{ page.product_category }} ({{ page.product_category.products.count }} products).
+  </p>
+
+  <div id="products">
+    {% for product in page.product_category.products.all %}
+      <div class="product">
+        <h3><a href="./{{ product.slug }}/">{{ product.title }}</a></h3>
+        <div>
+          {% if product.image %}<p><img src="{{ product.image.url }}" width="{{ product.image.width }}" height="{{ product.image.height }}" alt="{{ product.title }}" /></p>{% endif %}
+          <p><strong class="price">&euro; {{ product.price|floatformat:2 }}</strong></p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

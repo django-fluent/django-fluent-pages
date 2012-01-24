@@ -348,6 +348,25 @@ form label {
 }
 
 
+/* ---- Pagetypes ---- */
+
+#products {
+  margin: 1em 0;
+}
+
+#products .product {
+  float: left;
+  width: 200px;
+  min-height: 100px;
+  margin-bottom: 15px;
+}
+
+#products h3 {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+
 /* ---- standard resets and utils ---- */
 
 :focus       { outline: 0; }

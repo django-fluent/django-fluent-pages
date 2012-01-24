@@ -94,6 +94,9 @@ INSTALLED_APPS = (
     'fluent_pages.pagetypes.textfile',
     'theme1',
 
+    # Extra apps
+    'simpleshop',
+
     # Content for fluentpage, with plugins that have no extra configuration requirements
     'fluent_contents',
     'fluent_contents.plugins.code',
