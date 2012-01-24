@@ -190,7 +190,7 @@ def _get_current_page(context):
         try:
             # First start with something you can control,
             # and likely want to mimic from the standard view.
-            request._ecms_current_page = context['ecms_page']
+            request._ecms_current_page = context['page']
         except KeyError:
             try:
                 # Then try looking up environmental properties.
