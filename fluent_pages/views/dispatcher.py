@@ -20,7 +20,9 @@ class CmsPageDispatcher(View):
     model = UrlNode
 
     def get(self, request, **kwargs):
-        """Display the page in a GET request."""
+        """
+        Display the page in a GET request.
+        """
         self.path = self.get_path()
 
         # Since this view acts as a catch-all, give better error messages
@@ -35,17 +37,25 @@ class CmsPageDispatcher(View):
 
         raise Http404("No published '{0}' found for the path: '{1}'".format(self.model.__name__, self.path))
 
+
     def post(self, request, **kwargs):
-        """Allow POST requests (for forms) to the page."""
+        """
+        Allow POST requests (for forms) to the page.
+        """
         return self.get(request, **kwargs)
 
+
     def get_path(self):
+        """
+        Return the path argument of the view.
+        """
         if self.kwargs.has_key('path'):
             # Starting slash is removed by URLconf, restore it.
             return '/' + (self.kwargs['path'] or '')
         else:
             # Path from current script prefix
             return self.request.path_info
+
 
     def get_queryset(self):
         """
@@ -54,6 +64,7 @@ class CmsPageDispatcher(View):
         # This can be limited or expanded in the future
         return self.model.objects.published()
 
+
     def get_object(self, path=None):
         """
         Return the UrlNode subclass object of the current page.
@@ -61,16 +72,23 @@ class CmsPageDispatcher(View):
         path = path or self.get_path()
         return self.get_queryset().get_for_path(path)
 
+
     def get_best_match_object(self, path=None):
+        """
+        Return the nearest UrlNode object for an URL path.
+        """
         path = path or self.get_path()
         return self.get_queryset().best_match_for_path(path)
 
+
     def get_plugin(self):
-        """Return the rendering plugin for the current page object."""
+        """
+        Return the rendering plugin for the current page object.
+        """
         return page_type_pool.get_plugin_by_model(self.object.__class__)
 
 
-    # -- Various
+    # -- Various resolver functions
 
     def _get_node(self):
         try:
@@ -93,11 +111,13 @@ class CmsPageDispatcher(View):
         response = plugin.get_response(self.request, self.object)
         if response is None:
             # Avoid automatic fallback to 404 page in this dispatcher.
-            raise RuntimeError("No response received from plugin '{0}'".format(plugin.__class__.__name__))
+            raise RuntimeError("No response received from plugin '{0}.get_response()' method".format(plugin.__class__.__name__))
         return response
 
 
     def _get_urlnode_redirect(self):
+        # Since the URLconf matches without a final slash (to allow filename nodes),
+        # the APPEND_SLASH middleware is circumvented. Have to implement that here.
         if self.path.endswith('/') or not settings.APPEND_SLASH:
             return None
 
@@ -126,6 +146,8 @@ class CmsPageDispatcher(View):
         try:
             match = resolver.resolve(sub_path)
         except Resolver404:
+            # Again implement APPEND_SLASH behavior here,
+            # since the middleware is circumvented by the URLconf regex.
             if not sub_path.endswith('/') and settings.APPEND_SLASH:
                 try:
                     match = resolver.resolve(sub_path + '/')
@@ -135,6 +157,7 @@ class CmsPageDispatcher(View):
                     return HttpResponseRedirect(self.request.path + '/')
             return None
         else:
+            # Call application view.
             response = match.func(self.request, *match.args, **match.kwargs)
             if response is None:
                 raise RuntimeError("No response received from view '{0}'".format(match.url_name))
