@@ -25,8 +25,8 @@ class CmsPageDispatcher(View):
 
         # Since this view acts as a catch-all, give better error messages
         # when mistyping an admin URL. Don't mention anything about CMS pages.
-        if self.path.startswith(reverse('admin:index')[1:]):
-            raise Http404("No admin page found at '/{0}'\n(raised by fluent_pages catch-all).".format(self.path))
+        if self.path.startswith(reverse('admin:index', prefix='/')):
+            raise Http404("No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
 
         for func in (self._get_node, self._get_urlnode_redirect, self._get_appnode):
             response = func()
@@ -40,16 +40,30 @@ class CmsPageDispatcher(View):
         return self.get(request, **kwargs)
 
     def get_path(self):
-        return self.kwargs.get('path', self.request.path) or ''
+        if self.kwargs.has_key('path'):
+            # Starting slash is removed by URLconf, restore it.
+            return '/' + (self.kwargs['path'] or '')
+        else:
+            # Path from current script prefix
+            return self.request.path_info
+
+    def get_queryset(self):
+        """
+        Return the QuerySet used to find the pages.
+        """
+        # This can be limited or expanded in the future
+        return self.model.objects.published()
 
     def get_object(self, path=None):
-        """Return the UrlNode subclass object of the current page."""
+        """
+        Return the UrlNode subclass object of the current page.
+        """
         path = path or self.get_path()
-        return self.model.objects.get_for_path(path)
+        return self.get_queryset().get_for_path(path)
 
     def get_best_match_object(self, path=None):
         path = path or self.get_path()
-        return self.model.objects.best_match_for_path(path)
+        return self.get_queryset().best_match_for_path(path)
 
     def get_plugin(self):
         """Return the rendering plugin for the current page object."""

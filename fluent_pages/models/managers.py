@@ -1,8 +1,6 @@
 """
 The manager class for the CMS models
 """
-from django.core.urlresolvers import reverse
-from django.http import Http404
 from mptt.managers import TreeManager
 from polymorphic import PolymorphicManager
 from polymorphic.query import PolymorphicQuerySet
@@ -10,41 +8,16 @@ from fluent_pages.utils.db import DecoratingQuerySet
 
 
 class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
-    pass
-
-
-class UrlNodeManager(TreeManager, PolymorphicManager):
-    """
-    Extra methods attached to ``UrlNode.objects`` and ``Page.objects``.
-    """
-
-    def __init__(self, *args, **kwargs):
-        PolymorphicManager.__init__(self, UrlNodeQuerySet, *args, **kwargs)
-
-
-    def get_for_path_or_404(self, path):
-        """
-        Return the UrlNode for the given path.
-
-        Raises a Http404 error when the object is not found.
-        """
-        try:
-            return self.get_for_path(path)
-        except self.model.DoesNotExist as e:
-            raise Http404(e)
-
-
     def get_for_path(self, path):
         """
         Return the UrlNode for the given path.
+        The path is expected to start with an initial slash.
 
         Raises UrlNode.DoesNotExist when the item is not found.
         """
-        # Normalize slashes
-        path = '/{0}'.format(path)
-
+        # Don't normalize slashes, expect the URLs to be sane.
         try:
-            return self.published().get(_cached_url=path)
+            return self.get(_cached_url=path)
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist("No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
@@ -62,8 +35,7 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
             paths += ['/%s/' % '/'.join(tokens[:i]) for i in range(1, len(tokens)+1)]
 
         try:
-            return self.published() \
-                       .filter(_cached_url__in=paths) \
+            return self.filter(_cached_url__in=paths) \
                        .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
                        .order_by('-_url_length')[0]
         except IndexError:
@@ -75,7 +47,7 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
         Return only published pages
         """
         from fluent_pages.models import UrlNode   # the import can't be globally, that gives a circular dependency
-        return self.get_query_set().filter(status=UrlNode.PUBLISHED)
+        return self.filter(status=UrlNode.PUBLISHED)
 
 
     def in_navigation(self):
@@ -83,6 +55,47 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
         Return only pages in the navigation.
         """
         return self.published().filter(in_navigation=True)
+
+
+class UrlNodeManager(TreeManager, PolymorphicManager):
+    """
+    Extra methods attached to ``UrlNode.objects`` and ``Page.objects``.
+    """
+
+    def __init__(self, *args, **kwargs):
+        PolymorphicManager.__init__(self, UrlNodeQuerySet, *args, **kwargs)
+
+
+    def get_for_path(self, path):
+        """
+        Return the UrlNode for the given path.
+
+        Raises UrlNode.DoesNotExist when the item is not found.
+        """
+        return self.get_query_set().get_for_path(path)
+
+
+    def best_match_for_path(self, path):
+        """
+        Return the UrlNode that is the closest parent to the given path.
+
+        UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
+        """
+        return self.get_query_set().best_match_for_path(path)
+
+
+    def published(self):
+        """
+        Return only published pages
+        """
+        return self.get_query_set().published()
+
+
+    def in_navigation(self):
+        """
+        Return only pages in the navigation.
+        """
+        return self.get_query_set().in_navigation()
 
 
     def toplevel_navigation(self, current_page=None):
