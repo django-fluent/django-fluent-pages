@@ -28,9 +28,6 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
 
         Raises a Http404 error when the object is not found.
         """
-        if path.startswith(reverse('admin:index')[1:]):
-            raise Http404("No admin page found at '/{0}'\n(raised by fluent_pages catch-all).".format(path))
-
         try:
             return self.get_for_path(path)
         except self.model.DoesNotExist as e:

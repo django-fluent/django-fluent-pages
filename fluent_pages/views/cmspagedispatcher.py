@@ -2,7 +2,7 @@
 The view to display CMS content.
 """
 from django.conf import settings
-from django.core.urlresolvers import Resolver404
+from django.core.urlresolvers import Resolver404, reverse
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic.base import View
 from fluent_pages.models import UrlNode
@@ -22,6 +22,11 @@ class CmsPageDispatcher(View):
     def get(self, request, **kwargs):
         """Display the page in a GET request."""
         self.path = self.get_path()
+
+        # Since this view acts as a catch-all, give better error messages
+        # when mistyping an admin URL. Don't mention anything about CMS pages.
+        if self.path.startswith(reverse('admin:index')[1:]):
+            raise Http404("No admin page found at '/{0}'\n(raised by fluent_pages catch-all).".format(self.path))
 
         for func in (self._get_node, self._get_urlnode_redirect, self._get_appnode):
             response = func()
