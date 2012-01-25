@@ -57,6 +57,14 @@ class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
         return self.published().filter(in_navigation=True)
 
 
+    def toplevel(self):
+        """
+        Return all pages which have no parent.
+        """
+        return self.filter(parent__isnull=True)
+
+
+
 class UrlNodeManager(TreeManager, PolymorphicManager):
     """
     Extra methods attached to ``UrlNode.objects`` and ``Page.objects``.
@@ -98,13 +106,20 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
         return self.get_query_set().in_navigation()
 
 
+    def toplevel(self):
+        """
+        Return all pages which have no parent.
+        """
+        return self.get_query_set().toplevel()
+
+
     def toplevel_navigation(self, current_page=None):
         """
         Return all toplevel items.
 
         When current_page is passed, the object values such as 'is_current' will be set. 
         """
-        items = self.in_navigation().filter(parent__isnull=True).non_polymorphic()
+        items = self.toplevel().in_navigation().non_polymorphic()
         if current_page:
             items = _mark_current(items, current_page)
         return items
