@@ -14,7 +14,7 @@ The following named URLs are defined:
 By Appending @admin to an URL, the request will be redirected to the admin URL of the page.
 """
 from django.conf.urls.defaults import *
-from fluent_pages.views import CmsPageView, CmsPageAdminRedirect
+from fluent_pages.views import CmsPageDispatcher, CmsPageAdminRedirect
 
 
 # The URLs of the cmspage are forced to end with a slash,
@@ -23,5 +23,5 @@ from fluent_pages.views import CmsPageView, CmsPageAdminRedirect
 # which includes this file. Otherwise a rule matched after all.
 urlpatterns = patterns('fluent_pages.views',
     url(r'^(?P<path>.*)@admin$', CmsPageAdminRedirect.as_view(), name='ecms-admin-redirect'),
-    url(r'^$|^(?P<path>.*)$', CmsPageView.as_view(), name='ecms-page')
+    url(r'^$|^(?P<path>.*)$', CmsPageDispatcher.as_view(), name='ecms-page')
 )

@@ -1,6 +1,6 @@
 """
 All views of the CMS
 """
-from fluent_pages.views.cmspageview import CmsPageView, CmsPageAdminRedirect
+from fluent_pages.views.cmspagedispatcher import CmsPageDispatcher, CmsPageAdminRedirect
 
-__all__ = ['CmsPageView', 'CmsPageAdminRedirect']
+__all__ = ['CmsPageDispatcher', 'CmsPageAdminRedirect']

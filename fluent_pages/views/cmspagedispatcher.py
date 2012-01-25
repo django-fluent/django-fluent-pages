@@ -12,7 +12,7 @@ from django.views.generic import RedirectView
 import re
 
 
-class CmsPageView(View):
+class CmsPageDispatcher(View):
     """
     The view which displays a CMS page.
     This is not a ``DetailsView`` by design, as the rendering is redirected to the page type plugin.
