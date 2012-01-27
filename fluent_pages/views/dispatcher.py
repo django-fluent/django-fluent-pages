@@ -2,7 +2,7 @@
 The view to display CMS content.
 """
 from django.conf import settings
-from django.core.urlresolvers import Resolver404, reverse
+from django.core.urlresolvers import Resolver404, reverse, resolve
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic.base import View
 from fluent_pages.models import UrlNode
@@ -12,39 +12,12 @@ from django.views.generic import RedirectView
 import re
 
 
-class CmsPageDispatcher(View):
-    """
-    The view which displays a CMS page.
-    This is not a ``DetailsView`` by design, as the rendering is redirected to the page type plugin.
-    """
-    model = UrlNode
+# NOTE:
+# Since the URLconf of this module acts like a catch-all to serve files (e.g. paths without /),
+# the CommonMiddleware will not detect that the path could need an extra slash.
+# That logic also has to be implemented here.
 
-    def get(self, request, **kwargs):
-        """
-        Display the page in a GET request.
-        """
-        self.path = self.get_path()
-
-        # Since this view acts as a catch-all, give better error messages
-        # when mistyping an admin URL. Don't mention anything about CMS pages.
-        if self.path.startswith(reverse('admin:index', prefix='/')):
-            raise Http404("No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
-
-        for func in (self._get_node, self._get_urlnode_redirect, self._get_appnode):
-            response = func()
-            if response:
-                return response
-
-        raise Http404("No published '{0}' found for the path: '{1}'".format(self.model.__name__, self.path))
-
-
-    def post(self, request, **kwargs):
-        """
-        Allow POST requests (for forms) to the page.
-        """
-        return self.get(request, **kwargs)
-
-
+class GetPathMixin(View):
     def get_path(self):
         """
         Return the path argument of the view.
@@ -55,6 +28,42 @@ class CmsPageDispatcher(View):
         else:
             # Path from current script prefix
             return self.request.path_info
+
+
+
+class CmsPageDispatcher(GetPathMixin, View):
+    """
+    The view which displays a CMS page.
+    This is not a ``DetailsView`` by design, as the rendering is redirected to the page type plugin.
+    """
+    model = UrlNode
+
+
+    def get(self, request, **kwargs):
+        """
+        Display the page in a GET request.
+        """
+        self.path = self.get_path()
+
+        # See which view returns a valid response.
+        for func in (self._get_node, self._get_urlnode_redirect, self._get_appnode, self._get_append_slash_redirect):
+            response = func()
+            if response:
+                return response
+
+        # Since this view acts as a catch-all, give better error messages
+        # when mistyping an admin URL. Don't mention anything about CMS pages in /admin.
+        if self.path.startswith(reverse('admin:index', prefix='/')):
+            raise Http404("No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
+        else:
+            raise Http404("No published '{0}' found for the path: '{1}'".format(self.model.__name__, self.path))
+
+
+    def post(self, request, **kwargs):
+        """
+        Allow POST requests (for forms) to the page.
+        """
+        return self.get(request, **kwargs)
 
 
     def get_queryset(self):
@@ -97,7 +106,7 @@ class CmsPageDispatcher(View):
             return None
 
         # Before returning the response of an object,
-        # check if the root url is overlapped by an application.
+        # check if the plugin overwrites the root url with a custom view.
         plugin = self.get_plugin()
         resolver = plugin.get_url_resolver()
         if resolver:
@@ -111,13 +120,12 @@ class CmsPageDispatcher(View):
         response = plugin.get_response(self.request, self.object)
         if response is None:
             # Avoid automatic fallback to 404 page in this dispatcher.
-            raise RuntimeError("No response received from plugin '{0}.get_response()' method".format(plugin.__class__.__name__))
+            raise ValueError("The method '{0}.get_response()' didn't return an HttpResponse object.".format(plugin.__class__.__name__))
         return response
 
 
     def _get_urlnode_redirect(self):
-        # Since the URLconf matches without a final slash (to allow filename nodes),
-        # the APPEND_SLASH middleware is circumvented. Have to implement that here.
+        # Check if the URLnode would be returned if the path did end with a slash.
         if self.path.endswith('/') or not settings.APPEND_SLASH:
             return None
 
@@ -160,16 +168,44 @@ class CmsPageDispatcher(View):
             # Call application view.
             response = match.func(self.request, *match.args, **match.kwargs)
             if response is None:
-                raise RuntimeError("No response received from view '{0}'".format(match.url_name))
+                raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
             return response
 
 
-class CmsPageAdminRedirect(RedirectView):
+    def _get_append_slash_redirect(self):
+        if self.path.endswith('/') or not settings.APPEND_SLASH:
+            return None
+
+        urlconf = getattr(self.request, 'urlconf', None)
+        try:
+            match = resolve(self.request.path_info + '/', urlconf)
+        except Resolver404:
+            return None
+
+        if not self._is_own_view(match):
+            if settings.DEBUG and self.request.method == 'POST':
+                raise RuntimeError((""
+                    "You called this URL via POST, but the URL doesn't end "
+                    "in a slash and you have APPEND_SLASH set. Django can't "
+                    "redirect to the slash URL while maintaining POST data. "
+                    "Change your form to point to %s%s (note the trailing "
+                    "slash), or set APPEND_SLASH=False in your Django "
+                    "settings.") % (self.request.path, '/'))
+            return HttpResponseRedirect(self.request.path + '/')
+        return None
+
+
+    def _is_own_view(self, match):
+        return match.app_name == 'fluent_pages' \
+            or match.url_name == 'ecms-page'
+
+
+class CmsPageAdminRedirect(GetPathMixin, RedirectView):
     """
     A view which redirects to the admin.
     """
     def get_redirect_url(self, **kwargs):
-        path = self.kwargs.get('path', self.request.path) or ''
+        path = self.get_path()
         try:
             page = UrlNode.objects.non_polymorphic().get_for_path(path)
             return get_page_admin_url(page)

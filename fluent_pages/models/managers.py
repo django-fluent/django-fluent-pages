@@ -29,10 +29,10 @@ class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
         UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
         """
         # from FeinCMS:
-        paths = ['/']
+        paths = []
         if path:
             tokens = path.split('/')
-            paths += ['/%s/' % '/'.join(tokens[:i]) for i in range(1, len(tokens)+1)]
+            paths += ['{0}/'.format('/'.join(tokens[:i])) for i in range(1, len(tokens) + 1)]
 
         try:
             return self.filter(_cached_url__in=paths) \
