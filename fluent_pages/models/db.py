@@ -209,7 +209,13 @@ class UrlNode(MPTTModel, PolymorphicModel):
         Access the parent plugin which renders this model.
         """
         from fluent_pages.extensions import page_type_pool
-        return page_type_pool.get_plugin_by_model(self.__class__)
+        if self.__class__ == UrlNode:
+            # Also allow a non_polymorphic() queryset to resolve the plugin.
+            # Corresponding page_type_pool method is still private on purpose.
+            # Not sure the utility method should be public, or how it should be named.
+            return page_type_pool._get_plugin_by_content_type(self.polymorphic_ctype_id)
+        else:
+            return page_type_pool.get_plugin_by_model(self.__class__)
 
 
     # ---- Custom behavior ----

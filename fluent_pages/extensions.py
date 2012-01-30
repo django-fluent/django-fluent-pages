@@ -194,6 +194,7 @@ class PageTypePool(object):
     def __init__(self):
         self.plugins = {}
         self.plugin_for_model = {}
+        self.plugin_for_ctype_id = {}
         self.detected = False
         self.admin_site = admin.AdminSite()
         self._file_types = None
@@ -228,6 +229,7 @@ class PageTypePool(object):
         plugin_instance = plugin()
         self.plugins[name] = plugin_instance
         self.plugin_for_model[plugin.model] = name       # Track reverse for rendering
+        self.plugin_for_ctype_id[plugin_instance.type_id] = name
 
         # Instantiate model admin
         self.admin_site.register(plugin.model, plugin.model_admin)
@@ -260,6 +262,17 @@ class PageTypePool(object):
             name = self.plugin_for_model[model_class]
         except KeyError:
             raise PageTypeNotFound("No plugin found for model '{0}'.".format(model_class.__name__))
+        return self.plugins[name]
+
+
+    def _get_plugin_by_content_type(self, contenttype):
+        self._import_plugins()
+
+        ct_id = contenttype.id if isinstance(contenttype, ContentType) else int(contenttype)
+        try:
+            name = self.plugin_for_ctype_id[ct_id]
+        except KeyError:
+            raise PageTypeNotFound("No plugin found for content type '{0}'.".format(contenttype))
         return self.plugins[name]
 
 
