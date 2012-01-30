@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>{% block headtitle %}{% endblock %}</title>
+    <meta name="keywords" value="{{ page.keywords }}" />
+    <meta name="description" value="{{ page.description }}" />
+  </head>
+  <body>
+    <div id="main">
+      <h1>{% block pagetitle %}{% endblock %}</h1>
+      {% block main %}{% endblock %}
+    </div>
+  </body>
+</html>
