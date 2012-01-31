@@ -59,6 +59,7 @@ class PageTypePlugin(object):
 
 
     def __init__(self):
+        self._type_id = None
         self._url_resolver = None
 
 
@@ -76,6 +77,16 @@ class PageTypePlugin(object):
         Return the classname of the model, this is mainly provided for templates.
         """
         return self.model.__name__
+
+
+    @property
+    def type_id(self):
+        """
+        Shortcut to retrieving the ContentType id of the model.
+        """
+        if self._type_id is None:
+            self._type_id = ContentType.objects.get_for_model(self.model).id
+        return self._type_id
 
 
     def get_model_instances(self):
@@ -187,6 +198,7 @@ class PageTypePool(object):
         self.admin_site = admin.AdminSite()
         self._file_types = None
         self._folder_types = None
+        self._url_types = None
 
 
     def register(self, plugin):
@@ -210,6 +222,7 @@ class PageTypePool(object):
         # Reset some caches
         self._folder_types = None
         self._file_types = None
+        self._url_types = None
 
         # Make a single static instance, similar to ModelAdmin.
         plugin_instance = plugin()
@@ -264,22 +277,28 @@ class PageTypePool(object):
 
 
     def get_file_types(self):
+        """
+        Return the page content types which act like files (no slash or children).
+        """
         if self._file_types is None:
             ct_ids = []
             for plugin in self.get_plugins():
                 if plugin.is_file:
-                    ct_ids.append(ContentType.objects.get_for_model(plugin.model).id)
+                    ct_ids.append(plugin.type_id)
             self._file_types = ct_ids  # file_types is reset during plugin scan.
 
         return self._file_types
 
 
     def get_folder_types(self):
+        """
+        Return the page content types which operate as a container for sub pages.
+        """
         if self._folder_types is None:
             ct_ids = []
             for plugin in self.get_plugins():
                 if plugin.can_have_children and not plugin.is_file:
-                    ct_ids.append(ContentType.objects.get_for_model(plugin.model).id)
+                    ct_ids.append(plugin.type_id)
             self._folder_types = ct_ids  # folder_types is reset during plugin scan.
 
         return self._folder_types
