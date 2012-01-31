@@ -5,11 +5,43 @@ from fluent_pages.utils.polymorphicadmin import PolymorphicBaseModelAdmin, Polym
 from fluent_pages.models import UrlNode
 from mptt.admin import MPTTModelAdmin
 
-
 class PageTypeChoiceAdminForm(PolymorphicModelChoiceAdminForm):
     def __init__(self, *args, **kwargs):
         super(PageTypeChoiceAdminForm, self).__init__(*args, **kwargs)
         self.fields['ct_id'].label = _("Page type")
+
+
+def _get_polymorphic_type_choices():
+    from fluent_pages.extensions import page_type_pool
+
+    choices = []
+    for plugin in page_type_pool.get_plugins():
+        ct = ContentType.objects.get_for_model(plugin.model)
+        choices.append((ct.id, plugin.verbose_name))
+
+    choices.sort(key=lambda x: x[1])
+    return choices
+
+
+try:
+    from django.contrib.admin import SimpleListFilter
+except ImportError:
+    extra_list_filters = ()
+else:
+    # Django 1.4:
+    class PageTypeListFilter(SimpleListFilter):
+        parameter_name = 'ct_id'
+        title = _('page type')
+
+        def lookups(self, request, model_admin):
+            return _get_polymorphic_type_choices()
+
+        def queryset(self, request, queryset):
+            if self.value():
+                queryset = queryset.filter(polymorphic_ctype_id=self.value())
+            return queryset
+
+    extra_list_filters = (PageTypeListFilter,)
 
 
 class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
@@ -21,7 +53,7 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
 
     # Config list page:
     list_display = ('title', 'status_column', 'modification_date', 'actions_column')
-    #list_filter = ('status', 'parent')
+    list_filter = ('status',) + extra_list_filters
     search_fields = ('slug', 'title')
     actions = ['make_published']
     change_list_template = None  # Restore Django's default search behavior, no admin/mptt_change_list.html
@@ -49,13 +81,7 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         """
         Return a list of polymorphic types which can be added.
         """
-        from fluent_pages.extensions import page_type_pool
-
-        choices = []
-        for plugin in page_type_pool.get_plugins():
-            ct = ContentType.objects.get_for_model(plugin.model)
-            choices.append((ct.id, plugin.verbose_name))
-        return choices
+        return _get_polymorphic_type_choices()
 
 
     # ---- List code ----
