@@ -9,13 +9,11 @@ FLUENT_PAGES_TEMPLATE_DIR = getattr(settings, 'FLUENT_PAGES_TEMPLATE_DIR', setti
 FLUENT_PAGES_RELATIVE_TEMPLATE_DIR = getattr(settings, 'FLUENT_PAGES_RELATIVE_TEMPLATE_DIR', True)
 
 
-
-# Clean settings
-FLUENT_PAGES_TEMPLATE_DIR = FLUENT_PAGES_TEMPLATE_DIR.rstrip('/') + '/'
-
-
-# Test whether the template dir for page templates exists.
 if FLUENT_PAGES_TEMPLATE_DIR:
+    # Clean settings
+    FLUENT_PAGES_TEMPLATE_DIR = FLUENT_PAGES_TEMPLATE_DIR.rstrip('/') + '/'
+
+    # Test whether the template dir for page templates exists.
     settingName = 'TEMPLATE_DIRS[0]' if not hasattr(settings, 'FLUENT_PAGES_TEMPLATE_DIR') else 'FLUENT_PAGES_TEMPLATE_DIR'
     if not os.path.isabs(FLUENT_PAGES_TEMPLATE_DIR):
         raise ImproperlyConfigured("The setting '{0}' needs to be an absolute path!".format(settingName))
