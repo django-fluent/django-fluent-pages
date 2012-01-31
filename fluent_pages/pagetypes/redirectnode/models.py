@@ -14,9 +14,14 @@ class RedirectNode(Page):
         # to add Refresh-header redirects later, with a temporary message in between.
     )
 
+    # TODO: provide internal page link as well.
+
     new_url = models.URLField(_("New URL"))
     redirect_type = models.IntegerField(_("Redirect type"), choices=REDIRECT_TYPE_CHOICES, default=302, help_text=_("Use 'normal redirect' unless you want to transfer SEO ranking to the new page."))
 
     class Meta:
         verbose_name = _("Redirect")
         verbose_name_plural = _("Redirects")
+
+    # While it's very tempting to overwrite get_absolute_url() or 'url' with the new URL,
+    # the consequences for caching are probably too big to cope with. Just redirect instead.
