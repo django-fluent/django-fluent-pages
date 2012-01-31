@@ -61,17 +61,20 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
     # ---- List code ----
 
     STATUS_ICONS = (
-        (UrlNode.PUBLISHED, 'img/admin/icon-yes.gif'),
-        (UrlNode.DRAFT,     'img/admin/icon-unknown.gif'),
+        (UrlNode.PUBLISHED, 'icon-yes.gif'),
+        (UrlNode.DRAFT,     'icon-unknown.gif'),
     )
 
 
     def status_column(self, urlnode):
         status = urlnode.status
         title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
-        icon  = [rec[1] for rec in self.STATUS_ICONS  if rec[0] == status].pop()
-        return u'<img src="{admin}{icon}" width="10" height="10" alt="{title}" title="{title}" />'.format(
-            admin=settings.ADMIN_MEDIA_PREFIX, icon=icon, title=title)
+        icon  = [rec[1] for rec in self.STATUS_ICONS if rec[0] == status].pop()
+        if hasattr(settings, 'ADMIN_MEDIA_PREFIX'):
+            admin = settings.ADMIN_MEDIA_PREFIX + 'img/admin/'  # Django 1.3
+        elif getattr(settings, 'STATIC_URL', None):
+            admin = settings.STATIC_URL + 'admin/img/'  # Django 1.4+
+        return u'<img src="{admin}{icon}" width="10" height="10" alt="{title}" title="{title}" />'.format(admin=admin, icon=icon, title=title)
 
     status_column.allow_tags = True
     status_column.short_description = _('Status')

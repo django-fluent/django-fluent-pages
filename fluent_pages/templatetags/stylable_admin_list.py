@@ -15,11 +15,9 @@ from django.conf import settings
 from django.contrib.admin.views.main import EMPTY_CHANGELIST_VALUE
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.utils import dateformat
+from django.utils import formats
 from django.utils.html import escape, conditional_escape
-from django.utils.text import capfirst
 from django.utils.safestring import mark_safe
-from django.utils.translation import get_date_formats
 from django.utils.encoding import smart_unicode, force_unicode
 from django.template import Library
 
@@ -188,8 +186,11 @@ def _get_column_repr(cl, result, field_name):
     except models.FieldDoesNotExist:
         return _get_non_field_repr(cl, result, field_name)  # Field not found (maybe a function)
     else:
-        return _get_field_repr(cl, result, f)  # Standard field
-
+        row_classes = None
+        value = display_for_field(getattr(result, f.attname), f)  # Standard field
+        if isinstance(f, models.DateField) or isinstance(f, models.TimeField):
+            row_classes = ['nowrap']
+        return value, row_classes
 
 def _get_non_field_repr(cl, result, field_name):
     """
@@ -236,47 +237,24 @@ def _get_non_field_repr(cl, result, field_name):
     return result_repr, None
 
 
-def _get_field_repr(cl, result, f):
-    """
-    Render the visual representation of a column
-    which refers to a field in the model
-    """
-    row_classes = []
-    field_val = getattr(result, f.attname)
-    result_repr = EMPTY_CHANGELIST_VALUE
+# from Django 1.4:
+def display_for_field(value, field):
+    from django.contrib.admin.templatetags.admin_list import _boolean_icon
+    from django.contrib.admin.views.main import EMPTY_CHANGELIST_VALUE
 
-    if isinstance(f.rel, models.ManyToOneRel):
-        if field_val is not None:
-            result_repr = escape(getattr(result, f.name))
-
-    elif isinstance(f, models.DateField) \
-      or isinstance(f, models.TimeField):
-        # Dates and times are special: They're formatted in a certain way.
-        if field_val:
-            (date_format, datetime_format, time_format) = get_date_formats()
-            if isinstance(f, models.DateTimeField):
-                result_repr = capfirst(dateformat.format(field_val, datetime_format))
-            elif isinstance(f, models.TimeField):
-                result_repr = capfirst(dateformat.time_format(field_val, time_format))
-            else:
-                result_repr = capfirst(dateformat.format(field_val, date_format))
-        row_classes += 'nowrap',
-
-    elif isinstance(f, models.BooleanField) \
-      or isinstance(f, models.NullBooleanField):
-        # Booleans are special: using images.
-        result_repr = _boolean_icon(field_val)
-
-    elif isinstance(f, models.DecimalField):
-        # DecimalFields are special: Zero-pad the decimals.
-        if field_val is not None:
-            result_repr = ('%%.%sf' % f.decimal_places) % field_val
-
-    elif f.flatchoices:
-        # Fields with choices are special: Use the representation of the choice.
-        result_repr = dict(f.flatchoices).get(field_val, EMPTY_CHANGELIST_VALUE)
-
+    if field.flatchoices:
+        return dict(field.flatchoices).get(value, EMPTY_CHANGELIST_VALUE)
+    # NullBooleanField needs special-case null-handling, so it comes
+    # before the general null test.
+    elif isinstance(field, models.BooleanField) or isinstance(field, models.NullBooleanField):
+        return _boolean_icon(value)
+    elif value is None:
+        return EMPTY_CHANGELIST_VALUE
+    elif isinstance(field, models.DateField) or isinstance(field, models.TimeField):
+        return formats.localize(value)
+    elif isinstance(field, models.DecimalField):
+        return formats.number_format(value, field.decimal_places)
+    elif isinstance(field, models.FloatField):
+        return formats.number_format(value)
     else:
-        result_repr = escape(field_val)
-
-    return result_repr, row_classes
+        return smart_unicode(value)

@@ -112,11 +112,14 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
     def get_urls(self):
         """Support forwarding URLs."""
         urls = super(PolymorphicBaseModelAdmin, self).get_urls()
+        info = self.model._meta.app_label, self.model._meta.module_name
 
-        # Patch the change URL is not a big catch-all,
-        # so all custom URLs can be added to the end.
-        change_url = [u for u in urls if u.name.endswith('_change')][0]
-        change_url.regex = re.compile(r'^(\d+)/$', re.UNICODE)
+        # Patch the change URL is not a big catch-all, so all custom URLs can be added to the end.
+        # can't patch url.regex property directly, as it changed with Django 1.4's LocaleRegexProvider
+        new_change_url = url(r'^(\d+)/$', self.admin_site.admin_view(self.change_view), name='{0}_{1}_change'.format(*info))
+        for i, oldurl in enumerate(urls):
+            if oldurl.name == new_change_url.name:
+                urls[i] = new_change_url
 
         # Define the catch-all for custom views
         custom_urls = patterns('',
@@ -199,8 +202,9 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
             'has_change_permission': self.has_change_permission(request),
             'form_url': mark_safe(form_url),
             'opts': opts,
-            'root_path': self.admin_site.root_path,
         })
+        if hasattr(self.admin_site, 'root_path'):
+            context['root_path'] = self.admin_site.root_path  # Django < 1.4
         context_instance = RequestContext(request, current_app=self.admin_site.name)
         return render_to_response(self.add_type_template or [
             "admin/%s/%s/add_type_form.html" % (app_label, opts.object_name.lower()),
