@@ -125,12 +125,15 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
             url(r'^(?P<path>.+)$', self.admin_site.admin_view(self.custom_view))
         )
 
-        # Add reverse names for all polymorphic models, so the delete button works.
+        # Add reverse names for all polymorphic models, so the delete button and "save and add" works.
         from fluent_pages.extensions import page_type_pool
         dummy_urls = []
         for model in page_type_pool.get_model_classes():
-            info = model._meta.app_label, model._meta.module_name
-            dummy_urls.append(url(r'^(\d+)/$', _dummy_change_view, name='{0}_{1}_change'.format(*info)))
+            info = (model._meta.app_label, model._meta.module_name)
+            dummy_urls += (
+                url(r'^(\d+)/$', _dummy_change_view, name='{0}_{1}_change'.format(*info)),
+                url(r'^add/$', _dummy_change_view, name='{0}_{1}_add'.format(*info)),
+            )
 
         return urls + custom_urls + dummy_urls
 
