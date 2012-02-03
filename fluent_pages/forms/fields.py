@@ -16,7 +16,8 @@ class TemplateFilePathField(forms.FilePathField):
 
         # Make choices relative if requested.
         if appsettings.FLUENT_PAGES_RELATIVE_TEMPLATE_DIR:
-            self.choices = self.widget.choices = [(f.replace(self.path, '', 1), t) for f, t in self.choices]
+            self.choices.sort(key=lambda choice: choice[1])
+            self.choices = self.widget.choices = [(filename.replace(self.path, '', 1), title) for filename, title in self.choices]
 
     def prepare_value(self, value):
         """
