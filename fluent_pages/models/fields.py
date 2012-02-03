@@ -16,3 +16,11 @@ class TemplateFilePathField(models.FilePathField):
         defaults = {'form_class': forms.TemplateFilePathField}
         defaults.update(kwargs)
         return super(TemplateFilePathField, self).formfield(**defaults)
+
+
+try:
+    from south.modelsinspector import add_introspection_rules
+except ImportError:
+    pass
+else:
+    add_introspection_rules([], ["^" + __name__.replace(".", "\.") + "\.TemplateFilePathField"])
