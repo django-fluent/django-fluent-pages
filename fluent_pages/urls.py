@@ -8,8 +8,8 @@ They can be included using:
     )
 
 The following named URLs are defined:
-  - ecms-admin-redirect     - An redirect to the admin.
-  - ecms-page               - Display of a page.
+  - fluent-page-admin-redirect   - An redirect to the admin.
+  - fluent-page                  - Display of a page.
 
 By Appending @admin to an URL, the request will be redirected to the admin URL of the page.
 """
@@ -22,6 +22,6 @@ from fluent_pages.views import CmsPageDispatcher, CmsPageAdminRedirect
 # The same trick also needs to be used in the main site
 # which includes this file. Otherwise a rule matched after all.
 urlpatterns = patterns('fluent_pages.views',
-    url(r'^(?P<path>.*)@admin$', CmsPageAdminRedirect.as_view(), name='ecms-admin-redirect'),
-    url(r'^$|^(?P<path>.*)$', CmsPageDispatcher.as_view(), name='ecms-page')
+    url(r'^(?P<path>.*)@admin$', CmsPageAdminRedirect.as_view(), name='fluent-page-admin-redirect'),
+    url(r'^$|^(?P<path>.*)$', CmsPageDispatcher.as_view(), name='fluent-page')
 )

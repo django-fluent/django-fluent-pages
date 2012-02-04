@@ -36,7 +36,7 @@ class TemplateFilePathField(forms.FilePathField):
 
 class RelativeRootPathField(forms.CharField):
     """
-    A ``CharField`` which returns stored URL values relative to the ecms-pages root.
+    A ``CharField`` which returns stored URL values relative to the fluent-page root.
     """
     def prepare_value(self, value):
         """
@@ -44,7 +44,7 @@ class RelativeRootPathField(forms.CharField):
         Adds the root of the CMS pages.
         """
         if value and value.startswith('/'):  # value is None for add page.
-            root = reverse('ecms-page').rstrip('/')
+            root = reverse('fluent-page').rstrip('/')
             value = root + value
         return value
 
@@ -53,7 +53,7 @@ class RelativeRootPathField(forms.CharField):
         Convert the displayed value to the database/model value.
         Removes the root of the CMS pages.
         """
-        root = reverse('ecms-page').rstrip('/')
+        root = reverse('fluent-page').rstrip('/')
         value = super(RelativeRootPathField, self).to_python(value)
         if root and value.startswith(root):
             value = value[len(root):]

@@ -141,7 +141,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
         # when the application is mounted at a subfolder, or the 'cms.urls' config
         # is included at a sublevel, it needs to be prepended.
         try:
-            root = reverse('ecms-page').rstrip('/')
+            root = reverse('fluent-page').rstrip('/')
         except NoReverseMatch:
             raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
         return root + self._cached_url

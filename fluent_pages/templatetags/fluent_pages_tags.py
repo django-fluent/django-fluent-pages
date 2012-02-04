@@ -1,11 +1,17 @@
 """
-Template tags to request fluent page content in the template
+Template tags to request fluent page content in the template.
+
+Thet tags can be loaded using:
+
+.. code-block:: html+django
+
+    {% load fluent_pages_tags %}
 """
 from django.contrib.sites.models import Site
 from django.template import Library, Node, Context, defaulttags
 from django.template.loader import get_template
 from fluent_pages.models import UrlNode
-from fluent_pages.models.navigation import CmsObjectNavigationNode
+from fluent_pages.models.navigation import PageNavigationNode
 
 # Export the tags
 register = Library()
@@ -73,6 +79,13 @@ class BreadcrumbNode(SimpleInclusionNode):
 
 @register.tag
 def render_breadcrumb(parser, token):
+    """
+    Render the breadcrumb of the site.
+
+    .. code-block:: html+django
+
+        {% render_breadcrumb %}
+    """
     return BreadcrumbNode()
 
 
@@ -94,12 +107,19 @@ class MenuNode(SimpleInclusionNode):
         top_pages = UrlNode.objects.toplevel_navigation(current_page=page)
 
         # Make iterable context
-        menu_items = [CmsObjectNavigationNode(page, **token_kwargs) for page in top_pages]
+        menu_items = [PageNavigationNode(page, **token_kwargs) for page in top_pages]
         return {'menu_items': menu_items}
 
 
 @register.tag
 def render_menu(parser, token):
+    """
+    Render the breadcrumb of the site.
+
+    .. code-block:: html+django
+
+        {% render_menu max_depth=1 %}
+    """
     return MenuNode.parse(parser, token)
 
 
@@ -111,35 +131,42 @@ class GetVarsNode(Node):
     def render(self, context):
         # If the current URL does not overlay a page,
         # create a dummy item to handle the standard rendering.
-        current_site = None
-        current_page = None
-
         try:
             current_page = _get_current_page(context)
             current_site = current_page.parent_site
         except UrlNode.DoesNotExist:
             # Detect current site
             request = _get_request(context)
+            current_page = None
             current_site = Site.objects.get_current()
 
-            # Allow {% render_ecms_menu %} to operate.
+            # Allow {% render_menu %} to operate.
             dummy_page = UrlNode(title='', in_navigation=False, override_url=request.path, status=UrlNode.DRAFT, parent_site=current_site)
-            request._ecms_current_page = dummy_page
+            request._current_fluent_page = dummy_page
 
         # Automatically add 'ecms_site', allows "default:ecms_site.domain" to work.
         # ...and optionally - if a page exists - include 'ecms_page' too.
         if not context.has_key('site'):
-            ecms_vars = {'site': current_site}
+            extra_context = {'site': current_site}
             if current_page and not context.has_key('page'):
-                ecms_vars['page'] = current_page
+                extra_context['page'] = current_page
 
-            context.update(ecms_vars)
+            context.update(extra_context)
 
         return ''
 
 
 @register.tag
 def get_fluent_page_vars(parser, token):
+    """
+    When a template is used for an application page,
+    add the following contents to make it work:
+
+    .. code-block:: html+django
+
+        {% load fluent_pages_tags %}
+        {% get_fluent_page_vars %}
+    """
     return GetVarsNode()
 
 
@@ -154,32 +181,33 @@ def _get_current_page(context):
 
     # This is a load-on-demand attribute, to allow calling the ecms template tags outside the standard view.
     # When the current page is not specified, do auto-detection.
-    if not hasattr(request, '_ecms_current_page'):
+    if not hasattr(request, '_current_fluent_page'):
         try:
             # First start with something you can control,
             # and likely want to mimic from the standard view.
-            request._ecms_current_page = context['page']
+            request._current_fluent_page = context['page']
         except KeyError:
             try:
                 # Then try looking up environmental properties.
-                request._ecms_current_page = UrlNode.objects.get_for_path(request.path)
+                request._current_fluent_page = UrlNode.objects.get_for_path(request.path)
             except UrlNode.DoesNotExist, e:
                 # Be descriptive. This saves precious developer time.
                 raise UrlNode.DoesNotExist("Could not detect current page.\n"
                                            "- " + unicode(e) + "\n"
-                                           "- No context variable named 'ecms_page' found.")
+                                           "- No context variable named 'page' found.")
 
-    return request._ecms_current_page  # is a CmsObject
+    return request._current_fluent_page  # is a CmsObject
 
 
 def _get_request(context):
     """
     Fetch the request from the context.
-
     This enforces the use of a RequestProcessor, e.g.
+
+    .. code-block:: python
 
         render_to_response("page.html", context, context_instance=RequestContext(request))
     """
-    assert context.has_key('request'), "ECMS functions require a 'request' object in the context, is RequestContext not used?"
+    assert context.has_key('request'), "The fluent_pages_tags library requires a 'request' object in the context, is RequestContext not used?"
     return context['request']
 

@@ -35,16 +35,11 @@
 </div><!-- /inlines -->
 
 
-    <div class="ecms-tab" id="tab-properties">
-      <div id="ecms-fieldset-secondary">
+{# all remaining fieldsets #}
+{% for fieldset in adminform %}
+  {% if not forloop.first %}{% include "admin/includes/fieldset.html" %}{% endif %}
+{% endfor %}
 
-        {# all remaining fieldsets #}
-        {% for fieldset in adminform %}
-          {% if not forloop.first %}{% include "admin/includes/fieldset.html" %}{% endif %}
-        {% endfor %}
-
-      </div><!-- /ecms-fieldset-secondary -->
-    </div>
 
 {% submit_row %}
 

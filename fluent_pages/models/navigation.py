@@ -50,13 +50,13 @@ class NavigationNode(object):
         return self.level
 
 
-class CmsObjectNavigationNode(NavigationNode):
+class PageNavigationNode(NavigationNode):
 
     def __init__(self, page, parent_node=None, max_depth=9999):
         """
         Initialize the node with a CmsObject.
         """
-        assert page.in_navigation, "CmsObjectNavigationNode can't take page #%d (%s) which is not visible in the navigation." % (page.id, page.url)
+        assert page.in_navigation, "PageNavigationNode can't take page #%d (%s) which is not visible in the navigation." % (page.id, page.url)
         super(NavigationNode, self).__init__()
         self._page = page
         self._parent_node = parent_node
@@ -77,14 +77,14 @@ class CmsObjectNavigationNode(NavigationNode):
     @property
     def parent(self):
         if not self._parent_node:
-            self._parent_node = CmsObjectNavigationNode(self._page.get_parent(), max_depth=self._max_depth)
+            self._parent_node = PageNavigationNode(self._page.get_parent(), max_depth=self._max_depth)
         return self._parent_node
 
     @property
     def children(self):
         self._read_children()
         for child in self._children:
-            yield CmsObjectNavigationNode(child, self, max_depth=self._max_depth)
+            yield PageNavigationNode(child, self, max_depth=self._max_depth)
 
     @property
     def has_children(self):

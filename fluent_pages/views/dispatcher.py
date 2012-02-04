@@ -105,6 +105,8 @@ class CmsPageDispatcher(GetPathMixin, View):
         except self.model.DoesNotExist:
             return None
 
+        self.request._current_fluent_page = self.object   # Avoid additional lookup in templatetags
+
         # Before returning the response of an object,
         # check if the plugin overwrites the root url with a custom view.
         plugin = self.get_plugin()
@@ -166,6 +168,7 @@ class CmsPageDispatcher(GetPathMixin, View):
             return None
         else:
             # Call application view.
+            self.request._current_fluent_page = self.object   # Avoid additional lookup in templatetags
             response = match.func(self.request, *match.args, **match.kwargs)
             if response is None:
                 raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
@@ -197,7 +200,7 @@ class CmsPageDispatcher(GetPathMixin, View):
 
     def _is_own_view(self, match):
         return match.app_name == 'fluent_pages' \
-            or match.url_name == 'ecms-page'
+            or match.url_name == 'fluent-page'
 
 
 class CmsPageAdminRedirect(GetPathMixin, RedirectView):
