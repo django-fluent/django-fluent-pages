@@ -1,18 +1,14 @@
 """
-Template tags to request ECMS content in the template
+Template tags to request fluent page content in the template
 """
 from django.contrib.sites.models import Site
-from django.template import TemplateSyntaxError, Library, Node, Context, defaulttags
+from django.template import Library, Node, Context, defaulttags
 from django.template.loader import get_template
 from fluent_pages.models import UrlNode
-from fluent_contents.templatetags.placeholder_tags import PagePlaceholderNode
 from fluent_pages.models.navigation import CmsObjectNavigationNode
 
 # Export the tags
 register = Library()
-
-
-# ---- Template node parsing ----
 
 def _parse_token_kwargs(parser, token, allowed_fields):
     """
@@ -30,42 +26,6 @@ def _parse_token_kwargs(parser, token, allowed_fields):
     return kwargs
 
 
-def _resolve_token_kwargs(kwargs, context):
-    return dict([(key, val.resolve(context)) for key, val in kwargs.iteritems()])
-
-
-@register.tag(name='render_ecms_breadcrumb')
-def _parse_ecms_breadcrumb(parser, token):
-    return EcmsBreadcrumbNode()
-
-
-@register.tag(name='render_ecms_menu')
-def _parse_ecms_menu(parser, token):
-    kwargs = _parse_token_kwargs(parser, token, ('max_depth',))
-    return EcmsMenuNode(**kwargs)
-
-
-@register.tag(name='render_ecms_region')
-def _parse_ecms_region(parser, token):
-    try:
-        (tag_name, region_var_name) = token.split_contents()
-    except ValueError:
-        raise TemplateSyntaxError, "%r tag requires a single argument" % token.contents.split()[0]
-
-    # TODO: proper parsing of meta_kwargs
-    return EcmsRegionNode(
-        parent_expr=parser.compile_filter('ecms_page'),
-        slot_expr=parser.compile_filter(region_var_name),
-        meta_kwargs={},
-    )
-
-
-@register.tag(name='get_ecms_vars')
-def _parse_get_ecms_vars(parser, token):
-    return EcmsGetVarsNode()
-
-
-# ---- All template nodes ----
 
 # Please take thread-safety in mind when coding the node classes:
 # Only static/unmodified values (like template tag args) should be assigned to self.
@@ -90,7 +50,7 @@ class SimpleInclusionNode(Node):
             self.nodelist = tpl.nodelist
 
         # Resolve token kwargs
-        token_kwargs = _resolve_token_kwargs(self.kwargs, context)
+        token_kwargs = dict([(key, val.resolve(context)) for key, val in self.kwargs.iteritems()])
 
         # Render the node
         data = self.get_context_data(context, token_kwargs)
@@ -98,7 +58,7 @@ class SimpleInclusionNode(Node):
         return self.nodelist.render(new_context)
 
 
-class EcmsBreadcrumbNode(SimpleInclusionNode):
+class BreadcrumbNode(SimpleInclusionNode):
     """
     Template node for breadcrumb.
     """
@@ -111,11 +71,22 @@ class EcmsBreadcrumbNode(SimpleInclusionNode):
         return {'breadcrumb': items}
 
 
-class EcmsMenuNode(SimpleInclusionNode):
+@register.tag
+def render_breadcrumb(parser, token):
+    return BreadcrumbNode()
+
+
+
+class MenuNode(SimpleInclusionNode):
     """
     Template Node for topmenu
     """
     template_name = 'fluent_pages/parts/menu.html'
+
+    @classmethod
+    def parse(cls, parser, token):
+        kwargs = _parse_token_kwargs(parser, token, ('max_depth',))
+        return MenuNode(**kwargs)
 
     def get_context_data(self, context, token_kwargs):
         # Get page
@@ -127,23 +98,15 @@ class EcmsMenuNode(SimpleInclusionNode):
         return {'menu_items': menu_items}
 
 
-class EcmsRegionNode(PagePlaceholderNode):
-    """
-    Template Node for a region.
-    """
-    pass
+@register.tag
+def render_menu(parser, token):
+    return MenuNode.parse(parser, token)
 
 
-class EcmsGetVarsNode(Node):
+
+class GetVarsNode(Node):
     """
     Template Node to setup an application page.
-
-    When a template is used for an application page,
-    add the following contents to make it work:
-
-        {% load ecms_tags %}
-
-        {% ecms_get_vars %}
     """
     def render(self, context):
         # If the current URL does not overlay a page,
@@ -165,14 +128,19 @@ class EcmsGetVarsNode(Node):
 
         # Automatically add 'ecms_site', allows "default:ecms_site.domain" to work.
         # ...and optionally - if a page exists - include 'ecms_page' too.
-        if not context.has_key('ecms_site'):
-            ecms_vars = {'ecms_site': current_site}
-            if current_page and not context.has_key('ecms_page'):
-                ecms_vars['ecms_page'] = current_page
+        if not context.has_key('site'):
+            ecms_vars = {'site': current_site}
+            if current_page and not context.has_key('page'):
+                ecms_vars['page'] = current_page
 
             context.update(ecms_vars)
 
         return ''
+
+
+@register.tag
+def get_fluent_page_vars(parser, token):
+    return GetVarsNode()
 
 
 

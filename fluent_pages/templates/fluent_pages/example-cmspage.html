@@ -1,34 +1,34 @@
-{% load ecms_tags %}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% load fluent_page_tags placeholder_tags %}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xml:lang="{{ LANGUAGE_CODE|default:"nl" }}" lang="{{ LANGUAGE_CODE|default:"nl" }}">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="generator" content="Powered by Django and Python" />
-    <title>{{ ecms_page.title }} - {{ ecms_site.title|default:ecms_site.domain }}</title>
+    <title>{{ page.title }} - {{ site.title|default:site.domain }}</title>
     <link rel="stylesheet" href="{{ STATIC_URL }}yoursite/base.css" type="text/css" />
     {% block scripts %}{% endblock %}
   </head>
 
-  <body id="cmspage-{{ ecms_page.slug }}">
+  <body id="cmspage-{{ page.slug }}">
     <div id="wrapper">
       <div id="fullpage" class="clearfix">
         <div id="header">
-          <h1><a href="{{ ecms_site.url }}">{{ ecms_site.title|default:ecms_site.domain }}</a></h1>
+          <h1><a href="{{ site.url }}">{{ site.title|default:site.domain }}</a></h1>
         </div>
 
         <div id="menu" class="clearfix">
-          {% render_ecms_menu max_depth=2 %}
+          {% render_menu max_depth=2 %}
         </div><!-- /menu -->
 
         <div id="mainarea">
 
           <div id="breadcrumb">
-            {% render_ecms_breadcrumb %}
+            {% render_breadcrumb %}
           </div><!-- /breadcrumb -->
 
-          <h1 class="pagetitle">{% block pagetitle %}{{ ecms_page.title }}{% endblock %}</h1>
+          <h1 class="pagetitle">{% block pagetitle %}{{ page.title }}{% endblock %}</h1>
           <div id="content">
-            {%block content %}{% render_ecms_region "main" %}{% endblock %}
+            {% block content %}{% page_placeholder "main" %}{% endblock %}
           </div><!-- /content -->
 
         </div><!-- /mainarea -->

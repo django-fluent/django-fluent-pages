@@ -6,7 +6,24 @@ register = Library()
 class BreadcrumbScope(Node):
     def __init__(self, base_opts, nodelist):
         self.base_opts = base_opts
-        self.nodelist = nodelist
+        self.nodelist = nodelist   # Note, takes advantage of Node.child_nodelists
+
+    @classmethod
+    def parse(cls, parser, token):
+        bits = token.split_contents()
+        if len(bits) == 2:
+            (tagname, base_opts) = bits
+            base_opts = parser.compile_filter(base_opts)
+            nodelist = parser.parse(('endbreadcrumb_scope',))
+            parser.delete_first_token()
+
+            return cls(
+                base_opts=base_opts,
+                nodelist=nodelist
+            )
+        else:
+            raise TemplateSyntaxError("{0} tag expects 1 argument".format(token.contents[0]))
+
 
     def render(self, context):
         # app_label is really hard to overwrite in the standard Django ModelAdmin.
@@ -29,13 +46,4 @@ class BreadcrumbScope(Node):
 
 @register.tag
 def breadcrumb_scope(parser, token):
-    try:
-        (tagname, base_opts) = token.split_contents()
-    except IndexError:
-        raise TemplateSyntaxError("{0} tag expects 1 argument".format(token.contents[0]))
-
-    base_opts = parser.compile_filter(base_opts)
-    nodelist = parser.parse(('endbreadcrumb_scope',))
-    parser.delete_first_token()
-
-    return BreadcrumbScope(base_opts, nodelist)
+    return BreadcrumbScope.parse(parser, token)
