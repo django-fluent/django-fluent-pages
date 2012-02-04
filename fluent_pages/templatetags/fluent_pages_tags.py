@@ -42,26 +42,36 @@ class SimpleInclusionNode(Node):
     Base class to render a template tag with a template.
     """
     template_name = None
+    allowed_kwargs = ('template',)
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs
+
+    @classmethod
+    def parse(cls, parser, token):
+        kwargs = _parse_token_kwargs(parser, token, cls.allowed_kwargs)
+        return cls(**kwargs)
 
     def get_context_data(self, context, token_kwargs):
         raise NotImplementedError()
 
     def render(self, context):
-        # Get template nodes, and cache it.
-        if not getattr(self, 'nodelist', False):
-            tpl = get_template(self.template_name)
-            self.nodelist = tpl.nodelist
-
         # Resolve token kwargs
         token_kwargs = dict([(key, val.resolve(context)) for key, val in self.kwargs.iteritems()])
+
+        # Get template nodes, and cache it.
+        # Note that self.nodelist is special in the Node baseclass.
+        if not getattr(self, 'nodelist', None):
+            tpl = get_template(self.get_template_name(token_kwargs))
+            self.nodelist = tpl.nodelist
 
         # Render the node
         data = self.get_context_data(context, token_kwargs)
         new_context = Context(data, autoescape=context.autoescape)
         return self.nodelist.render(new_context)
+
+    def get_template_name(self, token_kwargs):
+        return token_kwargs.get('template', self.template_name)
 
 
 class BreadcrumbNode(SimpleInclusionNode):
@@ -85,8 +95,9 @@ def render_breadcrumb(parser, token):
     .. code-block:: html+django
 
         {% render_breadcrumb %}
+        {% render_breadcrumb template="sitetheme/parts/breadcrumb.html" %}
     """
-    return BreadcrumbNode()
+    return BreadcrumbNode.parse(parser, token)
 
 
 
@@ -95,11 +106,7 @@ class MenuNode(SimpleInclusionNode):
     Template Node for topmenu
     """
     template_name = 'fluent_pages/parts/menu.html'
-
-    @classmethod
-    def parse(cls, parser, token):
-        kwargs = _parse_token_kwargs(parser, token, ('max_depth',))
-        return MenuNode(**kwargs)
+    allowed_kwargs = ('max_depth', 'template',)
 
     def get_context_data(self, context, token_kwargs):
         # Get page
@@ -107,7 +114,8 @@ class MenuNode(SimpleInclusionNode):
         top_pages = UrlNode.objects.toplevel_navigation(current_page=page)
 
         # Make iterable context
-        menu_items = [PageNavigationNode(page, **token_kwargs) for page in top_pages]
+        node_kwargs = dict((k,v) for k, v in token_kwargs.iteritems() if k in ['max_depth'])
+        menu_items = [PageNavigationNode(page, **node_kwargs) for page in top_pages]
         return {'menu_items': menu_items}
 
 
@@ -118,7 +126,7 @@ def render_menu(parser, token):
 
     .. code-block:: html+django
 
-        {% render_menu max_depth=1 %}
+        {% render_menu max_depth=1 template="sitetheme/parts/menu.html" %}
     """
     return MenuNode.parse(parser, token)
 
