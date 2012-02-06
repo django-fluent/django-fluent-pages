@@ -31,6 +31,10 @@ It should have the following settings::
         # The CMS content plugins
         'fluent_contents.plugins.text',
 
+        # The CMS page types
+        'fluent_pages.pagetypes.fluentpage',
+        'fluent_pages.pagetypes.redirectnode',
+
         # Support libs
         'mptt',
         'django_wysiwyg',
