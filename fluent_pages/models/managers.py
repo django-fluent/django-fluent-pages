@@ -115,11 +115,12 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
 
     def toplevel_navigation(self, current_page=None):
         """
-        Return all toplevel items.
+        Return all toplevel items, ordered by menu ordering.
 
         When current_page is passed, the object values such as 'is_current' will be set. 
         """
-        items = self.toplevel().in_navigation().non_polymorphic()
+        # Default ordering is based on django-mptt, ordering on sort_order should be temporary needed.
+        items = self.toplevel().in_navigation().non_polymorphic().order_by('sort_order', 'title')
         if current_page:
             items = _mark_current(items, current_page)
         return items
