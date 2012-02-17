@@ -85,6 +85,10 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
         return self.get_admin_for_model(model_class)
 
 
+    def queryset(self, request):
+        return super(PolymorphicBaseModelAdmin, self).queryset(request).non_polymorphic()
+
+
     def add_view(self, request, form_url='', extra_context=None):
         """Redirect the add view to the real admin."""
         ct_id = int(request.GET.get('ct_id', 0))
