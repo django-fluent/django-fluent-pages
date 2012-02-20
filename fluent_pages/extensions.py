@@ -350,8 +350,8 @@ class PageTypePool(object):
 
         try:
             _import_apps_submodule("page_type_plugins")
-        finally:
             self.detected = True
+        finally:
             self.scanLock.release()
 
 
