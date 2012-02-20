@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.conf.urls.defaults import patterns
-from django.utils.translation import ugettext_lazy as _
-from fluent_pages.admin import PageAdmin
+from fluent_pages.admin import HtmlPageAdmin
 from fluent_pages.forms.widgets import LayoutSelector
 from fluent_pages.models import PageLayout
 from fluent_pages.utils.ajax import JsonResponse
@@ -8,17 +8,16 @@ from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 
 
-class FluentPageAdmin(PlaceholderEditorAdmin, PageAdmin):
-    fieldsets = (
+class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
+    # By using base_fieldsets, the parent PageAdmin will
+    # add an extra fieldset for all derived fields automatically.
+    base_fieldsets = (
         (None, {
-            'fields': PageAdmin.FIELDSET_GENERAL[1]['fields'] + ('layout',),
+            'fields': HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'] + ('layout',),
         }),
-        (_('SEO settings'), {
-            'fields': ('keywords', 'description'),
-            'classes': ('collapse',),
-        }),
-        PageAdmin.FIELDSET_MENU,
-        PageAdmin.FIELDSET_PUBLICATION,
+        HtmlPageAdmin.FIELDSET_SEO,
+        HtmlPageAdmin.FIELDSET_MENU,
+        HtmlPageAdmin.FIELDSET_PUBLICATION,
     )
 
     change_form_template = ["admin/fluent_pages/page/page_editor.html",

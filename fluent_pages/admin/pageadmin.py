@@ -1,5 +1,6 @@
+from django.utils.translation import ugettext_lazy as _
 from fluent_pages.admin.urlnodeadmin import UrlNodeAdmin, UrlNodeAdminForm
-from fluent_pages.models import Page
+from fluent_pages.models import Page, HtmlPage
 
 
 class PageAdminForm(UrlNodeAdminForm):
@@ -19,3 +20,20 @@ class PageAdmin(UrlNodeAdmin):
     # This class may be extended in the future.
     # Currently it's a tagging placeholder
     # to have a clear Page <-> PageAdmin combo.
+
+
+class HtmlPageAdmin(PageAdmin):
+    """
+    The modeladmin configured to display :class:`~fluent_pages.models.HtmlPage` objects.
+    """
+    FIELDSET_SEO = (_('SEO settings'), {
+        'fields': ('keywords', 'description'),
+        'classes': ('collapse',),
+    })
+
+    base_fieldsets = (
+        PageAdmin.FIELDSET_GENERAL,
+        FIELDSET_SEO,
+        PageAdmin.FIELDSET_MENU,
+        PageAdmin.FIELDSET_PUBLICATION,
+    )

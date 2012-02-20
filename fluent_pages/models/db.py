@@ -337,6 +337,7 @@ class HtmlPage(Page):
 
     class Meta:
         abstract = True
+        verbose_name_plural = _('Pages')
 
 
 

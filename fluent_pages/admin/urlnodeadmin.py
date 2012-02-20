@@ -98,7 +98,7 @@ class UrlNodeAdmin(PolymorphedModelAdmin, MPTTModelAdmin):
     base_fieldsets = (
         FIELDSET_GENERAL,
         FIELDSET_MENU,
-        FIELDSET_PUBLICATION
+        FIELDSET_PUBLICATION,
     )
 
     # Config add/edit page:

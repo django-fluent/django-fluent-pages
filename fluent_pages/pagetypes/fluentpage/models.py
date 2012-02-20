@@ -3,8 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 from fluent_pages.models import HtmlPage, PageLayout
 
-
-class FluentPage(HtmlPage):
+class FluentPageBase(HtmlPage):
     """
     A ```FluentPage``` represents one HTML page of the site.
     """
@@ -17,6 +16,14 @@ class FluentPage(HtmlPage):
 #    objects = UrlNodeManager()
 
     class Meta:
+        abstract = True
         verbose_name = _("Page")
         verbose_name_plural = _("Page")
 
+
+
+class FluentPage(FluentPageBase):
+    """
+    A ```FluentPage``` represents one HTML page of the site.
+    """
+    pass
