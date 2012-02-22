@@ -159,6 +159,17 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
 
     @property
+    def last_modified(self):
+        """
+        Return the last modification date of the page.
+        Currently this is the last time the page was saved.
+        This is implemented as separate property,
+        to be extended to page content in the future.
+        """
+        return self.modification_date
+
+
+    @property
     def breadcrumb(self):
         """
         Return the breadcrumb; all parent pages leading to the current page, including current page itself.
