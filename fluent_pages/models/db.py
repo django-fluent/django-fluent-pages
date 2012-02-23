@@ -51,12 +51,12 @@ class URLNodeMetaClass(MPTTModelBase, PolymorphicModelBase):
 
     Set db_table if it has not been customized.
     """
-    # Inspired by from Django-CMS, (c) , BSD licensed.
 
     def __new__(mcs, name, bases, attrs):
         new_class = super(URLNodeMetaClass, mcs).__new__(mcs, name, bases, attrs)
 
         # Update the table name.
+        # Inspired by from Django-CMS, (c) , BSD licensed.
         if name not in ['UrlNode', 'Page']:
             meta = new_class._meta
             if meta.db_table.startswith(meta.app_label + '_'):
