@@ -30,15 +30,26 @@
 {# inlines, for django-fluent-contents #}
 <div id="fluent_contents_inlines">
   {% for inline_admin_formset in inline_admin_formsets %}
-    {% include inline_admin_formset.opts.template %}
+    {% if inline_admin_formset.opts.is_fluent_editor_inline %}
+      {% include inline_admin_formset.opts.template %}
+    {% endif %}
   {% endfor %}
-</div><!-- /inlines -->
+</div><!-- /fluent_contents_inlines -->
 
 
 {# all remaining fieldsets #}
 {% for fieldset in adminform %}
   {% if not forloop.first %}{% include "admin/includes/fieldset.html" %}{% endif %}
 {% endfor %}
+
+{# remaining inlines added by pagetypes #}
+<div id="fluent_contents_inlines">
+  {% for inline_admin_formset in inline_admin_formsets %}
+    {% if not inline_admin_formset.opts.is_fluent_editor_inline %}
+      {% include inline_admin_formset.opts.template %}
+    {% endif %}
+  {% endfor %}
+</div><!-- /fluent_contents_inlines -->
 
 
 {% submit_row %}
