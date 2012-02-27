@@ -2,7 +2,11 @@
 Extra form fields.
 """
 from django import forms
+from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
+from mptt.forms import TreeNodeChoiceField
 from fluent_pages import appsettings
 import os
 
@@ -58,3 +62,20 @@ class RelativeRootPathField(forms.CharField):
         if root and value.startswith(root):
             value = value[len(root):]
         return value
+
+
+class PageChoiceField(TreeNodeChoiceField):
+    """
+    A SelectBox that displays the pages QuerySet, with items indented.
+    """
+
+    def __init__(self, *args, **kwargs):
+        if not args and not kwargs.has_key('queryset'):
+            from fluent_pages.models import UrlNode
+            kwargs['queryset'] = UrlNode.objects.filter(site=settings.SITE_ID).published().non_polymorphic()
+        super(PageChoiceField, self).__init__(*args, **kwargs)
+
+
+    def label_from_instance(self, page):
+        page_title = page.title or page.slug  # TODO: menu title?
+        return mark_safe(u"%s %s" % (u"&nbsp;&nbsp;" * page.level, escape(page_title)))

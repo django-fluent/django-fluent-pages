@@ -13,6 +13,7 @@ There are several sub packages:
 # Like django.db.models, or django.forms,
 # have everything split into several packages
 from django.conf import settings
+from fluent_pages.forms.fields import PageChoiceField
 from fluent_pages.models.db import UrlNode, Page, HtmlPage, PageLayout
 
 __all__ = ['UrlNode', 'Page', 'HtmlPage', 'PageLayout']
@@ -26,7 +27,7 @@ def _register_cmsfield_url_type():
     else:
         from django import forms
         from mptt.forms import TreeNodeChoiceField
-        CmsUrlField.register_model(Page, form_field=TreeNodeChoiceField(queryset=UrlNode.objects.published()))
+        CmsUrlField.register_model(Page, form_field=PageChoiceField(queryset=UrlNode.objects.published().non_polymorphic()))
 
 
 if 'cmsfields' in settings.INSTALLED_APPS:
