@@ -57,6 +57,9 @@ class PageTypePlugin(object):
     #: Set the URLs which the page serves provides the current node. Can either be a URLconf module, or inline pattern list.
     urls = None
 
+    #: The sorting priority for the add page.
+    sort_priority = 100
+
 
     def __init__(self):
         self._type_id = None

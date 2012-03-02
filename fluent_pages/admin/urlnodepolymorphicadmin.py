@@ -14,12 +14,14 @@ class PageTypeChoiceAdminForm(PolymorphicModelChoiceAdminForm):
 def _get_polymorphic_type_choices():
     from fluent_pages.extensions import page_type_pool
 
+    priorities = {}
     choices = []
     for plugin in page_type_pool.get_plugins():
         ct = ContentType.objects.get_for_model(plugin.model)
         choices.append((ct.id, plugin.verbose_name))
+        priorities[ct.id] = plugin.sort_priority
 
-    choices.sort(key=lambda x: x[1])
+    choices.sort(key=lambda choice: (priorities[choice[0]], choice[1]))
     return choices
 
 

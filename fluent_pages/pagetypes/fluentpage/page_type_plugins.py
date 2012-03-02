@@ -6,6 +6,7 @@ from fluent_pages.pagetypes.fluentpage.admin import FluentPageAdmin
 class FluentPagePlugin(PageTypePlugin):
     model = FluentPage
     model_admin = FluentPageAdmin
+    sort_priority = 10
 
     def get_render_template(self, request, fluentpage, **kwargs):
         return fluentpage.layout.template_path
