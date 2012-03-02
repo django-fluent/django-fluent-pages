@@ -8,28 +8,13 @@ Thet tags can be loaded using:
     {% load fluent_pages_tags %}
 """
 from django.contrib.sites.models import Site
-from django.template import Library, Node, Context, defaulttags
+from django.template import Library, Node, Context, TemplateSyntaxError
 from django.template.loader import get_template
 from fluent_pages.models import UrlNode
 from fluent_pages.models.navigation import PageNavigationNode
+from fluent_pages.utils.tagparsing import parse_token_kwargs
 
-# Export the tags
 register = Library()
-
-def _parse_token_kwargs(parser, token, allowed_fields):
-    """
-    Parse the template arguments in kwargs syntax.
-    Returns a dictionary with FilterExpression objects.
-    """
-    bits = token.split_contents()
-    remaining_bits = bits[1:]
-    kwargs = defaulttags.token_kwargs(remaining_bits, parser)
-
-    # Validate the allowed arguments, to make things easier for template developers
-    for name in kwargs:
-        if name not in allowed_fields:
-            raise AttributeError("The option %s=... cannot be used in '%s'.\nPossible options are: %s." % (name, bits[0], ", ".join(allowed_fields)))
-    return kwargs
 
 
 
@@ -49,7 +34,9 @@ class SimpleInclusionNode(Node):
 
     @classmethod
     def parse(cls, parser, token):
-        kwargs = _parse_token_kwargs(parser, token, cls.allowed_kwargs)
+        args, kwargs = parse_token_kwargs(parser, token, True, True, cls.allowed_kwargs)
+        if args:
+            raise TemplateSyntaxError("'{0}' tag only allows template=... argument!".format(token.contents.split(' ', 2)[0]))
         return cls(**kwargs)
 
     def get_context_data(self, context, token_kwargs):
