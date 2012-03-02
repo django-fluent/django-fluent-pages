@@ -6,7 +6,7 @@ class PageSitemap(Sitemap):
     The sitemap definition for the pages created with django-fluent-pages.
     """
     def items(self):
-        return UrlNode.objects.published().non_polymorphic()
+        return UrlNode.objects.published().non_polymorphic().order_by('level', '_cached_url')
 
     def lastmod(self, urlnode):
         """Return the last modification of the page."""
