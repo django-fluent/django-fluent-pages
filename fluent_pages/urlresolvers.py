@@ -47,7 +47,7 @@ def app_reverse(viewname, args=None, kwargs=None, multiple=False, current_page=N
             viewname, ', '.join(page.get_absolute_url() for page in pages)
         ))
     elif not pages:
-        raise PageTypeNotMounted("Reverse for application URL '{0}' not found, page type '{1}' is not added in the page tree.".format(plugin.type_name))
+        raise PageTypeNotMounted("Reverse for application URL '{0}' is not available, a '{1}' page needs to be added to the page tree.".format(viewname, unicode(plugin.verbose_name)))
 
     # Return URL with page prefix.
     if multiple:
