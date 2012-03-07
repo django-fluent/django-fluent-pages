@@ -1,6 +1,8 @@
 """
 The manager class for the CMS models
 """
+from datetime import datetime
+from django.db.models.query_utils import Q
 from mptt.managers import TreeManager
 from polymorphic import PolymorphicManager
 from polymorphic.query import PolymorphicQuerySet
@@ -47,7 +49,15 @@ class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
         Return only published pages
         """
         from fluent_pages.models import UrlNode   # the import can't be globally, that gives a circular dependency
-        return self.filter(status=UrlNode.PUBLISHED)
+        return self \
+            .filter(status=UrlNode.PUBLISHED) \
+            .filter(
+                Q(publication_date__isnull=True) |
+                Q(publication_date__lt=datetime.now())
+            ).filter(
+                Q(publication_end_date__isnull=True) |
+                Q(publication_end_date__gte=datetime.now())
+            )
 
 
     def in_navigation(self):

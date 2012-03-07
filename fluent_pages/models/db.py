@@ -89,7 +89,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
     # Publication information
     status = models.CharField(_('status'), max_length=1, choices=STATUSES, default=DRAFT)
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, help_text=_('''When the page should go live, status must be "Published".'''))
-    expire_date = models.DateTimeField(_('publication end date'), null=True, blank=True)
+    publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=True)
     sort_order = models.IntegerField(default=1)   # TODO: affect mptt sort ordering.
     override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))

@@ -91,7 +91,7 @@ class UrlNodeAdmin(PolymorphedModelAdmin, MPTTModelAdmin):
         'classes': ('collapse',),
     })
     FIELDSET_PUBLICATION = (_('Publication settings'), {
-        'fields': ('publication_date', 'expire_date', 'override_url'),
+        'fields': ('publication_date', 'publication_end_date', 'override_url'),
         'classes': ('collapse',),
     })
 
