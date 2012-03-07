@@ -126,7 +126,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
 
         # Define the catch-all for custom views
         custom_urls = patterns('',
-            url(r'^(?P<path>.+)$', self.admin_site.admin_view(self.custom_view))
+            url(r'^(?P<path>.+)$', self.admin_site.admin_view(self.subclass_view))
         )
 
         # Add reverse names for all polymorphic models, so the delete button and "save and add" works.
@@ -142,7 +142,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
         return urls + custom_urls + dummy_urls
 
 
-    def custom_view(self, request, path):
+    def subclass_view(self, request, path):
         """
         Forward any request to a custom view of the real admin.
         """
