@@ -31,8 +31,15 @@ def _dummy_change_view(request, id):
 
 class PolymorphicBaseModelAdmin(admin.ModelAdmin):
     """
-    A admin interface that can displays different change/delete pages,
-    depending on the polymorphic model.
+    A admin interface that can displays different change/delete pages, depending on the polymorphic model.
+    To use this class, two methods need to be defined:
+
+    * :func:`get_admin_for_model` should return a ModelAdmin instance for the derived model.
+    * :func:`get_polymorphic_model_classes` should return the available derived models.
+    * optionally, :func:`get_polymorphic_type_choices` can be overwritten to refine the choices for the add dialog.
+
+    This class needs to be inherited by the model admin base class that is registered in the site.
+    The derived models should *not* register the ModelAdmin, but instead it should be returned by :func:`get_admin_for_model`.
     """
     base_model = None
     add_type_template = None
@@ -86,7 +93,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
 
 
     def queryset(self, request):
-        return super(PolymorphicBaseModelAdmin, self).queryset(request).non_polymorphic()
+        return super(PolymorphicBaseModelAdmin, self).queryset(request).non_polymorphic()  # optimize the list display.
 
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -113,7 +120,9 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
 
 
     def get_urls(self):
-        """Support forwarding URLs."""
+        """
+        Expose the custom URLs for the subclasses and the URL resolver.
+        """
         urls = super(PolymorphicBaseModelAdmin, self).get_urls()
         info = self.model._meta.app_label, self.model._meta.module_name
 
@@ -125,6 +134,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
                 urls[i] = new_change_url
 
         # Define the catch-all for custom views
+        # TODO: include all urls all the subclasses, to fix reversing?
         custom_urls = patterns('',
             url(r'^(?P<path>.+)$', self.admin_site.admin_view(self.subclass_view))
         )
@@ -195,7 +205,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
             'errors': AdminErrorList(form, ()),
             'app_label': opts.app_label,
         }
-        return self.render_add_type_form(request, context)
+        return self.render_add_type_form(request, context, form_url)
 
 
     def render_add_type_form(self, request, context, form_url=''):
@@ -222,7 +232,16 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
 
 class PolymorphedModelAdmin(admin.ModelAdmin):
     """
-    The optional base class for the admin interface of derived models,
+    The *optional* base class for the admin interface of derived models.
+
+    This base class defines some convenience behavior for the admin interface:
+
+    * It defines ``base_opts`` in the template.
+    * It adds the base model path to the template lookup paths.
+    * It allows to set ``base_form`` so the derived class will automatically include other fields in the form.
+    * It allows to set ``base_fieldsets`` so the derived class will automatically display any extra fields.
+
+    The ``base_model`` attribute must be set.
     """
     base_model = None
     base_form = None
