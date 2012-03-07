@@ -124,44 +124,6 @@ class UrlNodeAdmin(PolymorphedModelAdmin, MPTTModelAdmin):
         obj.save()
 
 
-    # ---- Improving the form/fieldset default display ----
-
-    def get_fieldsets(self, request, obj=None):
-        # If subclass declares fieldsets, this is respected
-        if self.declared_fieldsets:
-            return super(UrlNodeAdmin, self).get_fieldsets(request, obj)
-
-        # Have a reasonable default fieldsets,
-        # where the subclass fields are automatically included.
-        other_fields = self.get_subclass_fields(request, obj)
-
-        if other_fields:
-            return (
-               self.base_fieldsets[0],
-               (_("Contents"), {'fields': other_fields}),
-            ) + self.base_fieldsets[1:]
-        else:
-            return self.base_fieldsets
-
-
-    def get_subclass_fields(self, request, obj=None):
-        # Find out how many fields would really be on the form,
-        # if it weren't restricted by declared fields.
-        exclude = list(self.exclude or [])
-        exclude.extend(self.get_readonly_fields(request, obj))
-
-        # By not declaring the fields/form in the base class,
-        # get_form() will populate the form with all available fields.
-        form = self.get_form(request, obj, exclude=exclude)
-        subclass_fields = form.base_fields.keys() + list(self.get_readonly_fields(request, obj))
-
-        # Find which fields are not part of the common fields.
-        for fieldset in self.base_fieldsets:
-            for field in fieldset[1]['fields']:
-                subclass_fields.remove(field)
-        return subclass_fields
-
-
     # ---- Pass parent_object to templates ----
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
