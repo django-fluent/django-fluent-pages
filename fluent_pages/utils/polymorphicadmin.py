@@ -346,5 +346,8 @@ class PolymorphedModelAdmin(admin.ModelAdmin):
         # Find which fields are not part of the common fields.
         for fieldset in self.base_fieldsets:
             for field in fieldset[1]['fields']:
-                subclass_fields.remove(field)
+                try:
+                    subclass_fields.remove(field)
+                except ValueError:
+                    pass   # field not found in form, Django will raise exception later.
         return subclass_fields
