@@ -4,7 +4,7 @@ django-mptt==0.5.2
 django-polymorphic==0.2
 
 # For the pagetypes:
-django-fluent-contents>=0.8.0dev
+-e git+https://github.com/edoburu/django-fluent-contents.git#egg=django-fluent-contents
 django-template-analyzer==1.0.0
 
 # For the fluent_contents plugins:
