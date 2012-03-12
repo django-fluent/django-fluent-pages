@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.core.urlresolvers import NoReverseMatch, reverse
 from fluent_pages.extensions import page_type_pool
 from fluent_pages.models.db import UrlNode
@@ -28,12 +29,11 @@ def app_reverse(viewname, args=None, kwargs=None, multiple=False, current_page=N
     # Do a reverse on every possible page type that supports URLs
     args = args or []
     kwargs = kwargs or {}
+
+    # Find the plugin
+    # TODO: allow more caching of the results
     plugin, url_end = _find_plugin_reverse(viewname, args, kwargs)
-
-    # TODO: allow caching of the results
-
-    # Find where the URL is currently hosted.
-    pages = UrlNode.objects.published().non_polymorphic().instance_of(plugin.model)
+    pages = _get_pages_of_type(plugin.model)
 
     if len(pages) > 1 and not multiple:
         # Multiple results available.
@@ -67,3 +67,18 @@ def _find_plugin_reverse(viewname, args, kwargs):
     else:
         raise NoReverseMatch("Reverse for application URL '%s' with arguments '%s' and keyword "
                              "arguments '%s' not found." % (viewname, args, kwargs))
+
+
+def _get_pages_of_type(model):
+    """
+    Find where a given model is hosted.
+    """
+    cachekey = 'fluent_pages.instance_of.{0}'.format(model.__name__)
+    pages = cache.get(cachekey)
+    if not pages:
+        pages = list(UrlNode.objects.published().non_polymorphic().instance_of(model).only('_cached_url',
+            'parent', 'title', 'lft',  # add fields read by MPTT, otherwise .only() causes infinite loop in django-mptt 0.5.2
+        ))
+        cache.set(cachekey, pages)
+
+    return pages

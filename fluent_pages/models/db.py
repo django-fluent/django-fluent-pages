@@ -9,6 +9,7 @@ It defines the following classes:
 * CmsLayout
   The layout of a page, which has regions and a template.
 """
+from django.core.cache import cache
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.auth.models import User
@@ -239,12 +240,15 @@ class UrlNode(MPTTModel, PolymorphicModel):
         """
         # Store this object
         self._make_slug_unique()
-        self._update_cached_url()
+        url_changed = self._update_cached_url()
         super(UrlNode, self).save(*args, **kwargs)
 
-        # Update others
-        self._update_decendant_urls()
-        return super(UrlNode, self).save(*args, **kwargs)
+        if url_changed:
+            # Performance optimisation: avoid traversing and updating many records
+            # when nothing changed in the URL.
+            self._expire_url_caches()
+            self._update_decendant_urls()
+            super(UrlNode, self).save(*args, **kwargs)
 
 
     # Following of the principles for "clean code"
@@ -286,18 +290,16 @@ class UrlNode(MPTTModel, PolymorphicModel):
         else:
             self._cached_url = u'%s%s/' % (self.parent._cached_url, self.slug)
 
+        return self._cached_url != self._original_cached_url
+
 
     def _update_decendant_urls(self):
         """
         Update the URLs of all decendant pages.
+        The method is only called when the URL has changed.
         """
         # This block of code is largely inspired and based on FeinCMS
         # (c) Matthias Kestenholz, BSD licensed
-
-        # Performance optimisation: avoid traversing and updating many records
-        # when nothing changed in the URL.
-        if self._cached_url == self._original_cached_url:
-            return
 
         # Keep cache
         cached_page_urls = {
@@ -318,6 +320,18 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
             # call base class, do not recurse
             super(UrlNode, subobject).save()
+            subobject._expire_url_caches()
+
+
+    def _expire_url_caches(self):
+        """
+        Reset all cache keys related to this model.
+        """
+        cachekeys = [
+            'fluent_pages.instance_of.{0}'.format(self.__class__.__name__),  # appresolvers._get_pages_of_type()
+        ]
+        for cachekey in cachekeys:
+            cache.delete(cachekey)
 
 
 
