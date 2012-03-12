@@ -129,6 +129,10 @@ class UrlNode(MPTTModel, PolymorphicModel):
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
         self._original_cached_url = self._cached_url
+        self._original_pub_date = self.publication_date if not self._deferred else None
+        self._original_pub_end_date = self.publication_end_date if not self._deferred else None
+        self._original_status = self.status if not self._deferred else None
+
         self._cached_ancestors = None
         self.is_current = None    # Can be defined by mark_current()
         self.is_onpath = None     # is an ancestor of the current node (part of the "menu trail").
@@ -240,15 +244,27 @@ class UrlNode(MPTTModel, PolymorphicModel):
         """
         # Store this object
         self._make_slug_unique()
-        url_changed = self._update_cached_url()
+        self._update_cached_url()
         super(UrlNode, self).save(*args, **kwargs)
 
-        if url_changed:
-            # Performance optimisation: avoid traversing and updating many records
-            # when nothing changed in the URL.
+        # Detect changes
+        url_changed = self._cached_url != self._original_cached_url
+        published_changed = self._original_pub_date != self.publication_date \
+                         or self._original_pub_end_date != self.publication_end_date \
+                         or self._original_status != self.status
+
+        if url_changed or published_changed:
             self._expire_url_caches()
-            self._update_decendant_urls()
-            super(UrlNode, self).save(*args, **kwargs)
+
+            # Update state for next save (if object is persistent somewhere)
+            self._original_cached_url = self._cached_url
+            self._original_pub_date = self.publication_date
+            self._original_pub_end_date = self.publication_end_date
+            self._original_status = self.status
+
+            if url_changed:
+                # Performance optimisation: only traversing and updating many records when something changed in the URL.
+                self._update_decendant_urls()
 
 
     # Following of the principles for "clean code"
@@ -290,8 +306,6 @@ class UrlNode(MPTTModel, PolymorphicModel):
         else:
             self._cached_url = u'%s%s/' % (self.parent._cached_url, self.slug)
 
-        return self._cached_url != self._original_cached_url
-
 
     def _update_decendant_urls(self):
         """
@@ -328,7 +342,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
         Reset all cache keys related to this model.
         """
         cachekeys = [
-            'fluent_pages.instance_of.{0}'.format(self.__class__.__name__),  # appresolvers._get_pages_of_type()
+            'fluent_pages.instance_of.{0}'.format(self.__class__.__name__),  # urlresolvers._get_pages_of_type()
         ]
         for cachekey in cachekeys:
             cache.delete(cachekey)

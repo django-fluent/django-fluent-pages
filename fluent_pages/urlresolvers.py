@@ -79,6 +79,8 @@ def _get_pages_of_type(model):
         pages = list(UrlNode.objects.published().non_polymorphic().instance_of(model).only('_cached_url',
             'parent', 'title', 'lft',  # add fields read by MPTT, otherwise .only() causes infinite loop in django-mptt 0.5.2
         ))
-        cache.set(cachekey, pages)
+
+        # Short cache time of 1 hour, take into account that the publication date can affect this value.
+        cache.set(cachekey, pages, 3600)
 
     return pages
