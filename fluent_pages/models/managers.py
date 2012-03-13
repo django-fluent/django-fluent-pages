@@ -33,7 +33,7 @@ class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
         # from FeinCMS:
         paths = []
         if path:
-            tokens = path.split('/')
+            tokens = path.rstrip('/').split('/')
             paths += ['{0}/'.format('/'.join(tokens[:i])) for i in range(1, len(tokens) + 1)]
 
         try:
