@@ -15,7 +15,8 @@ class AppUrlNode(Node):
 
     @classmethod
     def parse(cls, parser, token):
-        args, kwargs = parse_token_kwargs(parser, token, True, True)
+        bits = token.split_contents()
+        args, kwargs = parse_token_kwargs(parser, bits, True, True)
         if len(args) < 1:
             raise TemplateSyntaxError("'{0}' tag expects one argument!".format(bits[0]))
         return cls(args[0], args[1::], kwargs)
