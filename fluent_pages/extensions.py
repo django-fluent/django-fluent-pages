@@ -15,6 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import RegexURLResolver
 from django.template.response import TemplateResponse
+from django.utils.functional import SimpleLazyObject
 from django.utils.importlib import import_module
 from fluent_pages.admin import PageAdmin
 from fluent_pages.models import UrlNode
@@ -130,7 +131,7 @@ class PageTypePlugin(object):
         """
         return {
             'page': page,
-            'site': page.parent_site,
+            'site': SimpleLazyObject(lambda: page.parent_site),  # delay query until read
         }
 
 
