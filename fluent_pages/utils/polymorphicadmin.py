@@ -134,20 +134,17 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
                 urls[i] = new_change_url
 
         # Define the catch-all for custom views
-        # TODO: include all urls all the subclasses, to fix reversing?
         custom_urls = patterns('',
             url(r'^(?P<path>.+)$', self.admin_site.admin_view(self.subclass_view))
         )
 
         # Add reverse names for all polymorphic models, so the delete button and "save and add" works.
+        # These definitions are masked by the definition above, since it needs special handling (and a ct_id parameter).
         from fluent_pages.extensions import page_type_pool
         dummy_urls = []
         for model in page_type_pool.get_model_classes():
-            info = (model._meta.app_label, model._meta.module_name)
-            dummy_urls += (
-                url(r'^(\d+)/$', _dummy_change_view, name='{0}_{1}_change'.format(*info)),
-                url(r'^add/$', _dummy_change_view, name='{0}_{1}_add'.format(*info)),
-            )
+            admin = self.get_admin_for_model(model)
+            dummy_urls += admin.get_urls()
 
         return urls + custom_urls + dummy_urls
 
