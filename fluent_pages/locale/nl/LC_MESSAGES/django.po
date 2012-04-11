@@ -1,90 +1,122 @@
 # Copyright (C) 2010
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Diederik van der Boor <vdboor@edoburu-it.nl>, 2010-2011
+# Diederik van der Boor <vdboor@edoburu.nl>, 2010-2011
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-01-10 23:48+0100\n"
+"POT-Creation-Date: 2012-04-11 19:25+0200\n"
 "PO-Revision-Date: 2011-01-10 23:54+0100\n"
-"Last-Translator: Diederik van der Boor <vdboor@edoburu-it.nl>\n"
-"Language-Team: Dutch <kde-i18n-doc@kde.org>\n"
+"Last-Translator: Diederik van der Boor <vdboor@edoburu.nl>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.1\n"
 
-#: models.py:69 models.py:70
-msgid "Site Settings"
-msgstr "Site instellingen"
+#: admin/pageadmin.py:29
+msgid "SEO settings"
+msgstr "Zoekmachine opties"
 
-#: models.py:85
+#: admin/urlnodeadmin.py:58
+msgid "This URL is already taken by an other page."
+msgstr "Deze URL wordt al gebruikt door een andere pagina."
+
+#: admin/urlnodeadmin.py:69
+msgid "This slug is already used by an other page at the same level."
+msgstr "Deze waarde wordt gebruikt door een andere pagina op hetzelfde niveau."
+
+#: admin/urlnodeadmin.py:89
+msgid "Menu structure"
+msgstr "Menustructuur"
+
+#: admin/urlnodeadmin.py:93
+msgid "Publication settings"
+msgstr "Publicatievoorkeuren"
+
+#: admin/urlnodepolymorphicadmin.py:11
+msgid "Page type"
+msgstr "Paginatype"
+
+#: admin/urlnodepolymorphicadmin.py:36
+msgid "page type"
+msgstr ""
+
+#: admin/urlnodepolymorphicadmin.py:108
+msgid "Status"
+msgstr "Status"
+
+#: admin/urlnodepolymorphicadmin.py:115
+msgid "actions"
+msgstr ""
+
+#: admin/urlnodepolymorphicadmin.py:125
+msgid "Add child"
+msgstr ""
+
+#: admin/urlnodepolymorphicadmin.py:133
+#: templates/admin/fluent_pages/page/change_form.html:23
+msgid "View on site"
+msgstr "Bekijk op website"
+
+#: admin/urlnodepolymorphicadmin.py:148
+msgid "Mark selected objects as published"
+msgstr "Publiceer geselecteerde CMS pagina's"
+
+#: models/db.py:46
+msgid "The selected page cannot have sub pages."
+msgstr ""
+
+#: models/db.py:80
 msgid "Published"
 msgstr "Gepubliceerd"
 
-#: models.py:86
-msgid "Hidden"
-msgstr "Verborgen"
-
-#: models.py:87
+#: models/db.py:81
 msgid "Draft"
 msgstr "Concept"
 
-#: models.py:93 models.py:364
+#: models/db.py:84 models/db.py:389
 msgid "title"
 msgstr "Titel"
 
-#: models.py:94
+#: models/db.py:85
 msgid "slug"
 msgstr "Naam"
 
-#: models.py:94
+#: models/db.py:85
 msgid "The slug is used in the URL of the page"
 msgstr "Deze waarde wordt gebruikt in het URL adres van de pagina."
 
-#: models.py:95
+#: models/db.py:86
 msgid "parent"
 msgstr "ouder"
 
-#: models.py:100
-msgid "keywords"
-msgstr "Zoekwoorden"
-
-#: models.py:101
-msgid "description"
-msgstr "Beschrijving"
-
-#: models.py:105 models.py:377 models.py:399
-msgid "Layout"
-msgstr "Layout"
-
-#: models.py:106
+#: models/db.py:91
 msgid "status"
 msgstr "status"
 
-#: models.py:107
+#: models/db.py:92
 msgid "publication date"
 msgstr "gepubliceerd op"
 
-#: models.py:107
+#: models/db.py:92
 msgid "When the page should go live, status must be \"Published\"."
 msgstr "Zet de status op 'gepubliceerd' zodra de pagina live moet staan."
 
-#: models.py:108
+#: models/db.py:93
 msgid "publication end date"
 msgstr "gepubliceerd tot"
 
-#: models.py:109
+#: models/db.py:94
 msgid "show in navigation"
 msgstr "toon in menu"
 
-#: models.py:110
+#: models/db.py:96
 msgid "Override URL"
 msgstr "Overschrijf URL"
 
-#: models.py:110
+#: models/db.py:96
 msgid ""
 "Override the target URL. Be sure to include slashes at the beginning and at "
 "the end if it is a local URL. This affects both the navigation and subpages' "
@@ -94,173 +126,132 @@ msgstr ""
 "weerszijden  een / staan. Dit veld heeft betrekking op zowel de navigatie "
 "als de URLs van subpagina's."
 
-#: models.py:113
+#: models/db.py:99
 msgid "author"
 msgstr "auteur"
 
-#: models.py:114
+#: models/db.py:100
 msgid "creation date"
 msgstr "aanmaak datum"
 
-#: models.py:115
+#: models/db.py:101
 msgid "last modification"
 msgstr "laatste wijziging"
 
-#: models.py:118
+#: models/db.py:104
 msgid "Cached URL"
 msgstr "URL uit cache"
 
-#: models.py:125
+#: models/db.py:112
+msgid "URL Node"
+msgstr ""
+
+#: models/db.py:113
+msgid "URL Nodes"
+msgstr ""
+
+#: models/db.py:359 pagetypes/fluentpage/models.py:20
+#: pagetypes/fluentpage/models.py:21
 msgid "Page"
 msgstr "Pagina"
 
-#: models.py:126
+#: models/db.py:360 models/db.py:379
 msgid "Pages"
 msgstr "Pagina's"
 
-#: models.py:363
+#: models/db.py:372
+msgid "keywords"
+msgstr "zoekwoorden"
+
+#: models/db.py:373
+msgid "description"
+msgstr "beschrijving"
+
+#: models/db.py:388
 msgid "key"
 msgstr "code"
 
-#: models.py:363
+#: models/db.py:388
 msgid "A short name to identify the layout programmatically"
 msgstr "Een korte naam om de layout te identificeren in de code"
 
-#: models.py:378
+#: models/db.py:412 pagetypes/fluentpage/models.py:10
+msgid "Layout"
+msgstr "Layout"
+
+#: models/db.py:413
 msgid "Layouts"
 msgstr "Layouts"
 
-#: models.py:394
-msgid "Main content"
-msgstr "Hoofdinhoud"
-
-#: models.py:395
-msgid "Sidebar content"
-msgstr "Zijbalkinhoud"
-
-#: models.py:396
-msgid "Related content"
-msgstr "Gerelateerde inhoud"
-
-#: models.py:400
-msgid "Template key"
-msgstr "Template code"
-
-#: models.py:400
-msgid "A short name to identify the region in the template code"
-msgstr "Een korte naam om het gebied te identificeren in de template code"
-
-#: models.py:401
-msgid "tab title"
-msgstr "Tab titel"
-
-#: models.py:402
-msgid "use parent contents by default"
-msgstr "gebruik automatisch de bovenliggende inhoud"
-
-#: models.py:403
-msgid "role"
-msgstr "functie"
-
-#: models.py:411
-msgid "Layout region"
-msgstr "Layout gebied"
-
-#: models.py:412
-msgid "Layout regions"
-msgstr "Layout gebieden"
-
-#: models.py:457
-#, python-format
-msgid "{No rendering defined for class '%s'}"
-msgstr ""
-
-#: models.py:462
-msgid "CMS Page item"
-msgstr "CMS paginadeel"
-
-#: models.py:463
-msgid "CMS Page items"
-msgstr "CMS paginadelen"
-
-#: models.py:472
-msgid "text"
-msgstr "tekst"
-
-#: models.py:475
-msgid "Text item"
-msgstr "Tekstdeel"
-
-#: models.py:476
-msgid "Text items"
-msgstr "Tekstdelen"
-
-#: admin/cmsobject.py:63
-msgid "This URL is already taken by an other page."
-msgstr "Deze URL wordt al gebruikt door een andere pagina."
-
-#: admin/cmsobject.py:74
-msgid "This slug is already used by an other page at the same level."
-msgstr "Deze waarde wordt gebruikt door een andere pagina op hetzelfde niveau."
-
-#: admin/cmsobject.py:113
-msgid "SEO settings"
-msgstr "Zoekmachine opties"
-
-#: admin/cmsobject.py:117
-msgid "Publication settings"
-msgstr "Publicatievoorkeuren"
-
-#: admin/cmsobject.py:300
-#, python-format
-msgid "Add %s"
-msgstr "%s toevoegen"
-
-#: admin/cmsobject.py:335
-#, python-format
-msgid "%(name)s object with primary key %(key)r does not exist."
-msgstr "%(name)s object met primaire sleutel %(key)r bestaat niet."
-
-#: admin/cmsobject.py:430
-#, python-format
-msgid "Change %s"
-msgstr "%s veranderen"
-
-#: admin/cmsobject.py:486
-msgid "Mark selected objects as published"
-msgstr "Publiceer geselecteerde CMS pagina's"
-
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:23
-msgid "Add Subpage"
-msgstr "Subpagina toevoegen"
-
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:24
-msgid "History"
-msgstr "Geschiedenis"
-
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:25
-msgid "View on site"
-msgstr "Bekijk op website"
-
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:36
+#: pagetypes/fluentpage/templates/admin/fluent_pages/page/page_editor.html:17
+#: templates/admin/fluent_pages/add_type_form.html:27
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] "Corrigeer a.u.b. de volgende fout:"
 msgstr[1] "Corrigeer a.u.b. de volgende fouten:"
 
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:58
-msgid "Loading layout data..."
-msgstr "Layout gegevens ophalen..."
+#: pagetypes/redirectnode/models.py:11
+msgid "Normal redirect"
+msgstr "Normale doorverwijzing"
 
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:59
-msgid "Orphaned content"
-msgstr "Gevonden inhoud"
+#: pagetypes/redirectnode/models.py:12
+msgid "Permanent redirect (for SEO ranking)"
+msgstr "Permanente doorverwijzing (voor SEO waardering)"
 
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:60
-msgid "Properties"
-msgstr "Eigenschappen"
+#: pagetypes/redirectnode/models.py:19
+msgid "New URL"
+msgstr "Nieuwe URL"
 
-#: templates/admin/ecms/cmsobject/cmsobject_editor.html:69
-msgid "Region empty"
-msgstr "Gebied is leeg"
+#: pagetypes/redirectnode/models.py:20
+msgid "Redirect type"
+msgstr "Doorverwijzingstype"
 
+#: pagetypes/redirectnode/models.py:20
+msgid ""
+"Use 'normal redirect' unless you want to transfer SEO ranking to the new "
+"page."
+msgstr "Gebruik 'normale doorverwijzing' tenzij je de SEO waardering wilt overdragen op de nieuwe pagina."
+
+#: pagetypes/redirectnode/models.py:23
+msgid "Redirect"
+msgstr "Doorverwijzing"
+
+#: pagetypes/redirectnode/models.py:24
+msgid "Redirects"
+msgstr "Doorverwijzingen"
+
+#: pagetypes/textfile/models.py:11
+msgid "Plain text"
+msgstr "Platte tekst"
+
+#: pagetypes/textfile/models.py:12
+msgid "XML"
+msgstr "XML"
+
+#: pagetypes/textfile/models.py:13
+msgid "HTML"
+msgstr "HTML"
+
+#: pagetypes/textfile/models.py:19
+msgid "File contents"
+msgstr "Bestandsinhoud"
+
+#: pagetypes/textfile/models.py:20
+msgid "File type"
+msgstr "Bestandstype"
+
+#: pagetypes/textfile/models.py:23
+msgid "Plain text file"
+msgstr "Platte tekstbestand"
+
+#: pagetypes/textfile/models.py:24
+msgid "Plain text files"
+msgstr "Platte tekstbestanden"
+
+#: utils/polymorphicadmin.py:24
+msgid "Type"
+msgstr "Type"
+
+#: utils/polymorphicadmin.py:246
+msgid "Contents"
+msgstr "Inhoud"
