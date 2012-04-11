@@ -1,4 +1,4 @@
-# Copyright (C) 2010
+# Copyright (C) 2010-2012
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Diederik van der Boor <vdboor@edoburu.nl>, 2010-2011
@@ -9,6 +9,8 @@ msgstr ""
 "POT-Creation-Date: 2012-04-11 19:25+0200\n"
 "PO-Revision-Date: 2011-01-10 23:54+0100\n"
 "Last-Translator: Diederik van der Boor <vdboor@edoburu.nl>\n"
+"Language-Team: Dutch <NL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -41,19 +43,19 @@ msgstr "Paginatype"
 
 #: admin/urlnodepolymorphicadmin.py:36
 msgid "page type"
-msgstr ""
+msgstr "paginatype"
 
 #: admin/urlnodepolymorphicadmin.py:108
 msgid "Status"
 msgstr "Status"
 
 #: admin/urlnodepolymorphicadmin.py:115
-msgid "actions"
-msgstr ""
+msgid "Actions"
+msgstr "Acties"
 
 #: admin/urlnodepolymorphicadmin.py:125
-msgid "Add child"
-msgstr ""
+msgid "Add sub page"
+msgstr "Subpagina toevoegen"
 
 #: admin/urlnodepolymorphicadmin.py:133
 #: templates/admin/fluent_pages/page/change_form.html:23
@@ -66,7 +68,7 @@ msgstr "Publiceer geselecteerde CMS pagina's"
 
 #: models/db.py:46
 msgid "The selected page cannot have sub pages."
-msgstr ""
+msgstr "De gekozen pagina kan geen subpagina's bevatten."
 
 #: models/db.py:80
 msgid "Published"
@@ -144,11 +146,11 @@ msgstr "URL uit cache"
 
 #: models/db.py:112
 msgid "URL Node"
-msgstr ""
+msgstr "URL Pad"
 
 #: models/db.py:113
 msgid "URL Nodes"
-msgstr ""
+msgstr "URL Paden"
 
 #: models/db.py:359 pagetypes/fluentpage/models.py:20
 #: pagetypes/fluentpage/models.py:21
@@ -242,11 +244,11 @@ msgstr "Bestandstype"
 
 #: pagetypes/textfile/models.py:23
 msgid "Plain text file"
-msgstr "Platte tekstbestand"
+msgstr "Plat tekstbestand"
 
 #: pagetypes/textfile/models.py:24
 msgid "Plain text files"
-msgstr "Platte tekstbestanden"
+msgstr "Plat tekstbestanden"
 
 #: utils/polymorphicadmin.py:24
 msgid "Type"

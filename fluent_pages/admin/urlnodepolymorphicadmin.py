@@ -112,7 +112,7 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         return u' '.join(self._actions_column_icons(urlnode))
 
     actions_column.allow_tags = True
-    actions_column.short_description = _('actions')
+    actions_column.short_description = _('Actions')
 
 
     def _actions_column_icons(self, urlnode):
@@ -122,7 +122,7 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         if urlnode.can_have_children:
             actions.append(
                 u'<a href="add/?{parentattr}={id}" title="{title}"><img src="{static}fluent_pages/img/admin/page_new.gif" width="16" height="16" alt="{title}" /></a>'.format(
-                    parentattr=self.model._mptt_meta.parent_attr, id=urlnode.pk, title=_('Add child'), static=settings.STATIC_URL)
+                    parentattr=self.model._mptt_meta.parent_attr, id=urlnode.pk, title=_('Add sub page'), static=settings.STATIC_URL)
                 )
         else:
             actions.append(empty_img)
