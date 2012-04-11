@@ -36,7 +36,7 @@ class SimpleInclusionNode(Node):
     def parse(cls, parser, token):
         args, kwargs = parse_token_kwargs(parser, token, True, True, cls.allowed_kwargs)
         if args:
-            raise TemplateSyntaxError("'{0}' tag only allows template=... argument!".format(token.contents.split(' ', 2)[0]))
+            raise TemplateSyntaxError("'{0}' tag only allows keywords arguments, for example template=\"...\".".format(token.contents.split(' ', 2)[0]))
         return cls(**kwargs)
 
     def get_context_data(self, context, token_kwargs):
