@@ -84,10 +84,10 @@ class UrlNodeAdmin(PolymorphedModelAdmin, MPTTModelAdmin):
 
     # Expose fieldsets for subclasses to reuse
     FIELDSET_GENERAL = (None, {
-        'fields': ('title', 'slug', 'status',),
+        'fields': ('title', 'slug', 'status', 'in_navigation'),
     })
     FIELDSET_MENU = (_('Menu structure'), {
-        'fields': ('sort_order', 'parent', 'in_navigation'),
+        'fields': ('sort_order', 'parent'),
         'classes': ('collapse',),
     })
     FIELDSET_PUBLICATION = (_('Publication settings'), {

@@ -13,7 +13,7 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     # add an extra fieldset for all derived fields automatically.
     base_fieldsets = (
         (None, {
-            'fields': HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'] + ('layout',),
+            'fields': HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][:-1] + ('layout',) + HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][-1:],
         }),
         HtmlPageAdmin.FIELDSET_SEO,
         HtmlPageAdmin.FIELDSET_MENU,
