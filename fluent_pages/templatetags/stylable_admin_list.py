@@ -20,8 +20,9 @@ from django.utils.html import escape, conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.encoding import smart_unicode, force_unicode
 from django.template import Library
-
 from django.contrib.admin.templatetags.admin_list import _boolean_icon, result_headers
+from fluent_pages.utils.basetags import ExtensibleInclusionNode
+
 
 # While this is based on mptt/templatetags/mptt_admin.py,
 # and django/contrib/admin/templatetags/admin_list.py,
@@ -38,16 +39,26 @@ MPTT_ADMIN_LEVEL_INDENT = getattr(settings, 'MPTT_ADMIN_LEVEL_INDENT', 10)
 
 # Ideally the template name should be configurable too, provide a function instead of filename.
 # For now, just reuse the existing admin template for the list contents.
-@register.inclusion_tag("admin/change_list_results.html")
-def stylable_result_list(cl):
+class StylableResultList(ExtensibleInclusionNode):
+    min_args = 1
+    max_args = 1
+    template_name = "admin/change_list_results.html"
+
+    def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
+        cl = tag_args[0]
+        return {
+            'cl': cl,
+            'result_headers': list(stylable_result_headers(cl)),
+            'results': list(stylable_results(cl))
+        }
+
+
+@register.tag
+def stylable_result_list(parser, token):
     """
     Displays the headers and data list together
     """
-    return {
-        'cl': cl,
-        'result_headers': list(stylable_result_headers(cl)),
-        'results': list(stylable_results(cl))
-    }
+    return StylableResultList.parse(parser, token)
 
 
 def stylable_result_headers(cl):

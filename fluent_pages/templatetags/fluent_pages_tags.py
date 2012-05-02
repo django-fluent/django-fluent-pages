@@ -8,11 +8,10 @@ Thet tags can be loaded using:
     {% load fluent_pages_tags %}
 """
 from django.contrib.sites.models import Site
-from django.template import Library, Node, Context, TemplateSyntaxError
-from django.template.loader import get_template
+from django.template import Library, Node
 from fluent_pages.models import UrlNode
 from fluent_pages.models.navigation import PageNavigationNode
-from fluent_pages.utils.tagparsing import parse_token_kwargs
+from fluent_pages.utils.basetags import ExtensibleInclusionNode
 
 register = Library()
 
@@ -22,53 +21,14 @@ register = Library()
 # Only static/unmodified values (like template tag args) should be assigned to self.
 
 
-class SimpleInclusionNode(Node):
-    """
-    Base class to render a template tag with a template.
-    """
-    template_name = None
-    allowed_kwargs = ('template',)
-
-    def __init__(self, **kwargs):
-        self.kwargs = kwargs
-
-    @classmethod
-    def parse(cls, parser, token):
-        args, kwargs = parse_token_kwargs(parser, token, True, True, cls.allowed_kwargs)
-        if args:
-            raise TemplateSyntaxError("'{0}' tag only allows keywords arguments, for example template=\"...\".".format(token.contents.split(' ', 2)[0]))
-        return cls(**kwargs)
-
-    def get_context_data(self, context, token_kwargs):
-        raise NotImplementedError()
-
-    def render(self, context):
-        # Resolve token kwargs
-        token_kwargs = dict([(key, val.resolve(context)) for key, val in self.kwargs.iteritems()])
-
-        # Get template nodes, and cache it.
-        # Note that self.nodelist is special in the Node baseclass.
-        if not getattr(self, 'nodelist', None):
-            tpl = get_template(self.get_template_name(token_kwargs))
-            self.nodelist = tpl.nodelist
-
-        # Render the node
-        data = self.get_context_data(context, token_kwargs)
-        new_context = Context(data, autoescape=context.autoescape)
-        return self.nodelist.render(new_context)
-
-    def get_template_name(self, token_kwargs):
-        return token_kwargs.get('template', self.template_name)
-
-
-class BreadcrumbNode(SimpleInclusionNode):
+class BreadcrumbNode(ExtensibleInclusionNode):
     """
     Template node for breadcrumb.
     """
     template_name = 'fluent_pages/parts/breadcrumb.html'
 
-    def get_context_data(self, context, token_kwargs):
-        page  = _get_current_page(context)  # CmsObject()
+    def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
+        page  = _get_current_page(parent_context)  # CmsObject()
         items = page.breadcrumb # list(CmsObject)
 
         return {'breadcrumb': items}
@@ -88,20 +48,20 @@ def render_breadcrumb(parser, token):
 
 
 
-class MenuNode(SimpleInclusionNode):
+class MenuNode(ExtensibleInclusionNode):
     """
     Template Node for topmenu
     """
     template_name = 'fluent_pages/parts/menu.html'
     allowed_kwargs = ('max_depth', 'template',)
 
-    def get_context_data(self, context, token_kwargs):
+    def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
         # Get page
-        page      = _get_current_page(context)
+        page      = _get_current_page(parent_context)
         top_pages = UrlNode.objects.toplevel_navigation(current_page=page)
 
-        # Make iterable context
-        node_kwargs = dict((k,v) for k, v in token_kwargs.iteritems() if k in ['max_depth'])
+        # Make iterable context, pass subset of arguments to PageNavigationNode constructor
+        node_kwargs = dict((k,v) for k, v in tag_kwargs.iteritems() if k in ('max_depth',))
         menu_items = [PageNavigationNode(page, **node_kwargs) for page in top_pages]
         return {'menu_items': menu_items}
 
