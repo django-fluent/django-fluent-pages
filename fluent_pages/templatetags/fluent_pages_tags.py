@@ -157,12 +157,9 @@ def _get_current_page(context):
 def _get_request(context):
     """
     Fetch the request from the context.
-    This enforces the use of a RequestProcessor, e.g.
-
-    .. code-block:: python
-
-        render_to_response("page.html", context, context_instance=RequestContext(request))
+    This enforces the use of the template :class:`~django.template.RequestContext`,
+    and provides meaningful errors if this is omitted.
     """
-    assert context.has_key('request'), "The fluent_pages_tags library requires a 'request' object in the context, is RequestContext not used?"
+    assert context.has_key('request'), "The fluent_pages_tags library requires a 'request' object in the context! Is RequestContext not used, or 'django.core.context_processors.request' not included in TEMPLATE_CONTEXT_PROCESSORS?"
     return context['request']
 
