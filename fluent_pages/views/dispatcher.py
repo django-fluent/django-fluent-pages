@@ -7,7 +7,6 @@ from django.http import Http404, HttpResponseRedirect
 from django.views.generic.base import View
 from fluent_pages.models import UrlNode
 from fluent_pages.admin.utils import get_page_admin_url
-from fluent_pages.extensions import page_type_pool
 from django.views.generic import RedirectView
 import re
 
@@ -56,7 +55,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         if self.path.startswith(reverse('admin:index', prefix='/')):
             raise Http404("No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
         else:
-            raise Http404("No published '{0}' found for the path: '{1}'".format(self.model.__name__, self.path))
+            raise Http404("No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
 
 
     def post(self, request, **kwargs):
@@ -94,7 +93,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         """
         Return the rendering plugin for the current page object.
         """
-        return page_type_pool.get_plugin_by_model(self.object.__class__)
+        return self.object.plugin
 
 
     # -- Various resolver functions
@@ -119,6 +118,7 @@ class CmsPageDispatcher(GetPathMixin, View):
             else:
                 return match.func(self.request, *match.args, **match.kwargs)
 
+        # Let page type plugin handle the request.
         response = plugin.get_response(self.request, self.object)
         if response is None:
             # Avoid automatic fallback to 404 page in this dispatcher.
