@@ -87,7 +87,7 @@ class UrlNodeAdmin(PolymorphedModelAdmin, MPTTModelAdmin):
         'fields': ('title', 'slug', 'status', 'in_navigation'),
     })
     FIELDSET_MENU = (_('Menu structure'), {
-        'fields': ('sort_order', 'parent'),
+        'fields': ('parent',),
         'classes': ('collapse',),
     })
     FIELDSET_PUBLICATION = (_('Publication settings'), {

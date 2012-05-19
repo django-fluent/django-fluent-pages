@@ -83,7 +83,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
-    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), validators=[_validate_parent])
+    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), validators=[_validate_parent], help_text=_('You can also change the parent by dragging the page in the list.'))
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager by 'parent'
 
@@ -92,7 +92,6 @@ class UrlNode(MPTTModel, PolymorphicModel):
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True, help_text=_('''When the page should go live, status must be "Published".'''))
     publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=True, db_index=True)
-    sort_order = models.IntegerField(default=1)   # TODO: affect mptt sort ordering.
     override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
 
     # Metadata
@@ -108,7 +107,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
     class Meta:
         app_label = 'fluent_pages'
-        ordering = ('lft', 'sort_order', 'title')
+        ordering = ('lft', 'title')
         verbose_name = _('URL Node')
         verbose_name_plural = _('URL Nodes')  # Using Urlnode here makes it's way to the admin pages too.
 
