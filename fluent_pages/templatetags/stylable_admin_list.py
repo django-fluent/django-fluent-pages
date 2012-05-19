@@ -64,15 +64,22 @@ def stylable_result_list(parser, token):
 def stylable_result_headers(cl):
     """
     Reuse the existing result_headers() iterator,
-    and add a `col-FIELD_NAME` class to the header.
+    and add a `col-FIELD_NAME` class to the header, and fieldname to assist JavaScript
     cl = The django ChangeList object
     """
     for field_name, header in zip(cl.list_display, result_headers(cl)):
+        header['field_name'] = field_name  # For JavaScript
         if header.get('class_attrib'):
             header['class_attrib'] = mark_safe(header['class_attrib'].replace('class="', 'class="col-%s ' % field_name))
         else:
             header['class_attrib'] = mark_safe(' class="col-%s"' % field_name)
         yield header
+
+
+class ResultListRow(list):
+    def __init__(self, seq, object):
+        super(ResultListRow, self).__init__(seq)
+        self.object = object
 
 
 def stylable_results(cl):
@@ -82,10 +89,10 @@ def stylable_results(cl):
     # yield was used for convenience, and kept as is.
     if cl.formset:
         for res, form in zip(cl.result_list, cl.formset.forms):
-            yield list(stylable_items_for_result(cl, res, form))
+            yield ResultListRow(stylable_items_for_result(cl, res, form), res)
     else:
         for res in cl.result_list:
-            yield list(stylable_items_for_result(cl, res, None))
+            yield ResultListRow(stylable_items_for_result(cl, res, None), res)
 
 
 def stylable_items_for_result(cl, result, form):
@@ -105,11 +112,9 @@ def stylable_items_for_result(cl, result, form):
     # Parse all fields to display
     for field_name in cl.list_display:
         row_attr = ''
-        row_classes = []
-        f = None
 
         # This is all standard stuff, refactored to separate methods.
-        result_repr, row_classes = _get_column_repr(cl, result, field_name)
+        result_repr, row_classes = stylable_column_repr(cl, result, field_name)
         if force_unicode(result_repr) == '':
             result_repr = mark_safe('&nbsp;')
 
@@ -187,7 +192,7 @@ def _get_mptt_indent_field(cl, result):
     return mptt_indent_field
 
 
-def _get_column_repr(cl, result, field_name):
+def stylable_column_repr(cl, result, field_name):
     """
     Get the string representation for a column item.
     This can be a model field, callable or property.
@@ -202,6 +207,7 @@ def _get_column_repr(cl, result, field_name):
         if isinstance(f, models.DateField) or isinstance(f, models.TimeField):
             row_classes = ['nowrap']
         return value, row_classes
+
 
 def _get_non_field_repr(cl, result, field_name):
     """

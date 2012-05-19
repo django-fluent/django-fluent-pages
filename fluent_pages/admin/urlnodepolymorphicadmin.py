@@ -61,12 +61,6 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
     change_list_template = None  # Restore Django's default search behavior, no admin/mptt_change_list.html
 
 
-    class Media:
-        css = {
-            'screen': ('fluent_pages/admin.css',)
-        }
-
-
     # ---- Polymorphic code ----
 
     def get_admin_for_model(self, model):

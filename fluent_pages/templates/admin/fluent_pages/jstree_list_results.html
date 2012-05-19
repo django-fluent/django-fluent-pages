@@ -1,0 +1,69 @@
+{# variation of admin/change_list_results.html #}
+{% load static fluent_pages_admin_tags %}{% load url from future %}{% get_static_prefix as STATIC_URL %}
+
+{% if result_hidden_fields %}
+  <div class="hiddenfields">{# DIV for HTML validation #}
+    {% for item in result_hidden_fields %}{{ item }}{% endfor %}
+  </div>
+{% endif %}
+{% if results %}
+  <div class="results jqtree-django"><div id="js-result-list">
+    <table cellspacing="0" id="result_list">
+      <thead>
+      <tr>
+        {% for header in result_headers %}<th scope="col"{{ header.class_attrib }}>
+          {% if header.sortable %}<a href="{{ header.url }}">{% endif %}
+          {{ header.text|capfirst }}
+          {% if header.sortable %}</a>{% endif %}</th>{% endfor %}
+      </tr>
+      </thead>
+      <tbody>
+      {% for result in results %}
+        {% if result.form.non_field_errors %}
+          <tr><td colspan="{{ result|length }}">{{ result.form.non_field_errors }}</td></tr>
+        {% endif %}
+        <tr class="{% cycle 'row1' 'row2' %}">{% for item in result %}{{ item }}{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div></div>
+{% endif %}
+
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}fluent_pages/jqtree/jqtree.css"/>
+<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}fluent_pages/pagetree/pagetree.css"/>
+<script type="text/javascript">
+  if(! window.jQuery && window.django )
+    window.jQuery = window.django.jQuery;
+  window.$ = window.jQuery || window.django.jQuery;
+</script>
+<script type="text/javascript" src="{{ STATIC_URL }}fluent_pages/pagetree/jquery.cookie.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}fluent_pages/jqtree/tree.jquery.js"></script>
+<script type="text/javascript">
+
+  var data = [{% adminlist_recursetree cl %}{% with is_leaf=node.is_leaf_node %}
+    {id: {{ node.pk }}, label: '<div class="col-primary{% if is_leaf %} leaf{% endif %}"><div class="col col-title"><a href="{% url 'admin:fluent_pages_page_change' node.pk %}">{{ columns.1.1|escapejs }}</a></div></div><div class="col-metadata">{% for name, repr in columns %}{% if name != 'title' and name != 'action_checkbox' %}<div class="col col-{{ name }}">{{ repr|escapejs }}</div>{% endif %}{% endfor %}</div>'{% if not is_leaf %},
+     children: [ {{ children }}
+     ]{% endif %}},{% endwith %}{% endadminlist_recursetree %}
+    null  // for MSIE
+  ];
+  data.pop();
+
+
+  function onCreateLi(node, $li) {
+    // Move node contents directly in li element. not in a span.
+    var $div = $li.children('div')
+    var $span = $div.children('span');
+    var contents = $span.children();
+    $span.remove();
+    $div.append(contents);
+  }
+
+  var tree = jQuery("#js-result-list").tree({
+    data: data,
+    autoOpen: true,
+    saveState: true,
+    onCreateLi: onCreateLi
+  });
+
+  tree.before('<table class="js-tree-header"><thead><tr>{% for header in result_headers %}<th{{ header.class_attrib }}><div>{% if header.sortable %}<a href="{{ header.url }}">{{ header.text|capfirst }}</a>{% else %}{{ header.text|capfirst }}{% endif %}</div></th>{% endfor %}</tr></thead></table>');
+</script>

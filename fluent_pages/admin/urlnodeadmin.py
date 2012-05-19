@@ -111,12 +111,6 @@ class UrlNodeAdmin(PolymorphedModelAdmin, MPTTModelAdmin):
     # This class is only a base class for the custom pagetype plugins.
 
 
-    class Media:
-        css = {
-            'screen': ('fluent_pages/admin.css',)
-        }
-
-
     def save_model(self, request, obj, form, change):
         # Automatically store the user in the author field.
         if not change:
