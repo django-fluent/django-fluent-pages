@@ -64,10 +64,12 @@ class AdminListRecurseTreeNode(Node):
         context.push()
         for child in node.get_children():
             context['columns'] = self._get_column_repr(cl, child)
+            context['named_columns'] = dict(context['columns'])
             context['node'] = child
             bits.append(self._render_node(context, cl, child))
 
         context['columns'] = self._get_column_repr(cl, node)
+        context['named_columns'] = dict(context['columns'])
         context['node'] = node
         context['children'] = mark_safe(u''.join(bits))
         rendered = self.template_nodes.render(context)
