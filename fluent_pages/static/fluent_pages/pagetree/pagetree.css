@@ -13,7 +13,7 @@
 
 .jqtree-django .col-metadata {
   float: right;
-  width: 393px;  /* all 3 columns combined */
+  width: auto;  /* all 3 columns combined is 393px */
   border-right: 1px solid #ddd;
   z-index: 1;
 }
@@ -86,7 +86,7 @@
   top: 50%;
 }
 
-.jqtree-django ul.tree .col {
+.jqtree-django div.col {
   /* the "td" cells */
   float: left;
   padding: 5px;
@@ -96,17 +96,31 @@
   font-size: 11px;
 }
 
-.jqtree-django ul.tree .col-title {
+.jqtree-django div.col-title {
   border-left: 0;
 }
 
-.jqtree-django ul.tree .col-title a {
+.jqtree-django div.col-title a {
   font-size: 12px;
   font-weight: bold;
 }
 
 ul.tree li img { vertical-align: baseline; }  /* keeps 3px space below, use 'bottom' to remove it */
 
+
+/* drag and drop */
+
+#js-result-list .tree-dragging {
+  color: #333;
+  border: 1px solid #ddd;
+  background: #eee;
+  opacity: 0.9;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+#js-result-list .tree-dragging .col-title { min-width: 500px; }
+#js-result-list .tree-dragging .col-metadata { display: none; }
 
 /* resets */
 

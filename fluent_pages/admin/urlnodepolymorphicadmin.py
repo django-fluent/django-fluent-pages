@@ -1,4 +1,7 @@
 from django.conf import settings
+from django.conf.urls.defaults import url
+from django.http import HttpResponseNotFound, HttpResponse, HttpResponseBadRequest
+from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from fluent_pages.utils.polymorphicadmin import PolymorphicBaseModelAdmin, PolymorphicModelChoiceAdminForm
@@ -82,6 +85,10 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
 
     # ---- List code ----
 
+    # NOTE: the regular results table is replaced client-side with a jqTree list.
+    # When making changes to the list, test both the JavaScript and non-JavaScript variant.
+    # The jqTree variant still uses the server-side rendering for the colums.
+
     STATUS_ICONS = (
         (UrlNode.PUBLISHED, 'icon-yes.gif'),
         (UrlNode.DRAFT,     'icon-unknown.gif'),
@@ -129,6 +136,8 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         return actions
 
 
+    # ---- Bulk actions ----
+
     def make_published(self, request, queryset):
         rows_updated = queryset.update(status=UrlNode.PUBLISHED)
 
@@ -140,3 +149,45 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
 
 
     make_published.short_description = _("Mark selected objects as published")
+
+
+    # ---- Ajax APIs ----
+
+    def get_urls(self):
+        urls = super(UrlNodePolymorphicAdmin, self).get_urls()
+        info = self.model._meta.app_label, self.model._meta.module_name
+        ajax_urls = [
+            url(r'api/page-moved/$', self.admin_site.admin_view(self.api_page_moved_view), name='{0}_{1}_moved'.format(*info)),
+        ]
+        return ajax_urls + urls
+
+
+    def api_page_moved_view(self, request):
+        """
+        Update the position of a node, from a API request.
+        """
+        try:
+            moved = UrlNode.objects.get(pk=request.POST['moved_id'])
+            target = UrlNode.objects.get(pk=request.POST['target_id'])
+            previous_parent_id = int(request.POST['previous_parent_id']) or None
+            position = request.POST['position']
+        except KeyError as e:
+            return HttpResponseBadRequest(simplejson.dumps({'action': 'foundbug', 'error': str(e[0])}), content_type='application/json')
+        except UrlNode.DoesNotExist as e:
+            return HttpResponseNotFound(simplejson.dumps({'action': 'reload', 'error': str(e[0])}), content_type='application/json')
+
+        if not target.can_have_children and position == 'inside':
+            return HttpResponse(simplejson.dumps({'action': 'reject', 'error': 'Cannot move inside target, does not allow children!'}), content_type='application/json', status=409)  # Conflict
+        if moved.parent_id != previous_parent_id:
+            return HttpResponse(simplejson.dumps({'action': 'reload', 'error': 'Client seems to be out-of-sync, please reload!'}), content_type='application/json', status=409)
+
+        # TODO: with granular user permissions, check if user is allowed to edit both pages.
+
+        mptt_position = {
+            'inside': 'first-child',
+            'before': 'left',
+            'after': 'right',
+        }[position]
+        moved.move_to(target, mptt_position)
+
+        return HttpResponse(simplejson.dumps({'action': 'success', 'error': ''}), content_type='application/json')

@@ -129,8 +129,7 @@ class UrlNodeManager(TreeManager, PolymorphicManager):
 
         When current_page is passed, the object values such as 'is_current' will be set. 
         """
-        # Default ordering is based on django-mptt, ordering on sort_order should be temporary needed.
-        items = self.toplevel().in_navigation().non_polymorphic().order_by('sort_order', 'title')
+        items = self.toplevel().in_navigation().non_polymorphic()
         if current_page:
             items = _mark_current(items, current_page)
         return items
