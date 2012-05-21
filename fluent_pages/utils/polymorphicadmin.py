@@ -107,10 +107,11 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
             return real_admin.add_view(request, form_url, extra_context)
 
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, *args, **kwargs):
         """Redirect the change view to the real admin."""
+        # between Django 1.3 and 1.4 this method signature differs. Hence the *args, **kwargs
         real_admin = self._get_real_admin(object_id)
-        return real_admin.change_view(request, object_id, extra_context)
+        return real_admin.change_view(request, object_id, *args, **kwargs)
 
 
     def delete_view(self, request, object_id, extra_context=None):
