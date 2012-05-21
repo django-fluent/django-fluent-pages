@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.conf.urls.defaults import url
+from django.db import router
+from django.db.models import signals
 from django.http import HttpResponseNotFound, HttpResponse, HttpResponseBadRequest
 from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
@@ -167,13 +169,15 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         Update the position of a node, from a API request.
         """
         try:
-            moved = UrlNode.objects.get(pk=request.POST['moved_id'])
-            target = UrlNode.objects.get(pk=request.POST['target_id'])
+            # Not using .non_polymorphic() so all models are upcasted to the derived model.
+            # This causes the signal below to be emitted from the proper class as well.
+            moved = self.model.objects.get(pk=request.POST['moved_id'])
+            target = self.model.objects.get(pk=request.POST['target_id'])
             previous_parent_id = int(request.POST['previous_parent_id']) or None
             position = request.POST['position']
         except KeyError as e:
             return HttpResponseBadRequest(simplejson.dumps({'action': 'foundbug', 'error': str(e[0])}), content_type='application/json')
-        except UrlNode.DoesNotExist as e:
+        except self.model.DoesNotExist as e:
             return HttpResponseNotFound(simplejson.dumps({'action': 'reload', 'error': str(e[0])}), content_type='application/json')
 
         if not target.can_have_children and position == 'inside':
@@ -190,4 +194,10 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         }[position]
         moved.move_to(target, mptt_position)
 
+        # Fire post_save signal manually, because django-mptt doesn't do that.
+        # Allow models to be notified about a move, so django-fluent-contents can update caches.
+        using = router.db_for_write(moved.__class__, instance=moved)
+        signals.post_save.send(sender=moved.__class__, instance=moved, created=False, raw=False, using=using)
+
+        # Report back to client.
         return HttpResponse(simplejson.dumps({'action': 'success', 'error': ''}), content_type='application/json')
