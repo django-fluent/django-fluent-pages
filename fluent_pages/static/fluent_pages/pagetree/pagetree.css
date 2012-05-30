@@ -126,6 +126,14 @@ ul.tree li img { vertical-align: baseline; }  /* keeps 3px space below, use 'bot
 #js-result-list .tree-dragging .col-title { min-width: 500px; }
 #js-result-list .tree-dragging .col-metadata { display: none; }
 
+
 /* resets */
 
 .jqtree-django ul.tree li.folder { margin-bottom: 0; }
+
+
+/* non-javascript buttons */
+
+ul.tree .no-js { display: none; }
+ul.tree li:first-child .move-up { visibility: hidden; }  /* Hiding in CSS is easy, the server-side urlnode.is_first_sibling call is expensive. */
+ul.tree li:last-child .move-down { visibility: hidden; }

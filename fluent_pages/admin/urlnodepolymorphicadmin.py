@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.defaults import url
 from django.db import router
 from django.db.models import signals
-from django.http import HttpResponseNotFound, HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponseNotFound, HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
 from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -135,6 +135,12 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
                 u'<a href="{url}" title="{title}" target="_blank"><img src="{static}fluent_pages/img/admin/world.gif" width="16" height="16" alt="{title}" /></a>'.format(
                     url=urlnode.get_absolute_url(), title=_('View on site'), static=settings.STATIC_URL)
                 )
+
+        # The is_first_sibling and is_last_sibling is quite heavy. Instead rely on CSS to hide the arrows.
+        move_up = u'<a href="{0}/move_up/" class="move-up">\u2191</a>'.format(urlnode.pk)
+        move_down = u'<a href="{0}/move_down/" class="move-down">\u2193</a>'.format(urlnode.pk)
+        actions.append(u'<span class="no-js">{0}{1}</span>'.format(move_up, move_down))
+
         return actions
 
 
@@ -153,15 +159,17 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
     make_published.short_description = _("Mark selected objects as published")
 
 
-    # ---- Ajax APIs ----
+    # ---- Custom views ----
 
     def get_urls(self):
-        urls = super(UrlNodePolymorphicAdmin, self).get_urls()
+        base_urls = super(UrlNodePolymorphicAdmin, self).get_urls()
         info = self.model._meta.app_label, self.model._meta.module_name
-        ajax_urls = [
-            url(r'api/page-moved/$', self.admin_site.admin_view(self.api_page_moved_view), name='{0}_{1}_moved'.format(*info)),
+        extra_urls = [
+            url(r'^api/page-moved/$', self.admin_site.admin_view(self.api_page_moved_view), name='{0}_{1}_moved'.format(*info)),
+            url(r'^(\d+)/move_up/$', self.admin_site.admin_view(self.move_up_view)),
+            url(r'^(\d+)/move_down/$', self.admin_site.admin_view(self.move_down_view)),
         ]
-        return ajax_urls + urls
+        return extra_urls + base_urls
 
 
     def api_page_moved_view(self, request):
@@ -201,3 +209,25 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
 
         # Report back to client.
         return HttpResponse(simplejson.dumps({'action': 'success', 'error': ''}), content_type='application/json')
+
+
+    def move_up_view(self, request, object_id):
+        page = self.model.objects.get(pk=object_id)
+
+        if page is not None:
+            previous_sibling_category = page.get_previous_sibling()
+            if previous_sibling_category is not None:
+                page.move_to(previous_sibling_category, position='left')
+
+        return HttpResponseRedirect('../../')
+
+
+    def move_down_view(self, request, object_id):
+        page = self.model.objects.get(pk=object_id)
+
+        if page is not None:
+            next_sibling_category = page.get_next_sibling()
+            if next_sibling_category is not None:
+                page.move_to(next_sibling_category, position='right')
+
+        return HttpResponseRedirect('../../')
