@@ -10,7 +10,7 @@
   <div class="results jqtree-django"><div id="js-result-list">
     <table cellspacing="0" id="result_list">
       <thead>
-      <tr>
+      <tr>{# This is the Django 1.3 style for columns, so it works with both v1.3 and 1.4. #}
         {% for header in result_headers %}<th scope="col"{{ header.class_attrib }}>
           {% if header.sortable %}<a href="{{ header.url }}">{% endif %}
           {{ header.text|capfirst }}

@@ -79,6 +79,10 @@
 
 /* column layout */
 
+#changelist table.js-tree-header thead th {
+  padding: 2px 5px;  /* restore Django 1.3 padding, in case Django 1.4 is used. */
+}
+
 .jqtree-django ul.tree a.toggler {
   position: absolute;
   left: -6px;
