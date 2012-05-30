@@ -69,10 +69,20 @@ def stylable_result_headers(cl):
     """
     for field_name, header in zip(cl.list_display, result_headers(cl)):
         header['field_name'] = field_name  # For JavaScript
+
+
         if header.get('class_attrib'):
+            # Remove any sorting marker for mptt tables, because they are not sortable.
+            if hasattr(cl.model, '_mptt_meta'):
+                header['class_attrib'] = header['class_attrib'].replace('sortable', '').replace('sorted', '').replace('ascending', '')
+
             header['class_attrib'] = mark_safe(header['class_attrib'].replace('class="', 'class="col-%s ' % field_name))
         else:
             header['class_attrib'] = mark_safe(' class="col-%s"' % field_name)
+
+        if header.has_key('url_primary') and not header.has_key('url'):
+            header['url'] = header['url_primary']  # Django 1.3 template compatibility.
+
         yield header
 
 
