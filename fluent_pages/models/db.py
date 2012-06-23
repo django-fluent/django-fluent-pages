@@ -361,6 +361,8 @@ class Page(UrlNode):
     def __unicode__(self):
         return self.title or self.slug
 
+    # Make PyCharm happy
+    objects = UrlNode.objects
 
 
 class HtmlPage(Page):
