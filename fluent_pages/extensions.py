@@ -14,6 +14,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import RegexURLResolver
+from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
 from django.utils.importlib import import_module
@@ -93,7 +94,10 @@ class PageTypePlugin(object):
         Shortcut to retrieving the ContentType id of the model.
         """
         if self._type_id is None:
-            self._type_id = ContentType.objects.get_for_model(self.model).id
+            try:
+                self._type_id = ContentType.objects.get_for_model(self.model).id
+            except DatabaseError as e:
+                raise DatabaseError("Unable to fetch ContentType object, is a plugin being registered before the initial syncdb? (original error: {0})".format(str(e)))
         return self._type_id
 
 
