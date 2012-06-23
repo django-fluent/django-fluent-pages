@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Django environment setup:
-from django.conf import settings
+from django.conf import settings, global_settings as default_settings
 from django.core.management import call_command
 from os.path import dirname, realpath
 import sys
@@ -11,7 +11,7 @@ module_root = dirname(realpath(__file__))
 
 # Inline settings file
 settings.configure(
-    DEBUG = True,
+    DEBUG = False,  # will be False anyway by DjangoTestRunner.
     TEMPLATE_DEBUG = True,
     DATABASES = {
         'default': {
@@ -21,6 +21,9 @@ settings.configure(
     },
     TEMPLATE_LOADERS = (
         'django.template.loaders.app_directories.Loader',
+    ),
+    TEMPLATE_CONTEXT_PROCESSORS = default_settings.TEMPLATE_CONTEXT_PROCESSORS + (
+        'django.core.context_processors.request',
     ),
     INSTALLED_APPS = (
         'django.contrib.auth',
@@ -37,10 +40,11 @@ call_command('syncdb', verbosity=1, interactive=False)
 
 
 # ---- app start
+verbosity = 2 if '-v' in sys.argv else 1
 
 from django.test.utils import get_runner
 TestRunner = get_runner(settings)  # DjangoTestSuiteRunner
-runner = TestRunner(verbosity=1, interactive=True, failfast=False)
+runner = TestRunner(verbosity=verbosity, interactive=True, failfast=False)
 failures = runner.run_tests(['fluent_pages'])
 
 if failures:
