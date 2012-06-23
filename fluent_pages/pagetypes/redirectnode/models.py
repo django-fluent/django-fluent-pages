@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from fluent_pages.models import Page
+from .fields import UrlField
 
 
 class RedirectNode(Page):
@@ -16,7 +17,7 @@ class RedirectNode(Page):
 
     # TODO: provide internal page link as well.
 
-    new_url = models.URLField(_("New URL"))
+    new_url = UrlField(_("New URL"))
     redirect_type = models.IntegerField(_("Redirect type"), choices=REDIRECT_TYPE_CHOICES, default=302, help_text=_("Use 'normal redirect' unless you want to transfer SEO ranking to the new page."))
 
     class Meta:
