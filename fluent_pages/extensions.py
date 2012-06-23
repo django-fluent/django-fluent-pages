@@ -241,6 +241,7 @@ class PageTypePool(object):
 
         # Instantiate model admin
         self.admin_site.register(plugin.model, plugin.model_admin)
+        return plugin  # Allow class decorator syntax
 
 
     def get_plugins(self):
