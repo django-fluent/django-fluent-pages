@@ -50,6 +50,8 @@ class PluginTests(AppTestCase):
         The app_reverse functions should support multiple mount points for an app.
         """
         shop2 = WebShopPage.objects.create(title="Shop2", slug="shop2", status=WebShopPage.PUBLISHED, author=self.user)
+
+        # There are now 2 mount points, the functions should detect that
         self.assertRaises(MultipleReverseMatch, lambda: app_reverse('webshop_index'))
         self.assertRaises(MultipleReverseMatch, lambda: mixed_reverse('webshop_index'))
 
@@ -81,7 +83,8 @@ class PluginUrlTests(AppTestCase):
 
     def test_mixed_reverse_standalone(self):
         """
-        When a custom app is not hooked via the CMS page tree, mixed_reverse() will find it page anyway.
+        When a custom app is not hooked via the CMS page tree, mixed_reverse() should still work.
         """
+        self.assertRaises(PageTypeNotMounted, lambda: app_reverse('webshop_index'))
         self.assertEqual(mixed_reverse('webshop_index'), '/')
         self.assertEqual(mixed_reverse('webshop_article', kwargs={'slug': 'foobar'}), '/foobar/')
