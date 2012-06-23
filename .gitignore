@@ -2,6 +2,7 @@
 *.pyo
 *.mo
 *.db
+.idea
 .project
 .pydevproject
 .idea/workspace.xml
