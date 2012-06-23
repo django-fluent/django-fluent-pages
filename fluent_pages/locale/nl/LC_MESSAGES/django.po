@@ -206,7 +206,7 @@ msgstr "Nieuwe URL"
 
 #: pagetypes/redirectnode/models.py:20
 msgid "Redirect type"
-msgstr "Doorverwijzingstype"
+msgstr "Type doorverwijzing"
 
 #: pagetypes/redirectnode/models.py:20
 msgid ""
