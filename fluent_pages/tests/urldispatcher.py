@@ -79,10 +79,6 @@ class UrlDispatcherTests(AppTestCase):
             # NOTE: admin needs to be tested elsewhere for this too.
 
 
-    # TODO:
-    # application url overriding
-
-
     def test_page_output(self):
         """
         Pages should render output via the ``render_template``.
