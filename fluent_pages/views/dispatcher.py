@@ -2,7 +2,7 @@
 The view to display CMS content.
 """
 from django.conf import settings
-from django.core.urlresolvers import Resolver404, reverse, resolve
+from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic.base import View
 from fluent_pages.models import UrlNode
@@ -52,10 +52,14 @@ class CmsPageDispatcher(GetPathMixin, View):
 
         # Since this view acts as a catch-all, give better error messages
         # when mistyping an admin URL. Don't mention anything about CMS pages in /admin.
-        if self.path.startswith(reverse('admin:index', prefix='/')):
-            raise Http404("No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
-        else:
-            raise Http404("No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
+        try:
+            if self.path.startswith(reverse('admin:index', prefix='/')):
+                raise Http404("No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
+        except NoReverseMatch:
+            # Admin might not be loaded.
+            pass
+
+        raise Http404("No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
 
 
     def post(self, request, **kwargs):
