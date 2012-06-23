@@ -1,3 +1,4 @@
+import django
 from django.conf import settings
 from django.conf.urls.defaults import url
 from django.db import router
@@ -101,10 +102,10 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         status = urlnode.status
         title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
         icon  = [rec[1] for rec in self.STATUS_ICONS if rec[0] == status].pop()
-        if hasattr(settings, 'ADMIN_MEDIA_PREFIX'):
-            admin = settings.ADMIN_MEDIA_PREFIX + 'img/admin/'  # Django 1.3
-        elif getattr(settings, 'STATIC_URL', None):
-            admin = settings.STATIC_URL + 'admin/img/'  # Django 1.4+
+        if django.VERSION >= (1, 4):
+            admin = settings.STATIC_URL + 'admin/img/'
+        else:
+            admin = settings.ADMIN_MEDIA_PREFIX + 'img/admin/'
         return u'<img src="{admin}{icon}" width="10" height="10" alt="{title}" title="{title}" />'.format(admin=admin, icon=icon, title=title)
 
     status_column.allow_tags = True
