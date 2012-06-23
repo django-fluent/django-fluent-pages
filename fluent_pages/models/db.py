@@ -266,6 +266,11 @@ class UrlNode(MPTTModel, PolymorphicModel):
                 self._update_decendant_urls()
 
 
+    def delete(self, *args, **kwargs):
+        super(UrlNode, self).delete(*args, **kwargs)
+        self._expire_url_caches()
+
+
     # Following of the principles for "clean code"
     # the save() method is split in the 3 methods below,
     # each "do one thing, and only one thing".

@@ -85,3 +85,12 @@ def _get_pages_of_type(model):
         cache.set(cachekey, pages, 3600)
 
     return pages
+
+
+def clear_app_reverse_cache():
+    """
+    Clear the cache for the app_reverse() function.
+    This only has to be called when doing bulk update/delete actions that circumvent the individual model classes.
+    """
+    for model in page_type_pool.get_model_classes():
+        cache.delete('fluent_pages.instance_of.{0}'.format(model.__name__))

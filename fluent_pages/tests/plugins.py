@@ -1,5 +1,6 @@
 from fluent_pages.tests.testapp.models import WebShopPage
 from fluent_pages.tests.utils import AppTestCase
+from fluent_pages.urlresolvers import app_reverse, mixed_reverse, PageTypeNotMounted, MultipleReverseMatch
 
 
 class PluginTests(AppTestCase):
@@ -31,3 +32,56 @@ class PluginTests(AppTestCase):
 
     # TODO: test more stuff.
     # e.g. registration API, supported fields, expected available API functions
+
+
+    def test_app_reverse(self):
+        """
+        The app_reverse function should find the proper CMS page where the app is mounted.
+        """
+        self.assertEqual(app_reverse('webshop_index'), '/shop/')
+        self.assertEqual(app_reverse('webshop_article', kwargs={'slug': 'foobar'}), '/shop/foobar/')
+
+        self.assertEqual(mixed_reverse('webshop_index'), '/shop/')
+        self.assertEqual(mixed_reverse('webshop_article', kwargs={'slug': 'foobar'}), '/shop/foobar/')
+
+
+    def test_app_reverse_multiple(self):
+        """
+        The app_reverse functions should support multiple mount points for an app.
+        """
+        shop2 = WebShopPage.objects.create(title="Shop2", slug="shop2", status=WebShopPage.PUBLISHED, author=self.user)
+        self.assertRaises(MultipleReverseMatch, lambda: app_reverse('webshop_index'))
+        self.assertRaises(MultipleReverseMatch, lambda: mixed_reverse('webshop_index'))
+
+        # The functions have a 'current_page' parameter that allows relative resolving.
+        # This is designed for template functions, to allow resolving relative to the current page node.
+        self.assertEqual(app_reverse('webshop_index', current_page=shop2), '/shop2/')
+        self.assertEqual(app_reverse('webshop_article', current_page=shop2, kwargs={'slug': 'foobar'}), '/shop2/foobar/')
+
+        self.assertEqual(mixed_reverse('webshop_index', current_page=shop2), '/shop2/')
+        self.assertEqual(mixed_reverse('webshop_article', current_page=shop2, kwargs={'slug': 'foobar'}), '/shop2/foobar/')
+
+
+    def test_app_reverse_unmounted(self):
+        """
+        The app_reverse functions should raise an exception when the pagetype is not added in the page tree.
+        """
+        for page in WebShopPage.objects.all():
+            page.delete()  # Allow signals to be sent, and clear caches
+        self.assertRaises(PageTypeNotMounted, lambda: app_reverse('webshop_index'))
+        self.assertRaises(PageTypeNotMounted, lambda: mixed_reverse('webshop_index'))
+
+
+class PluginUrlTests(AppTestCase):
+    """
+    Test for running a pagetype app standalone.
+    (some apps will support that, e.g. django-fluent-blogs)
+    """
+    urls = 'fluent_pages.tests.testapp.urls_webshop'
+
+    def test_mixed_reverse_standalone(self):
+        """
+        When a custom app is not hooked via the CMS page tree, mixed_reverse() will find it page anyway.
+        """
+        self.assertEqual(mixed_reverse('webshop_index'), '/')
+        self.assertEqual(mixed_reverse('webshop_article', kwargs={'slug': 'foobar'}), '/foobar/')
