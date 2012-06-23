@@ -1,7 +1,7 @@
 import contextlib
 from functools import wraps
 from django.conf import settings, UserSettingsHolder
-from django.core.urlresolvers import get_script_prefix, set_script_prefix, get_urlconf, set_urlconf
+from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.test import TestCase
@@ -106,20 +106,6 @@ class override_settings(object):
 
     def disable(self):
         settings._wrapped = self.wrapped
-
-
-@contextlib.contextmanager
-def override_urlconf(urlconf_name):
-    """
-    Switch the URLConf to point to a new module name.
-    """
-    oldname = get_urlconf()
-    try:
-        set_urlconf(urlconf_name)
-        yield
-    finally:
-        set_urlconf(oldname)
-
 
 
 class script_name(override_settings):

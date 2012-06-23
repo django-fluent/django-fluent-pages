@@ -1,5 +1,5 @@
 from fluent_pages.models import Page
-from fluent_pages.tests.utils import AppTestCase, script_name, override_settings, override_urlconf
+from fluent_pages.tests.utils import AppTestCase, script_name, override_settings
 from fluent_pages.tests.testapp.models import SimpleTextPage, WebShopPage
 
 
@@ -66,19 +66,6 @@ class UrlDispatcherTests(AppTestCase):
             self.assert200('/sibling1/')
 
 
-    def test_urlconf_root(self):
-        """
-        The dispatcher should support an URLConf where fluent_pages.url is not at the root.
-        """
-        sibling1 = Page.objects.get_for_path('/sibling1/')  # Stored path is always relative to ROOT
-
-        with override_urlconf('fluent_pages.tests.testapp.urls_nonroot'):
-            self.assertEquals(sibling1.get_absolute_url(), '/pages/sibling1/', "UrlNode.get_absolute_url() should other URLConf root into account (got: {0}).".format(sibling1.get_absolute_url()))
-            sibling1.save()
-            self.assertEquals(sibling1._cached_url, '/sibling1/', "UrlNode keeps paths relative to the include()")
-            # NOTE: admin needs to be tested elsewhere for this too.
-
-
     def test_page_output(self):
         """
         Pages should render output via the ``render_template``.
@@ -127,3 +114,31 @@ class UrlDispatcherTests(AppTestCase):
 
         # However, non resolvable app pages should not get an APPEND_SLASH redirect
         self.assert404('/shop/article1/foo')
+
+
+
+class UrlDispatcherNonRootTests(AppTestCase):
+    """
+    Tests for URL resolving with a non-root URL include.
+    """
+
+    urls = 'fluent_pages.tests.testapp.urls_nonroot'
+
+
+    @classmethod
+    def setUpTree(cls):
+        SimpleTextPage.objects.create(title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
+
+
+    def test_urlconf_root(self):
+        """
+        The dispatcher should support an URLConf where fluent_pages.url is not at the root.
+        """
+        sibling1 = Page.objects.get_for_path('/sibling1/')  # Stored path is always relative to ROOT
+
+        self.assert200('/pages/sibling1/')
+        self.assert404('/sibling1/')
+        self.assertEquals(sibling1.get_absolute_url(), '/pages/sibling1/', "UrlNode.get_absolute_url() should other URLConf root into account (got: {0}).".format(sibling1.get_absolute_url()))
+        sibling1.save()
+        self.assertEquals(sibling1._cached_url, '/sibling1/', "UrlNode keeps paths relative to the include()")
+        # NOTE: admin needs to be tested elsewhere for this too.
