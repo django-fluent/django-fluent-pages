@@ -1,4 +1,3 @@
-import contextlib
 from functools import wraps
 from django.conf import settings, UserSettingsHolder
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
