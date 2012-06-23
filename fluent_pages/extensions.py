@@ -114,7 +114,7 @@ class PageTypePlugin(object):
         """
         render_template = self.get_render_template(request, page, **kwargs)
         if not render_template:
-            raise ImproperlyConfigured("{0} should either provide a definition of 'render_template' or an implementation of 'get_response()'".format(self.__class__.__name__))
+            raise ImproperlyConfigured("{0} should either provide a definition of `render_template`, `urls` or an implementation of `get_response()`".format(self.__class__.__name__))
 
         context = self.get_context(request, page, **kwargs)
         return self.response_class(
