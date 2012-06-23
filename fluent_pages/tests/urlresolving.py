@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.test import TestCase
 from django.utils.unittest import SkipTest
 from fluent_pages.models import Page
@@ -22,6 +23,7 @@ class UrlResolverTests(TestCase):
         if 'fluent_pages.tests.testapp' not in settings.INSTALLED_APPS:
             raise SkipTest("{0} can only run when 'fluent_pages.tests.testapp' is installed.".format(cls.__name__))
 
+        Site.objects.create(id=settings.SITE_ID, domain='django.localhost', name='django at localhost')
         user, _ = User.objects.get_or_create(is_superuser=True, is_staff=True, username="admin")
         root = PlainTextPage(title="Home", slug="home", status=PlainTextPage.PUBLISHED, author=user, override_url='/')
         root.save()

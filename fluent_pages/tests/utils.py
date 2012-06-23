@@ -29,7 +29,7 @@ def script_name(newpath):
     try:
         yield  # call code inside 'with'
     finally:
-        settings.FORCE_SCRIPT_NAME = newpath_noslash
+        settings.FORCE_SCRIPT_NAME = oldname
         settings.STATIC_URL = oldstatic
         settings.MEDIA_URL = oldmedia
         set_script_prefix(oldprefix)
