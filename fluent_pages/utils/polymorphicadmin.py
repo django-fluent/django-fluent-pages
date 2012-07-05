@@ -24,10 +24,6 @@ class PolymorphicModelChoiceAdminForm(forms.Form):
     ct_id = forms.ChoiceField(label=_("Type"), widget=AdminRadioSelect(attrs={'class': 'radiolist'}))
 
 
-def _dummy_change_view(request, id):
-    raise Http404("Dummy page for polymorphic classes")
-
-
 
 class PolymorphicBaseModelAdmin(admin.ModelAdmin):
     """
