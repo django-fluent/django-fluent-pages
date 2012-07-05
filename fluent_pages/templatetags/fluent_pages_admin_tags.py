@@ -1,8 +1,9 @@
 from django.contrib.admin.views.main import ChangeList
-from django.template import Library, Node, TemplateSyntaxError, Variable, Context
+from django.template import Library, Node, TemplateSyntaxError, Variable
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 from mptt.templatetags.mptt_tags import cache_tree_children
-from fluent_pages.templatetags.stylable_admin_list import stylable_items_for_result, stylable_column_repr
+from fluent_pages.templatetags.stylable_admin_list import stylable_column_repr
 
 register = Library()
 
