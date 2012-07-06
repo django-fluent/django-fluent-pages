@@ -149,7 +149,7 @@ The plugin can define the following attributes:
 * ``response_class`` - the response class (by default ``TemplateResponse``)
 * ``is_file`` - whether the node represents a file, and shouldn't end with a slash.
 * ``can_have_children`` - whether the node type allows to have child nodes.
-* ``urls`` - a custom set of URL patterns for sub pages (either a module name, or ``patterns()`` list).
+* ``urls`` - a custom set of URL patterns for sub pages (either a module name, or ``patterns()`` result).
 * ``sort_priority`` - a sorting order in the "add page" dialog.
 
 It can also override the following functions:
@@ -163,11 +163,12 @@ Application nodes
 ~~~~~~~~~~~~~~~~~
 
 As briefly mentioned above, a page type can have it's own set of URL patterns, via the ``urls`` attribute.
-This allows to implement page types such as a "product page" in the tree
+This allows implementing page types such as a "product page" in the tree,
 which automatically has all products from the database as sub pages.
+The provides ``example`` module demonstrates this concept.
 
-The URL patterns all start at the path of the page, and a page type may be added multiple times to the tree.
-
+The URL patterns start at the full path of the page, so it works similar to a regular ``include()`` in the URLconf.
+However, a page type may be added multiple times to the tree.
 To resolve the URLs, there are 2 functions available:
 
 * ``fluent_pages.urlresolvers.app_reverse()`` - this ``reverse()`` like function locates a view attached to a page.
