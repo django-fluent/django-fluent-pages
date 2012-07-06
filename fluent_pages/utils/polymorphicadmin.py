@@ -1,7 +1,5 @@
 """
 ModelAdmin code to display polymorphic models.
-
-Already made generic.
 """
 from django import forms
 from django.conf.urls.defaults import patterns, url
@@ -19,47 +17,59 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 import abc
 
+__all__ = ('PolymorphicModelChoiceForm', 'PolymorphicParentModelAdmin', 'PolymorphicChildModelAdmin')
 
-class PolymorphicModelChoiceAdminForm(forms.Form):
+
+class PolymorphicModelChoiceForm(forms.Form):
+    """
+    The default form for the ``add_type_form``. Can be overwritten and replaced.
+    """
     ct_id = forms.ChoiceField(label=_("Type"), widget=AdminRadioSelect(attrs={'class': 'radiolist'}))
 
 
 
-class PolymorphicBaseModelAdmin(admin.ModelAdmin):
+class PolymorphicParentModelAdmin(admin.ModelAdmin):
     """
     A admin interface that can displays different change/delete pages, depending on the polymorphic model.
     To use this class, two methods need to be defined:
 
     * :func:`get_admin_for_model` should return a ModelAdmin instance for the derived model.
-    * :func:`get_polymorphic_model_classes` should return the available derived models.
-    * optionally, :func:`get_polymorphic_type_choices` can be overwritten to refine the choices for the add dialog.
+    * :func:`get_child_model_classes` should return the available derived models.
+    * optionally, :func:`get_child_type_choices` can be overwritten to refine the choices for the add dialog.
 
     This class needs to be inherited by the model admin base class that is registered in the site.
     The derived models should *not* register the ModelAdmin, but instead it should be returned by :func:`get_admin_for_model`.
     """
     base_model = None
     add_type_template = None
-    add_type_form = PolymorphicModelChoiceAdminForm
+    add_type_form = PolymorphicModelChoiceForm
 
 
     @abc.abstractmethod
     def get_admin_for_model(self, model):
+        """
+        Return the polymorphic admin interface for a given model.
+        """
         raise NotImplementedError("Implement get_admin_for_model()")
 
 
     @abc.abstractmethod
-    def get_polymorphic_model_classes(self):
-        raise NotImplementedError("Implement get_polymorphic_model_classes()")
+    def get_child_model_classes(self):
+        """
+        Return the derived model classes which this admin should handle.
+
+        This could either be implemented as ``base_model.__subclasses__()``,
+        a setting in a config file, or a query of a plugin registration system.
+        """
+        raise NotImplementedError("Implement get_child_model_classes()")
 
 
-    def get_polymorphic_type_choices(self):
+    def get_child_type_choices(self):
         """
         Return a list of polymorphic types which can be added.
         """
-        from fluent_pages.extensions import page_type_pool
-
         choices = []
-        for model in self.get_polymorphic_model_classes():
+        for model in self.get_child_model_classes():
             ct = ContentType.objects.get_for_model(model)
             choices.append((ct.id, model._meta.verbose_name))
         return choices
@@ -89,7 +99,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
 
 
     def queryset(self, request):
-        return super(PolymorphicBaseModelAdmin, self).queryset(request).non_polymorphic()  # optimize the list display.
+        return super(PolymorphicParentModelAdmin, self).queryset(request).non_polymorphic()  # optimize the list display.
 
 
     def add_view(self, request, form_url='', extra_context=None):
@@ -120,11 +130,11 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
         """
         Expose the custom URLs for the subclasses and the URL resolver.
         """
-        urls = super(PolymorphicBaseModelAdmin, self).get_urls()
+        urls = super(PolymorphicParentModelAdmin, self).get_urls()
         info = self.model._meta.app_label, self.model._meta.module_name
 
-        # Patch the change URL is not a big catch-all, so all custom URLs can be added to the end.
-        # can't patch url.regex property directly, as it changed with Django 1.4's LocaleRegexProvider
+        # Patch the change URL so it's not a big catch-all; allowing all custom URLs to be added to the end.
+        # The url needs to be recreated, patching url.regex is not an option Django 1.4's LocaleRegexProvider changed it.
         new_change_url = url(r'^(\d+)/$', self.admin_site.admin_view(self.change_view), name='{0}_{1}_change'.format(*info))
         for i, oldurl in enumerate(urls):
             if oldurl.name == new_change_url.name:
@@ -135,7 +145,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
             url(r'^(?P<path>.+)$', self.admin_site.admin_view(self.subclass_view))
         )
 
-        # Add reverse names for all polymorphic models, so the delete button and "save and add" works.
+        # Add reverse names for all polymorphic models, so the delete button and "save and add" just work.
         # These definitions are masked by the definition above, since it needs special handling (and a ct_id parameter).
         from fluent_pages.extensions import page_type_pool
         dummy_urls = []
@@ -171,7 +181,7 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
         if request.META['QUERY_STRING']:
             extra_qs = '&' + request.META['QUERY_STRING']
 
-        choices = self.get_polymorphic_type_choices()
+        choices = self.get_child_type_choices()
         if len(choices) == 1:
             return HttpResponseRedirect('?ct_id={0}{1}'.format(choices[0][0], extra_qs))
 
@@ -224,14 +234,14 @@ class PolymorphicBaseModelAdmin(admin.ModelAdmin):
 
 
 
-class PolymorphedModelAdmin(admin.ModelAdmin):
+class PolymorphicChildModelAdmin(admin.ModelAdmin):
     """
     The *optional* base class for the admin interface of derived models.
 
     This base class defines some convenience behavior for the admin interface:
 
-    * It defines ``base_opts`` in the template.
-    * It adds the base model path to the template lookup paths.
+    * It corrects the breadcrumbs in the admin pages.
+    * It adds the base model to the template lookup paths.
     * It allows to set ``base_form`` so the derived class will automatically include other fields in the form.
     * It allows to set ``base_fieldsets`` so the derived class will automatically display any extra fields.
 
@@ -240,7 +250,7 @@ class PolymorphedModelAdmin(admin.ModelAdmin):
     base_model = None
     base_form = None
     base_fieldsets = None
-    extra_fieldset_title = _("Contents")
+    extra_fieldset_title = _("Contents")  # Default title for extra fieldset
 
 
     def get_form(self, request, obj=None, **kwargs):
@@ -253,7 +263,7 @@ class PolymorphedModelAdmin(admin.ModelAdmin):
         # If the derived class sets the model explicitly, respect that setting.
         if not self.form:
             kwargs['form'] = self.base_form
-        return super(PolymorphedModelAdmin, self).get_form(request, obj, **kwargs)
+        return super(PolymorphicChildModelAdmin, self).get_form(request, obj, **kwargs)
 
 
     @property
@@ -261,6 +271,7 @@ class PolymorphedModelAdmin(admin.ModelAdmin):
         opts = self.model._meta
         app_label = opts.app_label
 
+        # Pass the base options
         base_opts = self.base_model._meta
         base_app_label = base_opts.app_label
 
@@ -279,6 +290,7 @@ class PolymorphedModelAdmin(admin.ModelAdmin):
         opts = self.model._meta
         app_label = opts.app_label
 
+        # Pass the base options
         base_opts = self.base_model._meta
         base_app_label = base_opts.app_label
 
@@ -296,14 +308,14 @@ class PolymorphedModelAdmin(admin.ModelAdmin):
         context.update({
             'base_opts': self.base_model._meta,
         })
-        return super(PolymorphedModelAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
+        return super(PolymorphicChildModelAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
 
 
     def delete_view(self, request, object_id, context=None):
         extra_context = {
             'base_opts': self.base_model._meta,
         }
-        return super(PolymorphedModelAdmin, self).delete_view(request, object_id, extra_context)
+        return super(PolymorphicChildModelAdmin, self).delete_view(request, object_id, extra_context)
 
 
     # ---- Extra: improving the form/fieldset default display ----
@@ -311,7 +323,7 @@ class PolymorphedModelAdmin(admin.ModelAdmin):
     def get_fieldsets(self, request, obj=None):
         # If subclass declares fieldsets, this is respected
         if self.declared_fieldsets:
-            return super(PolymorphedModelAdmin, self).get_fieldsets(request, obj)
+            return super(PolymorphicChildModelAdmin, self).get_fieldsets(request, obj)
 
         # Have a reasonable default fieldsets,
         # where the subclass fields are automatically included.

@@ -7,13 +7,13 @@ from django.http import HttpResponseNotFound, HttpResponse, HttpResponseBadReque
 from django.utils import simplejson
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from fluent_pages.utils.polymorphicadmin import PolymorphicBaseModelAdmin, PolymorphicModelChoiceAdminForm
+from fluent_pages.utils.polymorphicadmin import PolymorphicParentModelAdmin, PolymorphicModelChoiceForm
 from fluent_pages.models import UrlNode
 from mptt.admin import MPTTModelAdmin
 
-class PageTypeChoiceAdminForm(PolymorphicModelChoiceAdminForm):
+class PageTypeChoiceForm(PolymorphicModelChoiceForm):
     def __init__(self, *args, **kwargs):
-        super(PageTypeChoiceAdminForm, self).__init__(*args, **kwargs)
+        super(PageTypeChoiceForm, self).__init__(*args, **kwargs)
         self.fields['ct_id'].label = _("Page type")
 
 
@@ -52,12 +52,12 @@ else:
     extra_list_filters = (PageTypeListFilter,)
 
 
-class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
+class UrlNodePolymorphicAdmin(PolymorphicParentModelAdmin, MPTTModelAdmin):
     """
     The main entry to the admin interface of django-fluent-pages.
     """
     base_model = UrlNode
-    add_type_form = PageTypeChoiceAdminForm
+    add_type_form = PageTypeChoiceForm
 
     # Config list page:
     list_display = ('title', 'status_column', 'modification_date', 'actions_column')
@@ -74,12 +74,12 @@ class UrlNodePolymorphicAdmin(PolymorphicBaseModelAdmin, MPTTModelAdmin):
         return page_type_pool.get_model_admin(model)
 
 
-    def get_polymorphic_model_classes(self):
+    def get_child_model_classes(self):
         from fluent_pages.extensions import page_type_pool
         return page_type_pool.get_model_classes()
 
 
-    def get_polymorphic_type_choices(self):
+    def get_child_type_choices(self):
         """
         Return a list of polymorphic types which can be added.
         """
