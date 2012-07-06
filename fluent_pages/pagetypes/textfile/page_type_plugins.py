@@ -3,6 +3,7 @@ from fluent_pages.extensions import PageTypePlugin, page_type_pool
 from fluent_pages.pagetypes.textfile.models import TextFile
 
 
+@page_type_pool.register
 class TextFilePlugin(PageTypePlugin):
     model = TextFile
     is_file = True
@@ -16,5 +17,3 @@ class TextFilePlugin(PageTypePlugin):
             content=textfile.content,
             content_type=content_type,
         )
-
-page_type_pool.register(TextFilePlugin)
