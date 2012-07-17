@@ -28,8 +28,8 @@ First install the module, preferably in a virtual environment::
     cd django-fluent-pages
     pip install .
 
-The main dependencies are django-mptt_ and django-polymorphic_,
-which will be automatically installed.
+The main dependency is django-polymorphic-tree_, which is based on django-mptt_ and django-polymorphic_.
+These dependencies will be automatically installed.
 
 Configuration
 -------------
@@ -196,4 +196,5 @@ Pull requests are welcome too. :-)
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
 .. _django-mptt: https://github.com/django-mptt/django-mptt
 .. _django-polymorphic: https://github.com/chrisglass/django_polymorphic
+.. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 

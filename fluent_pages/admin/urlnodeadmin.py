@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from mptt.admin import MPTTModelAdmin
 from mptt.forms import MPTTAdminForm
-from fluent_pages.utils.polymorphicadmin import PolymorphicChildModelAdmin
+from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
 from fluent_pages.models import UrlNode
 from fluent_pages.forms.fields import RelativeRootPathField
 
@@ -73,7 +72,7 @@ class UrlNodeAdminForm(MPTTAdminForm):
 
 
 
-class UrlNodeAdmin(PolymorphicChildModelAdmin, MPTTModelAdmin):
+class UrlNodeAdmin(PolymorphicMPTTChildModelAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
@@ -116,40 +115,3 @@ class UrlNodeAdmin(PolymorphicChildModelAdmin, MPTTModelAdmin):
         if not change:
             obj.author = request.user
         obj.save()
-
-
-    # ---- Pass parent_object to templates ----
-
-    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        # Get parent object for breadcrumb
-        parent_object = None
-        parent_id = request.REQUEST.get('parent')
-        if add and parent_id:
-            parent_object = UrlNode.objects.get(pk=int(parent_id))  # is polymorphic
-        elif change:
-            parent_object = obj.parent
-
-        # Improve the breadcrumb
-        context.update({
-            'parent_object': parent_object,
-        })
-
-        return super(UrlNodeAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
-
-
-    def delete_view(self, request, object_id, context=None):
-        # Get parent object for breadcrumb
-        parent_object = None
-        try:
-            parent_pk = UrlNode.objects.non_polymorphic().values('parent').filter(pk=int(object_id))
-            parent_object = UrlNode.objects.get(pk=parent_pk)
-        except UrlNode.DoesNotExist:
-            pass
-
-        # Improve the breadcrumb
-        extra_context = {
-            'parent_object': parent_object,
-        }
-        extra_context.update(context or {})
-
-        return super(UrlNodeAdmin, self).delete_view(request, object_id, extra_context)

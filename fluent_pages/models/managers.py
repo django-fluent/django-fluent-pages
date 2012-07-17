@@ -3,13 +3,11 @@ The manager class for the CMS models
 """
 from datetime import datetime
 from django.db.models.query_utils import Q
-from mptt.managers import TreeManager
-from polymorphic import PolymorphicManager
-from polymorphic.query import PolymorphicQuerySet
+from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
 from fluent_pages.utils.db import DecoratingQuerySet
 
 
-class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
+class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
     def get_for_path(self, path):
         """
         Return the UrlNode for the given path.
@@ -75,13 +73,11 @@ class UrlNodeQuerySet(PolymorphicQuerySet, DecoratingQuerySet):
 
 
 
-class UrlNodeManager(TreeManager, PolymorphicManager):
+class UrlNodeManager(PolymorphicMPTTModelManager):
     """
     Extra methods attached to ``UrlNode.objects`` and ``Page.objects``.
     """
-
-    def __init__(self, *args, **kwargs):
-        PolymorphicManager.__init__(self, UrlNodeQuerySet, *args, **kwargs)
+    queryset_class = UrlNodeQuerySet
 
 
     def get_for_path(self, path):
