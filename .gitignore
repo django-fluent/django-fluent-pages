@@ -2,8 +2,9 @@
 *.pyo
 *.mo
 *.db
-.idea
+*.egg-info/
 .project
+.idea/
 .pydevproject
 .idea/workspace.xml
 .DS_Store

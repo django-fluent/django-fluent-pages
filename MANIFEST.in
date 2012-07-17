@@ -1,0 +1,5 @@
+include AUTHORS
+include README.rst
+include LICENSE.rst
+recursive-include fluent_pages/templates/ *.html
+recursive-include fluent_pages/static/ *.css *.js

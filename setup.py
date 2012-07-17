@@ -17,10 +17,10 @@ setup(
     author='Diederik van der Boor',
     author_email='opensource@edoburu.nl',
 
-    url='https://github.com/edoburu/django-fluent-contents',
-    download_url='https://github.com/edoburu/django-fluent-contents/zipball/master',
+    url='https://github.com/edoburu/django-fluent-pages',
+    download_url='https://github.com/edoburu/django-fluent-pages/zipball/master',
 
-    packages=find_packages(),
+    packages=find_packages(exclude=('example*',)),
     include_package_data=True,
 
     zip_safe=False,
