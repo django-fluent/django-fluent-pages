@@ -99,7 +99,7 @@ The ``models.py`` file should define the custom node type, and any fields it has
         A page that renders RST code.
         """
         rst_content = models.TextField(_("RST contents"))
-        template = models.ChatField(_("Template"), max_length=200, choices=RST_TEMPLATE_CHOICES)
+        template = models.CharField(_("Template"), max_length=200, choices=RST_TEMPLATE_CHOICES)
 
         class Meta:
             verbose_name = _("RST page")
