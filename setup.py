@@ -8,7 +8,8 @@ setup(
 
     install_requires=[
         'Django>=1.3.0',
-        'django-mptt>=0.5.2',
+        'django-mptt>=0.5.1',
+        'django-polymorphic-tree>=0.8.1',
     ],
     description='A page tree structure to display various content in.',
     long_description=open('README.rst').read(),
@@ -16,10 +17,10 @@ setup(
     author='Diederik van der Boor',
     author_email='opensource@edoburu.nl',
 
-    url='https://github.com/edoburu/django-fluent-contents',
-    download_url='https://github.com/edoburu/django-fluent-contents/zipball/master',
+    url='https://github.com/edoburu/django-fluent-pages',
+    download_url='https://github.com/edoburu/django-fluent-pages/zipball/master',
 
-    packages=find_packages(),
+    packages=find_packages(exclude=('example*',)),
     include_package_data=True,
 
     zip_safe=False,

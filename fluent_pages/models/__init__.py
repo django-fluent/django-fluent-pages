@@ -26,7 +26,6 @@ def _register_cmsfield_url_type():
         pass
     else:
         from django import forms
-        from mptt.forms import TreeNodeChoiceField
         CmsUrlField.register_model(Page, form_field=PageChoiceField(queryset=UrlNode.objects.published().non_polymorphic()))
 
 

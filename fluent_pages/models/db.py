@@ -17,10 +17,8 @@ from django.contrib.sites.models import Site
 from django.db import models
 from django.db.transaction import commit_on_success
 from django.utils.translation import ugettext_lazy as _
-from mptt.models import MPTTModel, MPTTModelBase, TreeForeignKey
-from polymorphic import PolymorphicModel
-from polymorphic.base import PolymorphicModelBase
-from fluent_pages.models.fields import TemplateFilePathField
+from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
+from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 
@@ -29,24 +27,7 @@ def _get_current_site():
     return Site.objects.get_current()
 
 
-def _validate_parent(parent):
-    from fluent_pages.extensions import page_type_pool
-    if not parent:
-        return
-    elif isinstance(parent, (int, long)):
-        parent = UrlNode.objects.non_polymorphic().values('polymorphic_ctype').get(pk=parent)
-        if parent['polymorphic_ctype'] in page_type_pool.get_folder_types():
-            return
-    elif isinstance(parent, UrlNode):
-        if parent.can_have_children:
-            return
-    else:
-        raise ValueError("Unknown parent value")
-
-    raise ValidationError(_("The selected page cannot have sub pages."))
-
-
-class URLNodeMetaClass(MPTTModelBase, PolymorphicModelBase):
+class URLNodeMetaClass(PolymorphicMPTTModelBase):
     """
     Metaclass for all plugin models.
 
@@ -67,7 +48,7 @@ class URLNodeMetaClass(MPTTModelBase, PolymorphicModelBase):
         return new_class
 
 
-class UrlNode(MPTTModel, PolymorphicModel):
+class UrlNode(PolymorphicMPTTModel):
     """
     The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
     """
@@ -83,7 +64,7 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
     title = models.CharField(_('title'), max_length=255)
     slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
-    parent = TreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), validators=[_validate_parent], help_text=_('You can also change the parent by dragging the page in the list.'))
+    parent = PageTreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager by 'parent'
 
@@ -214,6 +195,8 @@ class UrlNode(MPTTModel, PolymorphicModel):
 
     @property
     def can_have_children(self):
+        # Redefine the model constant 'can_have_children' as property
+        # that access the plugin registration system,
         plugin = self.plugin
         return plugin.can_have_children and not plugin.is_file
 

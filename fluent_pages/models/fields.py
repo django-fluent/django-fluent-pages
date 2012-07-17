@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from polymorphic_tree.models import PolymorphicTreeForeignKey
 from fluent_pages import forms
 
 
@@ -18,9 +20,22 @@ class TemplateFilePathField(models.FilePathField):
         return super(TemplateFilePathField, self).formfield(**defaults)
 
 
+class PageTreeForeignKey(PolymorphicTreeForeignKey):
+    """
+    A customized version of the :class:`~polymorphic_tree.models.PolymorphicTreeForeignKey`.
+    """
+    default_error_messages = {
+        'no_children_allowed': _("The selected page cannot have sub pages."),
+    }
+
+
 try:
     from south.modelsinspector import add_introspection_rules
 except ImportError:
     pass
 else:
-    add_introspection_rules([], ["^" + __name__.replace(".", "\.") + "\.TemplateFilePathField"])
+    _name_re = "^" + __name__.replace(".", "\.")
+    add_introspection_rules([], [
+        _name_re + "\.TemplateFilePathField",
+        _name_re + "\.PageTreeForeignKey",
+    ])
