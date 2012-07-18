@@ -7,8 +7,7 @@ class FluentPageBase(HtmlPage):
     """
     A ```FluentPage``` represents one HTML page of the site.
     """
-    layout = models.ForeignKey(PageLayout, verbose_name=_('Layout'))
-
+    
     # Access to fluent-contents via the model
     placeholder_set = PlaceholderRelation()
     contentitem_set = ContentItemRelation()
@@ -26,4 +25,4 @@ class FluentPage(FluentPageBase):
     """
     A ```FluentPage``` represents one HTML page of the site.
     """
-    pass
+    layout = models.ForeignKey(PageLayout, verbose_name=_('Layout'))
