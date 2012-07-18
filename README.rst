@@ -74,7 +74,6 @@ In ``urls.py``::
 The database can be created afterwards::
 
     ./manage.py syncdb
-    ./manage.py loaddata welcome
     ./manage.py runserver
 
 
