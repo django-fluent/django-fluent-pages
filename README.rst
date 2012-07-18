@@ -44,16 +44,19 @@ To have a standard setup with django-fluent-contents_ integrated, use::
     INSTALLED_APPS += (
         # The CMS apps
         'fluent_pages',
+
+        # Required dependencies
         'mptt',
         'polymorphic',
+        'polymorphic_tree',
 
-        # Using widget pages via django-fluent-contents
+        # Optional widget pages via django-fluent-contents
         'fluent_pages.pagetypes.fluentpage',
         'fluent_contents',
         'fluent_contents.plugins.text',
         'django_wysiwyg',
 
-        # Other CMS page types
+        # Optional other CMS page types
         'fluent_pages.pagetypes.redirectnode',
 
         # enable the admin
