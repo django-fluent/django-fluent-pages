@@ -1,7 +1,7 @@
 # For the CMS:
 Django==1.3.1
+django-polymorphic-tree==0.8.1
 django-mptt==0.5.2
-django-polymorphic==0.2
 
 # For the pagetypes:
 -e git+https://github.com/edoburu/django-fluent-contents.git#egg=django-fluent-contents

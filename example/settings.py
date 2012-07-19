@@ -87,7 +87,6 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 
     # The CMS
-    'mptt',
     'fluent_pages',
     'fluent_pages.pagetypes.fluentpage',
     'fluent_pages.pagetypes.redirectnode',
@@ -96,6 +95,11 @@ INSTALLED_APPS = (
 
     # Extra apps
     'simpleshop',
+
+    # Required dependencies
+    'mptt',
+    'polymorphic',
+    'polymorphic_tree',
 
     # Content for fluentpage, with plugins that have no extra configuration requirements
     'fluent_contents',

@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.conf.urls.defaults import patterns
 from fluent_pages.admin import HtmlPageAdmin
 from fluent_pages.forms.widgets import LayoutSelector
@@ -8,7 +7,16 @@ from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 
 
-class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
+class FluentPageAdminBase(PlaceholderEditorAdmin, HtmlPageAdmin):
+    """
+    The base admin that works with the :class:`~fluent_pages.pagetypes.fluentpage.models.FluentPageBase` model;
+    it defines the connection to *django-fluent-pages*, but doesn't yet specify how the layout and templates
+    are associated with the page. The :func:`get_placeholder_data` function still needs to be implemented.
+    """
+    pass
+
+
+class FluentPageAdmin(FluentPageAdminBase):
     # By using base_fieldsets, the parent PageAdmin will
     # add an extra fieldset for all derived fields automatically.
     base_fieldsets = (
