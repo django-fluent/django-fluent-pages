@@ -17,7 +17,7 @@ class PageAdmin(UrlNodeAdmin):
     base_form = PageAdminForm
 
     class Media:
-        js = ('fluent_pages/fk_raw_id_fix.js',)
+        js = ('fluent_pages/admin/django13_fk_raw_id_fix.js',)
 
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
