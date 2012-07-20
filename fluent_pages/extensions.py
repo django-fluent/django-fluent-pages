@@ -59,7 +59,7 @@ class PageTypePlugin(object):
     #: Set the URLs which the page serves provides the current node. Can either be a URLconf module, or inline pattern list.
     urls = None
 
-    #: The sorting priority for the add page.
+    #: The sorting priority for the page type in the "add page" dialog of the admin.
     sort_priority = 100
 
 
