@@ -7,16 +7,13 @@ from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 
 
-class FluentPageAdminBase(PlaceholderEditorAdmin, HtmlPageAdmin):
+class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     """
-    The base admin that works with the :class:`~fluent_pages.pagetypes.fluentpage.models.FluentPageBase` model;
-    it defines the connection to *django-fluent-pages*, but doesn't yet specify how the layout and templates
-    are associated with the page. The :func:`get_placeholder_data` function still needs to be implemented.
+    This admin is a small binding between the pagetypes of *django-fluent-pages*
+    and page contents of *django-fluent-contents*. In fact, most code only concerns with the layout
+    mechanism that is custom for each implementation.
     """
-    pass
 
-
-class FluentPageAdmin(FluentPageAdminBase):
     # By using base_fieldsets, the parent PageAdmin will
     # add an extra fieldset for all derived fields automatically.
     base_fieldsets = (
