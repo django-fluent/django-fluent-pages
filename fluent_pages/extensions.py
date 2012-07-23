@@ -62,6 +62,8 @@ class PageTypePlugin(object):
     #: The sorting priority for the page type in the "add page" dialog of the admin.
     sort_priority = 100
 
+    # Add a default icon to every page
+    icon = settings.STATIC_URL + 'fluent_pages/admin/icons/blue-document.png'
 
     def __init__(self):
         self._type_id = None
