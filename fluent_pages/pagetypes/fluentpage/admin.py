@@ -11,7 +11,9 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     """
     This admin is a small binding between the pagetypes of *django-fluent-pages*
     and page contents of *django-fluent-contents*. In fact, most code only concerns with the layout
-    mechanism that is custom for each implementation.
+    mechanism that is custom for each implementation. To build a variation of this page,
+    see the API documentation of `Creating a CMS system <http://django-fluent-contents.readthedocs.org/en/latest/cms.html>`_
+    in the *django-fluent-contents* documentation to implement the required API's.
     """
 
     # By using base_fieldsets, the parent PageAdmin will
