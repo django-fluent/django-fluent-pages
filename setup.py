@@ -9,7 +9,7 @@ setup(
     install_requires=[
         'Django>=1.3.0',
         'django-mptt>=0.5.1',
-        'django-polymorphic-tree>=0.8.1',
+        'django-polymorphic-tree>=0.8.2',
     ],
     description='A page tree structure to display various content in.',
     long_description=open('README.rst').read(),

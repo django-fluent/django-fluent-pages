@@ -52,14 +52,16 @@ class UrlNodePolymorphicAdmin(PolymorphicMPTTParentModelAdmin):
 
     # ---- Polymorphic tree overrides ----
 
-    def get_admin_for_model(self, model):
+    def get_child_models(self):
+        """
+        Provide the available models of the page type registration system to *django-polymorphic-tree*.
+        """
         from fluent_pages.extensions import page_type_pool
-        return page_type_pool.get_model_admin(model)
+        child_models = []
 
-
-    def get_child_model_classes(self):
-        from fluent_pages.extensions import page_type_pool
-        return page_type_pool.get_model_classes()
+        for plugin in page_type_pool.get_plugins():
+            child_models.append((plugin.model, plugin.model_admin))
+        return child_models
 
 
     def get_child_type_choices(self):
@@ -77,6 +79,11 @@ class UrlNodePolymorphicAdmin(PolymorphicMPTTParentModelAdmin):
 
         choices.sort(key=lambda choice: (priorities[choice[0]], choice[1]))
         return choices
+
+
+    # Provide some migration assistance for the users of the 0.8.1 alpha release:
+    def get_child_model_classes(self):
+        raise DeprecationWarning("Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages.")
 
 
 

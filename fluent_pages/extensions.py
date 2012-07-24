@@ -10,7 +10,6 @@ Having to do an explicit register ensures future compatibility with other API's 
 """
 from django import forms
 from django.conf import settings
-from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import RegexURLResolver
@@ -208,7 +207,6 @@ class PageTypePool(object):
         self.plugin_for_model = {}
         self.plugin_for_ctype_id = {}
         self.detected = False
-        self.admin_site = admin.AdminSite()
         self._file_types = None
         self._folder_types = None
         self._url_types = None
@@ -243,8 +241,6 @@ class PageTypePool(object):
         self.plugin_for_model[plugin.model] = name       # Track reverse for rendering
         self.plugin_for_ctype_id[plugin_instance.type_id] = name
 
-        # Instantiate model admin
-        self.admin_site.register(plugin.model, plugin.model_admin)
         return plugin  # Allow class decorator syntax
 
 
@@ -287,19 +283,6 @@ class PageTypePool(object):
         except KeyError:
             raise PageTypeNotFound("No plugin found for content type '{0}'.".format(contenttype))
         return self.plugins[name]
-
-
-    def get_model_admin(self, model_class):
-        """
-        Access the model admin object instantiated for the plugin.
-        """
-        self._import_plugins()                   # could happen during rendering that no plugin scan happened yet.
-        assert issubclass(model_class, UrlNode)  # avoid confusion between model instance and class here!
-
-        try:
-            return self.admin_site._registry[model_class]
-        except KeyError:
-            raise PageTypeNotFound("No ModelAdmin found for model '{0}'.".format(model_class.__name__))
 
 
     def get_file_types(self):
