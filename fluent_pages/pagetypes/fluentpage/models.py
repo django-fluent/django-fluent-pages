@@ -26,7 +26,7 @@ class FluentPageBase(HtmlPage):
     class Meta:
         abstract = True
         verbose_name = _("Page")
-        verbose_name_plural = _("Page")
+        verbose_name_plural = _("Pages")
 
 
 
