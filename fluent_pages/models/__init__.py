@@ -26,7 +26,8 @@ def _register_cmsfield_url_type():
         pass
     else:
         from django import forms
-        CmsUrlField.register_model(Page, form_field=PageChoiceField(queryset=UrlNode.objects.published().non_polymorphic()))
+        from cmsfields.forms.widgets import SimpleRawIdWidget
+        CmsUrlField.register_model(Page, form_field=PageChoiceField(queryset=UrlNode.objects.published().non_polymorphic(), widget=SimpleRawIdWidget(Page)))
 
 
 if 'cmsfields' in settings.INSTALLED_APPS:
