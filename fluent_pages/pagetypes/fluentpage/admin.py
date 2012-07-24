@@ -1,10 +1,10 @@
-from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import patterns, url
 from fluent_pages.admin import HtmlPageAdmin
-from fluent_pages.forms.widgets import LayoutSelector
 from fluent_pages.models import PageLayout
 from fluent_pages.utils.ajax import JsonResponse
 from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
+from .widgets import LayoutSelector
 
 
 class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
@@ -39,6 +39,10 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
 
 
     def get_placeholder_data(self, request, obj):
+        """
+        Provides a list of :class:`fluent_contents.models.PlaceholderData` classes,
+        that describe the contents of the template.
+        """
         template = self.get_page_template(obj)
         if not template:
             return []
@@ -47,7 +51,10 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
 
 
     def get_page_template(self, page):
-        if not page:
+        """
+        Return the template that is associated with the page.
+        """
+        if page is None:
             # Add page. start with default template.
             try:
                 return PageLayout.objects.all()[0].get_template()
@@ -58,7 +65,7 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
             return page.layout.get_template()
 
 
-    # ---- Extra Ajax views ----
+    # ---- Layout selector code ----
 
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -73,7 +80,7 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
         """
         urls = super(FluentPageAdmin, self).get_urls()
         my_urls = patterns('',
-            (r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view))
+            url(r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view))
         )
         return my_urls + urls
 
