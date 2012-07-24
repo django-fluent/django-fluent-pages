@@ -10,7 +10,7 @@ It defines the following classes:
   The layout of a page, which has regions and a template.
 """
 from django.core.cache import cache
-from django.core.exceptions import ValidationError, ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
