@@ -1,6 +1,6 @@
 /**
  * This file deals with the high level layout switching / fetching layout info.
- * When a new layout is fetched, it is passed to the cp_tabs to rebuild the tabs.
+ * When a new layout is fetched, it is passed to the fluent_contents module to rebuild the tabs.
  */
 var fluent_layouts = {
     'ct_id': null,
@@ -25,7 +25,7 @@ var fluent_layouts = {
     var layout_selector = $("#id_layout");
     fluent_layouts._select_single_option( layout_selector );
     layout_selector.change( fluent_layouts.onLayoutChange );
-    cp_plugins.on_init_layout( fluent_layouts.fetch_layout_on_refresh );
+    fluent_contents.layout.onInit( fluent_layouts.fetch_layout_on_refresh );
   }
 
 
@@ -39,7 +39,7 @@ var fluent_layouts = {
     var initial_layout_id = layout_selector.attr('data-original-value');
     if( selected_layout_id != initial_layout_id )
     {
-      cp_tabs.hide();
+      fluent_contents.tabs.hide();
       layout_selector.change();
       return true;
     }
@@ -72,17 +72,17 @@ var fluent_layouts = {
     var layout_id = this.value;
     if( ! layout_id )
     {
-      cp_tabs.hide(true);
+      fluent_contents.tabs.hide(true);
       return;
     }
 
     // Disable content
-    cp_tabs.expire_all_tabs();
+    fluent_contents.layout.expire();
 
     if( event.originalEvent )
     {
       // Real change event, no manual invocation made above
-      cp_tabs.show(true);
+      fluent_contents.tabs.show(true);
     }
 
     fluent_layouts.fetch_layout(layout_id);
@@ -97,7 +97,7 @@ var fluent_layouts = {
       success: function(layout, textStatus, xhr)
       {
         // Ask to update the tabs!
-        cp_tabs.load_layout(layout);
+        fluent_contents.layout.load(layout);
       },
       dataType: 'json',
       error: function(xhr, textStatus, ex)
