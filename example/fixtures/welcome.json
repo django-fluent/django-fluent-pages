@@ -20,7 +20,7 @@
       "in_navigation": true, 
       "_cached_url": "/", 
       "slug": "homepage", 
-      "polymorphic_ctype": 12
+      "polymorphic_ctype": 11
     }
   }, 
   {
@@ -55,7 +55,7 @@
     "model": "fluent_contents.placeholder", 
     "fields": {
       "slot": "main1", 
-      "parent_type": 12, 
+      "parent_type": 11, 
       "title": "Main content", 
       "role": "m", 
       "parent_id": 1
@@ -67,9 +67,9 @@
     "fields": {
       "parent_id": 1, 
       "sort_order": 0, 
-      "parent_type": 12, 
+      "parent_type": 11, 
       "placeholder": 1, 
-      "polymorphic_ctype": 29
+      "polymorphic_ctype": 28
     }
   }, 
   {
