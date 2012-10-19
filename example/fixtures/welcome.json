@@ -25,6 +25,15 @@
   }, 
   {
     "pk": 1, 
+    "model": "fluentpage.fluentpage", 
+    "fields": {
+      "keywords": "", 
+      "layout": 1, 
+      "description": ""
+    }
+  },
+  {
+    "pk": 1, 
     "model": "fluent_pages.pagelayout", 
     "fields": {
       "template_path": "theme1/pages/standard.html", 
