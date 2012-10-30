@@ -25,7 +25,7 @@ var fluent_layouts = {
     var layout_selector = $("#id_layout");
     fluent_layouts._select_single_option( layout_selector );
     layout_selector.change( fluent_layouts.onLayoutChange );
-    fluent_contents.layout.onInit( fluent_layouts.fetch_layout_on_refresh );
+    fluent_contents.layout.onInitialize( fluent_layouts.fetch_layout_on_refresh );
   }
 
 
