@@ -1,6 +1,6 @@
 # For the CMS:
 Django>=1.4.2, < 1.5
-django-polymorphic-tree>=0.8.2
+django-polymorphic-tree>=0.8.3
 django-mptt>=0.5.2
 
 # For the pagetypes:
@@ -8,8 +8,8 @@ django-mptt>=0.5.2
 django-template-analyzer>=1.1.0
 
 # For the fluent_contents plugins:
-django-wysiwyg==0.4.1
-Markdown==2.0.3
-docutils==0.7
+django-wysiwyg>=0.5
+Markdown==2.2.0
+docutils==0.9.1
 textile==2.1.5
-Pygments==1.4
+Pygments==1.5
