@@ -1,11 +1,15 @@
 from functools import wraps
 from django.conf import settings, UserSettingsHolder
+from django.core.management import call_command
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.db.models import loading
+from django.template.loaders import app_directories
 from django.test import TestCase
-from django.utils.unittest import SkipTest
 from fluent_pages.models.db import UrlNode
+from fluent_pages.tests import testapp
+import os
 
 
 class AppTestCase(TestCase):
@@ -17,10 +21,18 @@ class AppTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        # When a simplepage is introduced, it can be used instead.
-        # For now, rely on the testapp.
         if 'fluent_pages.tests.testapp' not in settings.INSTALLED_APPS:
-            raise SkipTest("{0} can only run when 'fluent_pages.tests.testapp' is installed.".format(cls.__name__))
+            # When running this app via `./manage.py test fluent_pages`, auto install the test app + models.
+            print 'Adding fluent_pages.tests.testapp to INSTALLED_APPS'
+            settings.INSTALLED_APPS += ('fluent_pages.tests.testapp',)
+
+            # Flush caches
+            loading.cache.loaded = False
+            app_directories.app_template_dirs += (
+                os.path.join(os.path.dirname(testapp.__file__), 'templates'),
+            )
+
+            call_command('syncdb', verbosity=0)  # may run south's overlaid version
 
         # Create basic objects
         # 1.4 does not create site automatically with the defined SITE_ID, 1.3 does.
