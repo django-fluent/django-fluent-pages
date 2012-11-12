@@ -16,11 +16,10 @@ By Appending @admin to an URL, the request will be redirected to the admin URL o
 from django.conf.urls.defaults import *
 from fluent_pages.views import CmsPageDispatcher, CmsPageAdminRedirect
 
-
-# The URLs of the cmspage are forced to end with a slash,
-# so django will redirect /admin will redirect to /admin/.
-# The same trick also needs to be used in the main site
-# which includes this file. Otherwise a rule matched after all.
+# This urlpatterns acts as a catch-all, as there is no terminating slash in the pattern.
+# This allows the pages to have any name, including file names such as /robots.txt
+# Sadly, that circumvents the CommonMiddleware check whether a slash needs to be appended to a path.
+# The APPEND_SLASH behavior is implemented in the CmsPageDispatcher so the standard behavior still works as expected.
 urlpatterns = patterns('fluent_pages.views',
     url(r'^(?P<path>.*)@admin$', CmsPageAdminRedirect.as_view(), name='fluent-page-admin-redirect'),
     url(r'^$|^(?P<path>.*)$', CmsPageDispatcher.as_view(), name='fluent-page')

@@ -3,10 +3,10 @@ Database model for the CMS
 
 It defines the following classes:
 
-* CmsObject
+* UrlNode
   A item node. Can be an HTML page, image, symlink, etc..
 
-* CmsLayout
+* PageLayout
   The layout of a page, which has regions and a template.
 """
 from django.core.cache import cache

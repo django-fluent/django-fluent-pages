@@ -33,7 +33,7 @@ class UrlDispatcherTests(AppTestCase):
     def test_get_append_slash_redirect(self):
         """
         The dispatcher should implement APPEND_SLASH handling,
-        because it has a catch-all for ALL url's, including those without a slash.
+        because ``fluent_pages.urls`` is a catch-all for ALL url's, including those without a slash.
         """
         with override_settings(APPEND_SLASH=True):
             self.assertRedirects(self.client.get('/sibling1'), '/sibling1/', status_code=302)
@@ -71,7 +71,7 @@ class UrlDispatcherTests(AppTestCase):
         Pages should render output via the ``render_template``.
         """
         # Test initial state
-        from fluent_pages.tests.testapp.page_type_plugins import SimpleTextPagePlugin  # Import here as it needs an exising DB
+        from fluent_pages.tests.testapp.page_type_plugins import SimpleTextPagePlugin  # Import here as it needs an existing DB
         self.assertEquals(SimpleTextPagePlugin.render_template, 'testapp/simpletextpage.html')
 
         # Test how a normal page is rendered
