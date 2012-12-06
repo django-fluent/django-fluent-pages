@@ -25,7 +25,7 @@ class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
         try:
             return self.get(_cached_url=path)
         except self.model.DoesNotExist:
-            raise self.model.DoesNotExist("No published {0} found for the path '{1}'".format(self.model.__name__, path))
+            raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
 
     def best_match_for_path(self, path):
@@ -38,14 +38,14 @@ class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
         paths = []
         if path:
             tokens = path.rstrip('/').split('/')
-            paths += ['{0}/'.format('/'.join(tokens[:i])) for i in range(1, len(tokens) + 1)]
+            paths += [u'{0}/'.format(u'/'.join(tokens[:i])) for i in range(1, len(tokens) + 1)]
 
         try:
             return self.filter(_cached_url__in=paths) \
                        .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
                        .order_by('-_url_length')[0]
         except IndexError:
-            raise self.model.DoesNotExist("No published {0} found for the path '{1}'".format(self.model.__name__, path))
+            raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
 
     def published(self):

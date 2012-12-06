@@ -59,7 +59,7 @@ class AppTestCase(TestCase):
         """
         if msg_prefix:
             msg_prefix += ": "
-        self.assertEquals(self.client.get(url).status_code, 200, msg_prefix + "Page at {0} should be found.".format(url))
+        self.assertEquals(self.client.get(url).status_code, 200, unicode(msg_prefix) + u"Page at {0} should be found.".format(url))
 
 
     def assert404(self, url, msg_prefix=''):
@@ -68,7 +68,7 @@ class AppTestCase(TestCase):
         """
         if msg_prefix:
             msg_prefix += ": "
-        self.assertEquals(self.client.get(url).status_code, 404, msg_prefix + "Page at {0} should return 404.".format(url))
+        self.assertEquals(self.client.get(url).status_code, 404, unicode(msg_prefix) + u"Page at {0} should return 404.".format(url))
 
 
 try:

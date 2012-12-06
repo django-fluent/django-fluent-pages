@@ -116,6 +116,13 @@ class UrlDispatcherTests(AppTestCase):
         self.assert404('/shop/article1/foo')
 
 
+    def test_unicode_404(self):
+        """
+        Urls with unicode characters should return proper 404 pages, not crash on it.
+        """
+        url = u'/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/'
+        self.assert404(url)
+
 
 class UrlDispatcherNonRootTests(AppTestCase):
     """

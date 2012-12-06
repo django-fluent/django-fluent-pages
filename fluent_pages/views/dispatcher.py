@@ -53,12 +53,12 @@ class CmsPageDispatcher(GetPathMixin, View):
         # when mistyping an admin URL. Don't mention anything about CMS pages in /admin.
         try:
             if self.path.startswith(reverse('admin:index', prefix='/')):
-                raise Http404("No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
+                raise Http404(u"No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
         except NoReverseMatch:
             # Admin might not be loaded.
             pass
 
-        raise Http404("No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
+        raise Http404(u"No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
 
 
     def post(self, request, **kwargs):
