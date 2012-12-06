@@ -6,7 +6,6 @@ from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMat
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic.base import View
 from fluent_pages.models import UrlNode
-from fluent_pages.admin.utils import get_page_admin_url
 from django.views.generic import RedirectView
 import re
 
@@ -212,6 +211,10 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
     A view which redirects to the admin.
     """
     def get_redirect_url(self, **kwargs):
+        # Avoid importing the admin too early via the URLconf.
+        # This gives errors when 'fluent_pages' is not in INSTALLED_APPS yet.
+        from fluent_pages.admin.utils import get_page_admin_url
+
         path = self.get_path()
         try:
             page = UrlNode.objects.non_polymorphic().get_for_path(path)
