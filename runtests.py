@@ -3,7 +3,7 @@
 # Django environment setup:
 from django.conf import settings, global_settings as default_settings
 from django.core.management import call_command
-from os.path import dirname, realpath
+from os.path import dirname, realpath, join
 import sys
 
 # Detect location and available modules
@@ -34,6 +34,7 @@ settings.configure(
     ),
     SITE_ID = 4,
     ROOT_URLCONF = 'fluent_pages.tests.testapp.urls',
+    FLUENT_PAGES_TEMPLATE_DIR = join(module_root, 'fluent_pages', 'tests', 'testapp', 'templates'),
 )
 
 call_command('syncdb', verbosity=1, interactive=False)
