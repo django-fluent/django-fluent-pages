@@ -24,7 +24,7 @@ setup(
     ],
     extras_require={
         'fluentpage': ['django-fluent-contents>=0.8.3'],
-        'redirectnode': ['django-any-urlfield>=1.0.0'],
+        'redirectnode': ['django-any-urlfield>=1.0.1'],
     },
 
     description='A page tree structure to display various content in.',
