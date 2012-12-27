@@ -1,14 +1,14 @@
 """
-Small URLField wrapper to support ``cmsfields.models.CmsUrlField`` if it's available.
+Small URLField wrapper to support ``any_urlfield.models.AnyUrlField`` if it's available.
 """
 from django.conf import settings
 from django.db import models
 
 
 # subclassing here so South migrations detect a single class.
-if 'cmsfields' in settings.INSTALLED_APPS:
-    from cmsfields.models import CmsUrlField
-    class UrlField(CmsUrlField):
+if 'any_urlfield' in settings.INSTALLED_APPS:
+    from any_urlfield.models import AnyUrlField
+    class UrlField(AnyUrlField):
         pass
 else:
     class UrlField(models.URLField):

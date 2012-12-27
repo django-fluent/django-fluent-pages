@@ -21,14 +21,14 @@ __all__ = ['UrlNode', 'Page', 'HtmlPage', 'PageLayout']
 
 def _register_cmsfield_url_type():
     try:
-        from cmsfields.models import CmsUrlField
+        from any_urlfield.models import AnyUrlField
     except ImportError:
         pass
     else:
         from django import forms
-        from cmsfields.forms.widgets import SimpleRawIdWidget
-        CmsUrlField.register_model(Page, form_field=PageChoiceField(queryset=UrlNode.objects.published().non_polymorphic(), widget=SimpleRawIdWidget(Page)))
+        from any_urlfield.forms.widgets import SimpleRawIdWidget
+        AnyUrlField.register_model(Page, form_field=PageChoiceField(queryset=UrlNode.objects.published().non_polymorphic(), widget=SimpleRawIdWidget(Page)))
 
 
-if 'cmsfields' in settings.INSTALLED_APPS:
+if 'any_urlfield' in settings.INSTALLED_APPS:
     _register_cmsfield_url_type()

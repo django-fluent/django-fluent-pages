@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
-from os.path import dirname, join
 import sys, os
 
 # When creating the sdist, make sure the django.mo file also exists:
@@ -23,8 +22,9 @@ setup(
         'django-mptt>=0.5.1',
         'django-polymorphic-tree>=0.8.2',
     ],
-    extras_require = {
+    extras_require={
         'fluentpage': ['django-fluent-contents>=0.8.3'],
+        'redirectnode': ['django-any-urlfield>=1.0.0'],
     },
 
     description='A page tree structure to display various content in.',
