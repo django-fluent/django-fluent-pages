@@ -4,6 +4,7 @@ Changes in version 0.8.1
 * Improve error messages on initial project setup.
 * Fix 500 error on invalid URLs with unicode characters.
 * Add support for django-any-urlfield_.
+* Improve ability to extend the page change_form template.
 
 
 Version 0.8.0

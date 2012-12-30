@@ -16,6 +16,9 @@ class PageAdmin(UrlNodeAdmin):
     base_model = Page
     base_form = PageAdminForm
 
+    # Extra
+    base_change_form_template = "admin/fluent_pages/page/change_form.html"
+
     class Media:
         js = ('fluent_pages/admin/django13_fk_raw_id_fix.js',)
 
@@ -34,6 +37,14 @@ class PageAdmin(UrlNodeAdmin):
             field.widget.rel.to = Page
 
         return field
+
+
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        # Include a 'base_change_form_template' in the context, make it easier to extend
+        context.update({
+            'base_change_form_template': self.base_change_form_template,
+        })
+        return super(PageAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
 
 
 

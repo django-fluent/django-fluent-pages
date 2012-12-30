@@ -1,33 +1,12 @@
-{% extends "admin/fluent_pages/page/change_form.html" %}
-{% load i18n admin_modify adminmedia %}
+{% extends base_change_form_template %}{# = "admin/fluent_pages/page/change_form.html" #}
+{% load i18n %}
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript">fluent_layouts.ct_id = {{ content_type_id }};</script>
 {% endblock %}
 
-{% block content %}<div id="content-main">
-{% block object-tools %}{{ block.super }}{% endblock %}
-
-<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
-<div>
-{% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
-{% if save_on_top %}{% submit_row %}{% endif %}
-{% if errors %}
-    <p class="errornote">
-    {% blocktrans count errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
-    </p>
-    {{ adminform.form.non_field_errors }}
-{% endif %}
-</div>
-
-{# Different layout for fieldsets:  #}
-
-{# first fieldset #}
-{% for fieldset in adminform %}
-  {% if forloop.first %}{% include "admin/includes/fieldset.html" %}{% endif %}
-{% endfor %}
-
-{# inlines, for django-fluent-contents #}
+{% block after_first_fieldset %}
+{# the inlines for django-fluent-contents, to show the PlaceholderEditor first #}
 <div id="fluent_contents_inlines">
   {% for inline_admin_formset in inline_admin_formsets %}
     {% if inline_admin_formset.opts.is_fluent_editor_inline %}
@@ -35,13 +14,9 @@
     {% endif %}
   {% endfor %}
 </div><!-- /fluent_contents_inlines -->
+{% endblock %}
 
-
-{# all remaining fieldsets #}
-{% for fieldset in adminform %}
-  {% if not forloop.first %}{% include "admin/includes/fieldset.html" %}{% endif %}
-{% endfor %}
-
+{% block inline_field_sets %}
 {# remaining inlines added by pagetypes #}
 <div id="fluent_contents_inlines">
   {% for inline_admin_formset in inline_admin_formsets %}
@@ -50,17 +25,4 @@
     {% endif %}
   {% endfor %}
 </div><!-- /fluent_contents_inlines -->
-
-
-{% submit_row %}
-
-{% if adminform and add %}
-   <script type="text/javascript">document.getElementById("{{ adminform.first_field.auto_id }}").focus();</script>
-{% endif %}
-
-{# JavaScript for prepopulated fields #}
-{% prepopulated_fields_js %}
-
-</form>
-</div><!-- /content-main -->
 {% endblock %}
