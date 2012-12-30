@@ -129,6 +129,11 @@ class UrlNode(PolymorphicMPTTModel):
             root = reverse('fluent-page').rstrip('/')
         except NoReverseMatch:
             raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
+
+        if self._cached_url is None:
+            # This happened with Django 1.3 projects, when .only() didn't have the 'id' field included.
+            raise ImproperlyConfigured("UrlNode._cached_url is None for UrlNode!\nUrlNode = {0}".format(self.__dict__))
+
         return root + self._cached_url
 
 
