@@ -23,7 +23,7 @@ class AppUrlNode(Node):
 
     def render(self, context):
         # If the page is a UrlNode, use it as base for the pages.
-        page = context['page']
+        page = context.get('page')
         if not isinstance(page, UrlNode):
             page = None
 

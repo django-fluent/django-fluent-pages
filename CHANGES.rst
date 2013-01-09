@@ -6,6 +6,7 @@ Changes in version 0.8.1
 * Improve ability to extend the page change_form template.
 * Fix 500 error on invalid URLs with unicode characters.
 * Fixed ``app_reverse()`` function for Django 1.3.
+* Fixed ``appurl`` tag for template contexts without *page* variable.
 
 
 Version 0.8.0
