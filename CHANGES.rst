@@ -7,6 +7,7 @@ Changes in version 0.8.1
 * Fix 500 error on invalid URLs with unicode characters.
 * Fixed ``app_reverse()`` function for Django 1.3.
 * Fixed ``appurl`` tag for template contexts without *page* variable.
+* Fix Django dependency in ``setup.py``, moved from ``install_requires`` to the ``requires`` section.
 
 
 Version 0.8.0
