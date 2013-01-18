@@ -68,7 +68,7 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     # ---- Layout selector code ----
 
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'layout':
             kwargs['widget'] = LayoutSelector
         return super(FluentPageAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)

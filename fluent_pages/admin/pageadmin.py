@@ -23,7 +23,7 @@ class PageAdmin(UrlNodeAdmin):
         js = ('fluent_pages/admin/django13_fk_raw_id_fix.js',)
 
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         field = super(PageAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
         if field is None:
             return None
