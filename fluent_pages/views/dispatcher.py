@@ -3,6 +3,7 @@ The view to display CMS content.
 """
 from django.conf import settings
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
+from django.core.xheaders import populate_xheaders
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic.base import View
 from fluent_pages.models import UrlNode
@@ -119,13 +120,17 @@ class CmsPageDispatcher(GetPathMixin, View):
             except Resolver404:
                 pass
             else:
-                return match.func(self.request, *match.args, **match.kwargs)
+                return self._call_url_view(match)
 
         # Let page type plugin handle the request.
         response = plugin.get_response(self.request, self.object)
         if response is None:
             # Avoid automatic fallback to 404 page in this dispatcher.
             raise ValueError("The method '{0}.get_response()' didn't return an HttpResponse object.".format(plugin.__class__.__name__))
+
+        if 'X-Object-Type' not in response:
+            populate_xheaders(self.request, response, self.object, self.object.pk)
+
         return response
 
 
@@ -172,10 +177,18 @@ class CmsPageDispatcher(GetPathMixin, View):
         else:
             # Call application view.
             self.request._current_fluent_page = self.object   # Avoid additional lookup in templatetags
-            response = match.func(self.request, *match.args, **match.kwargs)
-            if response is None:
-                raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
-            return response
+            return self._call_url_view(match)
+
+
+    def _call_url_view(self, match):
+        response = match.func(self.request, *match.args, **match.kwargs)
+        if response is None:
+            raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
+
+        if 'X-Object-Type' not in response:
+            populate_xheaders(self.request, response, self.object, self.object.pk)
+
+        return response
 
 
     def _get_append_slash_redirect(self):

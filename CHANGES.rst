@@ -2,6 +2,7 @@ Changes in version 0.8.1
 ------------------------
 
 * Add support for django-any-urlfield_.
+* Add ``X-Object-Type`` and ``X-Object-Id`` headers to the response in development mode (simular to django.contrib.flatpages_).
 * Improve error messages on initial project setup.
 * Improve ability to extend the page change_form template.
 * Fix 500 error on invalid URLs with unicode characters.
@@ -21,5 +22,6 @@ First public release
 * Unit tests included.
 
 .. _django-any-urlfield: https://github.com/edoburu/django-any-urlfield
+.. _django.contrib.flatpages: https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
