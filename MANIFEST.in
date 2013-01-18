@@ -2,8 +2,8 @@ include AUTHORS
 include README.rst
 include LICENSE.rst
 recursive-include fluent_pages/locale *.mo *.po
-recursive-include fluent_pages/pagetypes/fluentpage/static *.js
-recursive-include fluent_pages/pagetypes/fluentpage/templates *.html
+recursive-include fluent_pages/pagetypes/*/static *.js
+recursive-include fluent_pages/pagetypes/*/templates *.html
 recursive-include fluent_pages/static *.js *.css
 recursive-include fluent_pages/templates *.html
 recursive-include fluent_pages/tests/testapp/templates *.html

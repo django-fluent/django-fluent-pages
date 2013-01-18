@@ -1,6 +1,7 @@
 Changes in version 0.8.1
 ------------------------
 
+* Add "Flat page" page type.
 * Add support for django-any-urlfield_.
 * Add ``X-Object-Type`` and ``X-Object-Id`` headers to the response in development mode (simular to django.contrib.flatpages_).
 * Improve error messages on initial project setup.

@@ -17,6 +17,7 @@ from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
 from django.utils.importlib import import_module
+from fluent_pages import appsettings
 from fluent_pages.admin import PageAdmin
 from fluent_pages.models import UrlNode
 from threading import Lock
@@ -137,6 +138,7 @@ class PageTypePlugin(object):
         By default, it returns the model instance as ``instance`` field in the template.
         """
         return {
+            'FLUENT_PAGES_BASE_TEMPLATE': appsettings.FLUENT_PAGES_BASE_TEMPLATE,
             'page': page,
             'site': SimpleLazyObject(lambda: page.parent_site),  # delay query until read
         }

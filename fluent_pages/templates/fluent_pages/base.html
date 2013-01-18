@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="keywords" content="{% block meta-keywords %}{% endblock %}" />
+  <meta name="description" content="{% block meta-description %}{% endblock %}" />
+  <title>{% block title %}{% endblock %} - No base template</title>
+</head>
+<body>
+
+<h1>No base template is set for django-fluent-pages</h1>
+
+<p>To configure the blog base template, either:
+<ul>
+  <li>create a template named: <kbd>fluent_pages/base.html</kbd>.</li>
+  <li>set <kbd>FLUENT_PAGES_BASE_TEMPLATE</kbd> to the desired base template file.</li>
+</ul>
+<p>The template needs to provide the following blocks:</p>
+<table>
+  <tr><td><kbd>contents</kbd></td><td>The placeholder for the main content.</td></tr>
+  <tr><td><kbd>title</kbd></td><td>The contents for the <code>&lt;title&gt;</code> tag.</td></tr>
+</table>
+
+<hr/>
+<p>The page contents is displayed below:</p>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>

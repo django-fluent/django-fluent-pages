@@ -1,0 +1,7 @@
+{% extends base_change_form_template %}{# = "admin/fluent_pages/page/change_form.html" #}
+{% load wysiwyg %}
+
+{% block extrahead %}{{ block.super }}
+{% wysiwyg_setup %}
+{% wysiwyg_editor "id_content" %}
+{% endblock %}
