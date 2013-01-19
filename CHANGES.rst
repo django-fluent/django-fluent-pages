@@ -6,6 +6,7 @@ Changes in version 0.8.1
 * Add ``X-Object-Type`` and ``X-Object-Id`` headers to the response in development mode (simular to django.contrib.flatpages_).
 * Improve error messages on initial project setup.
 * Improve ability to extend the page change_form template.
+* Improve layout of *keywords* and *description* fields in the admin.
 * Fix 500 error on invalid URLs with unicode characters.
 * Fixed ``app_reverse()`` function for Django 1.3.
 * Fixed ``appurl`` tag for template contexts without *page* variable.

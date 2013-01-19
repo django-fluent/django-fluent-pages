@@ -1,5 +1,5 @@
 import copy
-from django.contrib.admin.widgets import ForeignKeyRawIdWidget
+from django.contrib.admin.widgets import ForeignKeyRawIdWidget, AdminTextareaWidget, AdminTextInputWidget
 from django.utils.translation import ugettext_lazy as _
 from fluent_pages.admin.urlnodeadmin import UrlNodeAdmin, UrlNodeAdminForm
 from fluent_pages.models import Page, HtmlPage
@@ -63,3 +63,11 @@ class HtmlPageAdmin(PageAdmin):
         PageAdmin.FIELDSET_MENU,
         PageAdmin.FIELDSET_PUBLICATION,
     )
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'keywords':
+            kwargs.setdefault('widget', AdminTextInputWidget(attrs={'class': 'vLargeTextField'}))
+        if db_field.name == 'description':
+            kwargs.setdefault('widget', AdminTextareaWidget(attrs={'rows': 3}))
+
+        return super(HtmlPageAdmin, self).formfield_for_dbfield(db_field, **kwargs)
