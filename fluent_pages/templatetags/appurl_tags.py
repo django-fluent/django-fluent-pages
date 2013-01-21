@@ -1,3 +1,22 @@
+"""
+Template tag to resolve page URLs which have an URLconf attached to them.
+Load this module using:
+
+.. code-block:: html+django
+
+    {% load appurl_tags %}
+
+Usage:
+
+.. code-block:: html+django
+
+    {% appurl "my_viewname" %}
+
+    {% appurl "my_viewname" arg1 arg2 %}
+
+    {% appurl "my_viewname" kwarg1=value kwargs2=value %}
+
+"""
 from django.template import Library, Node, TemplateSyntaxError
 from django.utils.encoding import smart_str
 from fluent_pages.models.db import UrlNode

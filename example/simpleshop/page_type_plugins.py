@@ -3,6 +3,7 @@ from fluent_pages.extensions import PageTypePlugin, page_type_pool
 from simpleshop.models import ProductCategoryPage
 
 
+@page_type_pool.register
 class ProductCategoryPagePlugin(PageTypePlugin):
     """"
     A new pagetype plugin that binds the rendering and model together.
@@ -12,6 +13,3 @@ class ProductCategoryPagePlugin(PageTypePlugin):
     urls = patterns('simpleshop.views',
         url('^(?P<slug>[^/]+)/$', 'product_details'),
     )
-
-
-page_type_pool.register(ProductCategoryPagePlugin)

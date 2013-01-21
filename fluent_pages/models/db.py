@@ -175,31 +175,49 @@ class UrlNode(PolymorphicMPTTModel):
 
     @property
     def is_published(self):
+        """
+        Return whether the node is published.
+        """
         return self.status == self.PUBLISHED
 
 
     @property
     def is_draft(self):
+        """
+        Return whether the node is still a draft.
+        """
         return self.status == self.DRAFT
 
 
     @property
     def is_first_child(self):
+        """
+        Return ``True`` when the node is the first sibling.
+        """
         return self.is_root_node() or (self.parent and (self.lft == self.parent.lft + 1))
 
 
     @property
     def is_last_child(self):
+        """
+        Return ``True`` when the node is the last sibling.
+        """
         return self.is_root_node() or (self.parent and (self.rght + 1 == self.parent.rght))
 
 
     @property
     def is_file(self):
+        """
+        Return ``True`` when the node represents a file (can't have children, doesn't have a layout).
+        """
         return self.plugin.is_file
 
 
     @property
     def can_have_children(self):
+        """
+        Return ``True`` when the node can have child nodes.
+        """
         # Redefine the model constant 'can_have_children' as property
         # that access the plugin registration system,
         plugin = self.plugin
@@ -344,6 +362,9 @@ class UrlNode(PolymorphicMPTTModel):
 class Page(UrlNode):
     """
     The base class for all all :class:`UrlNode` subclasses that display pages.
+
+    This is a proxy model that changes the appearance of the node in the admin.
+    The :class:`UrlNode` displays the URL path, while this model displays the :attr:`title`.
     """
     class Meta:
         app_label = 'fluent_pages'
@@ -361,6 +382,8 @@ class Page(UrlNode):
 class HtmlPage(Page):
     """
     The base fields for a HTML page of the web site.
+
+    This is an abstract model, which adds the :attr:`keyword` and :attr:`description` fields.
     """
     # SEO fields
     keywords = models.CharField(_('keywords'), max_length=255, blank=True)
@@ -376,13 +399,13 @@ class HtmlPage(Page):
 
 class PageLayout(models.Model):
     """
-    A ```PageLayout``` object defines a layout of a page; which content blocks are available.
+    A ``PageLayout`` object defines a template that can be used by a page.
     """
+    # TODO: this should become optional, either allow Database templates, or a hard-coded list in settings.py
 
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
     title = models.CharField(_('title'), max_length=255)
     template_path = TemplateFilePathField('template file', path=appsettings.FLUENT_PAGES_TEMPLATE_DIR)
-    #regions = a RelatedManager
     #no children
     #unique
     #allowed_children

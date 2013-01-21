@@ -1,20 +1,33 @@
+"""
+URL Resolving for dynamically added pages.
+"""
 from django.core.cache import cache
 from django.core.urlresolvers import NoReverseMatch, reverse
 from fluent_pages.extensions import page_type_pool
 from fluent_pages.models.db import UrlNode
 
+__all__ = (
+    'MultipleReverseMatch', 'PageTypeNotMounted', 'mixed_reverse', 'app_reverse', 'clear_app_reverse_cache',
+)
 
 class MultipleReverseMatch(NoReverseMatch):
+    """
+    Raised when an :func:`app_reverse` call returns multiple possible matches.
+    """
     pass
 
 
 class PageTypeNotMounted(NoReverseMatch):
+    """
+    Raised when the :func:`app_reverse` function can't find the required plugin
+    in the page tree.
+    """
     pass
 
 
 def mixed_reverse(viewname, args=None, kwargs=None, current_app=None, current_page=None, multiple=False, ignore_multiple=False):
     """
-    Attempt to reverse a normal URLconf URL, revert to app_reverse() on errors.
+    Attempt to reverse a normal URLconf URL, revert to :func:`app_reverse` on errors.
     """
     try:
         return reverse(viewname, args=args, kwargs=kwargs, current_app=current_app)
@@ -93,7 +106,7 @@ def _get_pages_of_type(model):
 
 def clear_app_reverse_cache():
     """
-    Clear the cache for the app_reverse() function.
+    Clear the cache for the :func:`app_reverse` function.
     This only has to be called when doing bulk update/delete actions that circumvent the individual model classes.
     """
     for model in page_type_pool.get_model_classes():

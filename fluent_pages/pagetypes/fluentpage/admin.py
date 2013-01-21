@@ -18,10 +18,12 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
 
     # By using base_fieldsets, the parent PageAdmin will
     # add an extra fieldset for all derived fields automatically.
+    FIELDSET_GENERAL = (None, {
+        'fields': HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][:-1] + ('layout',) + HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][-1:],
+    })
+
     base_fieldsets = (
-        (None, {
-            'fields': HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][:-1] + ('layout',) + HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][-1:],
-        }),
+        FIELDSET_GENERAL,
         HtmlPageAdmin.FIELDSET_SEO,
         HtmlPageAdmin.FIELDSET_MENU,
         HtmlPageAdmin.FIELDSET_PUBLICATION,

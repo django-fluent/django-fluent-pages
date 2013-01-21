@@ -183,6 +183,23 @@ These features are also used by django-fluent-blogs_ to provide a "Blog" page ty
 that can be added to a random point of the tree.
 
 
+Adding pages to the sitemap
+---------------------------
+
+Optionally, the pages can be included in the sitemap.
+Add the following in ``urls.py``::
+
+    from fluent_pages.sitemaps import PageSitemap
+
+    sitemaps = {
+        'pages': PageSitemap,
+    }
+
+    urlpatterns += patterns('',
+        url(r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    )
+
+
 Contributing
 ------------
 

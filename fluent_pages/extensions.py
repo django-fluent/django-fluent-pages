@@ -32,34 +32,70 @@ class PageTypePlugin(object):
     """
     The base class for a page type plugin.
 
-    To create a new plugin, derive from this class and call :func:`plugin_pool.register <PluginPool.register>` to enable it.
+    To create a new plugin, derive from this class and call :func:`page_type_pool.register <PageTypePool.register>` to enable it.
+    For example:
+
+    .. code-block:: python
+
+        from fluent_pages.extensions import PageTypePlugin, page_type_pool
+        from mycms.models import MyCustomPage
+
+        @page_type_pool.register
+        class MyCustomPagePlugin(PageTypePlugin):
+            model = MyCustomPage
+            render_template = "mycustompage/example.html"
+
+    As minimal configuration, specify the :attr:`model` and :attr:`render_template` fields.
+    The :attr:`model` should be a subclass of the :class:`~fluent_pages.models.Page` model class.
+
+    .. note::
+        When the plugin is registered in the :attr:`page_type_pool`, it will be instantiated only once.
+        It is therefore not possible to store per-request state at the page type object.
+        This is similar to the behavior of the :class:`~django.contrib.admin.ModelAdmin` classes in Django.
+
+    To customize the admin, define the :attr:`model_admin` attribute.
+    The provided class should inherit from the :class:`~fluent_pages.admin.PageAdmin` class.
+
+    The output of a page is fully customizable in the page type plugin.
+    By default, :attr:`render_template` will be used but you can also override
+    :func:`get_render_template`, :func:`get_context` or even :func:`get_response`.
+    The latter gives full control over the :class:`~django.http.HttpResponse` to send to the client.
+
+    Page types can provide additional views, relative to the location where the page is placed in the tree.
+    A shopping module for example, can display products as sub pages.
+    Provide an URLconf to the :attr:`urls` attribute to use this feature,
+    and resolve those URLs using the :mod:`fluent_pages.urlresolvers` module.
     """
     __metaclass__ = forms.MediaDefiningClass
 
     # -- Settings to override:
 
-    #: The model to use, must derive from :class:`fluent_contents.models.UrlNode`.
+    #: Defines the model to use to store the custom fields.
+    #: It must derive from :class:`~fluent_pages.models.Page`.
     model = None
 
-    #: The modeladmin instance to customize the screen.
+    #: Defines the :class:`~django.contrib.admin.ModelAdmin` class to customize the screen.
+    #: It should inherit from :class:`~fluent_pages.admin.PageAdmin`.
     model_admin = PageAdmin
 
-    #: The template to render the frontend HTML output.
+    #: Defines the template to use for rendering the page.
     render_template = None
 
-    #: The class to use by default for the response
+    #: Defines the default class to use for the response.
     response_class = TemplateResponse
 
-    #: Whether the page type represents a file (no slash or children)
+    #: Defines the page type represents a file; it neither has appended slash or does it allow children.
     is_file = False
 
-    #: Whether the page type allows to have children (unless `is_file`` is true)
+    #: Defines whether users are allowed to place sub pages below this node. When :attr:`is_file` is ``True``, this is never possible.
     can_have_children = True
 
-    #: Set the URLs which the page serves provides the current node. Can either be a URLconf module, or inline pattern list.
+    #: Defines the URLs that the page provides relative to the current node.
+    #: This can either be the name of a Python module with ``urlpatterns`` in it,
+    #: or a direct inline :func:`~django.conf.urls.patterns` list.
     urls = None
 
-    #: The sorting priority for the page type in the "add page" dialog of the admin.
+    #: The sorting priority for the page type in the "Add Page" dialog of the admin.
     sort_priority = 100
 
 
@@ -75,7 +111,7 @@ class PageTypePlugin(object):
     @property
     def verbose_name(self):
         """
-        The title for the plugin, by default it reads the ``verbose_name`` of the model.
+        Returns the title for the plugin, by default it reads the ``verbose_name`` of the model.
         """
         return self.model._meta.verbose_name
 
@@ -83,7 +119,7 @@ class PageTypePlugin(object):
     @property
     def type_name(self):
         """
-        Return the classname of the model, this is mainly provided for templates.
+        Return the class name of the model, this is mainly provided for templates.
         """
         return self.model.__name__
 
@@ -91,7 +127,7 @@ class PageTypePlugin(object):
     @property
     def type_id(self):
         """
-        Shortcut to retrieving the ContentType id of the model.
+        Returns the :class:`~django.contrib.contenttypes.models.ContentType` id of the model.
         """
         if self._type_id is None:
             try:
@@ -103,14 +139,18 @@ class PageTypePlugin(object):
 
     def get_model_instances(self):
         """
-        Return the model instances the plugin has created.
+        Return all :class:`~fluent_pages.models.Page` instances that are has created using this page types.
         """
         return self.model.objects.all()
 
 
     def get_response(self, request, page, **kwargs):
         """
-        Return the Django response for the page.
+        Render the page, and return the Django :class:`~django.http.HttpResponse`.
+
+        This is the main function to generate output of the page.
+        By default, it uses :func:`get_render_template`, :func:`get_context` and :attr:`response_class`
+        to generate the output of the page. The behavior can be replaced completely by overriding this function.
         """
         render_template = self.get_render_template(request, page, **kwargs)
         if not render_template:
@@ -127,14 +167,14 @@ class PageTypePlugin(object):
     def get_render_template(self, request, page, **kwargs):
         """
         Return the template to render for the specific `page` or `request`,
-        By default it uses the ``render_template`` attribute.
+        By default it uses the :attr:`render_template` attribute.
         """
         return self.render_template
 
 
     def get_context(self, request, page, **kwargs):
         """
-        Return the context to use in the template defined by ``render_template`` (or :func:`get_render_template`).
+        Return the context to use in the template defined by :attr:`render_template` (or :func:`get_render_template`).
         By default, it returns the model instance as ``instance`` field in the template.
         """
         return {
@@ -146,7 +186,7 @@ class PageTypePlugin(object):
 
     def get_url_resolver(self):
         """
-        Return the URL patterns of the page type.
+        Access the URL resolver of the page type.
         """
         if self._url_resolver is None:
             if self.urls is None:
@@ -248,7 +288,7 @@ class PageTypePool(object):
 
     def get_plugins(self):
         """
-        Return the list of all plugin instances which are loaded.
+        Return the :class:`PageTypePlugin` instances which are loaded.
         """
         self._import_plugins()
         return self.plugins.values()
@@ -256,7 +296,8 @@ class PageTypePool(object):
 
     def get_model_classes(self):
         """
-        Return all :class:`~fluent_contents.models.ContentItem` model classes which are exposed by plugins.
+        Return all model classes which are exposed by page types.
+        Each model derives from :class:`~fluent_pages.models.Page` .
         """
         self._import_plugins()
         return [plugin.model for plugin in self.plugins.values()]
@@ -264,7 +305,7 @@ class PageTypePool(object):
 
     def get_plugin_by_model(self, model_class):
         """
-        Return the corresponding plugin for a given model.
+        Return the corresponding :class:`PageTypePlugin` for a given model.
         """
         self._import_plugins()                   # could happen during rendering that no plugin scan happened yet.
         assert issubclass(model_class, UrlNode)  # avoid confusion between model instance and class here!
@@ -289,7 +330,8 @@ class PageTypePool(object):
 
     def get_file_types(self):
         """
-        Return the page content types which act like files (no slash or children).
+        Return the :class:`~django.contrib.contenttypes.models.ContentType` id's
+        of page types that act like files (no slash or children).
         """
         if self._file_types is None:
             ct_ids = []
@@ -303,7 +345,8 @@ class PageTypePool(object):
 
     def get_folder_types(self):
         """
-        Return the page content types which operate as a container for sub pages.
+        Return the :class:`~django.contrib.contenttypes.models.ContentType` id's
+        of page types that operate as a container for sub pages.
         """
         if self._folder_types is None:
             ct_ids = []
@@ -317,7 +360,8 @@ class PageTypePool(object):
 
     def get_url_pattern_types(self):
         """
-        Return the page content types which can provide URL patterns.
+        Return the :class:`~django.contrib.contenttypes.models.ContentType` id's
+        of page types that provide URL patterns.
         """
         if self._url_types is None:
             self._url_types = [plugin.type_id for plugin in self.get_url_pattern_plugins()]
@@ -326,6 +370,9 @@ class PageTypePool(object):
 
 
     def get_url_pattern_plugins(self):
+        """
+        Return the :class:`PageTypePlugin` instances that provide URL patterns.
+        """
         plugins = []
         for plugin in self.get_plugins():
             if plugin.urls is not None:
@@ -353,5 +400,5 @@ class PageTypePool(object):
             self.scanLock.release()
 
 
-#: The global plugin pool, a instance of the :class:`PluginPool` class.
+#: The global plugin pool, a instance of the :class:`PageTypePool` class.
 page_type_pool = PageTypePool()

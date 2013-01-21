@@ -1,11 +1,29 @@
+"""
+This module provides integration for the :mod:`django.contrib.sitemaps <django.contrib.sitemaps>` module.
+This can be done using:
+
+.. code-block:: python
+
+    from fluent_pages.sitemaps import PageSitemap
+
+    sitemaps = {
+        'pages': PageSitemap,
+    }
+
+    urlpatterns += patterns('',
+        url(r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    )
+"""
 from django.contrib.sitemaps import Sitemap
 from fluent_pages.models import UrlNode
 
 class PageSitemap(Sitemap):
     """
-    The sitemap definition for the pages created with django-fluent-pages.
+    The sitemap definition for the pages created with *django-fluent-pages*.
+    It follows the API for the :mod:`django.contrib.sitemaps <django.contrib.sitemaps>` module.
     """
     def items(self):
+        """Return all items of the sitemap."""
         return UrlNode.objects.published().non_polymorphic().order_by('level', '_cached_url')
 
     def lastmod(self, urlnode):

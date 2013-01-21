@@ -6,18 +6,42 @@ from fluent_pages.models import Page, HtmlPage
 
 
 class PageAdminForm(UrlNodeAdminForm):
+    """
+    The base class for all admin forms.
+
+    This form validates the "Slug" and "Override URL" fields.
+    """
     pass
 
 
 class PageAdmin(UrlNodeAdmin):
     """
-    The base class for pages
+    The base class for administrating pages.
+    When a custom page type implements an custom admin, use this class as base.
+    See the code in ``fluent_pages/pagetypes/*/admin.py`` for examples.
+    To deal with model inheritence, define the fieldsets using the :attr:`base_fieldsets` option.
+    For example:
+
+    .. code-block:: python
+
+        base_fieldsets = (
+            PageAdmin.FIELDSET_GENERAL,
+            PageAdmin.FIELDSET_MENU,
+            PageAdmin.FIELDSET_PUBLICATION,
+        )
+
+    By using :attr:`base_fieldsets` instead of the :attr:`ModelAdmin.fieldsets <django.contrib.admin.ModelAdmin.fieldsets>` attribute,
+    any additional fields from a derived model will be displayed in separate fieldset automatically.
+    The title of the fieldset is configurable with the :attr:`extra_fieldset_title` attribute.
+    It's "Contents" by default.
     """
     base_model = Page
     base_form = PageAdminForm
 
-    # Extra
+    #: The default template name, which is available in the template context.
+    #: Use ``{% extend base_change_form_template %}`` in templates to inherit from it.
     base_change_form_template = "admin/fluent_pages/page/change_form.html"
+
 
     class Media:
         js = ('fluent_pages/admin/django13_fk_raw_id_fix.js',)
@@ -50,7 +74,20 @@ class PageAdmin(UrlNodeAdmin):
 
 class HtmlPageAdmin(PageAdmin):
     """
-    The modeladmin configured to display :class:`~fluent_pages.models.HtmlPage` objects.
+    The modeladmin configured to display :class:`~fluent_pages.models.HtmlPage` models.
+    The :class:`~fluent_pages.models.HtmlPage` also displays a ``keywords`` and ``description`` field.
+
+    This admin class defines another fieldset: :attr:`FIELDSET_SEO`.
+    The default fieldset layout is:
+
+    .. code-block:: python
+
+        base_fieldsets = (
+            HtmlPageAdmin.FIELDSET_GENERAL,
+            HtmlPageAdmin.FIELDSET_SEO,
+            HtmlPageAdmin.FIELDSET_MENU,
+            HtmlPageAdmin.FIELDSET_PUBLICATION,
+        )
     """
     FIELDSET_SEO = (_('SEO settings'), {
         'fields': ('keywords', 'description'),

@@ -22,7 +22,7 @@ class UrlNodeAdminForm(MPTTAdminForm):
     def __init__(self, *args, **kwargs):
         super(UrlNodeAdminForm, self).__init__(*args, **kwargs)
         # Copy the fields/labels from the model field, to avoid repeating the labels.
-        modelfield = [f for f in UrlNode._meta.fields if f.name == 'override_url'][0]
+        modelfield = UrlNode._meta.get_field_by_name('override_url')[0]
         self.fields['override_url'].label = modelfield.verbose_name
         self.fields['override_url'].help_text = modelfield.help_text
 
@@ -82,18 +82,23 @@ class UrlNodeAdmin(PolymorphicMPTTChildModelAdmin):
 
 
     # Expose fieldsets for subclasses to reuse
+    #: The general fieldset to display
     FIELDSET_GENERAL = (None, {
         'fields': ('title', 'slug', 'status', 'in_navigation'),
     })
+    #: The menu fieldset
     FIELDSET_MENU = (_('Menu structure'), {
         'fields': ('parent',),
         'classes': ('collapse',),
     })
+    #: The publication fields.
     FIELDSET_PUBLICATION = (_('Publication settings'), {
         'fields': ('publication_date', 'publication_end_date', 'override_url'),
         'classes': ('collapse',),
     })
 
+    #: The fieldsets to display.
+    #: Any missing fields will be displayed in a separate section (named :attr:`extra_fieldset_title`) automatically.
     base_fieldsets = (
         FIELDSET_GENERAL,
         FIELDSET_MENU,
@@ -102,7 +107,7 @@ class UrlNodeAdmin(PolymorphicMPTTChildModelAdmin):
 
     # Config add/edit page:
     prepopulated_fields = { 'slug': ('title',), }
-    raw_id_fields = ['parent']
+    raw_id_fields = ('parent',)
     radio_fields = {'status': admin.HORIZONTAL}
 
     # NOTE: list page is configured in UrlNodePolymorphicAdmin

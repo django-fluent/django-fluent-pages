@@ -4,15 +4,16 @@ The data model to walk through the site navigation.
 These objects only return the relevant data for the menu/breadcrumb
 in a fixed, minimalistic, API so template designers can focus on that.
 
-To walk through the site content in programmatic fashion, use the CmsObject directly.
-It offers properties such as `parent` and `children` (a RelatedManager),
+To walk through the site content in Python code, use the :class:`~fluent_pages.models.Page` model directly.
+It offers properties such as :attr:`~fluent_pages.models.Page.parent`
+and :attr:`~fluent_pages.models.Page.children` (a :class:`~django.db.models.RelatedManager`),
 and methods such as `get_parent()` and `get_children()` through the `MPTTModel` base class.
 """
 
 
 class NavigationNode(object):
     """
-    The base class for all navigation nodes, page-based on virtually inserted ones.
+    The base class for all navigation nodes, whether model-based on virtually inserted ones.
     """
 
     # Off course, the subclasses could just implement
@@ -26,14 +27,14 @@ class NavigationNode(object):
         return ['slug', 'title', 'url', 'is_active', 'parent', 'children']
 
     # All properties the template can request:
-    slug = property(_not_implemented)
-    title = property(_not_implemented)
-    url = property(_not_implemented)
-    is_active = property(_not_implemented)
-    level = property(_not_implemented)
-    parent = property(_not_implemented)
-    children = property(_not_implemented)
-    has_children = property(_not_implemented)
+    slug = property(_not_implemented, doc='The slug of the node.')
+    title = property(_not_implemented, doc='The title of the node.')
+    url = property(_not_implemented, doc='The URL of the node.')
+    is_active = property(_not_implemented, doc='True if the node is the currently active page.')
+    level = property(_not_implemented, doc='The depth of the menu level.')
+    parent = property(_not_implemented, doc='The parent node.')
+    children = property(_not_implemented, doc='The list of children.')
+    has_children = property(_not_implemented, doc='Whether the node has children.')
 
     # TODO: active trail item
 
@@ -49,12 +50,18 @@ class NavigationNode(object):
         """Provided for compatibility with mptt recursetree"""
         return self.level
 
+    def __repr__(self):
+        return '<{0}: {1}>'.format(self.__class__.__name__, self.url)
+
 
 class PageNavigationNode(NavigationNode):
+    """
+    An implementation of the :class:`NavigationNode` for :class:`~fluent_pages.models.Page` models.
+    """
 
     def __init__(self, page, parent_node=None, max_depth=9999):
         """
-        Initialize the node with a CmsObject.
+        Initialize the node with a Page.
         """
         assert page.in_navigation, "PageNavigationNode can't take page #%d (%s) which is not visible in the navigation." % (page.id, page.url)
         super(NavigationNode, self).__init__()
@@ -95,6 +102,3 @@ class PageNavigationNode(NavigationNode):
         if not self._children and (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
             #children = self._page.get_children()  # Via MPTT
             self._children = self._page.children.in_navigation()  # Via RelatedManager
-
-    def __repr__(self):
-        return '<{0}: {1}>'.format(self.__class__.__name__, self._page.get_absolute_url())

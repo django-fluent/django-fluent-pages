@@ -1,7 +1,6 @@
 """
 Template tags to request fluent page content in the template.
-
-Thet tags can be loaded using:
+Load this module using:
 
 .. code-block:: html+django
 
@@ -41,8 +40,7 @@ def render_breadcrumb(parser, token):
 
     .. code-block:: html+django
 
-        {% render_breadcrumb %}
-        {% render_breadcrumb template="sitetheme/parts/breadcrumb.html" %}
+        {% render_breadcrumb template="fluent_pages/parts/breadcrumb.html" %}
     """
     return BreadcrumbNode.parse(parser, token)
 
@@ -60,20 +58,24 @@ class MenuNode(ExtensibleInclusionNode):
         page      = _get_current_page(parent_context)
         top_pages = UrlNode.objects.toplevel_navigation(current_page=page)
 
-        # Make iterable context, pass subset of arguments to PageNavigationNode constructor
+        # Construct a PageNavigationNode for every page, that allows simple iteration of the tree.
+        # Filter all template tag arguments out that are not supported by the PageNavigationNode.
         node_kwargs = dict((k,v) for k, v in tag_kwargs.iteritems() if k in ('max_depth',))
-        menu_items = [PageNavigationNode(page, **node_kwargs) for page in top_pages]
-        return {'menu_items': menu_items}
+        return {
+            'menu_items': [
+                PageNavigationNode(page, **node_kwargs) for page in top_pages
+            ]
+        }
 
 
 @register.tag
 def render_menu(parser, token):
     """
-    Render the breadcrumb of the site.
+    Render the menu of the site.
 
     .. code-block:: html+django
 
-        {% render_menu max_depth=1 template="sitetheme/parts/menu.html" %}
+        {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
     """
     return MenuNode.parse(parser, token)
 
@@ -99,8 +101,8 @@ class GetVarsNode(Node):
             dummy_page = UrlNode(title='', in_navigation=False, override_url=request.path, status=UrlNode.DRAFT, parent_site=current_site)
             request._current_fluent_page = dummy_page
 
-        # Automatically add 'ecms_site', allows "default:ecms_site.domain" to work.
-        # ...and optionally - if a page exists - include 'ecms_page' too.
+        # Automatically add 'site', allows "default:site.domain" to work.
+        # ...and optionally - if a page exists - include 'page' too.
         if not context.has_key('site'):
             extra_context = {'site': current_site}
             if current_page and not context.has_key('page'):
@@ -114,12 +116,11 @@ class GetVarsNode(Node):
 @register.tag
 def get_fluent_page_vars(parser, token):
     """
-    When a template is used for an application page,
-    add the following contents to make it work:
+    Introduces the ``site`` and ``page`` variables in the template.
+    This can be used for pages that are rendered by a separate application.
 
     .. code-block:: html+django
 
-        {% load fluent_pages_tags %}
         {% get_fluent_page_vars %}
     """
     return GetVarsNode()
@@ -134,7 +135,7 @@ def _get_current_page(context):
     """
     request = _get_request(context)
 
-    # This is a load-on-demand attribute, to allow calling the ecms template tags outside the standard view.
+    # This is a load-on-demand attribute, to allow calling the template tags outside the standard view.
     # When the current page is not specified, do auto-detection.
     if not hasattr(request, '_current_fluent_page'):
         try:
