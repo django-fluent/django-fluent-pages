@@ -18,6 +18,8 @@ In case you're building a custom CMS, this module might just be suited for you,
 since it provides the tree for you, without bothering with anything else.
 The actual page contents is defined via page type plugins.
 
+For more details, see the documentation_ at Read The Docs.
+
 
 Installation
 ============
@@ -160,6 +162,8 @@ It can also override the following functions:
 * ``get_render_template(self, request, page, **kwargs)`` - return the template to render, by default this is ``render_template``.
 * ``get_context(self, request, page, **kwargs)`` - return the template context for the node.
 
+Details about these attributes is explained in the documentation_.
+
 
 Application nodes
 ~~~~~~~~~~~~~~~~~
@@ -210,6 +214,8 @@ If you have any other valuable contribution, suggestion or idea,
 please let us know as well because we will look into it.
 Pull requests are welcome too. :-)
 
+
+.. _documentation: http://django-fluent-pages.readthedocs.org/
 
 .. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
