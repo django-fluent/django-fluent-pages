@@ -1,6 +1,6 @@
 .. newpagetypes-urls:
 
-Adding custom URls
+Adding custom URLs
 ==================
 
 Page types can provide custom URL patterns.
