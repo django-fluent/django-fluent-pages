@@ -1,9 +1,10 @@
 """
 Django compatibility features
 """
+from django.conf import settings
 
 __all__ = (
-    'now', 'get_user_model',
+    'now', 'get_user_model', 'get_user_model_name',
 )
 
 
@@ -19,9 +20,15 @@ except ImportError:
 # Support for custom User models in Django 1.5+
 try:
     from django.contrib.auth import get_user_model
+
+    def get_user_model_name():
+        return settings.AUTH_USER_MODEL
 except ImportError:
     # django < 1.5
     from django.contrib.auth.models import User
 
     def get_user_model():
         return User
+
+    def get_user_model_name():
+        return '{0}.{1}'.format(User._meta.app_label, User._meta.object_name)

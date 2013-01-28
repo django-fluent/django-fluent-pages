@@ -20,7 +20,7 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBa
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from fluent_pages.utils.compat import get_user_model
+from fluent_pages.utils.compat import get_user_model_name
 
 
 def _get_current_site():
@@ -76,7 +76,7 @@ class UrlNode(PolymorphicMPTTModel):
     override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
 
     # Metadata
-    author = models.ForeignKey(get_user_model(), verbose_name=_('author'), editable=False)
+    author = models.ForeignKey(get_user_model_name(), verbose_name=_('author'), editable=False)
     creation_date = models.DateTimeField(_('creation date'), editable=False, auto_now_add=True)
     modification_date = models.DateTimeField(_('last modification'), editable=False, auto_now=True)
 
