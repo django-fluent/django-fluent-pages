@@ -2,7 +2,6 @@ from functools import wraps
 from django.conf import settings, UserSettingsHolder
 from django.core.management import call_command
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db.models import loading
 from django.template.loaders import app_directories
@@ -10,6 +9,14 @@ from django.test import TestCase
 from fluent_pages.models.db import UrlNode
 from fluent_pages.tests import testapp
 import os
+
+# support for custom User models in Django 1.5+
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:  # django < 1.5
+    from django.contrib.auth.models import User
+else:
+    User = get_user_model()
 
 
 class AppTestCase(TestCase):
