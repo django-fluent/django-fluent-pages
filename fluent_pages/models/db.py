@@ -12,7 +12,6 @@ It defines the following classes:
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.transaction import commit_on_success
@@ -21,6 +20,15 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBa
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
+
+
+# support for custom User models in Django 1.5+
+try:
+    from django.contrib.auth import get_user_model
+except ImportError:  # django < 1.5
+    from django.contrib.auth.models import User
+else:
+    User = get_user_model()
 
 
 def _get_current_site():
