@@ -7,16 +7,9 @@ from django.db.models import loading
 from django.template.loaders import app_directories
 from django.test import TestCase
 from fluent_pages.models.db import UrlNode
+from fluent_pages.utils.compat import get_user_model
 from fluent_pages.tests import testapp
 import os
-
-# support for custom User models in Django 1.5+
-try:
-    from django.contrib.auth import get_user_model
-except ImportError:  # django < 1.5
-    from django.contrib.auth.models import User
-else:
-    User = get_user_model()
 
 
 class AppTestCase(TestCase):
@@ -28,6 +21,8 @@ class AppTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        User = get_user_model()
+
         if 'fluent_pages.tests.testapp' not in settings.INSTALLED_APPS:
             # When running this app via `./manage.py test fluent_pages`, auto install the test app + models.
             print 'Adding fluent_pages.tests.testapp to INSTALLED_APPS'

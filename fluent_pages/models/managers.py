@@ -4,13 +4,7 @@ The manager class for the CMS models
 from django.db.models.query_utils import Q
 from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
 from fluent_pages.utils.db import DecoratingQuerySet
-
-try:
-    from django.utils.timezone import now
-except ImportError:
-    # The timezone support was introduced in Django 1.4, fallback to standard library for 1.3.
-    from datetime import datetime
-    now = datetime.now
+from fluent_pages.utils.compat import now
 
 
 class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
