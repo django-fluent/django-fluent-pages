@@ -4,6 +4,7 @@ Changes in version 0.8.1 (in development)
 * Add "Flat page" page type.
 * Add support for django-any-urlfield_.
 * Add ``X-Object-Type`` and ``X-Object-Id`` headers to the response in development mode (similar to django.contrib.flatpages_).
+* Add Django 1.5 Custom User model support.
 * Improve error messages on initial project setup.
 * Improve ability to extend the page change_form template.
 * Improve layout of *keywords* and *description* fields in the admin.
