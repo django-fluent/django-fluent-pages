@@ -26,7 +26,7 @@ setup(
         'Django (>=1.3)',   # Using staticfiles
     ],
     extras_require={
-        'flatpage': ['django-wysiwyg>=0.3.0'],
+        'flatpage': ['django-wysiwyg>=0.5.1'],
         'fluentpage': ['django-fluent-contents>=0.8.4'],
         'redirectnode': ['django-any-urlfield>=1.0.1'],
     },
