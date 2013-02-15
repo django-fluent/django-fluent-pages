@@ -7,23 +7,29 @@ Load this module using:
     {% load fluent_pages_tags %}
 """
 from django.contrib.sites.models import Site
-from django.template import Library, Node
+from django.template import Library
 from fluent_pages.models import UrlNode
 from fluent_pages.models.navigation import PageNavigationNode
-from fluent_pages.utils.basetags import ExtensibleInclusionNode
+from tag_parser import template_tag
+from tag_parser.basetags import BaseInclusionNode, BaseNode
 
 register = Library()
-
 
 
 # Please take thread-safety in mind when coding the node classes:
 # Only static/unmodified values (like template tag args) should be assigned to self.
 
 
-class BreadcrumbNode(ExtensibleInclusionNode):
+@template_tag(register, 'render_breadcrumb')
+class BreadcrumbNode(BaseInclusionNode):
     """
-    Template node for breadcrumb.
+    Render the breadcrumb of the site.
+
+    .. code-block:: html+django
+
+        {% render_breadcrumb template="fluent_pages/parts/breadcrumb.html" %}
     """
+    tag_name = 'render_breadcrumb'
     template_name = 'fluent_pages/parts/breadcrumb.html'
 
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
@@ -33,22 +39,14 @@ class BreadcrumbNode(ExtensibleInclusionNode):
         return {'breadcrumb': items}
 
 
-@register.tag
-def render_breadcrumb(parser, token):
+@template_tag(register, 'render_menu')
+class MenuNode(BaseInclusionNode):
     """
-    Render the breadcrumb of the site.
+    Render the menu of the site.
 
     .. code-block:: html+django
 
-        {% render_breadcrumb template="fluent_pages/parts/breadcrumb.html" %}
-    """
-    return BreadcrumbNode.parse(parser, token)
-
-
-
-class MenuNode(ExtensibleInclusionNode):
-    """
-    Template Node for topmenu
+        {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
     """
     template_name = 'fluent_pages/parts/menu.html'
     allowed_kwargs = ('max_depth', 'template',)
@@ -68,24 +66,19 @@ class MenuNode(ExtensibleInclusionNode):
         }
 
 
-@register.tag
-def render_menu(parser, token):
+@template_tag(register, 'get_fluent_page_vars')
+class GetVarsNode(BaseNode):
     """
-    Render the menu of the site.
+    Template Node to setup an application page.
+
+    Introduces the ``site`` and ``page`` variables in the template.
+    This can be used for pages that are rendered by a separate application.
 
     .. code-block:: html+django
 
-        {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
+        {% get_fluent_page_vars %}
     """
-    return MenuNode.parse(parser, token)
-
-
-
-class GetVarsNode(Node):
-    """
-    Template Node to setup an application page.
-    """
-    def render(self, context):
+    def render_tag(self, context, *args, **kwargs):
         # If the current URL does not overlay a page,
         # create a dummy item to handle the standard rendering.
         try:
@@ -111,20 +104,6 @@ class GetVarsNode(Node):
             context.update(extra_context)
 
         return ''
-
-
-@register.tag
-def get_fluent_page_vars(parser, token):
-    """
-    Introduces the ``site`` and ``page`` variables in the template.
-    This can be used for pages that are rendered by a separate application.
-
-    .. code-block:: html+django
-
-        {% get_fluent_page_vars %}
-    """
-    return GetVarsNode()
-
 
 
 # ---- Util functions ----

@@ -5,6 +5,7 @@ Changes in version 0.8.1 (in development)
 * Add support for django-any-urlfield_.
 * Add ``X-Object-Type`` and ``X-Object-Id`` headers to the response in development mode (similar to django.contrib.flatpages_).
 * Add Django 1.5 Custom User model support.
+* Moved the template tag parsing to a separate package, django-tag-parser_.
 * Improve error messages on initial project setup.
 * Improve ability to extend the page change_form template.
 * Improve layout of *keywords* and *description* fields in the admin.
@@ -28,3 +29,4 @@ First public release
 .. _django.contrib.flatpages: https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
+.. _django-tag-parser: https://github.com/edoburu/django-tag-parser
