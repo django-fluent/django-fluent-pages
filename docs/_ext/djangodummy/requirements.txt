@@ -3,3 +3,4 @@ Django==1.3.1
 django-mptt>=0.5.1
 django-polymorphic-tree>=0.8.4
 django-tag-parser>=1.0.0
+django-fluent-contents>=0.8.4
