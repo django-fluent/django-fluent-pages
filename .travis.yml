@@ -14,7 +14,12 @@ branches:
   only:
     - master
 notifications:
-  irc: "irc.freenode.org#django-fluent"
+  irc:
+    channels:
+      - "irc.freenode.org#django-fluent"
+    template:
+      - "%{repository}#%{build_number} (%{commit}) %{message}  --  %{build_url}"
+    use_notice: true
   email:
     recipients:
       - travis@edoburu.nl
