@@ -12,6 +12,8 @@ Changes in version 0.8.1 (in development)
 * Fix 500 error on invalid URLs with unicode characters.
 * Fixed ``app_reverse()`` function for Django 1.3.
 * Fixed ``appurl`` tag for template contexts without *page* variable.
+* Fixed ``NavigationNode.is_active`` property for sub menu nodes.
+* Fixed ``NavigationNode.parent`` property for root node.
 * Fix Django dependency in ``setup.py``, moved from ``install_requires`` to the ``requires`` section.
 
 

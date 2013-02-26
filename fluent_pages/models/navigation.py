@@ -87,7 +87,7 @@ class PageNavigationNode(NavigationNode):
 
     @property
     def parent(self):
-        if not self._parent_node:
+        if not self._parent_node and not self._page.is_root_node():
             self._parent_node = PageNavigationNode(self._page.get_parent(), max_depth=self._max_depth, current_page=self._current_page)
         return self._parent_node
 
