@@ -24,7 +24,7 @@ class NavigationNode(object):
         raise NotImplementedError("Missing property in NavigationNode!")
 
     def __dir__(self):
-        return ['slug', 'title', 'url', 'is_active', 'parent', 'children']
+        return ['slug', 'title', 'url', 'is_active', 'level', 'parent', 'children', 'has_children']
 
     # All properties the template can request:
     slug = property(_not_implemented, doc='The slug of the node.')
