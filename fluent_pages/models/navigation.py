@@ -59,13 +59,14 @@ class PageNavigationNode(NavigationNode):
     An implementation of the :class:`NavigationNode` for :class:`~fluent_pages.models.Page` models.
     """
 
-    def __init__(self, page, parent_node=None, max_depth=9999):
+    def __init__(self, page, parent_node=None, max_depth=9999, current_page=None):
         """
         Initialize the node with a Page.
         """
         assert page.in_navigation, "PageNavigationNode can't take page #%d (%s) which is not visible in the navigation." % (page.id, page.url)
         super(NavigationNode, self).__init__()
         self._page = page
+        self._current_page = current_page
         self._parent_node = parent_node
         self._children = []
         self._max_depth = max_depth
@@ -78,20 +79,23 @@ class PageNavigationNode(NavigationNode):
     slug = property(lambda self: self._page.slug)
     title = property(lambda self: self._page.title)
     url = property(lambda self: self._page.url)
-    is_active = property(lambda self: self._page.is_current)
     level = property(lambda self: self._page.level)
+
+    @property
+    def is_active(self):
+        return self._page.pk and self._page.pk == self._current_page.pk
 
     @property
     def parent(self):
         if not self._parent_node:
-            self._parent_node = PageNavigationNode(self._page.get_parent(), max_depth=self._max_depth)
+            self._parent_node = PageNavigationNode(self._page.get_parent(), max_depth=self._max_depth, current_page=self._current_page)
         return self._parent_node
 
     @property
     def children(self):
         self._read_children()
         for child in self._children:
-            yield PageNavigationNode(child, self, max_depth=self._max_depth)
+            yield PageNavigationNode(child, parent_node=self, max_depth=self._max_depth, current_page=self._current_page)
 
     @property
     def has_children(self):
@@ -101,4 +105,4 @@ class PageNavigationNode(NavigationNode):
     def _read_children(self):
         if not self._children and (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
             #children = self._page.get_children()  # Via MPTT
-            self._children = self._page.children.in_navigation()  # Via RelatedManager
+            self._children = self._page.children.in_navigation()._mark_current(self._current_page)  # Via RelatedManager

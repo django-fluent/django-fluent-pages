@@ -72,6 +72,21 @@ class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
         return self.filter(parent__isnull=True)
 
 
+    def _mark_current(self, current_page):
+        """
+        Internal API to mark the given page as "is_current" in the resulting set.
+        """
+        if current_page:
+            current_id = current_page.id
+
+            def add_prop(obj):
+                obj.is_current = (obj.id == current_id)
+
+            return self.decorate(add_prop)
+        else:
+            return self
+
+
 
 class UrlNodeManager(PolymorphicMPTTModelManager):
     """
@@ -125,20 +140,5 @@ class UrlNodeManager(PolymorphicMPTTModelManager):
 
         When current_page is passed, the object values such as 'is_current' will be set. 
         """
-        items = self.toplevel().in_navigation().non_polymorphic()
-        if current_page:
-            items = _mark_current(items, current_page)
+        items = self.toplevel().in_navigation().non_polymorphic()._mark_current(current_page)
         return items
-
-
-# Implemented as method, to avoid overwriting the QuerySet once again.
-def _mark_current(qs, current_page):
-    """
-    Mark the given page as "is_current" in the resulting set.
-    """
-    current_id = current_page.id
-
-    def add_prop(obj):
-        obj.is_current = (obj.id == current_id)
-
-    return qs.decorate(add_prop)

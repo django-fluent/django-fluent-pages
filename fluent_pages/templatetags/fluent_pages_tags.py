@@ -53,15 +53,15 @@ class MenuNode(BaseInclusionNode):
 
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
         # Get page
-        page      = _get_current_page(parent_context)
-        top_pages = UrlNode.objects.toplevel_navigation(current_page=page)
+        current_page = _get_current_page(parent_context)
+        top_pages = UrlNode.objects.toplevel_navigation(current_page=current_page)
 
         # Construct a PageNavigationNode for every page, that allows simple iteration of the tree.
         # Filter all template tag arguments out that are not supported by the PageNavigationNode.
         node_kwargs = dict((k,v) for k, v in tag_kwargs.iteritems() if k in ('max_depth',))
         return {
             'menu_items': [
-                PageNavigationNode(page, **node_kwargs) for page in top_pages
+                PageNavigationNode(page, current_page=current_page, **node_kwargs) for page in top_pages
             ]
         }
 
