@@ -20,7 +20,7 @@ setup(
 
     install_requires=[
         'django-mptt>=0.5.1',
-        'django-polymorphic-tree>=0.8.4',
+        'django-polymorphic-tree>=0.8.6',
         'django-tag-parser>=1.0.0',
     ],
     requires=[
