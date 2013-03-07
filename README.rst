@@ -1,3 +1,7 @@
+.. image::  https://travis-ci.org/edoburu/django-fluent-pages.png?branch=master
+  :target: http://travis-ci.org/edoburu/django-fluent-pages
+  :alt: build-status
+
 django-fluent-pages
 ===================
 
