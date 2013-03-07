@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError
 from fluent_pages.models import Page
+from fluent_pages.models.fields import PageTreeForeignKey
 from fluent_pages.tests.utils import AppTestCase
-from fluent_pages.tests.testapp.models import SimpleTextPage, WebShopPage
+from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
 
 
 class ModelDataTests(AppTestCase):
@@ -167,3 +169,25 @@ class ModelDataTests(AppTestCase):
         page5.slug = 'dup-slug'
         page5.save()
         self.assertEqual(page5.slug, 'dup-slug-5')
+
+
+    def test_file_model_urls(self):
+        """
+        When a plugin type is marked as "file" behave accordingly.
+        """
+        text_file = PlainTextFile.objects.create(slug='README', status=PlainTextFile.PUBLISHED, author=self.user, content="This is the README")
+        self.assertEqual(text_file.get_absolute_url(), '/README')  # No slash!
+
+        text_file2 = PlainTextFile.objects.create(slug='README', parent=self.level1, status=PlainTextFile.PUBLISHED, author=self.user, content="This is the README")
+        self.assertEqual(text_file2.get_absolute_url(), '/level1/README')  # No slash!
+
+
+    def test_file_model_parent(self):
+        """
+        A file model does not allow children.
+        """
+        text_file = PlainTextFile.objects.create(slug='README', status=PlainTextFile.PUBLISHED, author=self.user, content="This is the README")
+        text_file2 = PlainTextFile(slug='AUTHORS', parent=text_file, author=self.user, content='AUTHORS file')
+
+        # Note that .save() doesn't validate, as per default Django behavior.
+        self.assertRaisesMessage(ValidationError, PageTreeForeignKey.default_error_messages['no_children_allowed'], lambda: text_file2.full_clean())

@@ -309,12 +309,19 @@ class UrlNode(PolymorphicMPTTModel):
         # determine own URL
         if self.override_url:
             self._cached_url = self.override_url
-        elif self.is_file:
-            self._cached_url = u'/%s' % self.slug
-        elif self.is_root_node():
-            self._cached_url = u'/%s/' % self.slug
         else:
-            self._cached_url = u'%s%s/' % (self.parent._cached_url, self.slug)
+            parent_url = self.parent._cached_url if not self.is_root_node() else '/'
+
+            # The following shouldn't occur, it means a direct call to Page.objects.create()
+            # attempts to add a child node to a file object instead of calling model.full_clean().
+            # Make sure the URL space is kept clean.
+            if not parent_url[-1] == '/':
+                parent_url += '/'
+
+            if self.is_file:
+                self._cached_url = u'{0}{1}'.format(parent_url, self.slug)
+            else:
+                self._cached_url = u'{0}{1}/'.format(parent_url, self.slug)
 
 
     def _update_decendant_urls(self):

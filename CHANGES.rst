@@ -10,13 +10,14 @@ Changes in version 0.8.1
 * Improve error messages on initial project setup.
 * Improve ability to extend the page change_form template.
 * Improve layout of *keywords* and *description* fields in the admin.
-* Fix 500 error on invalid URLs with unicode characters.
+* Fixed 500 error on invalid URLs with unicode characters.
 * Fixed ``app_reverse()`` function for Django 1.3.
 * Fixed ``appurl`` tag for template contexts without *page* variable.
 * Fixed ``NavigationNode.is_active`` property for sub menu nodes.
 * Fixed ``NavigationNode.parent`` property for root node.
 * Fixed ``runtests.py`` script.
 * Fixed ``Page.objects.best_match_for_path()`` for pages without a slash.
+* Fixed generated URL path for "file" node types in sub folders.
 * Fix Django dependency in ``setup.py``, moved from ``install_requires`` to the ``requires`` section.
 * Bump version of django-polymorphic-tree_ to 0.8.6 because it fixes issues with moving pages in the admin.
 

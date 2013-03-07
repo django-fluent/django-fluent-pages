@@ -1,6 +1,6 @@
 from fluent_pages.models import Page
 from fluent_pages.tests.utils import AppTestCase, script_name, override_settings
-from fluent_pages.tests.testapp.models import SimpleTextPage, WebShopPage
+from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
 
 
 class UrlDispatcherTests(AppTestCase):
@@ -14,6 +14,7 @@ class UrlDispatcherTests(AppTestCase):
         SimpleTextPage.objects.create(title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
         SimpleTextPage.objects.create(title="Text1", slug="unpublished", status=SimpleTextPage.DRAFT, author=cls.user)
         WebShopPage.objects.create(title="Shop1", slug="shop", status=SimpleTextPage.PUBLISHED, author=cls.user)
+        PlainTextFile.objects.create(slug='README', status=PlainTextFile.PUBLISHED, author=cls.user, content="This is the README")
 
 
     def test_get_for_path(self):
@@ -114,6 +115,15 @@ class UrlDispatcherTests(AppTestCase):
 
         # However, non resolvable app pages should not get an APPEND_SLASH redirect
         self.assert404('/shop/article1/foo')
+
+
+    def test_plain_text_file(self):
+        """
+        URLs that point to files should return properly.
+        """
+        response = self.client.get('/README')
+        self.assertEqual(response.content, 'This is the README')
+        self.assertEqual(response['Content-Type'], 'text/plain')
 
 
     def test_unicode_404(self):
