@@ -14,9 +14,10 @@ class ModelDataTests(AppTestCase):
     @classmethod
     def setUpTree(cls):
         root = SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
-        level1 = SimpleTextPage.objects.create(title="Text1", slug="level1", parent=root, status=SimpleTextPage.PUBLISHED, author=cls.user)
-        level2 = SimpleTextPage.objects.create(title="Text1", slug="level2", parent=level1, status=SimpleTextPage.PUBLISHED, author=cls.user)
-        root2 = SimpleTextPage.objects.create(title="Text1", slug="root2", status=SimpleTextPage.PUBLISHED, author=cls.user)
+        draft1 = SimpleTextPage.objects.create(title="Draft1", slug="draft1", parent=root, status=SimpleTextPage.DRAFT, author=cls.user)
+        level1 = SimpleTextPage.objects.create(title="Level1", slug="level1", parent=root, status=SimpleTextPage.PUBLISHED, author=cls.user)
+        level2 = SimpleTextPage.objects.create(title="Level2", slug="level2", parent=level1, status=SimpleTextPage.PUBLISHED, author=cls.user)
+        root2 = SimpleTextPage.objects.create(title="Root2", slug="root2", status=SimpleTextPage.PUBLISHED, author=cls.user)
         shop = WebShopPage.objects.create(title="Shop1", slug="shop", status=WebShopPage.PUBLISHED, author=cls.user)
 
 
