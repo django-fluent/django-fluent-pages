@@ -88,3 +88,33 @@ class ModelDataTests(AppTestCase):
         level2 = SimpleTextPage.objects.get(slug='level2')
         self.assertEquals(level1.get_absolute_url(), '/root2/level1/')
         self.assertEquals(level2.get_absolute_url(), '/root2/level1/level2/')
+
+
+    def test_duplicate_slug(self):
+        """
+        At the model level, a duplicate slug is automatically renamed.
+        """
+        page1 = SimpleTextPage.objects.create(slug='dup-slug', author=self.user)
+        page2 = SimpleTextPage.objects.create(slug='dup-slug', author=self.user)
+        page3 = SimpleTextPage.objects.create(slug='dup-slug', author=self.user)
+
+        self.assertEqual(page1.slug, 'dup-slug')
+        self.assertEqual(page2.slug, 'dup-slug-2')
+        self.assertEqual(page3.slug, 'dup-slug-3')
+
+        # The duplicates should be detected per level,
+        # and update when the page is moved.
+        page4 = SimpleTextPage.objects.create(slug='dup-slug', parent=page3, author=self.user)
+        self.assertEqual(page4.slug, 'dup-slug')
+
+        page4.parent = None
+        page4.save()
+        self.assertEqual(page4.slug, 'dup-slug-4')
+
+        # Renaming a slug also works
+        page5 = SimpleTextPage.objects.create(slug='unique-slug', author=self.user)
+        self.assertEqual(page5.slug, 'unique-slug')
+
+        page5.slug = 'dup-slug'
+        page5.save()
+        self.assertEqual(page5.slug, 'dup-slug-5')
