@@ -1,3 +1,9 @@
+Changes in version 0.8.2
+------------------------
+
+* Fix unit test suite in Django 1.3
+
+
 Changes in version 0.8.1
 ------------------------
 

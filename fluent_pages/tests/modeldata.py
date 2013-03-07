@@ -1,3 +1,4 @@
+import django
 from django.core.exceptions import ValidationError
 from fluent_pages.models import Page
 from fluent_pages.models.fields import PageTreeForeignKey
@@ -190,4 +191,7 @@ class ModelDataTests(AppTestCase):
         text_file2 = PlainTextFile(slug='AUTHORS', parent=text_file, author=self.user, content='AUTHORS file')
 
         # Note that .save() doesn't validate, as per default Django behavior.
-        self.assertRaisesMessage(ValidationError, PageTreeForeignKey.default_error_messages['no_children_allowed'], lambda: text_file2.full_clean())
+        if django.VERSION >= (1, 4):
+            self.assertRaisesMessage(ValidationError, PageTreeForeignKey.default_error_messages['no_children_allowed'], lambda: text_file2.full_clean())
+        else:
+            self.assertRaises(ValidationError, lambda: text_file2.full_clean())
