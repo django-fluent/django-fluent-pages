@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-21 16:47+0100\n"
+"POT-Creation-Date: 2013-03-07 16:11+0100\n"
 "PO-Revision-Date: 2011-01-10 23:54+0100\n"
 "Last-Translator: Diederik van der Boor <vdboor@edoburu.nl>\n"
 "Language-Team: Dutch <NL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.1\n"
 
-#: admin/pageadmin.py:44
+#: admin/pageadmin.py:92
 msgid "SEO settings"
 msgstr "Zoekmachine opties"
 
@@ -29,11 +29,11 @@ msgstr "Deze URL wordt al gebruikt door een andere pagina."
 msgid "This slug is already used by an other page at the same level."
 msgstr "Deze waarde wordt gebruikt door een andere pagina op hetzelfde niveau."
 
-#: admin/urlnodeadmin.py:88
+#: admin/urlnodeadmin.py:90
 msgid "Menu structure"
 msgstr "Menustructuur"
 
-#: admin/urlnodeadmin.py:92
+#: admin/urlnodeadmin.py:95
 msgid "Publication settings"
 msgstr "Publicatievoorkeuren"
 
@@ -61,7 +61,7 @@ msgstr "Gepubliceerd"
 msgid "Draft"
 msgstr "Concept"
 
-#: models/db.py:65 models/db.py:378
+#: models/db.py:65 models/db.py:414
 msgid "title"
 msgstr "Titel"
 
@@ -79,7 +79,9 @@ msgstr "ouder"
 
 #: models/db.py:67
 msgid "You can also change the parent by dragging the page in the list."
-msgstr "Je kunt ook de ouder veranderen door de pagina in de lijstweergave te verslepen."
+msgstr ""
+"Je kunt ook de ouder veranderen door de pagina in de lijstweergave te "
+"verslepen."
 
 #: models/db.py:72
 msgid "status"
@@ -139,35 +141,36 @@ msgstr "URL Pad"
 msgid "URL Nodes"
 msgstr "URL Paden"
 
-#: models/db.py:346 pagetypes/fluentpage/models.py:28
+#: models/db.py:379 pagetypes/fluentpage/models.py:28
 msgid "Page"
 msgstr "Pagina"
 
-#: models/db.py:347 models/db.py:368 pagetypes/fluentpage/models.py:29
+#: models/db.py:380 models/db.py:403 pagetypes/fluentpage/models.py:29
 msgid "Pages"
 msgstr "Pagina's"
 
-#: models/db.py:361
+#: models/db.py:396
 msgid "keywords"
 msgstr "zoekwoorden"
 
-#: models/db.py:362
+#: models/db.py:397
 msgid "description"
 msgstr "beschrijving"
 
-#: models/db.py:377
+#: models/db.py:413
 msgid "key"
 msgstr "code"
 
-#: models/db.py:377
+#: models/db.py:413
 msgid "A short name to identify the layout programmatically"
 msgstr "Een korte naam om de layout te identificeren in de code"
 
-#: models/db.py:401 pagetypes/fluentpage/models.py:18
+#: models/db.py:436 pagetypes/flatpage/models.py:13
+#: pagetypes/fluentpage/models.py:18
 msgid "Layout"
 msgstr "Layout"
 
-#: models/db.py:402
+#: models/db.py:437
 msgid "Layouts"
 msgstr "Layouts"
 
@@ -175,11 +178,17 @@ msgstr "Layouts"
 msgid "The selected page cannot have sub pages."
 msgstr "De gekozen pagina kan geen subpagina's bevatten."
 
-#: pagetypes/fluentpage/templates/admin/fluent_pages/page/page_editor.html:17
-msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
-msgstr[0] "Corrigeer a.u.b. de volgende fout:"
-msgstr[1] "Corrigeer a.u.b. de volgende fouten:"
+#: pagetypes/flatpage/models.py:14
+msgid "Content"
+msgstr "Inhoud"
+
+#: pagetypes/flatpage/models.py:20
+msgid "Flat Page"
+msgstr "Platte pagina"
+
+#: pagetypes/flatpage/models.py:21
+msgid "Flat Pages"
+msgstr "Platte pagina's"
 
 #: pagetypes/redirectnode/models.py:12
 msgid "Normal redirect"
@@ -241,6 +250,12 @@ msgstr "Plat tekstbestand"
 msgid "Plain text files"
 msgstr "Plat tekstbestanden"
 
-#: templates/admin/fluent_pages/page/change_form.html:9
+#: templates/admin/fluent_pages/page/change_form.html:24
 msgid "View on site"
 msgstr "Bekijk op website"
+
+#: templates/admin/fluent_pages/page/change_form.html:35
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Corrigeer a.u.b. de volgende fout:"
+msgstr[1] "Corrigeer a.u.b. de volgende fouten:"
