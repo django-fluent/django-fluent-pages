@@ -1,10 +1,11 @@
-Changes in version 0.8.1 (in development)
------------------------------------------
+Changes in version 0.8.1
+------------------------
 
 * Add "Flat page" page type.
 * Add support for django-any-urlfield_.
 * Add ``X-Object-Type`` and ``X-Object-Id`` headers to the response in development mode (similar to django.contrib.flatpages_).
 * Add Django 1.5 Custom User model support.
+* Added lots of documentation.
 * Moved the template tag parsing to a separate package, django-tag-parser_.
 * Improve error messages on initial project setup.
 * Improve ability to extend the page change_form template.
@@ -14,6 +15,7 @@ Changes in version 0.8.1 (in development)
 * Fixed ``appurl`` tag for template contexts without *page* variable.
 * Fixed ``NavigationNode.is_active`` property for sub menu nodes.
 * Fixed ``NavigationNode.parent`` property for root node.
+* Fixed ``runtests.py`` script.
 * Fix Django dependency in ``setup.py``, moved from ``install_requires`` to the ``requires`` section.
 * Bump version of django-polymorphic-tree_ to 0.8.6 because it fixes issues with moving pages in the admin.
 
