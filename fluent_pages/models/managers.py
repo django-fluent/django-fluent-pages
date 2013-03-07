@@ -28,11 +28,8 @@ class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
 
         UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
         """
-        # from FeinCMS:
-        paths = []
-        if path:
-            tokens = path.rstrip('/').split('/')
-            paths += [u'{0}/'.format(u'/'.join(tokens[:i])) for i in range(1, len(tokens) + 1)]
+        # Based on FeinCMS:
+        paths = self._split_path_levels(path)
 
         try:
             return self.filter(_cached_url__in=paths) \
@@ -40,6 +37,24 @@ class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
                        .order_by('-_url_length')[0]
         except IndexError:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
+
+
+    def _split_path_levels(self, path):
+        """
+        Split the URL path, used by best_match_for_path()
+        """
+        # This is a separate function to allow unit testing.
+        paths = []
+        if path:
+            tokens = path.rstrip('/').split('/')
+            paths += [u'{0}/'.format(u'/'.join(tokens[:i])) for i in range(1, len(tokens) + 1)]
+
+            # If the original URL didn't end with a slash,
+            # make sure the splitted path also doesn't.
+            if path[-1] != '/':
+                paths[-1] = paths[-1].rstrip('/')
+
+        return paths
 
 
     def published(self):

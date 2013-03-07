@@ -13,12 +13,61 @@ class ModelDataTests(AppTestCase):
 
     @classmethod
     def setUpTree(cls):
-        root = SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
-        draft1 = SimpleTextPage.objects.create(title="Draft1", slug="draft1", parent=root, status=SimpleTextPage.DRAFT, author=cls.user)
-        level1 = SimpleTextPage.objects.create(title="Level1", slug="level1", parent=root, status=SimpleTextPage.PUBLISHED, author=cls.user)
-        level2 = SimpleTextPage.objects.create(title="Level2", slug="level2", parent=level1, status=SimpleTextPage.PUBLISHED, author=cls.user)
-        root2 = SimpleTextPage.objects.create(title="Root2", slug="root2", status=SimpleTextPage.PUBLISHED, author=cls.user)
-        shop = WebShopPage.objects.create(title="Shop1", slug="shop", status=WebShopPage.PUBLISHED, author=cls.user)
+        cls.root = SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
+        cls.draft1 = SimpleTextPage.objects.create(title="Draft1", slug="draft1", parent=cls.root, status=SimpleTextPage.DRAFT, author=cls.user)
+        cls.level1 = SimpleTextPage.objects.create(title="Level1", slug="level1", parent=cls.root, status=SimpleTextPage.PUBLISHED, author=cls.user)
+        cls.level2 = SimpleTextPage.objects.create(title="Level2", slug="level2", parent=cls.level1, status=SimpleTextPage.PUBLISHED, author=cls.user)
+        cls.root2 = SimpleTextPage.objects.create(title="Root2", slug="root2", status=SimpleTextPage.PUBLISHED, author=cls.user)
+        cls.shop = WebShopPage.objects.create(title="Shop1", slug="shop", status=WebShopPage.PUBLISHED, author=cls.user)
+
+
+    def test_get_for_path(self):
+        """
+        The get for path should work strictly on the path.
+        """
+        self.assertEqual(Page.objects.get_for_path('/'), self.root)
+        self.assertEqual(Page.objects.get_for_path('/draft1/'), self.draft1)
+        self.assertEqual(Page.objects.get_for_path('/level1/level2/'), self.level2)
+
+        # Any inaccuracies should raise errors
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path('/level1/level2'))
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path('level1/level2/'))
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path('level1/level2'))
+
+
+    def test_best_match_for_path(self):
+        """
+        The best match should return the first match, but never the '/'.
+        """
+        self.assertEqual(Page.objects.best_match_for_path('/level1/level2/foo/bar/'), self.level2)
+        self.assertEqual(Page.objects.best_match_for_path('/level1/level2/noslash.txt'), self.level2)
+
+        # If the root node has custom URLs support, that should also work:
+        self.assertEqual(Page.objects.best_match_for_path('/virtual/root-path/'), self.root)
+
+        # If there is no slash, there is still a best match.
+        # However, it can't be the level2 itself because that URL has a slash at it's end.
+        # The URL dispatcher handles APPEND_SLASH behaviour, not the model API.
+        self.assertEqual(Page.objects.best_match_for_path('/level1/level2'), self.level1)
+
+        # Any inaccuracies should raise errors
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.best_match_for_path('level1/level2/'))
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.best_match_for_path('level1/level2'))
+
+
+    def test_split_path_levels(self):
+        """
+        Test the splitting of URL paths, which is the core of best_match_for_path()
+        """
+        # Test standard path levels
+        self.assertEqual(Page.objects._split_path_levels('/level1/level2/'), ['/', '/level1/', '/level1/level2/'])
+
+        # Not adding a slash is reflected in the results
+        self.assertEqual(Page.objects._split_path_levels('/level1/level2/noslash.txt'), ['/', '/level1/', '/level1/level2/', '/level1/level2/noslash.txt'])
+        self.assertEqual(Page.objects._split_path_levels('/level1/level2'), ['/', '/level1/', '/level1/level2'])
+
+        # Garbage in, garbage out
+        self.assertEqual(Page.objects._split_path_levels('level1/level2'), ['level1/', 'level1/level2'])
 
 
     def test_polymorphic(self):

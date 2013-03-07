@@ -16,6 +16,7 @@ Changes in version 0.8.1
 * Fixed ``NavigationNode.is_active`` property for sub menu nodes.
 * Fixed ``NavigationNode.parent`` property for root node.
 * Fixed ``runtests.py`` script.
+* Fixed ``Page.objects.best_match_for_path()`` for pages without a slash.
 * Fix Django dependency in ``setup.py``, moved from ``install_requires`` to the ``requires`` section.
 * Bump version of django-polymorphic-tree_ to 0.8.6 because it fixes issues with moving pages in the admin.
 
