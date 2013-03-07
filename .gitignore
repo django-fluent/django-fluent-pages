@@ -3,6 +3,7 @@
 *.mo
 *.db
 *.egg-info/
+.coverage
 .project
 .idea/
 .pydevproject
@@ -10,3 +11,4 @@
 .DS_Store
 dist/
 docs/_build/
+htmlcov/
