@@ -3,6 +3,7 @@
 *.mo
 *.db
 *.egg-info/
+*.egg/
 .coverage
 .project
 .idea/
