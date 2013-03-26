@@ -68,6 +68,19 @@ The menu template could look like:
     </ul>
     {% endif %}
 
+Selective Menu Rendering
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can render just a portion of the menu using:
+
+.. code-block:: html+django
+
+    {% render_menu_below "page-slug" %}
+
+This works the same as the ``{% render_menu %}`` tag except that it will start from
+the page identified by the provided page slug instead of the root of the site. It
+also accepts both the ``max_depth`` and the ``template`` keyword arguments just like
+the ``{% render_menu %}`` tag.
 
 Advanced features
 -----------------

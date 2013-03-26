@@ -38,6 +38,15 @@ class BreadcrumbNode(BaseInclusionNode):
 
         return {'breadcrumb': items}
 
+def get_node_kwargs(tag_kwargs):
+    """
+    Return a dict suitable for passing as kwargs to a PageNavigationNode object
+    """
+    return dict(
+        (k, v)
+        for k, v in tag_kwargs.iteritems()
+        if k in ('max_depth',)
+    )
 
 @template_tag(register, 'render_menu')
 class MenuNode(BaseInclusionNode):
@@ -57,11 +66,42 @@ class MenuNode(BaseInclusionNode):
         top_pages = UrlNode.objects.toplevel_navigation(current_page=current_page)
 
         # Construct a PageNavigationNode for every page, that allows simple iteration of the tree.
-        # Filter all template tag arguments out that are not supported by the PageNavigationNode.
-        node_kwargs = dict((k,v) for k, v in tag_kwargs.iteritems() if k in ('max_depth',))
+        node_kwargs = get_node_kwargs(tag_kwargs)
         return {
             'menu_items': [
                 PageNavigationNode(page, current_page=current_page, **node_kwargs) for page in top_pages
+            ]
+        }
+
+@template_tag(register, 'render_menu_below')
+class MenuBelowNode(BaseInclusionNode):
+    """
+    Render a portion of the menu below a given page (slug).
+
+    .. code-block:: html+django
+
+        {% render_menu_below "communicate" max_depth=1 template="fluent_pages/parts/menu.html" %}
+    """
+    template_name = 'fluent_pages/parts/menu.html'
+    allowed_kwargs = ('max_depth', 'template',)
+
+    # we take one argument
+    min_args = 1
+    max_args = 1
+
+    def get_context_data(self, parent_context, page_slug, *tag_args, **tag_kwargs):
+        # Get the current page
+        current_page = _get_current_page(parent_context)
+
+        # Get the page via the provided slug
+        page = UrlNode.objects.get(slug=page_slug)
+
+        # Build our kwargs for the PageNavigationNode
+        node_kwargs = get_node_kwargs(tag_kwargs)
+
+        return {
+            'menu_items': [
+                PageNavigationNode(page, current_page=current_page, **node_kwargs)
             ]
         }
 
