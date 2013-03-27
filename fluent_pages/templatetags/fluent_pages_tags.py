@@ -81,7 +81,10 @@ class MenuNode(BaseInclusionNode):
 
             elif isinstance(tag_kwargs['parent'], int):
                 # If we've been provided an int then we lookup based on the id of the page
-                top_pages = base_qs.get(id=tag_kwargs['parent'])
+                try:
+                    top_pages = base_qs.get(id=tag_kwargs['parent'])
+                except UrlNode.DoesNotExist:
+                    top_pages = []
 
             elif isinstance(tag_kwargs['parent'], Page) or isinstance(tag_kwargs['parent'], UrlNode):
                 # If we've been given a Page or UrlNode then there's no lookup necessary
