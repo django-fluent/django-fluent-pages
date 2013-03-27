@@ -1,6 +1,7 @@
 Changes in version 0.8.2
 ------------------------
 
+* Add ``parent`` argument to ``{% render_menu %}``, to render sub menu's.
 * Fix unit test suite in Django 1.3
 
 
