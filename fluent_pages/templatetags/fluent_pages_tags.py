@@ -56,14 +56,22 @@ class MenuNode(BaseInclusionNode):
     .. code-block:: html+django
 
         {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
+        {% render_menu parent="slug" max_depth=1 template="fluent_pages/parts/menu.html" %}
     """
     template_name = 'fluent_pages/parts/menu.html'
-    allowed_kwargs = ('max_depth', 'template',)
+    allowed_kwargs = ('max_depth', 'template', 'parent')
 
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
-        # Get page
+        # Get page objects
         current_page = _get_current_page(parent_context)
-        top_pages = UrlNode.objects.toplevel_navigation(current_page=current_page)
+
+        if 'parent' in tag_kwargs:
+            # if we've been provided a parent kwarg then we want to filter
+            # for any nodes that contain the provided slug
+            top_pages = UrlNode.objects.filter(slug=tag_kwargs['parent'])
+        else:
+            # otherwise get the top level nav for the current page
+            top_pages = UrlNode.objects.toplevel_navigation(current_page=current_page)
 
         # Construct a PageNavigationNode for every page, that allows simple iteration of the tree.
         node_kwargs = get_node_kwargs(tag_kwargs)
@@ -72,39 +80,6 @@ class MenuNode(BaseInclusionNode):
                 PageNavigationNode(page, current_page=current_page, **node_kwargs) for page in top_pages
             ]
         }
-
-@template_tag(register, 'render_menu_below')
-class MenuBelowNode(BaseInclusionNode):
-    """
-    Render a portion of the menu below a given page (slug).
-
-    .. code-block:: html+django
-
-        {% render_menu_below "communicate" max_depth=1 template="fluent_pages/parts/menu.html" %}
-    """
-    template_name = 'fluent_pages/parts/menu.html'
-    allowed_kwargs = ('max_depth', 'template',)
-
-    # we take one argument
-    min_args = 1
-    max_args = 1
-
-    def get_context_data(self, parent_context, page_slug, *tag_args, **tag_kwargs):
-        # Get the current page
-        current_page = _get_current_page(parent_context)
-
-        # Get the page via the provided slug
-        page = UrlNode.objects.get(slug=page_slug)
-
-        # Build our kwargs for the PageNavigationNode
-        node_kwargs = get_node_kwargs(tag_kwargs)
-
-        return {
-            'menu_items': [
-                PageNavigationNode(page, current_page=current_page, **node_kwargs)
-            ]
-        }
-
 
 @template_tag(register, 'get_fluent_page_vars')
 class GetVarsNode(BaseNode):
