@@ -83,7 +83,7 @@ class MenuNode(BaseInclusionNode):
                 top_pages = UrlNode.objects.in_navigation().filter(parent_id=parent_value)
             elif isinstance(parent_value, UrlNode):
                 # If we've been given a Page or UrlNode then there's no lookup necessary
-                top_pages = parent_value.children.all()
+                top_pages = parent_value.children.in_navigation()
             else:
                 raise TemplateSyntaxError("The 'render_menu' tag only allows an URL path, page id or page object for the 'parent' keyword")
         else:
