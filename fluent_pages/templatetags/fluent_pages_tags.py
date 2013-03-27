@@ -7,7 +7,7 @@ Load this module using:
     {% load fluent_pages_tags %}
 """
 from django.contrib.sites.models import Site
-from django.template import Library
+from django.template import Library, TemplateSyntaxError
 from fluent_pages.models import UrlNode, Page
 from fluent_pages.models.navigation import PageNavigationNode
 from tag_parser import template_tag
@@ -38,6 +38,7 @@ class BreadcrumbNode(BaseInclusionNode):
 
         return {'breadcrumb': items}
 
+
 def get_node_kwargs(tag_kwargs):
     """
     Return a dict suitable for passing as kwargs to a PageNavigationNode object
@@ -48,8 +49,6 @@ def get_node_kwargs(tag_kwargs):
         if k in ('max_depth',)
     )
 
-class MenuNodeException(Exception):
-    pass
 
 @template_tag(register, 'render_menu')
 class MenuNode(BaseInclusionNode):
@@ -59,7 +58,7 @@ class MenuNode(BaseInclusionNode):
     .. code-block:: html+django
 
         {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
-        {% render_menu parent="/page/url" max_depth=1 template="fluent_pages/parts/menu.html" %}
+        {% render_menu parent="/page/url/" max_depth=1 template="fluent_pages/parts/menu.html" %}
     """
     template_name = 'fluent_pages/parts/menu.html'
     allowed_kwargs = ('max_depth', 'template', 'parent')
@@ -71,27 +70,28 @@ class MenuNode(BaseInclusionNode):
         if 'parent' in tag_kwargs:
             # if we've been provided a parent kwarg then we want to filter
             base_qs = UrlNode.objects.in_navigation()
+            parent_value = tag_kwargs['parent']
 
-            if isinstance(tag_kwargs['parent'], basestring):
+            if isinstance(parent_value, basestring):
                 # if we've been provided a string then we lookup based on the path/url
                 try:
-                    top_pages = [ base_qs.get_for_path(tag_kwargs['parent']) ]
+                    top_pages = [base_qs.get_for_path(parent_value)]
                 except UrlNode.DoesNotExist:
                     top_pages = []
 
-            elif isinstance(tag_kwargs['parent'], int):
+            elif isinstance(parent_value, (int, long)):
                 # If we've been provided an int then we lookup based on the id of the page
                 try:
-                    top_pages = base_qs.get(id=tag_kwargs['parent'])
+                    top_pages = base_qs.get(id=parent_value)
                 except UrlNode.DoesNotExist:
                     top_pages = []
 
-            elif isinstance(tag_kwargs['parent'], Page) or isinstance(tag_kwargs['parent'], UrlNode):
+            elif isinstance(parent_value, UrlNode):
                 # If we've been given a Page or UrlNode then there's no lookup necessary
-                top_pages = [ tag_kwargs['parent'] ]
+                top_pages = [parent_value]
 
             else:
-                raise MenuNodeException("You must provide a path/url, page id or page object to the parent keyword")
+                raise TemplateSyntaxError("The 'render_menu' tag only allows an URL path, page id or page object for the 'parent' keyword")
 
         else:
             # otherwise get the top level nav for the current page
@@ -104,6 +104,7 @@ class MenuNode(BaseInclusionNode):
                 PageNavigationNode(page, current_page=current_page, **node_kwargs) for page in top_pages
             ]
         }
+
 
 @template_tag(register, 'get_fluent_page_vars')
 class GetVarsNode(BaseNode):

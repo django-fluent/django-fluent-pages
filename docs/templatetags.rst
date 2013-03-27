@@ -55,11 +55,11 @@ The menu depth and template are configurable:
     {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
 
 You can render just a portion of the menu using use the ``parent`` keyword argument.
-It expects the slug of the page you want to render from:
+It expects the page object, URL path or page ID of the page you want to render from:
 
 .. code-block:: html+django
 
-    {% render_menu parent="page-slug" max_depth=1 template="fluent_pages/parts/menu.html" %}
+    {% render_menu parent=page max_depth=1 template="fluent_pages/parts/menu.html" %}
 
 The menu template could look like:
 
