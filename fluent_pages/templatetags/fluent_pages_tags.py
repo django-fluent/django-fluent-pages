@@ -69,30 +69,23 @@ class MenuNode(BaseInclusionNode):
 
         if 'parent' in tag_kwargs:
             # if we've been provided a parent kwarg then we want to filter
-            base_qs = UrlNode.objects.in_navigation()
             parent_value = tag_kwargs['parent']
 
             if isinstance(parent_value, basestring):
                 # if we've been provided a string then we lookup based on the path/url
                 try:
-                    top_pages = [base_qs.get_for_path(parent_value)]
+                    parent = UrlNode.objects.get_for_path(parent_value)
                 except UrlNode.DoesNotExist:
-                    top_pages = []
-
+                    return {'menu_items': []}
+                top_pages = parent.children.in_navigation()  # Can't do parent___cached_key due to polymorphic queryset code.
             elif isinstance(parent_value, (int, long)):
                 # If we've been provided an int then we lookup based on the id of the page
-                try:
-                    top_pages = base_qs.get(id=parent_value)
-                except UrlNode.DoesNotExist:
-                    top_pages = []
-
+                top_pages = UrlNode.objects.in_navigation().filter(parent_id=parent_value)
             elif isinstance(parent_value, UrlNode):
                 # If we've been given a Page or UrlNode then there's no lookup necessary
-                top_pages = [parent_value]
-
+                top_pages = parent_value.children.all()
             else:
                 raise TemplateSyntaxError("The 'render_menu' tag only allows an URL path, page id or page object for the 'parent' keyword")
-
         else:
             # otherwise get the top level nav for the current page
             top_pages = UrlNode.objects.toplevel_navigation(current_page=current_page)
