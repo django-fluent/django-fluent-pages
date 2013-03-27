@@ -54,26 +54,32 @@ The menu depth and template are configurable:
 
     {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
 
-You can render just a portion of the menu using use the ``parent`` keyword argument.
-It expects the page object, URL path or page ID of the page you want to render from:
-
-.. code-block:: html+django
-
-    {% render_menu parent=page max_depth=1 template="fluent_pages/parts/menu.html" %}
-
 The menu template could look like:
 
 .. code-block:: html+django
 
-    {% load mptt_tags %}{% if menu_items %}
-    <ul>
-      {% recursetree menu_items %}{# node is a Page #}
-      <li class="{% if node.is_active %}active{% endif %}{% if node.is_last_child %} last{% endif %}">
-        <a href="{{ node.url }}">{{ node.title }}</a>
-        {% if children %}<ul>{{ children }}</ul>{% endif %}
-      </li>{% endrecursetree %}
-    </ul>
+    {% load mptt_tags %}
+    {% if menu_items %}
+      <ul>
+        {% recursetree menu_items %}
+        <li class="{% if node.is_active %}active{% endif %}{% if node.is_last_child %} last{% endif %}">
+          <a href="{{ node.url }}">{{ node.title }}</a>
+          {% if children %}<ul>{{ children }}</ul>{% endif %}
+        </li>{% endrecursetree %}
+      </ul>
+    {% else %}
+      <!-- Menu is empty -->
     {% endif %}
+
+You can render just a portion of the menu using use the ``parent`` keyword argument.
+It expects a page object, URL path or page ID of the page you want to start at:
+
+.. code-block:: html+django
+
+    {% render_menu parent=page max_depth=1 %}
+    {% render_menu parent='/documentation/' max_depth=1 %}
+    {% render_menu parent=8 max_depth=1 %}
+
 
 Advanced features
 -----------------

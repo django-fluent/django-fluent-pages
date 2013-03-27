@@ -88,6 +88,7 @@ See the documentation of each of these :ref:`bundled content plugins <fluentcont
 * :ref:`fluentcontents:markup`
 * :ref:`fluentcontents:oembeditem`
 * :ref:`fluentcontents:rawhtml`
+* :ref:`fluentcontents:sharedcontent`
 * :ref:`fluentcontents:text`
 * :ref:`fluentcontents:twitterfeed`
 

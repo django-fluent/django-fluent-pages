@@ -24,11 +24,11 @@ or a custom template if the ``template`` argument is provided.
 The ``render_menu`` tag
 -----------------------------------
 
-Render the menu of the site. The ``max_depth`` and ``template`` arguments are optional.
+Render the menu of the site. The ``max_depth``, ``parent`` and ``template`` arguments are optional.
 
 .. code-block:: html+django
 
-    {% render_menu max_depth=1 template="fluent_pages/parts/menu.html" %}
+    {% render_menu max_depth=1 parent="/documentation/" template="fluent_pages/parts/menu.html" %}
 
 
 The ``get_fluent_page_vars`` tag
