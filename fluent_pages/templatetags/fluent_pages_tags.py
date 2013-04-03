@@ -165,11 +165,7 @@ def _get_current_page(context):
                                            "- No context variable named 'page' found.")
 
         if not isinstance(current_page, UrlNode):
-            try:
-                current_page = UrlNode.objects.get_for_path(request.path)
-            except UrlNode.DoesNotExist:
-                current_site = Site.objects.get_current()
-                current_page = UrlNode(title='', in_navigation=False, override_url=request.path, status=UrlNode.DRAFT, parent_site=current_site)
+            raise UrlNode.DoesNotExist("The 'page' context variable is not a valid page")
 
         request._current_fluent_page = current_page
 
