@@ -2,6 +2,7 @@ Changes in version 0.8.2
 ------------------------
 
 * Add ``parent`` argument to ``{% render_menu %}``, to render sub menu's.
+* Fix ``{% get_fluent_page_vars %}`` to skip the django-haystack_ ``page`` variable.
 * Fix unit test suite in Django 1.3
 
 
@@ -42,5 +43,6 @@ First public release
 .. _django-any-urlfield: https://github.com/edoburu/django-any-urlfield
 .. _django.contrib.flatpages: https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
+.. _django-haystack: http://haystacksearch.org/
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 .. _django-tag-parser: https://github.com/edoburu/django-tag-parser
