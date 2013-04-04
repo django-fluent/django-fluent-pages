@@ -153,16 +153,21 @@ def _get_current_page(context):
         try:
             # First start with something you can control,
             # and likely want to mimic from the standard view.
-            request._current_fluent_page = context['page']
+            current_page = context['page']
         except KeyError:
             try:
                 # Then try looking up environmental properties.
-                request._current_fluent_page = UrlNode.objects.get_for_path(request.path)
+                current_page = UrlNode.objects.get_for_path(request.path)
             except UrlNode.DoesNotExist, e:
                 # Be descriptive. This saves precious developer time.
                 raise UrlNode.DoesNotExist("Could not detect current page.\n"
                                            "- " + unicode(e) + "\n"
                                            "- No context variable named 'page' found.")
+
+        if not isinstance(current_page, UrlNode):
+            raise UrlNode.DoesNotExist("The 'page' context variable is not a valid page")
+
+        request._current_fluent_page = current_page
 
     return request._current_fluent_page  # is a CmsObject
 
