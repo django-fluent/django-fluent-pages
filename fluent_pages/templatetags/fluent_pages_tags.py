@@ -33,8 +33,8 @@ class BreadcrumbNode(BaseInclusionNode):
     template_name = 'fluent_pages/parts/breadcrumb.html'
 
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
-        page  = _get_current_page(parent_context)  # CmsObject()
-        items = page.breadcrumb # list(CmsObject)
+        page  = _get_current_page(parent_context)  # UrlNode
+        items = page.breadcrumb # list(UrlNode)
 
         return {'breadcrumb': items}
 
@@ -169,7 +169,7 @@ def _get_current_page(context):
 
         request._current_fluent_page = current_page
 
-    return request._current_fluent_page  # is a CmsObject
+    return request._current_fluent_page  # is a UrlNode
 
 
 def _get_request(context):
