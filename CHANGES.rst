@@ -2,6 +2,7 @@ Changes in version 0.8.2
 ------------------------
 
 * Add ``parent`` argument to ``{% render_menu %}``, to render sub menu's.
+* Bump version requirement of django-mptt_ to 0.5.4, earlier versions have bugs.
 * Fix ``{% get_fluent_page_vars %}`` to skip the django-haystack_ ``page`` variable.
 * Fix unit test suite in Django 1.3
 

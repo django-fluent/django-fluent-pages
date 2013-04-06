@@ -2,6 +2,7 @@ import django
 from django.core.exceptions import ValidationError
 from fluent_pages.models import Page
 from fluent_pages.models.fields import PageTreeForeignKey
+from fluent_pages.models.managers import UrlNodeQuerySet
 from fluent_pages.tests.utils import AppTestCase
 from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
 
@@ -87,6 +88,15 @@ class ModelDataTests(AppTestCase):
         pages = list(Page.objects.published().filter(slug__in=('level1', 'shop')).order_by('slug'))
         self.assertIsInstance(pages[0], SimpleTextPage)
         self.assertIsInstance(pages[1], WebShopPage)
+
+
+    def test_related_tree_manager(self):
+        """
+        The tree manager should get the same abilities as the original manager.
+        This was broken in django-mptt 0.5.2
+        """
+        self.assertIs(type(Page.objects.get_for_path('/').children.all()), UrlNodeQuerySet)  # This broke with some django-mptt 0.5.x versions
+        self.assertEqual(Page.objects.get_for_path('/').children.in_navigation()[0].slug, 'level1')
 
 
     def test_move_root(self):
