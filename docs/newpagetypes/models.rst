@@ -125,7 +125,7 @@ After adding it, the admin interface will be visible:
   :scale: 95
   :alt: Webshop page type admin interface
 
-The appearance at the website, depends on the sites CSS theme off course.
+The appearance on the website depends on the site's CSS theme, of course.
 
 This example showed how a new plugin can be created within 5-15 minutes!
 To continue, see :doc:`rendering` to implement custom rendering.
