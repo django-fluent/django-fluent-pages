@@ -3,7 +3,7 @@
 Customizing the frontend rendering
 ==================================
 
-As displayed in the :doc:`models` page, a pagw type is made of two classes:
+As displayed in the :doc:`models` page, a page type is made of two classes:
 
 * A model class in :file:`models.py`.
 * A plugin class in :file:`page_type_plugins.py`.
@@ -70,7 +70,7 @@ The standard :func:`~fluent_pages.extensions.PageTypePlugin.get_response` method
         )
 
 * It takes the template from :func:`~fluent_pages.extensions.PageTypePlugin.get_render_template`.
-* It uses the the context provided by :func:`~fluent_pages.extensions.PageTypePlugin.get_context`.
+* It uses the context provided by :func:`~fluent_pages.extensions.PageTypePlugin.get_context`.
 * It uses :func:`~fluent_pages.extensions.PageTypePlugin.response_class` class to output the response.
 
 .. note::

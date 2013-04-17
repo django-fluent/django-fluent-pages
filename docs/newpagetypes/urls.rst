@@ -51,8 +51,8 @@ Resolving URLs
 --------------
 
 The URLs can't be resolved using the standard :func:`~django.core.urlresolvers.reverse` function unfortunately.
-The main reason is caches results internally for the lifetime of the WSGI container,
-while pages may be rearranged by the admin.
+The main reason is that it caches results internally for the lifetime of the WSGI container,
+meanwhile pages may be rearranged by the admin.
 
 Hence, a :func:`~fluent_pages.urlresolvers.app_reverse` function is available.
 It can be used to resolve the product page:
@@ -63,7 +63,7 @@ It can be used to resolve the product page:
 
     app_reverse('product_details', kwargs={'slug': 'myproduct'})
 
-In templates, the is a ``appurl`` tag which accomplishes the same effect:
+In templates, there is an ``appurl`` tag which accomplishes the same effect:
 
 .. code-block:: html+django
 

@@ -17,7 +17,7 @@ class PageAdminForm(UrlNodeAdminForm):
 class PageAdmin(UrlNodeAdmin):
     """
     The base class for administrating pages.
-    When a custom page type implements an custom admin, use this class as base.
+    When a custom page type implements a custom admin, use this class as its base.
     See the code in ``fluent_pages/pagetypes/*/admin.py`` for examples.
     To deal with model inheritence, define the fieldsets using the :attr:`base_fieldsets` option.
     For example:
@@ -31,7 +31,7 @@ class PageAdmin(UrlNodeAdmin):
         )
 
     By using :attr:`base_fieldsets` instead of the :attr:`ModelAdmin.fieldsets <django.contrib.admin.ModelAdmin.fieldsets>` attribute,
-    any additional fields from a derived model will be displayed in separate fieldset automatically.
+    any additional fields from a derived model will be displayed in a separate fieldset automatically.
     The title of the fieldset is configurable with the :attr:`extra_fieldset_title` attribute.
     It's "Contents" by default.
     """
