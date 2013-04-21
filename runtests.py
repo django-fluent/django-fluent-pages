@@ -37,7 +37,7 @@ settings.configure(
     FLUENT_PAGES_TEMPLATE_DIR = join(module_root, 'fluent_pages', 'tests', 'testapp', 'templates'),
 )
 
-call_command('syncdb', verbosity=1, interactive=False)
+call_command('syncdb', verbosity=1, interactive=False, traceback=True)
 
 
 # ---- app start
