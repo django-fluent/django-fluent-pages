@@ -5,7 +5,7 @@
 django-fluent-pages
 ===================
 
-This is a stand alone module, which provides:
+This is a stand-alone module, which provides:
 
   " A polymorphic page structure to display CMS content in a tree. "
 
@@ -156,7 +156,7 @@ The plugin can define the following attributes:
 * ``render_template`` - the template to use for rendering
 * ``response_class`` - the response class (by default ``TemplateResponse``)
 * ``is_file`` - whether the node represents a file, and shouldn't end with a slash.
-* ``can_have_children`` - whether the node type allows to have child nodes.
+* ``can_have_children`` - whether the node type is allowed to have child nodes.
 * ``urls`` - a custom set of URL patterns for sub pages (either a module name, or ``patterns()`` result).
 * ``sort_priority`` - a sorting order in the "add page" dialog.
 
@@ -185,7 +185,7 @@ To resolve the URLs, there are 2 functions available:
 * ``fluent_pages.urlresolvers.mixed_reverse()`` - this resolver tries ``app_reverse()`` first, and falls back to the standard ``reverse()``.
 
 The ``mixed_reverse()`` is useful for third party applications which
-can operate either stand alone (mounted in the normal URLconf),
+can operate either stand-alone (mounted in the normal URLconf),
 or operate as page type node in combination with *django-fluent-pages*.
 These features are also used by django-fluent-blogs_ to provide a "Blog" page type
 that can be added to a random point of the tree.

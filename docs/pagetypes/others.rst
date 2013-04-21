@@ -20,7 +20,7 @@ To integrate it with this module, configure it using:
 See the documentation of django-fluent-blogs_ for details.
 
 
-Open idea's
+Open ideas
 -----------
 
 Other page types can also be written, for example:
@@ -31,7 +31,7 @@ Other page types can also be written, for example:
 * a "Web shop" page type.
 * a "Subsite section" page type.
 
-See the next chapter, :ref:`newpagetypes` to create such plugin.
+See the next chapter, :ref:`newpagetypes` to create such plugins.
 
 
 .. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
