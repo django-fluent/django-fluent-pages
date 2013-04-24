@@ -133,11 +133,13 @@ class GetVarsNode(BaseNode):
 
         # Automatically add 'site', allows "default:site.domain" to work.
         # ...and optionally - if a page exists - include 'page' too.
+        extra_context = {}
         if not context.has_key('site'):
-            extra_context = {'site': current_site}
-            if current_page and not context.has_key('page'):
-                extra_context['page'] = current_page
+            extra_context['site'] = current_site
+        if current_page and not context.has_key('page'):
+            extra_context['page'] = current_page
 
+        if extra_context:
             context.update(extra_context)
 
         return ''

@@ -5,6 +5,7 @@ Changes in version 0.8.2
 * Add ``page`` and ``site`` variable in template of ``{% render_breadcrumb %}``.
 * Bump version requirement of django-mptt_ to 0.5.4, earlier versions have bugs.
 * Fix ``{% get_fluent_page_vars %}`` to skip the django-haystack_ ``page`` variable.
+* Fix ``{% get_fluent_page_vars %}`` when a ``site`` variable is already present.
 * Fix unit test suite in Django 1.3
 
 
