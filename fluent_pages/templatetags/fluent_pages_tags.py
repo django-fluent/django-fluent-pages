@@ -33,10 +33,13 @@ class BreadcrumbNode(BaseInclusionNode):
     template_name = 'fluent_pages/parts/breadcrumb.html'
 
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
+        request = _get_request(parent_context)
         page  = _get_current_page(parent_context)  # UrlNode
         items = page.breadcrumb # list(UrlNode)
 
         return {
+            'parent': parent_context,
+            'request': request,
             'breadcrumb': items,
             'page': page,
             'site': page.parent_site,
@@ -69,6 +72,7 @@ class MenuNode(BaseInclusionNode):
 
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
         # Get page objects
+        request = _get_request(parent_context)
         current_page = _get_current_page(parent_context)
 
         if 'parent' in tag_kwargs:
@@ -97,6 +101,8 @@ class MenuNode(BaseInclusionNode):
         # Construct a PageNavigationNode for every page, that allows simple iteration of the tree.
         node_kwargs = get_node_kwargs(tag_kwargs)
         return {
+            'parent': parent_context,
+            'request': request,
             'menu_items': [
                 PageNavigationNode(page, current_page=current_page, **node_kwargs) for page in top_pages
             ]
