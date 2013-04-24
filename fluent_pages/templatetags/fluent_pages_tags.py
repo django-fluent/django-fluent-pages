@@ -36,7 +36,11 @@ class BreadcrumbNode(BaseInclusionNode):
         page  = _get_current_page(parent_context)  # UrlNode
         items = page.breadcrumb # list(UrlNode)
 
-        return {'breadcrumb': items}
+        return {
+            'breadcrumb': items,
+            'page': page,
+            'site': page.parent_site,
+        }
 
 
 def get_node_kwargs(tag_kwargs):
