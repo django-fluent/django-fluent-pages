@@ -32,7 +32,7 @@ setup(
         'redirectnode': ['django-any-urlfield>=1.0.1'],
     },
 
-    description='A page tree structure to display various content in.',
+    description='A flexible, scalable CMS with custom node types, and flexible block content.',
     long_description=open(join(dirname(__file__), 'README.rst')).read(),
 
     author='Diederik van der Boor',
