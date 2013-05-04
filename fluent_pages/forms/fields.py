@@ -72,7 +72,7 @@ class PageChoiceField(TreeNodeChoiceField):
     def __init__(self, *args, **kwargs):
         if not args and not kwargs.has_key('queryset'):
             from fluent_pages.models import UrlNode
-            kwargs['queryset'] = UrlNode.objects.filter(site=settings.SITE_ID).published().non_polymorphic()
+            kwargs['queryset'] = UrlNode.objects.filter(parent_site=settings.SITE_ID).published().non_polymorphic()
         super(PageChoiceField, self).__init__(*args, **kwargs)
 
 
