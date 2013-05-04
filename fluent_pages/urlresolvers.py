@@ -3,8 +3,10 @@ URL Resolving for dynamically added pages.
 """
 from django.core.cache import cache
 from django.core.urlresolvers import NoReverseMatch, reverse
-from fluent_pages.extensions import page_type_pool
-from fluent_pages.models.db import UrlNode
+
+# Several imports in this file are placed inline, to avoid loading the models too early.
+# Because fluent_pages.models creates a QuerySet, all all apps will be imported.
+# By reducing the import statements here, other apps (e.g. django-fluent-blogs) can already import this module safely.
 
 __all__ = (
     'MultipleReverseMatch', 'PageTypeNotMounted', 'mixed_reverse', 'app_reverse', 'clear_app_reverse_cache',
@@ -71,6 +73,7 @@ def app_reverse(viewname, args=None, kwargs=None, multiple=False, ignore_multipl
 
 
 def _find_plugin_reverse(viewname, args, kwargs):
+    from fluent_pages.extensions import page_type_pool
     plugins = page_type_pool.get_url_pattern_plugins()
     for plugin in plugins:
         try:
@@ -90,6 +93,7 @@ def _get_pages_of_type(model):
     """
     Find where a given model is hosted.
     """
+    from fluent_pages.models.db import UrlNode
     cachekey = 'fluent_pages.instance_of.{0}'.format(model.__name__)
     pages = cache.get(cachekey)
     if not pages:
@@ -109,5 +113,6 @@ def clear_app_reverse_cache():
     Clear the cache for the :func:`app_reverse` function.
     This only has to be called when doing bulk update/delete actions that circumvent the individual model classes.
     """
+    from fluent_pages.extensions import page_type_pool
     for model in page_type_pool.get_model_classes():
         cache.delete('fluent_pages.instance_of.{0}'.format(model.__name__))
