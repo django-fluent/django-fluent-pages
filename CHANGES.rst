@@ -2,6 +2,7 @@ Changes in version 0.8.3 (dev)
 ------------------------------
 
 * Fix circular imports for some setups that import ``fluent_pages.urlresolvers`` early.
+* Fix initial south migrations, added missing dependencies.
 
 
 Changes in version 0.8.2
