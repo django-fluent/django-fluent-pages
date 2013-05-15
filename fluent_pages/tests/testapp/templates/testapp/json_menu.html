@@ -1,0 +1,9 @@
+{% load mptt_tags %}{% if menu_items %}
+[
+  {% recursetree menu_items %}{# node is a Page #}
+    {'title': "{{ node.title }}', 'url': "{{ node.url }}", 'active': {{ node.is_active|yesno:"true,false" }}
+      {% if children %}, 'children': [{{ children }}]{% endif %}
+    },
+  {% endrecursetree %}
+]
+{% endif %}

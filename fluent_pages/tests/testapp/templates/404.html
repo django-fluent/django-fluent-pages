@@ -1,1 +1,5 @@
 Got 404 on: {{ request.path }}
+
+{# should work at 404 pages #}
+{% load fluent_pages_tags %}
+menu = {% render_menu template="testapp/json_menu.html" %}

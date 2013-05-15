@@ -73,7 +73,10 @@ class MenuNode(BaseInclusionNode):
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
         # Get page objects
         request = _get_request(parent_context)
-        current_page = _get_current_page(parent_context)
+        try:
+            current_page = _get_current_page(parent_context)
+        except UrlNode.DoesNotExist:
+            current_page = None
 
         if 'parent' in tag_kwargs:
             # if we've been provided a parent kwarg then we want to filter
