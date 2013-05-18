@@ -104,13 +104,5 @@ A ``mixedurl`` template tag has to be included in the application itself. Use th
     The django-fluent-blogs_ application uses this feature to optionally integrate the blog articles to the page tree.
 
 
-X-Header notes
---------------
-
-All views from *django-fluent-pages* receive the ``X-Object-Type`` and ``X-Object-Id`` headers during development,
-pointing at the page that hosted the view. To override these values for custom views,
-call :func:`~django.core.xheaders.populate_xheaders` manually in your views.
-
-
 .. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
 .. _example: https://github.com/edoburu/django-fluent-pages/tree/master/example

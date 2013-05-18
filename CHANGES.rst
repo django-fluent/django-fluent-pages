@@ -2,6 +2,7 @@ Changes in development version
 ------------------------------
 
 * Fix running at Django 1.6
+* Remove ``X-Object-Type`` and ``X-Object-Id`` headers as Django 1.6 removed it due to caching issues.
 
 
 Changes in version 0.8.3
