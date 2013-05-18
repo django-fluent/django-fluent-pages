@@ -1,3 +1,9 @@
+Changes in development version
+------------------------------
+
+* Fix running at Django 1.6
+
+
 Changes in version 0.8.3
 ------------------------
 

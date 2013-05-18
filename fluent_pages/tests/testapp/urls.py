@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url, include
+from fluent_pages.utils.compat import patterns, url, include
 
 urlpatterns = patterns('',
     url(r'', include('fluent_pages.urls')),

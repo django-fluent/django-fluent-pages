@@ -1,10 +1,11 @@
-from django.conf.urls.defaults import patterns, url
 from fluent_pages.admin import HtmlPageAdmin
 from fluent_pages.models import PageLayout
 from fluent_pages.utils.ajax import JsonResponse
+from fluent_pages.utils.compat import url, patterns
 from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 from .widgets import LayoutSelector
+
 
 
 class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):

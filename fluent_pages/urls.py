@@ -13,8 +13,9 @@ The following named URLs are defined:
 
 By Appending @admin to an URL, the request will be redirected to the admin URL of the page.
 """
-from django.conf.urls.defaults import *
 from fluent_pages.views import CmsPageDispatcher, CmsPageAdminRedirect
+from fluent_pages.utils.compat import url, patterns
+
 
 # This urlpatterns acts as a catch-all, as there is no terminating slash in the pattern.
 # This allows the pages to have any name, including file names such as /robots.txt

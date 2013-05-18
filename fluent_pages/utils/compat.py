@@ -5,6 +5,7 @@ from django.conf import settings
 
 __all__ = (
     'now', 'get_user_model', 'get_user_model_name',
+    'patterns', 'url', 'include',
 )
 
 
@@ -32,3 +33,12 @@ except ImportError:
 
     def get_user_model_name():
         return '{0}.{1}'.format(User._meta.app_label, User._meta.object_name)
+
+
+# URLs moved in Django 1.4
+try:
+    # Django 1.6 requires this
+    from django.conf.urls import patterns, url, include
+except ImportError:
+    # Django 1.3 compatibility, kept in minor release
+    from django.conf.urls.defaults import patterns, url, include
