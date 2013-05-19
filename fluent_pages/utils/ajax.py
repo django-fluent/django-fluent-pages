@@ -1,9 +1,8 @@
 """
 Generic Ajax functionality
 """
-
+import json
 from django.http import HttpResponse
-from django.utils import simplejson
 from django.core.serializers import serialize
 from django.db.models.query import QuerySet
 
@@ -16,7 +15,7 @@ def to_json(object):
     if isinstance(object, QuerySet):
         return serialize('json', object)
     else:
-        return simplejson.dumps(object)
+        return json.dumps(object)
 
 
 class JsonResponse(HttpResponse):
