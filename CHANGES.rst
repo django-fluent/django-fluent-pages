@@ -1,7 +1,8 @@
-Changes in development version
-------------------------------
+Changes in version 0.8.4
+------------------------
 
 * Fix running at Django 1.6
+* Remove filtering pages by SITE_ID in ``PageChoiceField`` as there is no proper multi-site support yet.
 * Remove ``X-Object-Type`` and ``X-Object-Id`` headers as Django 1.6 removed it due to caching issues.
 
 
