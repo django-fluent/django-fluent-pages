@@ -177,3 +177,11 @@ class UrlDispatcherNonRootTests(AppTestCase):
         sibling1.save()
         self.assertEquals(sibling1._cached_url, '/sibling1/', "UrlNode keeps paths relative to the include()")
         # NOTE: admin needs to be tested elsewhere for this too.
+
+
+    def test_admin_redirect(self):
+        """
+        Urls can end with @admin to be redirected to the admin.
+        """
+        self.assertRedirects(self.client.get('/pages/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302)
+        self.assertRedirects(self.client.get('/pages/non-existent/@admin'), 'http://testserver/pages/non-existent/', status_code=302, target_status_code=404)

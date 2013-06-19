@@ -223,12 +223,12 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
         # This gives errors when 'fluent_pages' is not in INSTALLED_APPS yet.
         from fluent_pages.admin.utils import get_page_admin_url
 
-        path = self.get_path()
         try:
+            path = self.get_path()
             page = UrlNode.objects.non_polymorphic().published().get_for_path(path)
             url = get_page_admin_url(page)
         except UrlNode.DoesNotExist:
             # Back to page without @admin, display the error there.
-            url = re.sub('@[^@]+/?$', '', path)
+            url = re.sub('@[^@]+/?$', '', self.request.path)
 
         return self.request.build_absolute_uri(url)
