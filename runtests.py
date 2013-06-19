@@ -29,6 +29,8 @@ settings.configure(
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sites',
+        'django.contrib.admin',
+        'django.contrib.sessions',
         'fluent_pages',
         'fluent_pages.tests.testapp',
         'mptt',

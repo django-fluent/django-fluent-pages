@@ -1,3 +1,9 @@
+Changes in version 0.8.5 (in development)
+-----------------------------------------
+
+* Fix the @admin redirect for application URLs (e.g. ``/page/app-url/@admin`` should redirect to ``/page/app-url/``).
+
+
 Changes in version 0.8.4
 ------------------------
 

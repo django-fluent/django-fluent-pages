@@ -216,6 +216,8 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
     """
     A view which redirects to the admin.
     """
+    permanent = False
+
     def get_redirect_url(self, **kwargs):
         # Avoid importing the admin too early via the URLconf.
         # This gives errors when 'fluent_pages' is not in INSTALLED_APPS yet.
@@ -223,8 +225,10 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
 
         path = self.get_path()
         try:
-            page = UrlNode.objects.non_polymorphic().get_for_path(path)
-            return get_page_admin_url(page)
+            page = UrlNode.objects.non_polymorphic().published().get_for_path(path)
+            url = get_page_admin_url(page)
         except UrlNode.DoesNotExist:
             # Back to page without @admin, display the error there.
-            return '/' + re.sub('@[^@]+/?$', '', path)
+            url = re.sub('@[^@]+/?$', '', path)
+
+        return self.request.build_absolute_uri(url)

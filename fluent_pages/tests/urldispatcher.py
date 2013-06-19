@@ -134,6 +134,24 @@ class UrlDispatcherTests(AppTestCase):
         self.assert404(url)
 
 
+    def test_admin_redirect(self):
+        """
+        Urls can end with @admin to be redirected to the admin.
+        """
+        self.assertRedirects(self.client.get('/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302)
+        self.assertRedirects(self.client.get('/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/2/', status_code=302)
+        self.assertRedirects(self.client.get('/shop/@admin'), 'http://testserver/admin/fluent_pages/page/4/', status_code=302)
+
+        # Anything that doesn't match, is redirected to the URL without @admin suffix
+        self.assertRedirects(self.client.get('/unpublished/@admin'), 'http://testserver/unpublished/', status_code=302, target_status_code=404)
+        self.assertRedirects(self.client.get('/non-existent/@admin'), 'http://testserver/non-existent/', status_code=302, target_status_code=404)
+
+        # Same also applies to application URLs. Can be extended in the future to resolve to the
+        # app page, or the actual object. Currently this is not supported.
+        self.assertRedirects(self.client.get('/shop/foobar/@admin'), 'http://testserver/shop/foobar/', status_code=302)
+
+
+
 class UrlDispatcherNonRootTests(AppTestCase):
     """
     Tests for URL resolving with a non-root URL include.
