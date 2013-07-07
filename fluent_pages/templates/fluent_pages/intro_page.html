@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="robots" content="NONE,NOARCHIVE">
+  <title>Welcome to django-fluent-pages</title>
+  <style type="text/css">
+    html, body { padding:0; margin:0; }
+    #summary, #instructions, #explanation { padding:10px 20px; }
+    body { font:small sans-serif; background: #fff; }
+    body>div { border-bottom:1px solid #ddd; }
+    h1 { font-weight:normal; margin: 0; }
+    h2 { margin-bottom:.8em; }
+    h2 span { font-size:80%; color:#666; font-weight:normal; }
+    h3 { margin:1em 0 .5em 0; }
+    h4 { margin:0 0 .5em 0; font-weight: normal; }
+    table { border:1px solid #ccc; border-collapse: collapse; width:100%; background:white; }
+    tbody td, tbody th { vertical-align:top; padding:2px 3px; }
+    thead th { padding:1px 6px 1px 3px; background:#fefefe; text-align:left; font-weight:normal; font-size:11px; border:1px solid #ddd; }
+    tbody th { width:12em; text-align:right; color:#666; padding-right:.5em; }
+    ul { margin: 1em 0 1em 2em; padding: 0; }
+    li { margin: 0; padding: 0; }
+    p { margin: 0 0 1em 0; }
+    #summary { background: #a2ab40; color: #fff; }
+    #summary h2 { font-weight: normal; color: #666; }
+    #explanation { background:#eee; border-bottom: 0; }
+    #explanation p { margin: 0; }
+    #instructions { background:#f6f6f6; }
+    #summary table { border:none; background:transparent; }
+    a { color: #777700; text-decoration: none; }
+    a:link, a:visited { color: #777700; text-decoration: none; }
+    a:hover { color: #0066FF; text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+<div id="summary">
+  <h1>Welcome to Django Fluent!</h1>
+</div>
+
+<div id="instructions">
+  <p>You can start by logging into the <a href="{% url 'admin:index' %}">admin interface</a> and <a href="{% url 'admin:fluent_pages_page_add' %}">add your first page</a>.</p>
+
+
+  <div class="more-info">
+    <p>More info:</p>
+    <ul>
+      <li><a href="http://django-fluent.org/">django-fluent.org</a></li>
+      <li><a href=https://django-fluent-pages.readthedocs.org/>documentation</a></li>
+    </ul>
+
+    <div class="addons">
+      <p>Addons:</p>
+      <ul>
+        <li><a href=https://django-fluent-contents.readthedocs.org/>django-fluent-contents</a> - flexible content blocks</li>
+        <li><a href=https://django-fluent-dashboard.readthedocs.org/>django-fluent-dashboard</a> - admin dashboard</li>
+        <li><a href=https://github.com/edoburu/django-fluent-blogs/blob/master/README.rst>django-fluent-blogs</a> - blog engine</li>
+        <li><a href=https://github.com/edoburu/django-fluent-comments/blob/master/README.rst>django-fluent-comments</a> - comments module</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="explanation">
+  <p>
+    You're seeing this message because you have <code>DEBUG = True</code> in your
+    Django settings file and you haven't published any pages yet. Get to work!
+  </p>
+</div>
+</body></html>
+
+{% comment %}{% load i18n %}{% load url from future %}<!doctype html>
+<html xml:lang="{{ LANGUAGE_CODE|default:"nl" }}" lang="{{ LANGUAGE_CODE|default:"nl" }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="generator" content="Powered by Django" />
+    <title>Welcome to django-fluent-pages</title>
+  </head>
+
+      <div id="content">
+        <div id="main">
+          {% block main %}{% block content %}{% endblock %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{% endcomment %}

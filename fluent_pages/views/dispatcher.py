@@ -4,6 +4,7 @@ The view to display CMS content.
 from django.conf import settings
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
 from django.http import Http404, HttpResponseRedirect
+from django.template.response import TemplateResponse
 from django.views.generic.base import View
 from fluent_pages.models import UrlNode
 from django.views.generic import RedirectView
@@ -49,6 +50,17 @@ class CmsPageDispatcher(GetPathMixin, View):
             if response:
                 return response
 
+        return self._page_not_found()
+
+
+    def post(self, request, **kwargs):
+        """
+        Allow POST requests (for forms) to the page.
+        """
+        return self.get(request, **kwargs)
+
+
+    def _page_not_found(self):
         # Since this view acts as a catch-all, give better error messages
         # when mistyping an admin URL. Don't mention anything about CMS pages in /admin.
         try:
@@ -58,14 +70,18 @@ class CmsPageDispatcher(GetPathMixin, View):
             # Admin might not be loaded.
             pass
 
-        raise Http404(u"No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
+        if settings.DEBUG and self.model.objects.published().count() == 0 and self.path == '/':
+            # No pages in the database, present nice homepage.
+            return self._intro_page()
+        else:
+            if self.path == '/':
+                raise Http404(u"No published '{0}' found for the path '{1}'. Use the 'Override URL' field to make sure a page can be found at the root of the site.".format(self.model.__name__, self.path))
+            else:
+                raise Http404(u"No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
 
 
-    def post(self, request, **kwargs):
-        """
-        Allow POST requests (for forms) to the page.
-        """
-        return self.get(request, **kwargs)
+    def _intro_page(self):
+        return TemplateResponse(self.request, "fluent_pages/intro_page.html", {})
 
 
     def get_queryset(self):
