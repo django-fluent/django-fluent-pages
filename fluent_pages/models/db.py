@@ -14,19 +14,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
 from django.db import models
-from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from fluent_pages.utils.compat import get_user_model_name
-
-
-try:
-    transaction_atomic = transaction.atomic
-except AttributeError:
-    transaction_atomic = transaction.commit_on_success
+from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 
 
 def _get_current_site():

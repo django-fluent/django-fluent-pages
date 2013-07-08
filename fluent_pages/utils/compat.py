@@ -2,10 +2,13 @@
 Django compatibility features
 """
 from django.conf import settings
+from django.db import transaction
+
 
 __all__ = (
-    'now', 'get_user_model', 'get_user_model_name',
-    'patterns', 'url', 'include', 'user_model_label',
+    'now', 'get_user_model', 'get_user_model_name', 'user_model_label',
+    'patterns', 'url', 'include',
+    'transaction_atomic',
 )
 
 
@@ -45,3 +48,10 @@ try:
 except ImportError:
     # Django 1.3 compatibility, kept in minor release
     from django.conf.urls.defaults import patterns, url, include
+
+
+# New transaction support in Django 1.6
+try:
+    transaction_atomic = transaction.atomic
+except AttributeError:
+    transaction_atomic = transaction.commit_on_success
