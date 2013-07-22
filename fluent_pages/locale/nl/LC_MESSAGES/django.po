@@ -67,7 +67,7 @@ msgstr "Titel"
 
 #: models/db.py:66
 msgid "slug"
-msgstr "Naam"
+msgstr "Slug"
 
 #: models/db.py:66
 msgid "The slug is used in the URL of the page"
