@@ -14,11 +14,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, get_language
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
+from fluent_pages.models.translations import TranslatableModel, TranslatedAttribute, TranslatedFieldsModel
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 
 
@@ -47,7 +48,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
         return new_class
 
 
-class UrlNode(PolymorphicMPTTModel):
+class UrlNode(PolymorphicMPTTModel, TranslatableModel):
     """
     The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
     """
@@ -61,8 +62,8 @@ class UrlNode(PolymorphicMPTTModel):
         (DRAFT, _('Draft')),
     )
 
-    title = models.CharField(_('title'), max_length=255)
-    slug = models.SlugField(_('slug'), help_text=_("The slug is used in the URL of the page"))
+    title = TranslatedAttribute('title')
+    slug = TranslatedAttribute('slug')
     parent = PageTreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager by 'parent'
@@ -72,7 +73,7 @@ class UrlNode(PolymorphicMPTTModel):
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True, help_text=_('''When the page should go live, status must be "Published".'''))
     publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=appsettings.FLUENT_PAGES_DEFAULT_IN_NAVIGATION, db_index=True)
-    override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
+    override_url = TranslatedAttribute('override_url')
 
     # Metadata
     author = models.ForeignKey(get_user_model_name(), verbose_name=_('author'), editable=False)
@@ -80,19 +81,19 @@ class UrlNode(PolymorphicMPTTModel):
     modification_date = models.DateTimeField(_('last modification'), editable=False, auto_now=True)
 
     # Caching
-    _cached_url = models.CharField(_('Cached URL'), max_length=300, blank=True, editable=False, default='', db_index=True)
+    _cached_url = TranslatedAttribute('_cached_url')
 
     # Django settings
     objects = UrlNodeManager()
 
     class Meta:
         app_label = 'fluent_pages'
-        ordering = ('lft', 'title')
+        ordering = ('lft',)
         verbose_name = _('URL Node')
         verbose_name_plural = _('URL Nodes')  # Using Urlnode here makes it's way to the admin pages too.
 
-    class MPTTMeta:
-        order_insertion_by = 'title'
+#    class MPTTMeta:
+#        order_insertion_by = 'title'
 
     def __unicode__(self):
         # This looks pretty nice on the delete page.
@@ -107,7 +108,6 @@ class UrlNode(PolymorphicMPTTModel):
         super(UrlNode, self).__init__(*args, **kwargs)
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
-        self._original_cached_url = self._cached_url
         self._original_pub_date = self.publication_date if not self._deferred else None
         self._original_pub_end_date = self.publication_end_date if not self._deferred else None
         self._original_status = self.status if not self._deferred else None
@@ -249,10 +249,10 @@ class UrlNode(PolymorphicMPTTModel):
         # Store this object
         self._make_slug_unique()
         self._update_cached_url()
-        super(UrlNode, self).save(*args, **kwargs)
+        url_changed = self._get_translated_model().is_cached_url_modified
+        super(UrlNode, self).save(*args, **kwargs)  # Already saves translated model.
 
         # Detect changes
-        url_changed = self._cached_url != self._original_cached_url
         published_changed = self._original_pub_date != self.publication_date \
                          or self._original_pub_end_date != self.publication_end_date \
                          or self._original_status != self.status
@@ -261,7 +261,6 @@ class UrlNode(PolymorphicMPTTModel):
             self._expire_url_caches()
 
             # Update state for next save (if object is persistent somewhere)
-            self._original_cached_url = self._cached_url
             self._original_pub_date = self.publication_date
             self._original_pub_end_date = self.publication_end_date
             self._original_status = self.status
@@ -287,7 +286,7 @@ class UrlNode(PolymorphicMPTTModel):
         origslug = self.slug
         dupnr = 1
         while True:
-            others = UrlNode.objects.filter(parent=self.parent, slug=self.slug).non_polymorphic()
+            others = UrlNode.objects.filter(parent=self.parent, translations__slug=self.slug).non_polymorphic()
             if self.pk:
                 others = others.exclude(pk=self.pk)
 
@@ -338,7 +337,7 @@ class UrlNode(PolymorphicMPTTModel):
 
         # Update all sub objects.
         # even if can_have_children is false, ensure a consistent state for the URL structure
-        subobjects = self.get_descendants().order_by('lft')
+        subobjects = self.get_descendants().prefetch_related('translations').order_by('lft')
         for subobject in subobjects:
             # Set URL, using cache for parent URL.
             if subobject.override_url:
@@ -362,6 +361,49 @@ class UrlNode(PolymorphicMPTTModel):
         ]
         for cachekey in cachekeys:
             cache.delete(cachekey)
+
+
+
+class UrlNode_Translation(TranslatedFieldsModel):
+    """
+    Translation table for UrlNode.
+    This layout is identical to what *django-hvad* uses, to ease migration in the future.
+    """
+    title = models.CharField(_("title"), max_length=255)
+    slug = models.SlugField(_("slug"), max_length=50, help_text=_("The slug is used in the URL of the page"))
+    override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
+    _cached_url = models.CharField(default='', max_length=300, unique=True, db_index=True, blank=True)
+
+    language_code = models.CharField(max_length=15, db_index=True)
+    master = models.ForeignKey(UrlNode, related_name='translations', null=True)
+
+    class Meta:
+        app_label = 'fluent_pages'
+
+    def __unicode__(self):
+        return self.slug
+
+    def __repr__(self):
+        return "<{0}: #{1}, {2}, {3}, master: #{4}>".format(
+            self.__class__.__name__, self.pk, self._cached_url, self.language_code, self.master_id
+        )
+
+    def __init__(self, *args, **kwargs):
+        super(UrlNode_Translation, self).__init__(*args, **kwargs)
+        self._original_cached_url = self._cached_url
+
+    @property
+    def is_cached_url_modified(self):
+        return self._cached_url != self._original_cached_url
+
+    def save(self, *args, **kwargs):
+        super(UrlNode_Translation, self).save(*args, **kwargs)
+        self._original_cached_url = self._cached_url
+
+
+# Link the model, to make it quite generic
+# (just less sophisticated then django-hvad)
+UrlNode._translations_model = UrlNode_Translation
 
 
 

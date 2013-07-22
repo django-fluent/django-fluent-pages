@@ -17,7 +17,7 @@ class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
         """
         # Don't normalize slashes, expect the URLs to be sane.
         try:
-            return self.get(_cached_url=path)
+            return self.get(translations___cached_url=path)
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
@@ -32,7 +32,7 @@ class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
         paths = self._split_path_levels(path)
 
         try:
-            return self.filter(_cached_url__in=paths) \
+            return self.filter(translations___cached_url__in=paths) \
                        .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
                        .order_by('-_url_length')[0]
         except IndexError:

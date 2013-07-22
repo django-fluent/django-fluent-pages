@@ -2,29 +2,29 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from mptt.forms import MPTTAdminForm
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
-from fluent_pages.models import UrlNode
+from fluent_pages.admin.translations import TranslatableModelFormMixin
+from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_pages.forms.fields import RelativeRootPathField
 
 
-class UrlNodeAdminForm(MPTTAdminForm):
+class UrlNodeAdminForm(TranslatableModelFormMixin, MPTTAdminForm):
     """
     The admin form for the main fields (the ``UrlNode`` object).
     """
+    _translatable_model = UrlNode_Translation
+    _translatable_fields = ('title', 'slug', 'override_url')
 
+    # Translated fields
+    #
     # Using a separate formfield to display the full URL in the override_url field:
     # - The override_url is stored relative to the URLConf root,
     #   which makes the site easily portable to another path or root.
     # - Users don't have to know or care about this detail.
     #   They only see the absolute external URLs, so make the input reflect that as well.
-    override_url = RelativeRootPathField(max_length=300, required=False)
-
-
-    def __init__(self, *args, **kwargs):
-        super(UrlNodeAdminForm, self).__init__(*args, **kwargs)
-        # Copy the fields/labels from the model field, to avoid repeating the labels.
-        modelfield = UrlNode._meta.get_field_by_name('override_url')[0]
-        self.fields['override_url'].label = modelfield.verbose_name
-        self.fields['override_url'].help_text = modelfield.help_text
+    #
+    title = TranslatableModelFormMixin.get_formfield(UrlNode_Translation, 'title')
+    slug = TranslatableModelFormMixin.get_formfield(UrlNode_Translation, 'slug')
+    override_url = TranslatableModelFormMixin.get_formfield(UrlNode_Translation, 'override_url', form_class=RelativeRootPathField)
 
 
     def clean(self):
@@ -35,25 +35,24 @@ class UrlNodeAdminForm(MPTTAdminForm):
         # As of Django 1.3, only valid fields are passed in cleaned_data.
         cleaned_data = super(UrlNodeAdminForm, self).clean()
 
-        # See if the current
-        all_objects = UrlNode.objects.all().non_polymorphic()
-
+        # See if the current URLs don't overlap.
+        all_translations = UrlNode_Translation.objects.all()
         if self.instance and self.instance.id:
             # Editing an existing page
             current_id = self.instance.id
-            other_objects = all_objects.exclude(id=current_id)
+            other_translations = all_translations.exclude(master_id=current_id)
             parent = UrlNode.objects.non_polymorphic().get(pk=current_id).parent
         else:
             # Creating new page!
             parent = cleaned_data['parent']
-            other_objects = all_objects
+            other_translations = all_translations
 
         # If fields are filled in, and still valid, check for unique URL.
         # Determine new URL (note: also done in UrlNode model..)
         if cleaned_data.get('override_url'):
             new_url = cleaned_data['override_url']
 
-            if other_objects.filter(_cached_url=new_url).count():
+            if other_translations.filter(_cached_url=new_url).count():
                 self._errors['override_url'] = self.error_class([_('This URL is already taken by an other page.')])
                 del cleaned_data['override_url']
 
@@ -64,7 +63,7 @@ class UrlNodeAdminForm(MPTTAdminForm):
             else:
                 new_url = '/%s/' % new_slug
 
-            if other_objects.filter(_cached_url=new_url).count():
+            if other_translations.filter(_cached_url=new_url).count():
                 self._errors['slug'] = self.error_class([_('This slug is already used by an other page at the same level.')])
                 del cleaned_data['slug']
 
@@ -106,7 +105,7 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin):
     )
 
     # Config add/edit page:
-    prepopulated_fields = { 'slug': ('title',), }
+    #prepopulated_fields = { 'slug': ('title',), }
     raw_id_fields = ('parent',)
     radio_fields = {'status': admin.HORIZONTAL}
 
