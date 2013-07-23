@@ -85,6 +85,13 @@ class TranslatedFieldsModel(models.Model):
         # Return all field values in a consistent (sorted) manner.
         return [getattr(self, field) for field in self._meta.get_all_field_names()]
 
+    @classmethod
+    def get_translated_fields(self):
+        fields = self._meta.get_all_field_names()
+        fields.remove('language_code')
+        fields.remove('master')
+        return fields
+
     def __unicode__(self):
         return unicode(self.pk)
 

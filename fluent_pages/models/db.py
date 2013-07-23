@@ -105,6 +105,14 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
 
     def __init__(self, *args, **kwargs):
+        # Still allow to pass slug=..., title=... to this function.
+        translated_kwargs = {}
+        for field in self._translations_model.get_translated_fields():
+            try:
+                translated_kwargs[field] = kwargs.pop(field)
+            except KeyError:
+                pass
+
         super(UrlNode, self).__init__(*args, **kwargs)
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
@@ -115,6 +123,12 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         self._cached_ancestors = None
         self.is_current = None    # Can be defined by mark_current()
         self.is_onpath = None     # is an ancestor of the current node (part of the "menu trail").
+
+        # Assign translated args.
+        if translated_kwargs:
+            translation = self._get_translated_model()
+            for field, value in translated_kwargs.iteritems():
+                setattr(translation, field, value)
 
 
     def get_absolute_url(self):
@@ -369,11 +383,13 @@ class UrlNode_Translation(TranslatedFieldsModel):
     Translation table for UrlNode.
     This layout is identical to what *django-hvad* uses, to ease migration in the future.
     """
+    # Translated fields
     title = models.CharField(_("title"), max_length=255)
     slug = models.SlugField(_("slug"), max_length=50, help_text=_("The slug is used in the URL of the page"))
     override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
     _cached_url = models.CharField(default='', max_length=300, unique=True, db_index=True, blank=True)
 
+    # Base fields
     language_code = models.CharField(max_length=15, db_index=True)
     master = models.ForeignKey(UrlNode, related_name='translations', null=True)
 
