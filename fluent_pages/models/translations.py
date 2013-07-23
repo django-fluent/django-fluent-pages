@@ -106,8 +106,8 @@ class TranslatedAttribute(object):
 
     def __get__(self, instance, instance_type=None):
         if not instance:
-            # From django-hvad: don't raise an attribute error so we can use it in admin.
-            return instance_type._translations_model._meta.get_field_by_name(self.name)[0].default
+            # Return the class attribute when asked for by the admin.
+            return instance_type._translations_model._meta.get_field_by_name(self.name)[0]
 
         return getattr(instance._get_translated_model(), self.name)
 
