@@ -3,6 +3,7 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from fluent_pages.urlresolvers import clear_app_reverse_cache
 
 
 class Migration(SchemaMigration):
@@ -19,6 +20,10 @@ class Migration(SchemaMigration):
 
         # Deleting field 'UrlNode._cached_url'
         db.delete_column(u'fluent_pages_urlnode', '_cached_url')
+
+        # Make sure pickled data in memcache doesn't interfere with our new model layout.
+        if not db.dry_run:
+            clear_app_reverse_cache()
 
 
     def backwards(self, orm):
