@@ -1,30 +1,46 @@
 # -*- coding: utf-8 -*-
 import datetime
-from django.core.exceptions import ObjectDoesNotExist
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from django.conf import settings
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'UrlNode_Translation'
-        db.create_table('fluent_pages_urlnode_translation', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50)),
-            ('override_url', self.gf('django.db.models.fields.CharField')(max_length=300, blank=True)),
-            ('_cached_url', self.gf('django.db.models.fields.CharField')(default='', max_length=300, db_index=True, blank=True)),
-            ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
-            ('master', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', null=True, to=orm['fluent_pages.UrlNode'])),
-        ))
-        db.send_create_signal('fluent_pages', ['UrlNode_Translation'])
+        # Deleting field 'UrlNode.slug'
+        db.delete_column(u'fluent_pages_urlnode', 'slug')
+
+        # Deleting field 'UrlNode.title'
+        db.delete_column(u'fluent_pages_urlnode', 'title')
+
+        # Deleting field 'UrlNode.override_url'
+        db.delete_column(u'fluent_pages_urlnode', 'override_url')
+
+        # Deleting field 'UrlNode._cached_url'
+        db.delete_column(u'fluent_pages_urlnode', '_cached_url')
+
 
     def backwards(self, orm):
-        # Deleting model 'UrlNode_Translation'
-        db.delete_table('fluent_pages_urlnode_translation')
+        # Adding field 'UrlNode.slug'
+        db.add_column(u'fluent_pages_urlnode', 'slug',
+                      self.gf('django.db.models.fields.SlugField')(default='', max_length=50),
+                      keep_default=False)
+
+        # Adding field 'UrlNode.title'
+        db.add_column(u'fluent_pages_urlnode', 'title',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=255),
+                      keep_default=False)
+
+        # Adding field 'UrlNode.override_url'
+        db.add_column(u'fluent_pages_urlnode', 'override_url',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=300, blank=True),
+                      keep_default=False)
+
+        # Adding field 'UrlNode._cached_url'
+        db.add_column(u'fluent_pages_urlnode', '_cached_url',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=300, blank=True, db_index=True),
+                      keep_default=False)
 
     models = {
         u'auth.group': {
@@ -72,7 +88,6 @@ class Migration(SchemaMigration):
         },
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft',)", 'object_name': 'UrlNode'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -80,21 +95,18 @@ class Migration(SchemaMigration):
             'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modification_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
             'parent': ('fluent_pages.models.fields.PageTreeForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
             'parent_site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']"}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_fluent_pages.urlnode_set'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'publication_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'publication_end_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'d'", 'max_length': '1', 'db_index': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
         },
         'fluent_pages.urlnode_translation': {
             'Meta': {'object_name': 'UrlNode_Translation'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'unique': 'True', 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),

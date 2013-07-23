@@ -1,27 +1,33 @@
 # -*- coding: utf-8 -*-
 import datetime
+from django.core.exceptions import ObjectDoesNotExist
 from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from south.v2 import DataMigration
+from django.conf import settings
 
 
-class Migration(SchemaMigration):
+class Migration(DataMigration):
 
     def forwards(self, orm):
-
-        # Changing field 'PageLayout.template_path'
-        db.alter_column(u'fluent_pages_pagelayout', 'template_path', self.gf('fluent_pages.models.fields.TemplateFilePathField')(path='/Users/diederik/Sites/moulin.nl/src/frontend/templates/', max_length=100, recursive=True, match='.*\\.html$'))
-        # Adding unique constraint on 'UrlNode_Translation', fields ['_cached_url']
-        db.create_unique(u'fluent_pages_urlnode_translation', ['_cached_url'])
-
+        db.execute(
+            'INSERT INTO fluent_pages_urlnode_translation(title, slug, override_url, _cached_url, language_code, master_id)'
+            ' SELECT title, slug, override_url, _cached_url, %s, id FROM fluent_pages_urlnode',
+            [settings.LANGUAGE_CODE]
+        )
 
     def backwards(self, orm):
-        # Removing unique constraint on 'UrlNode_Translation', fields ['_cached_url']
-        db.delete_unique(u'fluent_pages_urlnode_translation', ['_cached_url'])
-
-
-        # Changing field 'PageLayout.template_path'
-        db.alter_column(u'fluent_pages_pagelayout', 'template_path', self.gf('fluent_pages.models.fields.TemplateFilePathField')(path='/Users/diederik/Sites/webapps/edoburu.nl/edoburu_site/themes/edoburu/templates/', max_length=100, recursive=True, match='.*\\.html$'))
+        # Convert all fields back to the single-language table.
+        for urlnode in orm['fluent_pages.UrlNode'].objects.all():
+            translations = orm['fluent_pages.UrlNode_Translation'].objects.filter(master_id=urlnode.id)
+            try:
+                translation = translations.get(language_code=settings.LANGUAGE_CODE)
+            except ObjectDoesNotExist:
+                translation = translations.get(language_code__in=('en_US', 'en'))
+            urlnode.title = translation.title
+            urlnode.slug = translation.slug
+            urlnode.override_url = translation.override_url
+            urlnode._cached_url = translation._cached_url
+            urlnode.save()   # As intended: doesn't call UrlNode.save() but Model.save() only.
 
     models = {
         u'auth.group': {
@@ -64,11 +70,12 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('title',)", 'object_name': 'PageLayout'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
-            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'path': "'/Users/diederik/Sites/moulin.nl/src/frontend/templates/'", 'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
+            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'path': "'/Users/diederik/Sites/webapps/edoburu.nl/edoburu_site/themes/edoburu/templates/'", 'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft',)", 'object_name': 'UrlNode'},
+            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -76,18 +83,21 @@ class Migration(SchemaMigration):
             'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modification_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
             'parent': ('fluent_pages.models.fields.PageTreeForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
             'parent_site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']"}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_fluent_pages.urlnode_set'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'publication_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'publication_end_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'d'", 'max_length': '1', 'db_index': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
         },
         'fluent_pages.urlnode_translation': {
             'Meta': {'object_name': 'UrlNode_Translation'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'unique': 'True', 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
