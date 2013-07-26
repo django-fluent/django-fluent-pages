@@ -1,7 +1,12 @@
 Changes in version 0.8.5 (in development)
 -----------------------------------------
 
+* Added intro page for empty sites.
+* Support Django 1.6 transaction management.
+* Fix NL translation of "Slug".
 * Fix the @admin redirect for application URLs (e.g. ``/page/app-url/@admin`` should redirect to ``/page/app-url/``).
+* Fix URL dispatcher for app urls when a URL prefix is used (e.g. ``/en/..``)
+* Fix Django 1.5 custom user model support in migrations
 
 
 Changes in version 0.8.4
