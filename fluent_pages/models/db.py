@@ -14,7 +14,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
 from django.db import models
-from django.utils.translation import ugettext_lazy as _, get_language
+from django.utils.translation import ugettext_lazy as _
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
@@ -143,11 +143,17 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         except NoReverseMatch:
             raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
 
-        if self._cached_url is None:
+        cached_url = self._cached_url
+        if cached_url is None:
             # This happened with Django 1.3 projects, when .only() didn't have the 'id' field included.
             raise ImproperlyConfigured("UrlNode._cached_url is None for UrlNode!\nUrlNode = {0}".format(self.__dict__))
+        elif cached_url == '':
+            # There is an URL node, but no translation is set for the current language.
+            raise TranslationDoesNotExist("Page does not have a translation for the current language!\nPage ID #{0}, language={1}".format(
+                self.pk, self._active_language
+            ))
 
-        return root + self._cached_url
+        return root + cached_url
 
 
     @property
@@ -421,6 +427,11 @@ class UrlNode_Translation(TranslatedFieldsModel):
 # (just less sophisticated then django-hvad)
 UrlNode._translations_model = UrlNode_Translation
 
+
+class TranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
+    """
+    The operation can't be completed, because a translation is missing.
+    """
 
 
 class Page(UrlNode):

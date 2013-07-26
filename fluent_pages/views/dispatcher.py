@@ -170,8 +170,10 @@ class CmsPageDispatcher(GetPathMixin, View):
         if not resolver:
             return None
 
-        page_prefix = self.object.get_absolute_url().rstrip('/')
-        sub_path = self.request.path[len(page_prefix):]  # path_info starts at script_prefix, path starts at root.
+        # Strip the full CMS url from the path_info,
+        # so the remainder can be passed to the URL resolver of the app.
+        urlnode_path = self.object.get_absolute_url().rstrip('/')
+        sub_path = self.request.path[len(urlnode_path):]  # path_info starts at script_prefix, path starts at root.
 
         try:
             match = resolver.resolve(sub_path)

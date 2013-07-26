@@ -19,7 +19,7 @@ class TranslatableModel(models.Model):
     def __init__(self, *args, **kwargs):
         super(TranslatableModel, self).__init__(*args, **kwargs)
         self._translations_cache = {}
-        self._active_language = get_language()
+        self._active_language = get_language()  # What you used to fetch the object is what you get.
 
 
     def _get_translated_model(self, language_code=None):
