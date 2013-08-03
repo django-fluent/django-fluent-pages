@@ -3,11 +3,12 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
+from fluent_pages.utils.compat import user_model_label
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
+
         # Adding model 'UrlNode'
         db.create_table('fluent_pages_urlnode', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -22,7 +23,7 @@ class Migration(SchemaMigration):
             ('in_navigation', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('sort_order', self.gf('django.db.models.fields.IntegerField')(default=1)),
             ('override_url', self.gf('django.db.models.fields.CharField')(max_length=300, blank=True)),
-            ('author', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('author', self.gf('django.db.models.fields.related.ForeignKey')(to=orm[user_model_label])),
             ('creation_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('modification_date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('_cached_url', self.gf('django.db.models.fields.CharField')(default='', max_length=300, db_index=True, blank=True)),
@@ -44,7 +45,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'UrlNode'
         db.delete_table('fluent_pages_urlnode')
 
@@ -66,8 +67,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
+        user_model_label: {
+            'Meta': {'object_name': user_model_label.split('.')[-1]},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -99,7 +100,7 @@ class Migration(SchemaMigration):
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft', 'sort_order', 'title')", 'object_name': 'UrlNode'},
             '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
+            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm[user_model_label]"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'expire_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
