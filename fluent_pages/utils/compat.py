@@ -5,7 +5,7 @@ from django.conf import settings
 
 __all__ = (
     'now', 'get_user_model', 'get_user_model_name',
-    'patterns', 'url', 'include',
+    'patterns', 'url', 'include', 'user_model_label',
 )
 
 
