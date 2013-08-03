@@ -34,6 +34,9 @@ except ImportError:
     def get_user_model_name():
         return '{0}.{1}'.format(User._meta.app_label, User._meta.object_name)
 
+# Named variable containing the user model for migrations compatibility.
+user_model_label = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+
 
 # URLs moved in Django 1.4
 try:
