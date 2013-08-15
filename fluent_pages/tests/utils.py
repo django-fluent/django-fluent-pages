@@ -32,7 +32,7 @@ class AppTestCase(TestCase):
             for appname in cls.install_apps:
                 if appname not in settings.INSTALLED_APPS:
                     print 'Adding {0} to INSTALLED_APPS'.format(appname)
-                    settings.INSTALLED_APPS += (appname,)
+                    settings.INSTALLED_APPS = (appname,) + tuple(settings.INSTALLED_APPS)
                     run_syncdb = True
 
                     # Flush caches
