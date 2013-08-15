@@ -1,3 +1,9 @@
+Changes in version 0.8.6
+------------------------
+
+* Fix django-mptt_ 0.6 support.
+
+
 Changes in version 0.8.5
 ------------------------
 

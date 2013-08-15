@@ -50,6 +50,9 @@ class NavigationNode(object):
         """Provided for compatibility with mptt recursetree"""
         return self.level
 
+    # Needed since django-mptt 0.6:
+    _mptt_meta = property(_not_implemented)
+
     def __repr__(self):
         return '<{0}: {1}>'.format(self.__class__.__name__, self.url)
 
@@ -106,3 +109,9 @@ class PageNavigationNode(NavigationNode):
         if not self._children and (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
             #children = self._page.get_children()  # Via MPTT
             self._children = self._page.children.in_navigation()._mark_current(self._current_page)  # Via RelatedManager
+
+    @property
+    def _mptt_meta(self):
+        # Needed since django-mptt 0.6.
+        # Need to reconsider this design, for now this patch will suffice.
+        return self._page._mptt_meta
