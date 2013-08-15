@@ -1,5 +1,5 @@
-Changes in version 0.8.5 (in development)
------------------------------------------
+Changes in version 0.8.5
+------------------------
 
 * Added intro page for empty sites.
 * Support Django 1.6 transaction management.
