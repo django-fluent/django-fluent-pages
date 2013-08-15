@@ -3,12 +3,16 @@ python:
   - "2.7"
   - "2.6"
 env:
-  - DJANGO=1.3.1
-  - DJANGO=1.4.5   # django-polymorphic 0.5 uses django.utils.six which is bundled as of Django 1.4.2
+  - DJANGO="django==1.3.1" ADDITIONAL_PACKAGES="django-polymorphic==0.4.0 django-polymorphic-tree==0.8.6"
+  - DJANGO="django==1.4.5"   # django-polymorphic >= 0.5 uses django.utils.six which is bundled as of Django 1.4.2
+  - DJANGO="django==1.5.0"
+  - DJANGO="https://www.djangoproject.com/m/releases/1.6/Django-1.6b2.tar.gz"
+#matrix:
+#  allow_failures:
+#    - env: DJANGO="https://www.djangoproject.com/m/releases/1.6/Django-1.6b2.tar.gz"
 install:
-  - if [[ "$DJANGO" == '1.3.1' ]]; then pip install django-polymorphic==0.4.0 django-polymorphic-tree==0.8.6 --use-mirrors; fi
-  - pip install -q Django==$DJANGO --use-mirrors
-  - pip install -q -e . --use-mirrors
+  - pip install -q $DJANGO $ADDITIONAL_PACKAGES
+  - pip install -q -e .
 script:
   - python runtests.py
 branches:
