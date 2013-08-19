@@ -1,5 +1,6 @@
 import django
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
@@ -31,9 +32,10 @@ else:
     extra_list_filters = (PageTypeListFilter,)
 
 
-class UrlNodePolymorphicAdmin(PolymorphicMPTTParentModelAdmin):
+class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
     """
-    The main entry to the admin interface of django-fluent-pages.
+    The internal machinery
+    The admin screen for the ``UrlNode`` objects.
     """
     base_model = UrlNode
     add_type_form = PageTypeChoiceForm

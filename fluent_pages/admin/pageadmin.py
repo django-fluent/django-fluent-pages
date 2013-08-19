@@ -1,8 +1,11 @@
 import copy
-from django.contrib.admin.widgets import ForeignKeyRawIdWidget, AdminTextareaWidget, AdminTextInputWidget
-from django.utils.translation import ugettext_lazy as _
-from fluent_pages.admin.urlnodeadmin import UrlNodeAdmin, UrlNodeAdminForm
-from fluent_pages.models import Page, HtmlPage
+from django.contrib.admin.widgets import ForeignKeyRawIdWidget
+from django.template import TemplateDoesNotExist
+from django.template.loader import get_template
+from django.utils.functional import SimpleLazyObject, lazy
+from fluent_pages.admin.urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
+from fluent_pages.admin.urlnodeparentadmin import UrlNodeParentAdmin
+from fluent_pages.models import Page
 
 
 class PageAdminForm(UrlNodeAdminForm):
@@ -14,7 +17,17 @@ class PageAdminForm(UrlNodeAdminForm):
     pass
 
 
-class PageAdmin(UrlNodeAdmin):
+class DefaultPageParentAdmin(UrlNodeParentAdmin):
+    """
+    This admin class renders the *list* of the page tree.
+
+    Since this admin displays polymorphic objects, the edit/delete pages
+    are actually handled by the :class:`PageAdmin` class.
+    """
+    pass
+
+
+class DefaultPageChildAdmin(UrlNodeChildAdmin):
     """
     The base class for administrating pages.
     When a custom page type implements a custom admin, use this class as its base.
@@ -48,7 +61,7 @@ class PageAdmin(UrlNodeAdmin):
 
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(PageAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        field = super(DefaultPageChildAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
         if field is None:
             return None
 
@@ -63,48 +76,52 @@ class PageAdmin(UrlNodeAdmin):
         return field
 
 
+    @property
+    def change_form_template(self):
+        templates = super(DefaultPageChildAdmin, self).change_form_template
+        opts = self.model._meta
+        app_label = opts.app_label
+
+        return [
+            "admin/fluent_pages/pagetypes/{0}/{1}/change_form.html".format(app_label, opts.object_name.lower()),
+            "admin/fluent_pages/pagetypes/{0}/change_form.html".format(app_label),
+        ] + templates
+
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         # Include a 'base_change_form_template' in the context, make it easier to extend
         context.update({
             'base_change_form_template': self.base_change_form_template,
+            'default_change_form_template': _lazy_get_default_change_form_template(self),
         })
-        return super(PageAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
+        return super(DefaultPageChildAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
 
 
+def _get_default_change_form_template(self):
+    return _select_template_name(DefaultPageChildAdmin.change_form_template.__get__(self))
 
-class HtmlPageAdmin(PageAdmin):
+_lazy_get_default_change_form_template = lazy(_get_default_change_form_template, unicode)
+
+
+_cached_name_lookups = {}
+def _select_template_name(template_name_list):
     """
-    The modeladmin configured to display :class:`~fluent_pages.models.HtmlPage` models.
-    The :class:`~fluent_pages.models.HtmlPage` also displays a ``keywords`` and ``description`` field.
-
-    This admin class defines another fieldset: :attr:`FIELDSET_SEO`.
-    The default fieldset layout is:
-
-    .. code-block:: python
-
-        base_fieldsets = (
-            HtmlPageAdmin.FIELDSET_GENERAL,
-            HtmlPageAdmin.FIELDSET_SEO,
-            HtmlPageAdmin.FIELDSET_MENU,
-            HtmlPageAdmin.FIELDSET_PUBLICATION,
-        )
+    Given a list of template names, find the first one that exists.
     """
-    FIELDSET_SEO = (_('SEO settings'), {
-        'fields': ('keywords', 'description'),
-        'classes': ('collapse',),
-    })
+    if not isinstance(template_name_list, tuple):
+        template_name_list = tuple(template_name_list)
 
-    base_fieldsets = (
-        PageAdmin.FIELDSET_GENERAL,
-        FIELDSET_SEO,
-        PageAdmin.FIELDSET_MENU,
-        PageAdmin.FIELDSET_PUBLICATION,
-    )
+    try:
+        return _cached_name_lookups[template_name_list]
+    except KeyError:
+        # Find which template of the template_names is selected by the Django loader.
+        for template_name in template_name_list:
+            try:
+                get_template(template_name)
+            except TemplateDoesNotExist:
+                continue
+            else:
+                template_name = unicode(template_name)  # consistent value for lazy() function.
+                _cached_name_lookups[template_name_list] = template_name
+                return template_name
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name == 'keywords':
-            kwargs.setdefault('widget', AdminTextInputWidget(attrs={'class': 'vLargeTextField'}))
-        if db_field.name == 'description':
-            kwargs.setdefault('widget', AdminTextareaWidget(attrs={'rows': 3}))
-
-        return super(HtmlPageAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        return None

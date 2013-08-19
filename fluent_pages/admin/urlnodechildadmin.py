@@ -72,7 +72,7 @@ class UrlNodeAdminForm(MPTTAdminForm):
 
 
 
-class UrlNodeAdmin(PolymorphicMPTTChildModelAdmin):
+class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
@@ -110,7 +110,7 @@ class UrlNodeAdmin(PolymorphicMPTTChildModelAdmin):
     raw_id_fields = ('parent',)
     radio_fields = {'status': admin.HORIZONTAL}
 
-    # NOTE: list page is configured in UrlNodePolymorphicAdmin
+    # NOTE: list page is configured in UrlNodeParentAdmin
     # as that class is used for the real admin screen.
     # This class is only a base class for the custom pagetype plugins.
 
@@ -119,4 +119,5 @@ class UrlNodeAdmin(PolymorphicMPTTChildModelAdmin):
         # Automatically store the user in the author field.
         if not change:
             obj.author = request.user
-        obj.save()
+
+        super(UrlNodeChildAdmin, self).save_model(request, obj, form, change)

@@ -8,8 +8,9 @@ The API uses a registration system.
 While plugins can be easily detected via ``__subclasses__()``, the register approach is less magic and more explicit.
 Having to do an explicit register ensures future compatibility with other API's like reversion.
 """
+from threading import Lock
+
 from django import forms
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import RegexURLResolver
@@ -17,10 +18,12 @@ from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
 from django.utils.importlib import import_module
+
 from fluent_pages import appsettings
 from fluent_pages.admin import PageAdmin
 from fluent_pages.models import UrlNode
-from threading import Lock
+from fluent_pages.utils.load import import_apps_submodule
+
 
 __all__ = (
     'PageTypePlugin', 'PageTypeAlreadyRegistered', 'PageTypeNotFound', 'PageTypePool', 'page_type_pool'
@@ -205,23 +208,6 @@ class PageTypePlugin(object):
         return self._url_resolver
 
 
-
-# -------- Some utils --------
-
-def _import_apps_submodule(submodule):
-    """
-    Look for a submodule is a series of packages, e.g. ".pagetype_plugins" in all INSTALLED_APPS.
-    """
-    for app in settings.INSTALLED_APPS:
-        try:
-            import_module('.' + submodule, app)
-        except ImportError, e:
-            if submodule not in str(e):
-                raise   # import error is a level deeper.
-            else:
-                pass
-
-
 # -------- API to access plugins --------
 
 class PageTypeAlreadyRegistered(Exception):
@@ -403,7 +389,7 @@ class PageTypePool(object):
             return  # previous threaded released + completed
 
         try:
-            _import_apps_submodule("page_type_plugins")
+            import_apps_submodule("page_type_plugins")
             self.detected = True
         finally:
             self.scanLock.release()

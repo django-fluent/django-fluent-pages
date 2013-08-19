@@ -30,9 +30,9 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
         HtmlPageAdmin.FIELDSET_PUBLICATION,
     )
 
-    change_form_template = ["admin/fluent_pages/page/page_editor.html",
-                            "admin/fluent_pages/page.html",
-                            ]
+    #change_form_template = ["admin/fluentpage/page/page_editor.html",
+    #                        HtmlPageAdmin.base_change_form_template
+    #                        ]
 
     class Media:
         js = ('fluent_pages/fluentpage/fluent_layouts.js',)
