@@ -2,6 +2,7 @@ Changes in version 0.8.6
 ------------------------
 
 * Fix django-mptt_ 0.6 support.
+* Add ``FLUENT_PAGES_DEFAULT_IN_NAVIGATION`` setting to change the "in navigation" default value.
 
 
 Changes in version 0.8.5
