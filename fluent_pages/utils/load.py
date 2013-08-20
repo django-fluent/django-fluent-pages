@@ -1,8 +1,13 @@
 from __future__ import absolute_import
-from importlib import import_module
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from fluent_pages import appsettings
+
+try:
+    from importlib import import_module
+except ImportError:
+    from django.utils.importlib import import_module  # Python 2.6 compatibility
+
 
 __all__ = ('import_appsetting_class', 'import_class', 'import_apps_submodule')
 
