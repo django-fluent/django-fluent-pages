@@ -15,8 +15,7 @@ class RedirectNode(Page):
         # to add Refresh-header redirects later, with a temporary message in between.
     )
 
-    # TODO: provide internal page link as well.
-
+    # Note that the UrlField can support internal links too when django-any-urlfield is installed.
     new_url = UrlField(_("New URL"))
     redirect_type = models.IntegerField(_("Redirect type"), choices=REDIRECT_TYPE_CHOICES, default=302, help_text=_("Use 'normal redirect' unless you want to transfer SEO ranking to the new page."))
 
