@@ -105,15 +105,8 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
 
     def __init__(self, *args, **kwargs):
-        # Still allow to pass slug=..., title=... to this function.
-        translated_kwargs = {}
-        for field in self._translations_model.get_translated_fields():
-            try:
-                translated_kwargs[field] = kwargs.pop(field)
-            except KeyError:
-                pass
-
         super(UrlNode, self).__init__(*args, **kwargs)
+
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
         self._original_pub_date = self.publication_date if not self._deferred else None
@@ -123,12 +116,6 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         self._cached_ancestors = None
         self.is_current = None    # Can be defined by mark_current()
         self.is_onpath = None     # is an ancestor of the current node (part of the "menu trail").
-
-        # Assign translated args.
-        if translated_kwargs:
-            translation = self._get_translated_model()
-            for field, value in translated_kwargs.iteritems():
-                setattr(translation, field, value)
 
 
     def get_absolute_url(self):
