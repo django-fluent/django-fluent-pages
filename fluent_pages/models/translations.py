@@ -2,9 +2,6 @@ from django.db import models
 from django.utils.translation import get_language
 from fluent_pages import appsettings
 
-# Marker object for the translation cache.
-LANGUAGE_NOT_FOUND = object()
-
 
 class TranslatableModel(models.Model):
     """
@@ -57,7 +54,7 @@ class TranslatableModel(models.Model):
             object = self._translations_cache[language_code]
 
             # If cached object indicates the language doesn't exist, need to query the fallback.
-            if object is not LANGUAGE_NOT_FOUND:
+            if object is not None:
                 return object
         except KeyError:
             # No cache, need to query
@@ -80,7 +77,7 @@ class TranslatableModel(models.Model):
             elif use_fallback and (appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE != language_code):
                 # Jump to fallback language, return directly.
                 # Don't cache under this language_code
-                self._translations_cache[language_code] = LANGUAGE_NOT_FOUND
+                self._translations_cache[language_code] = None   # explicit marker that language query was tried before.
                 return self._get_translated_model(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE, use_fallback=False, auto_create=auto_create)
             else:
                 # None of the above, bail out!
