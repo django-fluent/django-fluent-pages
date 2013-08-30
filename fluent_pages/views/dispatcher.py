@@ -5,7 +5,9 @@ from django.conf import settings
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
 from django.http import Http404, HttpResponseRedirect
 from django.template.response import TemplateResponse
+from django.utils import translation
 from django.views.generic.base import View
+from fluent_pages import appsettings
 from fluent_pages.models import UrlNode
 from django.views.generic import RedirectView
 import re
@@ -28,6 +30,11 @@ class GetPathMixin(View):
             # Path from current script prefix
             return self.request.path_info
 
+    def get_language(self):
+        """
+        Return the language to display in this view.
+        """
+        return translation.get_language()  # Assumes that middleware has set this properly.
 
 
 class CmsPageDispatcher(GetPathMixin, View):
@@ -42,6 +49,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         """
         Display the page in a GET request.
         """
+        self.language_code = self.get_language()
         self.path = self.get_path()
 
         # See which view returns a valid response.
@@ -92,20 +100,30 @@ class CmsPageDispatcher(GetPathMixin, View):
         return self.model.objects.published()
 
 
-    def get_object(self, path=None):
+    def get_object(self, path=None, language_code=None):
         """
         Return the UrlNode subclass object of the current page.
         """
         path = path or self.get_path()
-        return self.get_queryset().get_for_path(path)
+        language_code = language_code or self.language_code
+        qs = self.get_queryset()
+
+        return _try_languages(language_code, UrlNode.DoesNotExist,
+            lambda lang: qs.get_for_path(path, language_code=lang)
+        )
 
 
-    def get_best_match_object(self, path=None):
+    def get_best_match_object(self, path=None, language_code=None):
         """
         Return the nearest UrlNode object for an URL path.
         """
         path = path or self.get_path()
-        return self.get_queryset().best_match_for_path(path)
+        language_code = language_code or self.language_code
+        qs = self.get_queryset()
+
+        return _try_languages(language_code, UrlNode.DoesNotExist,
+            lambda lang: qs.best_match_for_path(path, language_code=lang)
+        )
 
 
     def get_plugin(self):
@@ -241,12 +259,36 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
         # This gives errors when 'fluent_pages' is not in INSTALLED_APPS yet.
         from fluent_pages.admin.utils import get_page_admin_url
 
+        path = self.get_path()
+        language_code = self.get_language()
+        qs = UrlNode.objects.non_polymorphic().published()
+
         try:
-            path = self.get_path()
-            page = UrlNode.objects.non_polymorphic().published().get_for_path(path)
+            page = _try_languages(language_code, UrlNode.DoesNotExist,
+                lambda lang: qs.get_for_path(path, language_code=lang)
+            )
             url = get_page_admin_url(page)
         except UrlNode.DoesNotExist:
             # Back to page without @admin, display the error there.
             url = re.sub('@[^@]+/?$', '', self.request.path)
 
         return self.request.build_absolute_uri(url)
+
+
+def _try_languages(language_code, exception_class, func):
+    """
+    Try running the same code with different languages.
+    """
+    try:
+        return func(language_code)
+    except exception_class:
+        # Try for next row?
+        if not appsettings.FLUENT_PAGES_ENABLE_DEFAULT_LANGUAGE_URLS \
+           or appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE == language_code:
+            # There is not another attempt, raise.
+            raise
+
+    try:
+        return func(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+    except exception_class as e:
+        raise exception_class(str(e) + "\nTried languages: {0}, {1}".format(language_code, appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE), e)

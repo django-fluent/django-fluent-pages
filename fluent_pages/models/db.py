@@ -383,7 +383,6 @@ class UrlNode_Translation(TranslatedFieldsModel):
     _cached_url = models.CharField(default='', max_length=300, unique=True, db_index=True, blank=True)
 
     # Base fields
-    language_code = models.CharField(max_length=15, db_index=True)
     master = models.ForeignKey(UrlNode, related_name='translations', null=True)
 
     class Meta:

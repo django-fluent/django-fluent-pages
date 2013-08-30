@@ -19,12 +19,11 @@ class TranslatableModel(models.Model):
 
 
     def __init__(self, *args, **kwargs):
-        self._translations_cache = {}
-        self._active_language = get_language()  # What you used to fetch the object is what you get.
-
         # Still allow to pass the translated fields (e.g. title=...) to this function.
         translated_kwargs = {}
+        active_language = None
         if kwargs:
+            active_language = kwargs.get('_active_language', None)
             for field in self._translations_model.get_translated_fields():
                 try:
                     translated_kwargs[field] = kwargs.pop(field)
@@ -33,6 +32,9 @@ class TranslatableModel(models.Model):
 
         # Run original Django model __init__
         super(TranslatableModel, self).__init__(*args, **kwargs)
+
+        self._translations_cache = {}
+        self._active_language = active_language or get_language()  # What you used to fetch the object is what you get.
 
         # Assign translated args manually.
         if translated_kwargs:
@@ -111,6 +113,9 @@ class TranslatedFieldsModel(models.Model):
     """
     Base class for the model that holds the translated fields.
     """
+    language_code = models.CharField(max_length=15, db_index=True)
+    master = None   # FK to shared model.
+
     class Meta:
         abstract = True
 
