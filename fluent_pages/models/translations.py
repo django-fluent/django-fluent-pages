@@ -121,6 +121,7 @@ class TranslatedFieldsModel(models.Model):
         fields = self._meta.get_all_field_names()
         fields.remove('language_code')
         fields.remove('master')
+        fields.remove('id')   # exists with deferred objects that .only() queries create.
         return fields
 
     def __unicode__(self):
