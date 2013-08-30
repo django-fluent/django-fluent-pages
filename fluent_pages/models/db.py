@@ -423,15 +423,16 @@ class UrlNode_Translation(TranslatedFieldsModel):
         self._original_cached_url = self._cached_url
 
 
-# Link the model, to make it quite generic
-# (just less sophisticated then django-hvad)
-UrlNode._translations_model = UrlNode_Translation
-
-
 class TranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
     """
     The operation can't be completed, because a translation is missing.
     """
+
+
+# Link the model, to make it quite generic
+# (just less sophisticated then django-hvad)
+UrlNode._translations_model = UrlNode_Translation
+UrlNode._translations_model_doesnotexist = TranslationDoesNotExist
 
 
 class Page(UrlNode):

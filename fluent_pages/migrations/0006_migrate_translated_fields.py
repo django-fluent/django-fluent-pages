@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from south.db import db
 from south.v2 import DataMigration
 from django.conf import settings
+from fluent_pages import appsettings
 
 
 class Migration(DataMigration):
@@ -12,7 +13,7 @@ class Migration(DataMigration):
         db.execute(
             'INSERT INTO fluent_pages_urlnode_translation(title, slug, override_url, _cached_url, language_code, master_id)'
             ' SELECT title, slug, override_url, _cached_url, %s, id FROM fluent_pages_urlnode',
-            [settings.LANGUAGE_CODE]
+            [appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE]
         )
 
     def backwards(self, orm):
@@ -20,9 +21,16 @@ class Migration(DataMigration):
         for urlnode in orm['fluent_pages.UrlNode'].objects.all():
             translations = orm['fluent_pages.UrlNode_Translation'].objects.filter(master_id=urlnode.id)
             try:
-                translation = translations.get(language_code=settings.LANGUAGE_CODE)
+                # Try default translation
+                translation = translations.get(language_code=appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
             except ObjectDoesNotExist:
-                translation = translations.get(language_code__in=('en_US', 'en'))
+                try:
+                    # Try internal fallback
+                    translation = translations.get(language_code__in=('en_US', 'en'))
+                except ObjectDoesNotExist:
+                    # Hope there is a single translation
+                    translation = translations.get()
+
             urlnode.title = translation.title
             urlnode.slug = translation.slug
             urlnode.override_url = translation.override_url

@@ -1,5 +1,9 @@
 from django.db import models
 from django.utils.translation import get_language
+from fluent_pages import appsettings
+
+# Marker object for the translation cache.
+LANGUAGE_NOT_FOUND = object()
 
 
 class TranslatableModel(models.Model):
@@ -11,6 +15,7 @@ class TranslatableModel(models.Model):
     # Not part of the public API, but used internally in the class hierarchy.
     _translations_field = 'translations'
     _translations_model = None
+    _translations_model_doesnotexist = None
 
     class Meta:
         abstract = True
@@ -22,29 +27,55 @@ class TranslatableModel(models.Model):
         self._active_language = get_language()  # What you used to fetch the object is what you get.
 
 
-    def _get_translated_model(self, language_code=None):
+    def _get_translated_model(self, language_code=None, use_fallback=False, auto_create=False):
         """
         Fetch the translated fields model.
         """
         if not language_code:
             language_code = self._active_language
 
+        # 1. fetch the object from the cache
+        object = None
         try:
-            return self._translations_cache[language_code]
+            object = self._translations_cache[language_code]
+
+            # If cached object indicates the language doesn't exist, need to query the fallback.
+            if object is not LANGUAGE_NOT_FOUND:
+                return object
         except KeyError:
+            # No cache, need to query
             # Get via self.TRANSLATIONS_FIELD.get(..) so it also uses the prefetch/select_related cache.
             accessor = getattr(self, self._translations_field)
             try:
                 object = accessor.get(language_code=language_code)
             except self._translations_model.DoesNotExist:
+                pass
+
+        if object is None:
+            # Not in cache, or default.
+            # Not fetched from DB
+            if auto_create:
+                # Auto create policy first (e.g. a __set__ call)
                 object = self._translations_model(
                     language_code=language_code,
                     master=self  # ID might be None at this point
                 )
+            elif use_fallback and (appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE != language_code):
+                # Jump to fallback language, return directly.
+                # Don't cache under this language_code
+                self._translations_cache[language_code] = LANGUAGE_NOT_FOUND
+                return self._get_translated_model(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE, use_fallback=False, auto_create=auto_create)
+            else:
+                # None of the above, bail out!
+                exception_class = (self._translations_model_doesnotexist or self._translations_model.DoesNotExist)
+                raise exception_class(
+                    u"{0} does not have a translation for the current language!\n"
+                    u"{0} ID #{1}, language={2}".format(self._meta.verbose_name, self.pk, language_code
+                ))
 
-            # Cache and return
-            self._translations_cache[language_code] = object
-            return object
+        # Cache and return
+        self._translations_cache[language_code] = object
+        return object
 
 
     def save(self, *args, **kwargs):
@@ -95,6 +126,12 @@ class TranslatedFieldsModel(models.Model):
     def __unicode__(self):
         return unicode(self.pk)
 
+    def __repr__(self):
+        return "<{0}: #{1}, {2}, master: #{3}>".format(
+            self.__class__.__name__, self.pk, self.language_code, self.master_id
+        )
+
+
 
 class TranslatedAttribute(object):
     """
@@ -109,11 +146,20 @@ class TranslatedAttribute(object):
             # Return the class attribute when asked for by the admin.
             return instance_type._translations_model._meta.get_field_by_name(self.name)[0]
 
-        return getattr(instance._get_translated_model(), self.name)
+        # Auto create is useless for __get__, will return empty titles everywhere.
+        # Better use a fallback instead, just like gettext does.
+        translation = instance._get_translated_model(use_fallback=True)
+        return getattr(translation, self.name)
 
     def __set__(self, instance, value):
-        translation = instance._get_translated_model()
+        # When assigning the property, assign to the current language.
+        # No fallback is used in this case.
+        translation = instance._get_translated_model(use_fallback=False, auto_create=True)
         setattr(translation, self.name, value)
 
     def __delete__(self, instance):
-        delattr(instance._get_translated_model(), self.name)
+        # No autocreate or fallback, as this is delete.
+        # Rather blow it all up when the attribute doesn't exist.
+        # Similar to getting a KeyError on `del dict['UNKNOWN_KEY']`
+        translation = instance._get_translated_model()
+        delattr(translation, self.name)
