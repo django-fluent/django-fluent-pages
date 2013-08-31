@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from mptt.forms import MPTTAdminForm
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
-from fluent_pages.admin.translations import TranslatableModelFormMixin, get_model_form_field
+from fluent_pages.admin.translations import TranslatableModelFormMixin, TranslatableAdmin, get_model_form_field
 from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_pages.forms.fields import RelativeRootPathField
 
@@ -72,7 +72,7 @@ class UrlNodeAdminForm(TranslatableModelFormMixin, MPTTAdminForm):
 
 
 
-class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin):
+class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
