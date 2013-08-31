@@ -137,7 +137,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         elif cached_url == '':
             # There is an URL node, but no translation is set for the current language.
             raise TranslationDoesNotExist("Page does not have a translation for the current language!\nPage ID #{0}, language={1}".format(
-                self.pk, self._active_language
+                self.pk, self.get_current_language()
             ))
 
         return root + cached_url

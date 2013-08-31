@@ -4,16 +4,18 @@ Translation support for admin forms.
 from django import forms
 
 
+def get_model_form_field(model, name, **kwargs):
+    return model._meta.get_field_by_name(name)[0].formfield(**kwargs)
+
+
 class TranslatableModelFormMixin(object):
+    """
+    Form mixin, to fetch+store translated fields.
+    """
     _translatable_model = None
     _translatable_fields = ()
 
     language_code = forms.CharField(max_length=15, widget=forms.HiddenInput)
-
-
-    @classmethod
-    def get_formfield(cls, model, name, **kwargs):
-        return model._meta.get_field_by_name(name)[0].formfield(**kwargs)
 
 
     def __init__(self, *args, **kwargs):

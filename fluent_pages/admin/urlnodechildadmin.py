@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from mptt.forms import MPTTAdminForm
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
-from fluent_pages.admin.translations import TranslatableModelFormMixin
+from fluent_pages.admin.translations import TranslatableModelFormMixin, get_model_form_field
 from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_pages.forms.fields import RelativeRootPathField
 
@@ -14,7 +14,8 @@ class UrlNodeAdminForm(TranslatableModelFormMixin, MPTTAdminForm):
     _translatable_model = UrlNode_Translation
     _translatable_fields = ('title', 'slug', 'override_url')
 
-    # Translated fields
+    # Translated fields.
+    # Added manually for simplicity, no metaclass magic in place.
     #
     # Using a separate formfield to display the full URL in the override_url field:
     # - The override_url is stored relative to the URLConf root,
@@ -22,9 +23,9 @@ class UrlNodeAdminForm(TranslatableModelFormMixin, MPTTAdminForm):
     # - Users don't have to know or care about this detail.
     #   They only see the absolute external URLs, so make the input reflect that as well.
     #
-    title = TranslatableModelFormMixin.get_formfield(UrlNode_Translation, 'title')
-    slug = TranslatableModelFormMixin.get_formfield(UrlNode_Translation, 'slug')
-    override_url = TranslatableModelFormMixin.get_formfield(UrlNode_Translation, 'override_url', form_class=RelativeRootPathField)
+    title = get_model_form_field(UrlNode_Translation, 'title')
+    slug = get_model_form_field(UrlNode_Translation, 'slug')
+    override_url = get_model_form_field(UrlNode_Translation, 'override_url', form_class=RelativeRootPathField)
 
 
     def clean(self):

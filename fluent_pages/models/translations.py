@@ -1,3 +1,11 @@
+"""
+Simple but effective translation support.
+
+Integrating *django-hvad* (v0.3) turned out to be really hard,
+as it changes the behavior of the QuerySet iterator, manager methods
+and model metaclass which *django-polymorphic* also rely on.
+The following is a "crude, but effective" way to introduce multilingual support.
+"""
 from django.db import models
 from django.utils.translation import get_language
 from fluent_pages import appsettings
@@ -21,9 +29,9 @@ class TranslatableModel(models.Model):
     def __init__(self, *args, **kwargs):
         # Still allow to pass the translated fields (e.g. title=...) to this function.
         translated_kwargs = {}
-        active_language = None
+        current_language = None
         if kwargs:
-            active_language = kwargs.get('_active_language', None)
+            current_language = kwargs.get('_current_language', None)
             for field in self._translations_model.get_translated_fields():
                 try:
                     translated_kwargs[field] = kwargs.pop(field)
@@ -34,7 +42,7 @@ class TranslatableModel(models.Model):
         super(TranslatableModel, self).__init__(*args, **kwargs)
 
         self._translations_cache = {}
-        self._active_language = active_language or get_language()  # What you used to fetch the object is what you get.
+        self._current_language = current_language or get_language()  # What you used to fetch the object is what you get.
 
         # Assign translated args manually.
         if translated_kwargs:
@@ -43,12 +51,21 @@ class TranslatableModel(models.Model):
                 setattr(translation, field, value)
 
 
+    def get_current_language(self):
+        # not a property, so won't conflict with model fields.
+        return self._current_language
+
+
+    def set_current_language(self, language_code):
+        self._current_language = language_code or get_language()
+
+
     def _get_translated_model(self, language_code=None, use_fallback=False, auto_create=False):
         """
         Fetch the translated fields model.
         """
         if not language_code:
-            language_code = self._active_language
+            language_code = self._current_language
 
         # 1. fetch the object from the cache
         object = None
@@ -59,7 +76,7 @@ class TranslatableModel(models.Model):
             if object is not None:
                 return object
         except KeyError:
-            # No cache, need to query
+            # 2. No cache, need to query
             # Get via self.TRANSLATIONS_FIELD.get(..) so it also uses the prefetch/select_related cache.
             accessor = getattr(self, self._translations_field)
             try:
@@ -70,6 +87,8 @@ class TranslatableModel(models.Model):
         if object is None:
             # Not in cache, or default.
             # Not fetched from DB
+
+            # 3. Alternative solutions
             if auto_create:
                 # Auto create policy first (e.g. a __set__ call)
                 object = self._translations_model(
