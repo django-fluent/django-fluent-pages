@@ -82,10 +82,16 @@ class CmsPageDispatcher(GetPathMixin, View):
             # No pages in the database, present nice homepage.
             return self._intro_page()
         else:
-            if self.path == '/':
-                raise Http404(u"No published '{0}' found for the path '{1}'. Use the 'Override URL' field to make sure a page can be found at the root of the site.".format(self.model.__name__, self.path))
+            if _try_default_language(self.language_code):
+                languages = (self.language_code, appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+                tried_msg = u" (language '{0}', fallback: '{1}')".format(*languages)
             else:
-                raise Http404(u"No published '{0}' found for the path '{1}'".format(self.model.__name__, self.path))
+                tried_msg = u", language '{0}'".format(self.language_code)
+
+            if self.path == '/':
+                raise Http404(u"No published '{0}' found for the path '{1}'{2}. Use the 'Override URL' field to make sure a page can be found at the root of the site.".format(self.model.__name__, self.path, tried_msg))
+            else:
+                raise Http404(u"No published '{0}' found for the path '{1}'{2}.".format(self.model.__name__, self.path, tried_msg))
 
 
     def _intro_page(self):
@@ -283,8 +289,7 @@ def _try_languages(language_code, exception_class, func):
         return func(language_code)
     except exception_class:
         # Try for next row?
-        if not appsettings.FLUENT_PAGES_ENABLE_DEFAULT_LANGUAGE_URLS \
-           or appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE == language_code:
+        if not _try_default_language(language_code):
             # There is not another attempt, raise.
             raise
 
@@ -292,3 +297,11 @@ def _try_languages(language_code, exception_class, func):
         return func(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
     except exception_class as e:
         raise exception_class(str(e) + "\nTried languages: {0}, {1}".format(language_code, appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE), e)
+
+
+def _try_default_language(language_code):
+    """
+    Whether to try the default language.
+    """
+    return appsettings.FLUENT_PAGES_ENABLE_DEFAULT_LANGUAGE_URLS \
+       and appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE != language_code
