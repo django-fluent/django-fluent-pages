@@ -57,8 +57,12 @@ class TranslatableModel(models.Model):
         return self._current_language
 
 
-    def set_current_language(self, language_code):
+    def set_current_language(self, language_code, initialize=False):
         self._current_language = normalize_language_code(language_code or get_language())
+
+        # Ensure the translation is present for __get__ queries.
+        if initialize:
+            self._get_translated_model(use_fallback=False, auto_create=True)
 
 
     def get_available_languages(self):

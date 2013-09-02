@@ -5,6 +5,8 @@ import urllib
 from django import forms
 from django.conf import settings
 from django.contrib import admin
+from django.core.urlresolvers import reverse
+from django.utils.encoding import iri_to_uri
 from django.utils.translation import get_language
 from fluent_pages.utils.i18n import normalize_language_code
 
@@ -26,8 +28,7 @@ class TranslatableModelFormMixin(object):
     """
     _translatable_model = None
     _translatable_fields = ()
-
-    language_code = forms.CharField(max_length=15, widget=forms.HiddenInput)
+    language_code = None   # Set by get_form()
 
 
     def __init__(self, *args, **kwargs):
@@ -36,13 +37,13 @@ class TranslatableModelFormMixin(object):
         # Load the initial values for the translated fields
         instance = kwargs.get('instance', None)
         if instance:
-            self.initial.setdefault('language_code', instance.get_current_language())
-
+            translation = instance._get_translated_model(auto_create=True)
             for field in self._translatable_fields:
-                self.initial.setdefault(field, getattr(instance, field))
+                self.initial.setdefault(field, getattr(translation, field))
 
 
     def save(self, commit=True):
+        self.instance.set_current_language(self.language_code)
         # Assign translated fields to the model (using the TranslatedAttribute descriptor)
         for field in self._translatable_fields:
             setattr(self.instance, field, self.cleaned_data[field])
@@ -73,9 +74,14 @@ class TranslatableAdmin(admin.ModelAdmin):
         """
         object = super(TranslatableAdmin, self).get_object(request, object_id)
         if object is not None:
-            object.set_current_language(self._language(request))
+            object.set_current_language(self._language(request), initialize=True)
 
         return object
+
+    def get_form(self, request, obj=None, **kwargs):
+        form_class = super(TranslatableAdmin, self).get_form(request, obj, **kwargs)
+        form_class.language_code = self._language(request)
+        return form_class
 
     def get_available_languages(self, obj):
         if obj:
@@ -96,7 +102,7 @@ class TranslatableAdmin(admin.ModelAdmin):
 
     def get_language_tabs(self, request, available_languages):
         tabs = []
-        get = dict(request.GET)
+        get = request.GET.copy()  # QueryDict object
         language = self._language(request)
         tab_languages = []
 
@@ -104,7 +110,7 @@ class TranslatableAdmin(admin.ModelAdmin):
 
         for key, name in settings.LANGUAGES:
             get['language'] = key
-            url = '{0}?{1}'.format(base_url, urllib.urlencode(get))
+            url = '{0}?{1}'.format(base_url, get.urlencode())
 
             if key == language:
                 status = 'current'
@@ -120,7 +126,7 @@ class TranslatableAdmin(admin.ModelAdmin):
         for key in available_languages:
             if key not in tab_languages:
                 get['language'] = key
-                url = '{0}?{1}'.format(base_url, urllib.urlencode(get))
+                url = '{0}?{1}'.format(base_url, get.urlencode())
                 tabs.append((url, key, key, 'available'))
 
         return tabs
