@@ -1,6 +1,5 @@
 import django
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
@@ -41,7 +40,7 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
     add_type_form = PageTypeChoiceForm
 
     # Config list page:
-    list_display = ('title', 'status_column', 'modification_date', 'actions_column')
+    list_display = ('title', 'language_column', 'status_column', 'modification_date', 'actions_column')
     list_filter = ('status',) + extra_list_filters
     search_fields = ('slug', 'title')
     actions = ['make_published']
@@ -95,11 +94,18 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
     # When making changes to the list, test both the JavaScript and non-JavaScript variant.
     # The jqTree variant still uses the server-side rendering for the colums.
 
+    def language_column(self, urlnode):
+        languages = urlnode.get_available_languages()
+        return u'<span class="available-languages">{0}</span>'.format(' '.join(languages))
+
+    language_column.allow_tags = True
+    language_column.short_description = _("Lang")
+
+
     STATUS_ICONS = (
         (UrlNode.PUBLISHED, 'icon-yes.gif'),
         (UrlNode.DRAFT,     'icon-unknown.gif'),
     )
-
 
     def status_column(self, urlnode):
         status = urlnode.status

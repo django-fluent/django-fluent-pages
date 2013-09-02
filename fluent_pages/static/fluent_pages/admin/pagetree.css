@@ -1,5 +1,31 @@
 /* column layout */
 
-.jqtree-django .col-status_column { width: 80px; }
+.jqtree-django .col-status_column     { width: 80px; }
 .jqtree-django .col-modification_date { width: 160px; }
-.jqtree-django .col-actions_column { width: 120px; }
+.jqtree-django .col-actions_column    { width: 120px; }
+.jqtree-django .col-language_column   { width: 100px; }
+
+
+/* language buttons */
+
+thead th.col-language_column {
+  border-left: 0;
+}
+
+thead th.col-language_column div {
+   display: none;
+}
+
+.jqtree-django div.col.col-language_column {
+  border-left: 0;
+}
+
+.available-languages {
+  font-weight: normal;
+  float: right;
+  padding-right: 5px;
+  font-size: 9px;
+  color: #666;
+  text-transform: uppercase;
+}
+
