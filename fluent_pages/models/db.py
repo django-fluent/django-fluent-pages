@@ -98,7 +98,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
     def __unicode__(self):
         # This looks pretty nice on the delete page.
         # All other models derive from Page, so they get good titles in the breadcrumb.
-        return unicode(self.get_absolute_url())
+        return u", ".join(self.get_absolute_urls().itervalues())
 
 
     # ---- Extra properties ----
@@ -141,6 +141,18 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
             ))
 
         return root + cached_url
+
+
+    def get_absolute_urls(self):
+        """
+        Return all available URLs to this page.
+        """
+        root = reverse('fluent-page').rstrip('/')
+        result = {}
+        for code, cached_url in self.translations.values_list('language_code', '_cached_url'):
+            result[code] = root + cached_url
+
+        return result
 
 
     @property
@@ -391,9 +403,11 @@ class UrlNode_Translation(TranslatedFieldsModel):
             ('_cached_url', 'language_code'),
             ('language_code', 'master'),
         )
+        verbose_name = _('URL Node translation')
+        verbose_name_plural = _('URL Nodes translations')  # Using Urlnode here makes it's way to the admin pages too.
 
     def __unicode__(self):
-        return self.slug
+        return self.title
 
     def __repr__(self):
         return "<{0}: #{1}, {2}, {3}, master: #{4}>".format(
