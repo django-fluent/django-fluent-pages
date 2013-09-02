@@ -100,6 +100,28 @@ class TranslatableAdmin(admin.ModelAdmin):
         #context['base_template'] = self.get_change_form_base_template()
         return super(TranslatableAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
+    def response_add(self, request, obj, post_url_continue=None):
+        redirect = super(TranslatableAdmin, self).response_add(request, obj, post_url_continue)
+        return self._patch_redirect(request, obj, redirect)
+
+    def response_change(self, request, obj):
+        redirect = super(TranslatableAdmin, self).response_change(request, obj)
+        return self._patch_redirect(request, obj, redirect)
+
+    def _patch_redirect(self, request, obj, redirect):
+        if redirect.status_code not in (301,302):
+            return redirect  # a 200 response likely.
+
+        uri = iri_to_uri(request.path)
+        info = (self.model._meta.app_label, self.model._meta.module_name)
+
+        # Pass ?language=.. to next page.
+        continue_urls = (uri, "../add/", reverse('admin:{0}_{1}_add'.format(*info)))
+        if redirect['Location'] in continue_urls and self.query_language_key in request.GET:
+            # "Save and add another" / "Save and continue" URLs
+            redirect['Location'] += "?{0}={1}".format(self.query_language_key, request.GET[self.query_language_key])
+        return redirect
+
     def get_language_tabs(self, request, available_languages):
         tabs = []
         get = request.GET.copy()  # QueryDict object
