@@ -85,7 +85,6 @@ class TranslatableModel(models.Model):
             language_code = self._current_language
 
         # 1. fetch the object from the cache
-        object = None
         try:
             object = self._translations_cache[language_code]
 
@@ -100,34 +99,41 @@ class TranslatableModel(models.Model):
                 object = accessor.get(language_code=language_code)
             except self._translations_model.DoesNotExist:
                 pass
-
-        if object is None:
-            # Not in cache, or default.
-            # Not fetched from DB
-
-            # 3. Alternative solutions
-            if auto_create:
-                # Auto create policy first (e.g. a __set__ call)
-                object = self._translations_model(
-                    language_code=language_code,
-                    master=self  # ID might be None at this point
-                )
-            elif use_fallback and (appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE != language_code):
-                # Jump to fallback language, return directly.
-                # Don't cache under this language_code
-                self._translations_cache[language_code] = None   # explicit marker that language query was tried before.
-                return self._get_translated_model(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE, use_fallback=False, auto_create=auto_create)
             else:
-                # None of the above, bail out!
-                exception_class = (self._translations_model_doesnotexist or self._translations_model.DoesNotExist)
-                raise exception_class(
-                    u"{0} does not have a translation for the current language!\n"
-                    u"{0} ID #{1}, language={2}".format(self._meta.verbose_name, self.pk, language_code
-                ))
+                self._translations_cache[language_code] = object
+                return object
 
-        # Cache and return
-        self._translations_cache[language_code] = object
-        return object
+        # Not in cache, or default.
+        # Not fetched from DB
+
+        # 3. Auto create?
+        if auto_create:
+            # Auto create policy first (e.g. a __set__ call)
+            object = self._translations_model(
+                language_code=language_code,
+                master=self  # ID might be None at this point
+            )
+            self._translations_cache[language_code] = object
+            return object
+
+        # 4. Fallback?
+        fallback_msg = None
+        exception_class = (self._translations_model_doesnotexist or self._translations_model.DoesNotExist)
+
+        if use_fallback and (appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE != language_code):
+            # Jump to fallback language, return directly.
+            # Don't cache under this language_code
+            self._translations_cache[language_code] = None   # explicit marker that language query was tried before.
+            try:
+                return self._get_translated_model(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE, use_fallback=False, auto_create=auto_create)
+            except (self._translations_model_doesnotexist, exception_class):
+                fallback_msg = u" (tried fallback {0})".format(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+
+        # None of the above, bail out!
+        raise exception_class(
+            u"{0} does not have a translation for the current language!\n"
+            u"{0} ID #{1}, language={2}{3}".format(self._meta.verbose_name, self.pk, language_code, fallback_msg or ''
+        ))
 
 
     def save(self, *args, **kwargs):
