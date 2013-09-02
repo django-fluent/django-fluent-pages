@@ -8,6 +8,7 @@ from django.contrib import admin
 from django.core.urlresolvers import reverse
 from django.utils.encoding import iri_to_uri
 from django.utils.translation import get_language
+from fluent_pages import appsettings
 from fluent_pages.utils.i18n import normalize_language_code
 
 
@@ -147,10 +148,17 @@ class TranslatableAdmin(admin.ModelAdmin):
             tab_languages.append(code)
 
         # Additional stale translations in the database?
-        for code in available_languages:
-            if code not in tab_languages:
-                get['language'] = code
-                url = '{0}?{1}'.format(base_url, get.urlencode())
-                tabs.append((url, code, code, 'available'))
+        if appsettings.FLUENT_PAGES_SHOW_EXCLUDED_LANGUAGE_TABS:
+            for code in available_languages:
+                if code not in tab_languages:
+                    get['language'] = code
+                    url = '{0}?{1}'.format(base_url, get.urlencode())
+
+                    if code == language:
+                        status = 'current'
+                    else:
+                        status = 'available'
+
+                    tabs.append((url, get_language_title(code), code, status))
 
         return tabs
