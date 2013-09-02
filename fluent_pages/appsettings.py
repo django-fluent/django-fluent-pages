@@ -3,6 +3,7 @@ Overview of all settings which can be customized.
 """
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from fluent_pages.utils.i18n import normalize_language_code
 import os
 
 FLUENT_PAGES_BASE_TEMPLATE = getattr(settings, "FLUENT_PAGES_BASE_TEMPLATE", 'fluent_pages/base.html')
@@ -30,3 +31,6 @@ else:
         raise ImproperlyConfigured("The setting '{0}' needs to be an absolute path!".format(settingName))
     if not os.path.exists(FLUENT_PAGES_TEMPLATE_DIR):
         raise ImproperlyConfigured("The path '{0}' in the setting '{1}' does not exist!".format(FLUENT_PAGES_TEMPLATE_DIR, settingName))
+
+
+FLUENT_PAGES_DEFAULT_LANGUAGE_CODE = normalize_language_code(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)

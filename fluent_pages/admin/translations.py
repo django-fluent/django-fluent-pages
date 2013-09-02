@@ -6,6 +6,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import get_language
+from fluent_pages.utils.i18n import normalize_language_code
 
 
 def get_model_form_field(model, name, **kwargs):
@@ -64,7 +65,7 @@ class TranslatableAdmin(admin.ModelAdmin):
     query_language_key = 'language'
 
     def _language(self, request):
-        return request.GET.get(self.query_language_key, get_language())
+        return normalize_language_code(request.GET.get(self.query_language_key, get_language()))
 
     def get_object(self, request, object_id):
         """

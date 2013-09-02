@@ -9,6 +9,7 @@ The following is a "crude, but effective" way to introduce multilingual support.
 from django.db import models
 from django.utils.translation import get_language
 from fluent_pages import appsettings
+from fluent_pages.utils.i18n import normalize_language_code
 
 
 class TranslatableModel(models.Model):
@@ -42,7 +43,7 @@ class TranslatableModel(models.Model):
         super(TranslatableModel, self).__init__(*args, **kwargs)
 
         self._translations_cache = {}
-        self._current_language = current_language or get_language()  # What you used to fetch the object is what you get.
+        self._current_language = normalize_language_code(current_language or get_language())  # What you used to fetch the object is what you get.
 
         # Assign translated args manually.
         if translated_kwargs:
@@ -57,7 +58,7 @@ class TranslatableModel(models.Model):
 
 
     def set_current_language(self, language_code):
-        self._current_language = language_code or get_language()
+        self._current_language = normalize_language_code(language_code or get_language())
 
 
     def get_available_languages(self):
