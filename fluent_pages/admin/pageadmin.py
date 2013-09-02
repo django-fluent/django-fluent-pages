@@ -1,8 +1,8 @@
 import copy
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.template import TemplateDoesNotExist
-from django.template.loader import get_template
-from django.utils.functional import SimpleLazyObject, lazy
+from django.template.loader import find_template
+from django.utils.functional import lazy
 from fluent_pages.admin.urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
 from fluent_pages.admin.urlnodeparentadmin import UrlNodeParentAdmin
 from fluent_pages.models import Page
@@ -116,7 +116,7 @@ def _select_template_name(template_name_list):
         # Find which template of the template_names is selected by the Django loader.
         for template_name in template_name_list:
             try:
-                get_template(template_name)
+                find_template(template_name)
             except TemplateDoesNotExist:
                 continue
             else:
