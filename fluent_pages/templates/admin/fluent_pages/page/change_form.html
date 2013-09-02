@@ -25,6 +25,7 @@
     {% endblock %}
   </ul>
 {% endif %}
+{% if language_tabs %}{% include "admin/fluent_pages/utils/language_tabs.html" %}{% endif %}
 {% endblock %}
 <form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
 <div>

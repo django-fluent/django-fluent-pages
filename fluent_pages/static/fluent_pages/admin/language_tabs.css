@@ -1,0 +1,22 @@
+.nani-language-tabs span {
+    display: inline-block;
+    padding: 5px 15px;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    position: relative;
+    left: 0px;
+    top: 1px;
+    font-weight: bold;
+}
+.nani-language-tabs span.current {
+    border-bottom: 1px solid #fff;
+}
+.nani-language-tabs span.empty {
+    opacity: 0.7;
+    font-weight: normal;
+}
+.nani-language-tabs a.deletelink {
+    right: -17px;
+    bottom: 4px;
+    position: relative;
+}

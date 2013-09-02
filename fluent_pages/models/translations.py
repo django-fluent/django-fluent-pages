@@ -60,6 +60,13 @@ class TranslatableModel(models.Model):
         self._current_language = language_code or get_language()
 
 
+    def get_available_languages(self):
+        """
+        Return the language codes of all translated variations.
+        """
+        return self._translations_model.objects.filter(master=self).values_list('language_code', flat=True)
+
+
     def _get_translated_model(self, language_code=None, use_fallback=False, auto_create=False):
         """
         Fetch the translated fields model.
