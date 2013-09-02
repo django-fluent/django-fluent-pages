@@ -467,7 +467,14 @@ class Page(UrlNode):
         verbose_name_plural = _('Pages')
 
     def __unicode__(self):
-        return self.title or self.slug
+        # Find translation
+        translated = self.title or self.slug
+        if translated:
+            return translated
+
+        # Get first translation that can be found
+        translation = self.translations.all()[0]
+        return translation.title or translation.slug
 
     # Make PyCharm happy
     objects = UrlNode.objects
