@@ -119,15 +119,16 @@ class TranslatableModel(models.Model):
         # 4. Fallback?
         fallback_msg = None
         exception_class = (self._translations_model_doesnotexist or self._translations_model.DoesNotExist)
+        lang_dict = appsettings.get_language_settings(language_code)
 
-        if use_fallback and (appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE != language_code):
+        if use_fallback and (lang_dict['fallback'] != language_code):
             # Jump to fallback language, return directly.
             # Don't cache under this language_code
             self._translations_cache[language_code] = None   # explicit marker that language query was tried before.
             try:
-                return self._get_translated_model(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE, use_fallback=False, auto_create=auto_create)
+                return self._get_translated_model(lang_dict['fallback'], use_fallback=False, auto_create=auto_create)
             except (self._translations_model_doesnotexist, exception_class):
-                fallback_msg = u" (tried fallback {0})".format(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+                fallback_msg = u" (tried fallback {0})".format(lang_dict['fallback'])
 
         # None of the above, bail out!
         raise exception_class(

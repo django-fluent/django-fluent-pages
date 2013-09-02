@@ -82,8 +82,9 @@ class CmsPageDispatcher(GetPathMixin, View):
             # No pages in the database, present nice homepage.
             return self._intro_page()
         else:
-            if _try_default_language(self.language_code):
-                languages = (self.language_code, appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+            fallback = _get_fallback_language(self.language_code)
+            if fallback:
+                languages = (self.language_code, fallback)
                 tried_msg = u" (language '{0}', fallback: '{1}')".format(*languages)
             else:
                 tried_msg = u", language '{0}'".format(self.language_code)
@@ -289,19 +290,23 @@ def _try_languages(language_code, exception_class, func):
         return func(language_code)
     except exception_class:
         # Try for next row?
-        if not _try_default_language(language_code):
+        fallback = _get_fallback_language(language_code)
+        if not fallback:
             # There is not another attempt, raise.
             raise
 
     try:
-        return func(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+        return func(fallback)
     except exception_class as e:
-        raise exception_class(str(e) + "\nTried languages: {0}, {1}".format(language_code, appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE), e)
+        raise exception_class(str(e) + "\nTried languages: {0}, {1}".format(language_code, fallback), e)
 
 
-def _try_default_language(language_code):
+def _get_fallback_language(language_code):
     """
     Whether to try the default language.
     """
-    return appsettings.FLUENT_PAGES_ENABLE_DEFAULT_LANGUAGE_URLS \
-       and appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE != language_code
+    lang_dict = appsettings.get_language_settings(language_code)
+    if not lang_dict['hide_untranslated'] and lang_dict['fallback'] != language_code:
+        return lang_dict['fallback']
+    else:
+        return None

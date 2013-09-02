@@ -15,7 +15,7 @@ def get_model_form_field(model, name, **kwargs):
     return model._meta.get_field_by_name(name)[0].formfield(**kwargs)
 
 
-def get_language_name(language_code):
+def get_language_title(language_code):
     try:
         return next(title for code, title in settings.LANGUAGES if code == language_code)
     except StopIteration:
@@ -91,7 +91,7 @@ class TranslatableAdmin(admin.ModelAdmin):
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         lang_code = self._language(request)
-        lang = get_language_name(lang_code)
+        lang = get_language_title(lang_code)
         available_languages = self.get_available_languages(obj)
         context['title'] = '%s (%s)' % (context['title'], lang)
         context['current_is_translated'] = lang_code in available_languages
@@ -130,25 +130,27 @@ class TranslatableAdmin(admin.ModelAdmin):
 
         base_url = '{0}://{1}{2}'.format(request.is_secure() and 'https' or 'http', request.get_host(), request.path)
 
-        for key, name in settings.LANGUAGES:
-            get['language'] = key
+        for lang_dict in settings.FLUENT_PAGES_LANGUAGES[settings.SITE_ID]:
+            code = lang_dict['code']
+            title = get_language_title(code)
+            get['language'] = code
             url = '{0}?{1}'.format(base_url, get.urlencode())
 
-            if key == language:
+            if code == language:
                 status = 'current'
-            elif key in available_languages:
+            elif code in available_languages:
                 status = 'available'
             else:
                 status = 'empty'
 
-            tabs.append((url, name, key, status))
-            tab_languages.append(key)
+            tabs.append((url, title, code, status))
+            tab_languages.append(code)
 
         # Additional stale translations in the database?
-        for key in available_languages:
-            if key not in tab_languages:
-                get['language'] = key
+        for code in available_languages:
+            if code not in tab_languages:
+                get['language'] = code
                 url = '{0}?{1}'.format(base_url, get.urlencode())
-                tabs.append((url, key, key, 'available'))
+                tabs.append((url, code, code, 'available'))
 
         return tabs
