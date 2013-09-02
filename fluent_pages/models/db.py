@@ -125,6 +125,20 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         # cached_url always points to the URL within the URL config root.
         # when the application is mounted at a subfolder, or the 'cms.urls' config
         # is included at a sublevel, it needs to be prepended.
+        return self.default_url
+
+
+    @property
+    def default_url(self):
+        """
+        The internal implementation of :func:`get_absolute_url`.
+        This function can be used when overriding :func:`get_absolute_url` in the settings.
+        For example::
+
+            ABSOLUTE_URL_OVERRIDES = {
+                'fluent_pages.Page': lambda o: "http://example.com" + o.default_url
+            }
+        """
         try:
             root = reverse('fluent-page').rstrip('/')
         except NoReverseMatch:
