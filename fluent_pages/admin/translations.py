@@ -1,14 +1,20 @@
 """
 Translation support for admin forms.
 """
-import urllib
-from django import forms
 from django.conf import settings
+from django.conf.urls import patterns, url
 from django.contrib import admin
+from django.contrib.admin.options import csrf_protect_m
+from django.contrib.admin.util import get_deleted_objects, unquote
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.utils.encoding import iri_to_uri
-from django.utils.translation import get_language
+from django.db import router
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import render
+from django.utils.encoding import iri_to_uri, force_unicode
+from django.utils.translation import get_language, ugettext_lazy as _
 from fluent_pages import appsettings
+from fluent_pages.utils.compat import transaction_atomic
 from fluent_pages.utils.i18n import normalize_language_code
 
 
@@ -64,7 +70,10 @@ class TranslatableAdmin(admin.ModelAdmin):
             'all': ('fluent_pages/admin/language_tabs.css',)
         }
 
+    deletion_not_allowed_template = 'admin/fluent_pages/page/deletion_not_allowed.html'
+
     query_language_key = 'language'
+
 
     def _language(self, request):
         return normalize_language_code(request.GET.get(self.query_language_key, get_language()))
@@ -84,11 +93,22 @@ class TranslatableAdmin(admin.ModelAdmin):
         form_class.language_code = self._language(request)
         return form_class
 
+    def get_urls(self):
+        urlpatterns = super(TranslatableAdmin, self).get_urls()
+        info = self.model._meta.app_label, self.model._meta.module_name
+
+        return patterns('',
+            url(r'^(.+)/delete-translation/(.+)/$',
+                self.admin_site.admin_view(self.delete_translation),
+                name='{0}_{1}_delete_translation'.format(*info)
+            ),
+        ) + urlpatterns
+
     def get_available_languages(self, obj):
         if obj:
             return obj.get_available_languages()
         else:
-            return []
+            return self.model._translations_model.objects.get_empty_query_set()
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
         lang_code = self._language(request)
@@ -162,3 +182,85 @@ class TranslatableAdmin(admin.ModelAdmin):
                     tabs.append((url, get_language_title(code), code, status))
 
         return tabs
+
+    @csrf_protect_m
+    @transaction_atomic
+    def delete_translation(self, request, object_id, language_code):
+        """
+        The 'delete translation' admin view for this model.
+        """
+        opts = self.model._meta
+        translations_model = self.model._translations_model
+
+        try:
+            translation = translations_model.objects.select_related('master').get(master=unquote(object_id), language_code=language_code)
+        except translations_model.DoesNotExist:
+            raise Http404
+
+        if not self.has_delete_permission(request, translation):
+            raise PermissionDenied
+
+        if self.get_available_languages(translation.master).count() <= 1:
+            return self.deletion_not_allowed(request, translation, language_code)
+
+        # Populate deleted_objects, a data structure of all related objects that
+        # will also be deleted.
+
+        using = router.db_for_write(translations_model)
+        lang = get_language_title(language_code)
+        (deleted_objects, perms_needed, protected) = get_deleted_objects(
+            [translation], translations_model._meta, request.user, self.admin_site, using)
+
+        if request.POST: # The user has already confirmed the deletion.
+            if perms_needed:
+                raise PermissionDenied
+            obj_display = _('{0} translation of {1}').format(lang, force_unicode(translation))  # in hvad: (translation.master)
+
+            self.log_deletion(request, translation, obj_display)
+            self.delete_model_translation(request, translation)
+            self.message_user(request, _('The %(name)s "%(obj)s" was deleted successfully.') % dict(
+                name=force_unicode(opts.verbose_name), obj=force_unicode(obj_display)
+            ))
+
+            if self.has_change_permission(request, None):
+                return HttpResponseRedirect(reverse('admin:{0}_{1}_changelist'.format(opts.app_label, opts.module_name)))
+            else:
+                return HttpResponseRedirect(reverse('admin:index'))
+
+        object_name = _('{0} Translation').format(force_unicode(opts.verbose_name))
+        if perms_needed or protected:
+            title = _("Cannot delete %(name)s") % {"name": object_name}
+        else:
+            title = _("Are you sure?")
+
+        context = {
+            "title": title,
+            "object_name": object_name,
+            "object": translation,
+            "deleted_objects": deleted_objects,
+            "perms_lacking": perms_needed,
+            "protected": protected,
+            "opts": opts,
+            "app_label": opts.app_label,
+        }
+
+        return render(request, self.delete_confirmation_template or [
+            "admin/%s/%s/delete_confirmation.html" % (opts.app_label, opts.object_name.lower()),
+            "admin/%s/delete_confirmation.html" % opts.app_label,
+            "admin/delete_confirmation.html"
+        ], context)
+
+    def deletion_not_allowed(self, request, obj, language_code):
+        opts = self.model._meta
+        context = {
+            'object': obj.master,
+            'language_code': language_code,
+            'opts': opts,
+            'app_label': opts.app_label,
+            'language_name': get_language_title(language_code),
+            'object_name': force_unicode(opts.verbose_name)
+        }
+        return render(request, self.deletion_not_allowed_template, context)
+
+    def delete_model_translation(self, request, translation):
+        translation.delete()

@@ -440,6 +440,10 @@ class UrlNode_Translation(TranslatedFieldsModel):
         super(UrlNode_Translation, self).save(*args, **kwargs)
         self._original_cached_url = self._cached_url
 
+    def get_ancestors(self, ascending=False, include_self=False):
+        # For the delete page, mptt_breadcrumb filter in the django-polymorphic-tree templates.
+        return self.master.get_ancestors(ascending=ascending, include_self=include_self)
+
 
 class TranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
     """
