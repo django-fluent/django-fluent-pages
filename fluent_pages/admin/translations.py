@@ -75,8 +75,27 @@ class TranslatableAdmin(admin.ModelAdmin):
     query_language_key = 'language'
 
 
-    def _language(self, request):
-        return normalize_language_code(request.GET.get(self.query_language_key, get_language()))
+    def _language(self, request, obj=None):
+        if not appsettings.is_multilingual():
+            # By default, the pages are stored in a single static language.
+            # This makes the transition to multilingual easier as well.
+            # The default language can operate as fallback language too.
+            return appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE
+        else:
+            # In multilingual mode, take the provided language of the request.
+            code = request.GET.get(self.query_language_key)
+
+            if not code:
+                # Show first tab by default
+                try:
+                    lang_choices = appsettings.FLUENT_PAGES_LANGUAGES[settings.SITE_ID]
+                    code = lang_choices[0]['code']
+                except (KeyError, IndexError):
+                    # No configuration, always fallback to default language.
+                    # This is essentially a non-multilingual configuration.
+                    code = appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE
+
+            return normalize_language_code(code)
 
     def get_object(self, request, object_id):
         """
@@ -84,7 +103,7 @@ class TranslatableAdmin(admin.ModelAdmin):
         """
         obj = super(TranslatableAdmin, self).get_object(request, object_id)
         if obj is not None:
-            obj.set_current_language(self._language(request), initialize=True)
+            obj.set_current_language(self._language(request, obj), initialize=True)
 
         return obj
 
