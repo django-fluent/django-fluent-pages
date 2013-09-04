@@ -90,7 +90,7 @@ class TranslatableAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form_class = super(TranslatableAdmin, self).get_form(request, obj, **kwargs)
-        form_class.language_code = self._language(request)
+        form_class.language_code = obj.get_current_language() if obj is not None else self._language(request)
         return form_class
 
     def get_urls(self):
@@ -111,12 +111,12 @@ class TranslatableAdmin(admin.ModelAdmin):
             return self.model._translations_model.objects.get_empty_query_set()
 
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        lang_code = self._language(request)
+        lang_code = obj.get_current_language() if obj is not None else self._language(request)
         lang = get_language_title(lang_code)
         available_languages = self.get_available_languages(obj)
         context['current_is_translated'] = lang_code in available_languages
         context['allow_deletion'] = len(available_languages) > 1
-        context['language_tabs'] = self.get_language_tabs(request, available_languages)
+        context['language_tabs'] = self.get_language_tabs(request, obj, available_languages)
         if context['language_tabs']:
             context['title'] = '%s (%s)' % (context['title'], lang)
         #context['base_template'] = self.get_change_form_base_template()
@@ -144,10 +144,10 @@ class TranslatableAdmin(admin.ModelAdmin):
             redirect['Location'] += "?{0}={1}".format(self.query_language_key, request.GET[self.query_language_key])
         return redirect
 
-    def get_language_tabs(self, request, available_languages):
+    def get_language_tabs(self, request, obj, available_languages):
         tabs = []
         get = request.GET.copy()  # QueryDict object
-        language = self._language(request)
+        language = obj.get_current_language() if obj is not None else self._language(request)
         tab_languages = []
 
         base_url = '{0}://{1}{2}'.format(request.is_secure() and 'https' or 'http', request.get_host(), request.path)
