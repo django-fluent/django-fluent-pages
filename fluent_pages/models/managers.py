@@ -8,7 +8,7 @@ from fluent_pages.utils.db import DecoratingQuerySet
 from fluent_pages.utils.compat import now
 
 
-class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
+class UrlNodeQuerySet(DecoratingQuerySet, PolymorphicMPTTQuerySet):
     def get_for_path(self, path, language_code=None):
         """
         Return the UrlNode for the given path.

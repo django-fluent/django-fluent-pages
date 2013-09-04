@@ -91,6 +91,15 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
         raise DeprecationWarning("Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages.")
 
 
+    # ---- Multilingual code ----
+
+    def queryset(self, request):
+        qs = super(UrlNodeParentAdmin, self).queryset(request)
+        if not appsettings.is_multilingual():
+            # Make sure the current translations remain visible, not the dynamically set get_language() value.
+            qs = qs.decorate(lambda x: x.set_current_language(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE))
+        return qs
+
 
     # ---- List code ----
 
