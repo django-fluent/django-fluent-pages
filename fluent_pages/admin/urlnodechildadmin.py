@@ -106,9 +106,22 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     )
 
     # Config add/edit page:
-    #prepopulated_fields = { 'slug': ('title',), }
     raw_id_fields = ('parent',)
     radio_fields = {'status': admin.HORIZONTAL}
+
+    # Manually configured prepopulated fields
+    # The static prepopulated_fields attribute is validated and fails.
+    class Media:
+        js = (
+            'admin/js/urlify.js',
+            'admin/js/prepopulate.min.js'
+        )
+
+    def get_prepopulated_fields(self, request, obj=None):
+        return {
+            'slug': ('title',)
+        }
+
 
     # NOTE: list page is configured in UrlNodeParentAdmin
     # as that class is used for the real admin screen.
