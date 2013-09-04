@@ -82,11 +82,11 @@ class TranslatableAdmin(admin.ModelAdmin):
         """
         Make sure the object is fetched in the correct language.
         """
-        object = super(TranslatableAdmin, self).get_object(request, object_id)
-        if object is not None:
-            object.set_current_language(self._language(request), initialize=True)
+        obj = super(TranslatableAdmin, self).get_object(request, object_id)
+        if obj is not None:
+            obj.set_current_language(self._language(request), initialize=True)
 
-        return object
+        return obj
 
     def get_form(self, request, obj=None, **kwargs):
         form_class = super(TranslatableAdmin, self).get_form(request, obj, **kwargs)
