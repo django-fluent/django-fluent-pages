@@ -114,10 +114,11 @@ class TranslatableAdmin(admin.ModelAdmin):
         lang_code = self._language(request)
         lang = get_language_title(lang_code)
         available_languages = self.get_available_languages(obj)
-        context['title'] = '%s (%s)' % (context['title'], lang)
         context['current_is_translated'] = lang_code in available_languages
         context['allow_deletion'] = len(available_languages) > 1
         context['language_tabs'] = self.get_language_tabs(request, available_languages)
+        if context['language_tabs']:
+            context['title'] = '%s (%s)' % (context['title'], lang)
         #context['base_template'] = self.get_change_form_base_template()
         return super(TranslatableAdmin, self).render_change_form(request, context, add, change, form_url, obj)
 
@@ -151,7 +152,7 @@ class TranslatableAdmin(admin.ModelAdmin):
 
         base_url = '{0}://{1}{2}'.format(request.is_secure() and 'https' or 'http', request.get_host(), request.path)
 
-        for lang_dict in settings.FLUENT_PAGES_LANGUAGES[settings.SITE_ID]:
+        for lang_dict in appsettings.FLUENT_PAGES_LANGUAGES.get(settings.SITE_ID, ()):
             code = lang_dict['code']
             title = get_language_title(code)
             get['language'] = code

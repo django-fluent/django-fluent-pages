@@ -42,7 +42,8 @@ if FLUENT_PAGES_DEFAULT_LANGUAGE_CODE not in supported_django_languages:
     raise ImproperlyConfigured("FLUENT_PAGES_DEFAULT_LANGUAGE_CODE '{0}' does not exist in LANGUAGES".format(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE))
 
 def _clean_languages():
-    defaults = FLUENT_PAGES_LANGUAGES.get('default', {})
+    FLUENT_PAGES_LANGUAGES.setdefault('default', {})
+    defaults = FLUENT_PAGES_LANGUAGES['default']
     defaults.setdefault('code', FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
     defaults.setdefault('hide_untranslated', False)
     defaults.setdefault('fallback', FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
@@ -69,8 +70,12 @@ def get_language_settings(language_code, site_id=None):
     if site_id is None:
         site_id = settings.SITE_ID
 
-    for lang_dict in FLUENT_PAGES_LANGUAGES[site_id]:
+    for lang_dict in FLUENT_PAGES_LANGUAGES.get(site_id, ()):
         if lang_dict['code'] == language_code:
             return lang_dict
 
     return FLUENT_PAGES_LANGUAGES['default']
+
+
+def is_multilingual(site_id=None):
+    return FLUENT_PAGES_SHOW_EXCLUDED_LANGUAGE_TABS or FLUENT_PAGES_LANGUAGES.has_key(site_id or settings.SITE_ID)

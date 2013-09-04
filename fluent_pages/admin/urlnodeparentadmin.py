@@ -2,6 +2,7 @@ import django
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from fluent_pages import appsettings
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
 from fluent_pages.models import UrlNode
 
@@ -40,7 +41,10 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
     add_type_form = PageTypeChoiceForm
 
     # Config list page:
-    list_display = ('title', 'language_column', 'status_column', 'modification_date', 'actions_column')
+    if appsettings.is_multilingual():
+        list_display = ('title', 'language_column', 'status_column', 'modification_date', 'actions_column')
+    else:
+        list_display = ('title', 'status_column', 'modification_date', 'actions_column')
     list_filter = ('status',) + extra_list_filters
     search_fields = ('slug', 'title')
     actions = ['make_published']
