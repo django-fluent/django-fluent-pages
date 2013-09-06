@@ -12,21 +12,14 @@ from django.db import router
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.utils.encoding import iri_to_uri, force_unicode
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from fluent_pages import appsettings
 from fluent_pages.utils.compat import transaction_atomic
-from fluent_pages.utils.i18n import normalize_language_code
+from fluent_pages.utils.i18n import normalize_language_code, get_language_title
 
 
 def get_model_form_field(model, name, **kwargs):
     return model._meta.get_field_by_name(name)[0].formfield(**kwargs)
-
-
-def get_language_title(language_code):
-    try:
-        return next(title for code, title in settings.LANGUAGES if code == language_code)
-    except StopIteration:
-        return language_code
 
 
 class TranslatableModelFormMixin(object):
