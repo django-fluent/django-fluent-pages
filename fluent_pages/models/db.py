@@ -319,7 +319,12 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         origslug = self.slug
         dupnr = 1
         while True:
-            others = UrlNode.objects.filter(parent=self.parent, translations__slug=self.slug).non_polymorphic()
+            others = UrlNode.objects.filter(
+                parent=self.parent,
+                translations__slug=self.slug,
+                translations__language_code=self.get_current_language()
+            ).non_polymorphic()
+
             if self.pk:
                 others = others.exclude(pk=self.pk)
 
