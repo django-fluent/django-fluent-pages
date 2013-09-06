@@ -85,7 +85,7 @@ class ModelDataTests(AppTestCase):
         self.assertIsInstance(shop, WebShopPage)
 
         # Same for lists
-        pages = list(Page.objects.published().filter(slug__in=('level1', 'shop')).order_by('slug'))
+        pages = list(Page.objects.published().filter(translations__slug__in=('level1', 'shop')).order_by('translations__slug'))
         self.assertIsInstance(pages[0], SimpleTextPage)
         self.assertIsInstance(pages[1], WebShopPage)
 
@@ -104,9 +104,9 @@ class ModelDataTests(AppTestCase):
         Moving the root node should update all child node URLs. (they are precalculated/cached in the DB)
         """
         # Get start situation
-        root = SimpleTextPage.objects.get(override_url='/')
-        level1 = SimpleTextPage.objects.get(slug='level1')
-        level2 = SimpleTextPage.objects.get(slug='level2')
+        root = SimpleTextPage.objects.get(translations__override_url='/')
+        level1 = SimpleTextPage.objects.get(translations__slug='level1')
+        level2 = SimpleTextPage.objects.get(translations__slug='level2')
         self.assertEquals(level1.get_absolute_url(), '/level1/')
         self.assertEquals(level2.get_absolute_url(), '/level1/level2/')
 
@@ -115,8 +115,8 @@ class ModelDataTests(AppTestCase):
         root.save()
 
         # Check result
-        level1 = SimpleTextPage.objects.get(slug='level1')
-        level2 = SimpleTextPage.objects.get(slug='level2')
+        level1 = SimpleTextPage.objects.get(translations__slug='level1')
+        level2 = SimpleTextPage.objects.get(translations__slug='level2')
         self.assertEquals(level1.get_absolute_url(), '/new_root/level1/')
         self.assertEquals(level2.get_absolute_url(), '/new_root/level1/level2/')
 
@@ -127,12 +127,12 @@ class ModelDataTests(AppTestCase):
         """
         Renaming a slug should affect the nodes below.
         """
-        level1 = SimpleTextPage.objects.get(slug='level1')
+        level1 = SimpleTextPage.objects.get(translations__slug='level1')
         level1.slug = 'level1_b'
         level1.save()
 
         level1 = SimpleTextPage.objects.get(pk=level1.pk)
-        level2 = SimpleTextPage.objects.get(slug='level2')
+        level2 = SimpleTextPage.objects.get(translations__slug='level2')
         self.assertEquals(level1.get_absolute_url(), '/level1_b/')
         self.assertEquals(level2.get_absolute_url(), '/level1_b/level2/')
 
@@ -141,13 +141,13 @@ class ModelDataTests(AppTestCase):
         """
         Moving a tree to a new parent should update their URLs
         """
-        root2 = SimpleTextPage.objects.get(slug='root2')
-        level1 = SimpleTextPage.objects.get(slug='level1')
+        root2 = SimpleTextPage.objects.get(translations__slug='root2')
+        level1 = SimpleTextPage.objects.get(translations__slug='level1')
         level1.parent = root2
         level1.save()
 
         level1 = SimpleTextPage.objects.get(pk=level1.pk)
-        level2 = SimpleTextPage.objects.get(slug='level2')
+        level2 = SimpleTextPage.objects.get(translations__slug='level2')
         self.assertEquals(level1.get_absolute_url(), '/root2/level1/')
         self.assertEquals(level2.get_absolute_url(), '/root2/level1/level2/')
 

@@ -50,7 +50,7 @@ class UrlDispatcherTests(AppTestCase):
         """
         Unpublished pages should not appear
         """
-        self.assertTrue(SimpleTextPage.objects.filter(slug='unpublished').exists(), "page /unpublished/ should exist in the database.")
+        self.assertTrue(SimpleTextPage.objects.filter(translations__slug='unpublished').exists(), "page /unpublished/ should exist in the database.")
         self.assert404('/unpublished/')
         self.assert404('/unpublished')   # With default APPEND_SLASH=True
 
