@@ -1,5 +1,5 @@
-from django import forms
 from django.contrib import admin
+from django.contrib.admin.widgets import AdminTextInputWidget
 from django.utils.translation import gettext_lazy as _
 from mptt.forms import MPTTAdminForm
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
@@ -18,6 +18,8 @@ class UrlNodeAdminForm(TranslatableModelForm, MPTTAdminForm):
     #   which makes the site easily portable to another path or root.
     # - Users don't have to know or care about this detail.
     #   They only see the absolute external URLs, so make the input reflect that as well.
+    title = TranslatedField(widget=AdminTextInputWidget)  # Needed for django-parler==0.9
+    slug = TranslatedField(widget=AdminTextInputWidget)
     override_url = TranslatedField(form_class=RelativeRootPathField)
 
 
