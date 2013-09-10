@@ -22,7 +22,9 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
 
         # Don't normalize slashes, expect the URLs to be sane.
         try:
-            return self.get(translations___cached_url=path, translations__language_code=language_code)
+            object = self.get(translations___cached_url=path, translations__language_code=language_code)
+            object.set_current_language(language_code)  # NOTE. Explicitly set language to the state the object was fetched in.
+            return object
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
@@ -43,7 +45,9 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             qs = self.filter(translations___cached_url__in=paths, translations__language_code=language_code) \
                      .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
                      .order_by('-_url_length')
-            return qs[0]
+            object = qs[0]
+            object.set_current_language(language_code)  # NOTE: Explicitly set language to the state the object was fetched in.
+            return object
         except IndexError:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
