@@ -1,10 +1,12 @@
 import django
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from parler.admin import TranslatableAdmin
+from parler.utils import is_multilingual_project
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
 from fluent_pages.models import UrlNode
+
 
 
 class PageTypeChoiceForm(NodeTypeChoiceForm):
@@ -32,7 +34,7 @@ else:
     extra_list_filters = (PageTypeListFilter,)
 
 
-class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
+class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
@@ -41,7 +43,10 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
     add_type_form = PageTypeChoiceForm
 
     # Config list page:
-    list_display = ('title', 'status_column', 'modification_date', 'actions_column')
+    if is_multilingual_project():
+        list_display = ('title', 'language_column', 'status_column', 'modification_date', 'actions_column')
+    else:
+        list_display = ('title', 'status_column', 'modification_date', 'actions_column')
     list_filter = ('status',) + extra_list_filters
     search_fields = ('slug', 'title')
     actions = ['make_published']
@@ -88,7 +93,6 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
         raise DeprecationWarning("Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages.")
 
 
-
     # ---- List code ----
 
     # NOTE: the regular results table is replaced client-side with a jqTree list.
@@ -99,7 +103,6 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
         (UrlNode.PUBLISHED, 'icon-yes.gif'),
         (UrlNode.DRAFT,     'icon-unknown.gif'),
     )
-
 
     def status_column(self, urlnode):
         status = urlnode.status

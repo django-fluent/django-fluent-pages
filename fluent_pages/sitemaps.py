@@ -24,7 +24,7 @@ class PageSitemap(Sitemap):
     """
     def items(self):
         """Return all items of the sitemap."""
-        return UrlNode.objects.published().non_polymorphic().order_by('level', '_cached_url')
+        return UrlNode.objects.published().non_polymorphic().distinct().order_by('level', 'translations__language_code', 'translations___cached_url')
 
     def lastmod(self, urlnode):
         """Return the last modification of the page."""

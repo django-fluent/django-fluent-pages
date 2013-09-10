@@ -14,6 +14,9 @@ class DecoratingQuerySet(QuerySet):
     """
     An enhancement of the QuerySet which allows objects to be decorated
     with extra properties before they are returned.
+
+    When using this method with *django-polymorphic* or *django-hvad*, make sure this
+    class is first in the chain of inherited classes.
     """
 
     def __init__(self, *args, **kwargs):

@@ -97,12 +97,13 @@ def _get_pages_of_type(model):
     cachekey = 'fluent_pages.instance_of.{0}'.format(model.__name__)
     pages = cache.get(cachekey)
     if not pages:
-        pages = list(UrlNode.objects.published().non_polymorphic().instance_of(model).only('_cached_url',
-            'parent', 'title', 'lft',  # add fields read by MPTT, otherwise .only() causes infinite loop in django-mptt 0.5.2
-            'id',                      # for Django 1.3
-        ))
+        pages = UrlNode.objects.published().non_polymorphic().instance_of(model).select_related('translations').only(
+            'parent', 'lft',  # add fields read by MPTT, otherwise .only() causes infinite loop in django-mptt 0.5.2
+            'id',             # for Django 1.3
+        )
 
         # Short cache time of 1 hour, take into account that the publication date can affect this value.
+        pages = list(pages)   # Make output consistent with non-cached version
         cache.set(cachekey, pages, 3600)
 
     return pages

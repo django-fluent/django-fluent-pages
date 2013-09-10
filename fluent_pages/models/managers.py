@@ -2,39 +2,48 @@
 The manager class for the CMS models
 """
 from django.db.models.query_utils import Q
+from django.utils.translation import get_language
+from parler.managers import TranslatableQuerySet
 from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
 from fluent_pages.utils.db import DecoratingQuerySet
 from fluent_pages.utils.compat import now
 
 
-class UrlNodeQuerySet(PolymorphicMPTTQuerySet, DecoratingQuerySet):
-    def get_for_path(self, path):
+class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQuerySet):
+    def get_for_path(self, path, language_code=None):
         """
         Return the UrlNode for the given path.
         The path is expected to start with an initial slash.
 
         Raises UrlNode.DoesNotExist when the item is not found.
         """
+        if language_code is None:
+            language_code = get_language()
+
         # Don't normalize slashes, expect the URLs to be sane.
         try:
-            return self.get(_cached_url=path)
+            return self.get(translations___cached_url=path, translations__language_code=language_code)
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
 
-    def best_match_for_path(self, path):
+    def best_match_for_path(self, path, language_code=None):
         """
         Return the UrlNode that is the closest parent to the given path.
 
         UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
         """
+        if language_code is None:
+            language_code = get_language()
+
         # Based on FeinCMS:
         paths = self._split_path_levels(path)
 
         try:
-            return self.filter(_cached_url__in=paths) \
-                       .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
-                       .order_by('-_url_length')[0]
+            qs = self.filter(translations___cached_url__in=paths, translations__language_code=language_code) \
+                     .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
+                     .order_by('-_url_length')
+            return qs[0]
         except IndexError:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 

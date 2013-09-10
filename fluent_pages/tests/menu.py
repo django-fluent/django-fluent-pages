@@ -35,7 +35,7 @@ class MenuTests(AppTestCase):
         """
         The API should pass the current page to it's queryset.
         """
-        current_page = Page.objects.get(slug='root2')
+        current_page = Page.objects.get(translations__slug='root2')
 
         menu = list(Page.objects.toplevel_navigation(current_page=current_page))
         self.assertEqual(menu[0].slug, 'home')
@@ -50,7 +50,7 @@ class MenuTests(AppTestCase):
         """
         The menu API should return the active item.
         """
-        current_page = Page.objects.get(slug='root2')
+        current_page = Page.objects.get(translations__slug='root2')
 
         nav = Page.objects.toplevel_navigation(current_page=current_page)
         menu = [PageNavigationNode(page, current_page=current_page) for page in nav]
@@ -72,7 +72,7 @@ class MenuTests(AppTestCase):
         """
         The menu API should return the active item.
         """
-        current_page = Page.objects.get(slug='level1a')
+        current_page = Page.objects.get(translations__slug='level1a')
 
         nav = Page.objects.toplevel_navigation(current_page=current_page)
         menu = [PageNavigationNode(page, current_page=current_page) for page in nav]

@@ -14,9 +14,10 @@ There are several sub packages:
 # have everything split into several packages
 from django.conf import settings
 from fluent_pages.forms.fields import PageChoiceField
-from fluent_pages.models.db import UrlNode, Page, HtmlPage, PageLayout
+import fluent_pages.models.db
+from .db import UrlNode, UrlNode_Translation, Page, HtmlPage, PageLayout
 
-__all__ = ['UrlNode', 'Page', 'HtmlPage', 'PageLayout']
+__all__ = ['UrlNode', 'UrlNode_Translation', 'Page', 'HtmlPage', 'PageLayout']
 
 
 def _register_cmsfield_url_type():
