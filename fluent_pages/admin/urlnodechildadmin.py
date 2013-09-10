@@ -1,31 +1,24 @@
+from django import forms
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from mptt.forms import MPTTAdminForm
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
-from fluent_pages.admin.translations import TranslatableModelFormMixin, TranslatableAdmin, get_model_form_field
+from parler.admin import TranslatableAdmin
+from parler.forms import TranslatableModelForm, TranslatedField
 from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_pages.forms.fields import RelativeRootPathField
 
 
-class UrlNodeAdminForm(TranslatableModelFormMixin, MPTTAdminForm):
+class UrlNodeAdminForm(TranslatableModelForm, MPTTAdminForm):
     """
     The admin form for the main fields (the ``UrlNode`` object).
     """
-    _translatable_model = UrlNode_Translation
-    _translatable_fields = ('title', 'slug', 'override_url')
-
-    # Translated fields.
-    # Added manually for simplicity, no metaclass magic in place.
-    #
     # Using a separate formfield to display the full URL in the override_url field:
     # - The override_url is stored relative to the URLConf root,
     #   which makes the site easily portable to another path or root.
     # - Users don't have to know or care about this detail.
     #   They only see the absolute external URLs, so make the input reflect that as well.
-    #
-    title = get_model_form_field(UrlNode_Translation, 'title')
-    slug = get_model_form_field(UrlNode_Translation, 'slug')
-    override_url = get_model_form_field(UrlNode_Translation, 'override_url', form_class=RelativeRootPathField)
+    override_url = TranslatedField(form_class=RelativeRootPathField)
 
 
     def clean(self):
@@ -109,19 +102,12 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     raw_id_fields = ('parent',)
     radio_fields = {'status': admin.HORIZONTAL}
 
-    # Manually configured prepopulated fields
     # The static prepopulated_fields attribute is validated and fails.
-    class Media:
-        js = (
-            'admin/js/urlify.js',
-            'admin/js/prepopulate.min.js'
-        )
-
+    # The object function does work, and django-parler provides the media
     def get_prepopulated_fields(self, request, obj=None):
         return {
             'slug': ('title',)
         }
-
 
     # NOTE: list page is configured in UrlNodeParentAdmin
     # as that class is used for the real admin screen.

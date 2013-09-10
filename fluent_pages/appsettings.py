@@ -3,7 +3,8 @@ Overview of all settings which can be customized.
 """
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from fluent_pages.utils.i18n import normalize_language_code, is_supported_django_language
+from parler import appsettings as parler_appsettings
+from parler.utils.i18n import normalize_language_code, is_supported_django_language
 import os
 
 FLUENT_PAGES_BASE_TEMPLATE = getattr(settings, "FLUENT_PAGES_BASE_TEMPLATE", 'fluent_pages/base.html')
@@ -13,10 +14,9 @@ FLUENT_PAGES_RELATIVE_TEMPLATE_DIR = getattr(settings, 'FLUENT_PAGES_RELATIVE_TE
 FLUENT_PAGES_DEFAULT_IN_NAVIGATION = getattr(settings, 'FLUENT_PAGES_DEFAULT_IN_NAVIGATION', True)
 
 # Note: the default language setting is used during the migrations
-FLUENT_DEFAULT_LANGUAGE_CODE = getattr(settings, 'FLUENT_DEFAULT_LANGUAGE_CODE', settings.LANGUAGE_CODE)
+FLUENT_DEFAULT_LANGUAGE_CODE = getattr(settings, 'FLUENT_DEFAULT_LANGUAGE_CODE', parler_appsettings.PARLER_DEFAULT_LANGUAGE_CODE)
 FLUENT_PAGES_DEFAULT_LANGUAGE_CODE = getattr(settings, 'FLUENT_PAGES_DEFAULT_LANGUAGE_CODE', FLUENT_DEFAULT_LANGUAGE_CODE)
-FLUENT_PAGES_SHOW_EXCLUDED_LANGUAGE_TABS = getattr(settings, 'FLUENT_PAGES_SHOW_EXCLUDED_LANGUAGE_TABS', False)
-FLUENT_PAGES_LANGUAGES = getattr(settings, 'FLUENT_PAGES_LANGUAGES', {})
+FLUENT_PAGES_LANGUAGES = getattr(settings, 'FLUENT_PAGES_LANGUAGES', parler_appsettings.PARLER_LANGUAGES)
 
 FLUENT_PAGES_PARENT_ADMIN_MIXIN = getattr(settings, 'FLUENT_PAGES_PARENT_ADMIN_MIXIN', None)
 FLUENT_PAGES_CHILD_ADMIN_MIXIN = getattr(settings, 'FLUENT_PAGES_CHILD_ADMIN_MIXIN', None)
@@ -75,7 +75,3 @@ def get_language_settings(language_code, site_id=None):
             return lang_dict
 
     return FLUENT_PAGES_LANGUAGES['default']
-
-
-def is_multilingual(site_id=None):
-    return FLUENT_PAGES_SHOW_EXCLUDED_LANGUAGE_TABS or FLUENT_PAGES_LANGUAGES.has_key(site_id or settings.SITE_ID)

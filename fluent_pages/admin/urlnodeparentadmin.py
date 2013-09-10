@@ -2,9 +2,11 @@ import django
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
-from fluent_pages import appsettings
+from parler.admin import TranslatableAdmin
+from parler.utils import is_multilingual_project
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
 from fluent_pages.models import UrlNode
+
 
 
 class PageTypeChoiceForm(NodeTypeChoiceForm):
@@ -32,7 +34,7 @@ else:
     extra_list_filters = (PageTypeListFilter,)
 
 
-class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
+class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
@@ -41,7 +43,7 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
     add_type_form = PageTypeChoiceForm
 
     # Config list page:
-    if appsettings.is_multilingual():
+    if is_multilingual_project():
         list_display = ('title', 'language_column', 'status_column', 'modification_date', 'actions_column')
     else:
         list_display = ('title', 'status_column', 'modification_date', 'actions_column')
@@ -91,29 +93,11 @@ class UrlNodeParentAdmin(PolymorphicMPTTParentModelAdmin):
         raise DeprecationWarning("Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages.")
 
 
-    # ---- Multilingual code ----
-
-    def queryset(self, request):
-        qs = super(UrlNodeParentAdmin, self).queryset(request)
-        if not appsettings.is_multilingual():
-            # Make sure the current translations remain visible, not the dynamically set get_language() value.
-            qs = qs.decorate(lambda x: x.set_current_language(appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE))
-        return qs
-
-
     # ---- List code ----
 
     # NOTE: the regular results table is replaced client-side with a jqTree list.
     # When making changes to the list, test both the JavaScript and non-JavaScript variant.
     # The jqTree variant still uses the server-side rendering for the colums.
-
-    def language_column(self, urlnode):
-        languages = urlnode.get_available_languages()
-        return u'<span class="available-languages">{0}</span>'.format(' '.join(languages))
-
-    language_column.allow_tags = True
-    language_column.short_description = _("Lang")
-
 
     STATUS_ICONS = (
         (UrlNode.PUBLISHED, 'icon-yes.gif'),

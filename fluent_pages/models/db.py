@@ -15,11 +15,12 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+from parler.models import TranslatableModel, TranslatedFieldsModel
+from parler.fields import TranslatedField
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from fluent_pages.models.translations import TranslatableModel, TranslatedAttribute, TranslatedFieldsModel
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 
 
@@ -62,8 +63,8 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         (DRAFT, _('Draft')),
     )
 
-    title = TranslatedAttribute('title')
-    slug = TranslatedAttribute('slug')
+    title = TranslatedField()  # Explicitly added, not needed
+    slug = TranslatedField()
     parent = PageTreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager by 'parent'
@@ -73,7 +74,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True, help_text=_('''When the page should go live, status must be "Published".'''))
     publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=appsettings.FLUENT_PAGES_DEFAULT_IN_NAVIGATION, db_index=True)
-    override_url = TranslatedAttribute('override_url')
+    override_url = TranslatedField()
 
     # Metadata
     author = models.ForeignKey(get_user_model_name(), verbose_name=_('author'), editable=False)
@@ -81,10 +82,11 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
     modification_date = models.DateTimeField(_('last modification'), editable=False, auto_now=True)
 
     # Caching
-    _cached_url = TranslatedAttribute('_cached_url')
+    _cached_url = TranslatedField()
 
     # Django settings
     objects = UrlNodeManager()
+    _default_manager = UrlNodeManager()
 
     class Meta:
         app_label = 'fluent_pages'
@@ -411,7 +413,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
     title = models.CharField(_("title"), max_length=255)
     slug = models.SlugField(_("slug"), max_length=50, help_text=_("The slug is used in the URL of the page"))
     override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
-    _cached_url = models.CharField(default='', max_length=300, db_index=True, blank=True)
+    _cached_url = models.CharField(default='', max_length=300, db_index=True, blank=True, editable=False)
 
     # Base fields
     master = models.ForeignKey(UrlNode, related_name='translations', null=True)
@@ -455,11 +457,8 @@ class TranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
     The operation can't be completed, because a translation is missing.
     """
 
+UrlNode_Translation.DoesNotExist = TranslationDoesNotExist
 
-# Link the model, to make it quite generic
-# (just less sophisticated then django-hvad)
-UrlNode._translations_model = UrlNode_Translation
-UrlNode._translations_model_doesnotexist = TranslationDoesNotExist
 
 
 class Page(UrlNode):

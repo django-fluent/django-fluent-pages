@@ -3,12 +3,13 @@ The manager class for the CMS models
 """
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
+from parler.managers import TranslatableQuerySet
 from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
 from fluent_pages.utils.db import DecoratingQuerySet
 from fluent_pages.utils.compat import now
 
 
-class UrlNodeQuerySet(DecoratingQuerySet, PolymorphicMPTTQuerySet):
+class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQuerySet):
     def get_for_path(self, path, language_code=None):
         """
         Return the UrlNode for the given path.
