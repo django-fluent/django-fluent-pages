@@ -26,7 +26,7 @@ class Migration(DataMigration):
             except ObjectDoesNotExist:
                 try:
                     # Try internal fallback
-                    translation = translations.get(language_code__in=('en_US', 'en'))
+                    translation = translations.get(language_code__in=('en-us', 'en'))
                 except ObjectDoesNotExist:
                     # Hope there is a single translation
                     translation = translations.get()
