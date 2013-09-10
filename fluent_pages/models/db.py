@@ -17,6 +17,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFieldsModel
 from parler.fields import TranslatedField
+from parler.utils import get_language_title
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
@@ -428,7 +429,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
         verbose_name_plural = _('URL Nodes translations')  # Using Urlnode here makes it's way to the admin pages too.
 
     def __unicode__(self):
-        return self.title
+        return u"{0}: {1}".format(get_language_title(self.language_code), self.title)
 
     def __repr__(self):
         return "<{0}: #{1}, {2}, {3}, master: #{4}>".format(
