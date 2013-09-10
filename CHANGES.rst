@@ -1,9 +1,11 @@
 Changes in version 0.9 (dev)
 ----------------------------
 
+* Added multilingual support, using django-parler_.
 * Added hooks for patching the admin; ``FLUENT_PAGES_PARENT_ADMIN_MIXIN`` and ``FLUENT_PAGES_CHILD_ADMIN_MIXIN``.
   Note that using this feature is comparable to monkey-patching, and future compatibility can't be fully guanteed.
 * Add ``FLUENT_PAGES_DEFAULT_IN_NAVIGATION`` setting to change the "in navigation" default value.
+* Dropped Django 1.3 support.
 
 
 Changes in version 0.8.6
@@ -89,5 +91,6 @@ First public release
 .. _django.contrib.flatpages: https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
 .. _django-haystack: http://haystacksearch.org/
+.. _django-parler: https://github.com/edoburu/django-parler
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 .. _django-tag-parser: https://github.com/edoburu/django-tag-parser

@@ -53,6 +53,7 @@ To have a standard setup with django-fluent-contents_ integrated, use::
 
         # Required dependencies
         'mptt',
+        'parler',
         'polymorphic',
         'polymorphic_tree',
 
