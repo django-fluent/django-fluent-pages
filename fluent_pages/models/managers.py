@@ -3,8 +3,10 @@ The manager class for the CMS models
 """
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
+from parler import is_multilingual_project
 from parler.managers import TranslatableQuerySet
 from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
+from fluent_pages import appsettings
 from fluent_pages.utils.db import DecoratingQuerySet
 from fluent_pages.utils.compat import now
 
@@ -168,5 +170,16 @@ class UrlNodeManager(PolymorphicMPTTModelManager):
 
         When current_page is passed, the object values such as 'is_current' will be set. 
         """
-        items = self.toplevel().in_navigation().non_polymorphic()._mark_current(current_page)
-        return items
+        qs = self.toplevel().in_navigation().non_polymorphic()._mark_current(current_page)
+
+        if is_multilingual_project():
+            # Make sure only translated menu items are visible.
+            language = get_language()
+            fallback = appsettings.get_language_settings(language).get('fallback')
+
+            if fallback and fallback != language:
+                qs = qs.filter(translations__language_code__in=(language, fallback)).distinct()
+            else:
+                qs = qs.filter(translations__language_code=language)
+
+        return qs
