@@ -37,7 +37,7 @@ setup(
 
     install_requires=[
         'django-mptt>=0.5.4',
-        'django-parler>=0.9',
+        'django-parler>=0.9.2',
         'django-polymorphic>=0.5.2',        # Need 0.5.2 for several upstream fixes related to forms.
         'django-polymorphic-tree>=0.8.10',  # Enforce latest bugfix version for consistent behavior.
         'django-tag-parser>=1.0.0',

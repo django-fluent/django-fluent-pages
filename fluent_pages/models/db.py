@@ -64,8 +64,8 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         (DRAFT, _('Draft')),
     )
 
-    title = TranslatedField()  # Explicitly added, not needed
-    slug = TranslatedField()
+    title = TranslatedField(any_language=True)
+    slug = TranslatedField()  # Explicitly added, but not needed
     parent = PageTreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
     #children = a RelatedManager by 'parent'
@@ -147,15 +147,10 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         except NoReverseMatch:
             raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
 
-        cached_url = self._cached_url
+        cached_url = self._cached_url  # May raise TranslationDoesNotExist
         if cached_url is None:
             # This happened with Django 1.3 projects, when .only() didn't have the 'id' field included.
             raise ImproperlyConfigured("UrlNode._cached_url is None for UrlNode!\nUrlNode = {0}".format(self.__dict__))
-        elif cached_url == '':
-            # There is an URL node, but no translation is set for the current language.
-            raise TranslationDoesNotExist("Page does not have a translation for the current language!\nPage ID #{0}, language={1}".format(
-                self.pk, self.get_current_language()
-            ))
 
         return root + cached_url
 
@@ -476,14 +471,8 @@ class Page(UrlNode):
         verbose_name_plural = _('Pages')
 
     def __unicode__(self):
-        # Find translation
-        translated = self.title or self.slug
-        if translated:
-            return translated
-
-        # Get first translation that can be found
-        translation = self.translations.all()[0]
-        return translation.title or translation.slug
+        # self.title is configured with any_language=True, so always returns a value.
+        return self.title or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
 
     # Make PyCharm happy
     objects = UrlNode.objects

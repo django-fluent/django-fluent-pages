@@ -9,6 +9,7 @@ It offers properties such as :attr:`~fluent_pages.models.Page.parent`
 and :attr:`~fluent_pages.models.Page.children` (a :class:`~django.db.models.RelatedManager`),
 and methods such as `get_parent()` and `get_children()` through the `MPTTModel` base class.
 """
+from parler.models import TranslationDoesNotExist
 
 
 class NavigationNode(object):
@@ -54,7 +55,18 @@ class NavigationNode(object):
     _mptt_meta = property(_not_implemented)
 
     def __repr__(self):
-        return '<{0}: {1}>'.format(self.__class__.__name__, self.url)
+        try:
+            url = self.url
+        except TranslationDoesNotExist:
+            url = None
+        return '<{0}: {1}>'.format(self.__class__.__name__, url)
+
+    def __unicode__(self):
+        # This only exists in case a developer uses `{{ node }}` in the template.
+        try:
+            return self.title
+        except TranslationDoesNotExist:
+            return ''
 
 
 class PageNavigationNode(NavigationNode):

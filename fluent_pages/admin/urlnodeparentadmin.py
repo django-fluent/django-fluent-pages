@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from parler.admin import TranslatableAdmin
+from parler.models import TranslationDoesNotExist
 from parler.utils import is_multilingual_project
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
 from fluent_pages.models import UrlNode
@@ -120,7 +121,16 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
 
     def can_preview_object(self, urlnode):
         """ Override whether the node can be previewed. """
-        return hasattr(urlnode, 'get_absolute_url') and urlnode.is_published
+        if not hasattr(urlnode, 'get_absolute_url') or not urlnode.is_published:
+            return False
+
+        try:
+            # Must have a translation in the currently active admin language.
+            urlnode._cached_url
+        except TranslationDoesNotExist:
+            return False
+        else:
+            return True
 
 
     # ---- Bulk actions ----
