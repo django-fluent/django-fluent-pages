@@ -110,3 +110,22 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
             }
 
         return JsonResponse(json, status=status)
+
+
+    # ---- Layout permission hooks ----
+
+    def get_readonly_fields(self, request, obj=None):
+        fields = super(FluentPageAdmin, self).get_readonly_fields(request, obj)
+        if obj is not None and not self.has_change_page_layout_permission(request, obj):
+            # Disable on edit page only.
+            # Add page is allowed, need to be able to choose initial layout
+            fields = fields + ('layout',)
+        return fields
+
+
+    def has_change_page_layout_permission(self, request, obj=None):
+        """
+        Whether the user can change the page layout.
+        """
+        codename = '{0}.change_page_layout'.format(obj._meta.app_label)
+        return request.user.has_perm(codename, obj=obj)

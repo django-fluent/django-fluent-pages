@@ -27,6 +27,9 @@ class FluentPageBase(HtmlPage):
         abstract = True
         verbose_name = _("Page")
         verbose_name_plural = _("Pages")
+        permissions = (
+            ('change_page_layout', _("Can change Page layout")),
+        )
 
 
 

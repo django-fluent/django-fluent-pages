@@ -3,7 +3,7 @@
  * When a new layout is fetched, it is passed to the fluent_contents module to rebuild the tabs.
  */
 var fluent_layouts = {
-    'ct_id': null,
+    'ct_id': null
 };
 
 (function($)
@@ -23,6 +23,8 @@ var fluent_layouts = {
   function onReady()
   {
     var layout_selector = $("#id_layout");
+    if(layout_selector.length == 0)   // readonly field.
+      return;
     fluent_layouts._select_single_option( layout_selector );
     layout_selector.change( fluent_layouts.onLayoutChange );
     fluent_contents.layout.onInitialize( fluent_layouts.fetch_layout_on_refresh );
