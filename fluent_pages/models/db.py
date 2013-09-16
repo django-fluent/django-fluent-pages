@@ -94,6 +94,9 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         ordering = ('lft',)
         verbose_name = _('URL Node')
         verbose_name_plural = _('URL Nodes')  # Using Urlnode here makes it's way to the admin pages too.
+        permissions = (
+            ('change_shared_fields_urlnode', _("Can change Shared fields")),  # The fields shared between languages.
+        )
 
 #    class MPTTMeta:
 #        order_insertion_by = 'title'

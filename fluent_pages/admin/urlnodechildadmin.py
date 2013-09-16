@@ -103,6 +103,7 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     # Config add/edit page:
     raw_id_fields = ('parent',)
     radio_fields = {'status': admin.HORIZONTAL}
+    readonly_shared_fields = ('status', 'in_navigation', 'parent', 'publication_date', 'publication_end_date',)
 
     # The static prepopulated_fields attribute is validated and fails.
     # The object function does work, and django-parler provides the media
@@ -114,6 +115,27 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     # NOTE: list page is configured in UrlNodeParentAdmin
     # as that class is used for the real admin screen.
     # This class is only a base class for the custom pagetype plugins.
+
+
+    def get_readonly_fields(self, request, obj=None):
+        fields = super(UrlNodeChildAdmin, self).get_readonly_fields(request, obj)
+        if obj is not None:
+            # Edit screen
+            if obj.get_available_languages().count() >= 2 \
+            and not self.has_change_shared_fields_permission(request, obj):
+                # This page is translated in multiple languages,
+                # language team is only allowed to update their own language.
+                fields += self.readonly_shared_fields
+        return fields
+
+
+    def has_change_shared_fields_permission(self, request, obj=None):
+        """
+        Whether the user can change the page layout.
+        """
+        codename = '{0}.change_shared_fields_urlnode'.format(obj._meta.app_label)
+        return request.user.has_perm(codename, obj=obj)
+
 
 
     def save_model(self, request, obj, form, change):

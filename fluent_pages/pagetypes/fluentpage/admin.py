@@ -116,7 +116,10 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         fields = super(FluentPageAdmin, self).get_readonly_fields(request, obj)
-        if obj is not None and not self.has_change_page_layout_permission(request, obj):
+
+        if obj is not None \
+        and not 'layout' in fields \
+        and not self.has_change_page_layout_permission(request, obj):
             # Disable on edit page only.
             # Add page is allowed, need to be able to choose initial layout
             fields = fields + ('layout',)
