@@ -133,6 +133,13 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
             return True
 
 
+    def get_language_short_title(self, language_code):
+        """
+        Turn the language code to uppercase.
+        """
+        return language_code.upper()
+
+
     # ---- Bulk actions ----
 
     def make_published(self, request, queryset):
