@@ -49,7 +49,7 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
     else:
         list_display = ('title', 'status_column', 'modification_date', 'actions_column')
     list_filter = ('status',) + extra_list_filters
-    search_fields = ('slug', 'title')
+    search_fields = ('translations__slug', 'translations__title')
     actions = ['make_published']
 
     class Media:
