@@ -15,6 +15,8 @@ This can be done using:
     )
 """
 from django.contrib.sitemaps import Sitemap
+from django.utils.translation import get_language
+from fluent_pages import appsettings
 from fluent_pages.models import UrlNode
 
 class PageSitemap(Sitemap):
@@ -24,7 +26,11 @@ class PageSitemap(Sitemap):
     """
     def items(self):
         """Return all items of the sitemap."""
-        return UrlNode.objects.published().non_polymorphic().distinct().order_by('level', 'translations__language_code', 'translations___cached_url')
+        lang_dict = appsettings.get_language_settings(get_language())
+        languages = set((lang_dict['code'], lang_dict['fallback']))
+        return UrlNode.objects.published().non_polymorphic() \
+            .filter(translations__language_code__in=languages) \
+            .distinct().order_by('level', 'translations__language_code', 'translations___cached_url')
 
     def lastmod(self, urlnode):
         """Return the last modification of the page."""
