@@ -4,7 +4,7 @@ Overview of all settings which can be customized.
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from parler import appsettings as parler_appsettings
-from parler.utils.i18n import normalize_language_code, is_supported_django_language
+from parler.utils import normalize_language_code, is_supported_django_language
 import os
 
 FLUENT_PAGES_BASE_TEMPLATE = getattr(settings, "FLUENT_PAGES_BASE_TEMPLATE", 'fluent_pages/base.html')
@@ -15,6 +15,8 @@ FLUENT_PAGES_DEFAULT_IN_NAVIGATION = getattr(settings, 'FLUENT_PAGES_DEFAULT_IN_
 
 # Note: the default language setting is used during the migrations
 FLUENT_DEFAULT_LANGUAGE_CODE = getattr(settings, 'FLUENT_DEFAULT_LANGUAGE_CODE', parler_appsettings.PARLER_DEFAULT_LANGUAGE_CODE)
+
+# Allow this module to have other settings, but default to the shared settings
 FLUENT_PAGES_DEFAULT_LANGUAGE_CODE = getattr(settings, 'FLUENT_PAGES_DEFAULT_LANGUAGE_CODE', FLUENT_DEFAULT_LANGUAGE_CODE)
 FLUENT_PAGES_LANGUAGES = getattr(settings, 'FLUENT_PAGES_LANGUAGES', parler_appsettings.PARLER_LANGUAGES)
 
@@ -38,29 +40,15 @@ else:
 # Clean settings
 FLUENT_PAGES_DEFAULT_LANGUAGE_CODE = normalize_language_code(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
 
-def _clean_languages():
-    if not is_supported_django_language(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE):
-        raise ImproperlyConfigured("FLUENT_PAGES_DEFAULT_LANGUAGE_CODE '{0}' does not exist in LANGUAGES".format(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE))
+if not is_supported_django_language(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE):
+    raise ImproperlyConfigured("FLUENT_PAGES_DEFAULT_LANGUAGE_CODE '{0}' does not exist in LANGUAGES".format(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE))
 
-    FLUENT_PAGES_LANGUAGES.setdefault('default', {})
-    defaults = FLUENT_PAGES_LANGUAGES['default']
-    defaults.setdefault('code', FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
-    defaults.setdefault('hide_untranslated', False)
-    defaults.setdefault('fallback', FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
-
-    for site_id, lang_choices in FLUENT_PAGES_LANGUAGES.iteritems():
-        if site_id == 'default':
-            continue
-
-        if not isinstance(lang_choices, (list, tuple)):
-            raise ImproperlyConfigured("FLUENT_PAGES_LANGUAGES[{0}] should be a tuple of language choices!".format(site_id))
-        for i, choice in enumerate(lang_choices):
-            if not is_supported_django_language(choice['code']):
-                raise ImproperlyConfigured("FLUENT_PAGES_LANGUAGES[{0}][{1}]['code'] does not exist in LANGUAGES".format(site_id, i))
-            choice.setdefault('fallback', defaults['fallback'])
-            choice.setdefault('hide_untranslated', defaults['hide_untranslated'])
-
-_clean_languages()
+FLUENT_PAGES_LANGUAGES = parler_appsettings.add_default_language_settings(
+    FLUENT_PAGES_LANGUAGES, 'FLUENT_PAGES_LANGUAGES',
+    hide_untranslated=False,
+    code=FLUENT_PAGES_DEFAULT_LANGUAGE_CODE,
+    fallback=FLUENT_PAGES_DEFAULT_LANGUAGE_CODE
+)
 
 
 def get_language_settings(language_code, site_id=None):
