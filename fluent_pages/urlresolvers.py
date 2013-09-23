@@ -3,6 +3,7 @@ URL Resolving for dynamically added pages.
 """
 from django.core.cache import cache
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.utils.translation import get_language
 
 # Several imports in this file are placed inline, to avoid loading the models too early.
 # Because fluent_pages.models creates a QuerySet, all all apps will be imported.
@@ -27,17 +28,17 @@ class PageTypeNotMounted(NoReverseMatch):
     pass
 
 
-def mixed_reverse(viewname, args=None, kwargs=None, current_app=None, current_page=None, multiple=False, ignore_multiple=False):
+def mixed_reverse(viewname, args=None, kwargs=None, current_app=None, current_page=None, language_code=None, multiple=False, ignore_multiple=False):
     """
     Attempt to reverse a normal URLconf URL, revert to :func:`app_reverse` on errors.
     """
     try:
         return reverse(viewname, args=args, kwargs=kwargs, current_app=current_app)
     except NoReverseMatch:
-        return app_reverse(viewname, args=args, kwargs=kwargs, multiple=multiple, ignore_multiple=ignore_multiple, current_page=current_page)
+        return app_reverse(viewname, args=args, kwargs=kwargs, multiple=multiple, ignore_multiple=ignore_multiple, current_page=current_page, language_code=language_code)
 
 
-def app_reverse(viewname, args=None, kwargs=None, multiple=False, ignore_multiple=False, current_page=None):
+def app_reverse(viewname, args=None, kwargs=None, multiple=False, ignore_multiple=False, current_page=None, language_code=None):
     """
     Locate an URL which is located under a page type.
     """
@@ -48,7 +49,7 @@ def app_reverse(viewname, args=None, kwargs=None, multiple=False, ignore_multipl
     # Find the plugin
     # TODO: allow more caching of the results
     plugin, url_end = _find_plugin_reverse(viewname, args, kwargs)
-    pages = _get_pages_of_type(plugin.model)
+    pages = _get_pages_of_type(plugin.model, language_code=language_code)
 
     if len(pages) > 1 and not (multiple or ignore_multiple):
         # Multiple results available.
@@ -89,11 +90,14 @@ def _find_plugin_reverse(viewname, args, kwargs):
         ))
 
 
-def _get_pages_of_type(model):
+def _get_pages_of_type(model, language_code=None):
     """
     Find where a given model is hosted.
     """
     from fluent_pages.models.db import UrlNode
+    if language_code is None:
+        language_code = get_language()
+
     cachekey = 'fluent_pages.instance_of.{0}'.format(model.__name__)
     pages = cache.get(cachekey)
     if not pages:
@@ -105,6 +109,11 @@ def _get_pages_of_type(model):
         # Short cache time of 1 hour, take into account that the publication date can affect this value.
         pages = list(pages)   # Make output consistent with non-cached version
         cache.set(cachekey, pages, 3600)
+
+    # Return in desired language
+    # This is effectively what qs.language(..) does
+    for page in pages:
+        page.set_current_language(language_code)
 
     return pages
 
