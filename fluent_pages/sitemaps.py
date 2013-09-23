@@ -25,12 +25,19 @@ class PageSitemap(Sitemap):
     It follows the API for the :mod:`django.contrib.sitemaps <django.contrib.sitemaps>` module.
     """
     def items(self):
-        """Return all items of the sitemap."""
+        """
+        Return all items of the sitemap.
+        """
         lang_dict = appsettings.get_language_settings(get_language())
-        languages = set((lang_dict['code'], lang_dict['fallback']))
-        return UrlNode.objects.published().non_polymorphic() \
-            .filter(translations__language_code__in=languages) \
-            .distinct().order_by('level', 'translations__language_code', 'translations___cached_url')
+        qs = UrlNode.objects.published().non_polymorphic()
+
+        # Limit to current languages
+        if not lang_dict['hide_untranslated'] and lang_dict['fallback'] != lang_dict['code']:
+            qs = qs.filter(translations__language_code__in=(lang_dict['code'], lang_dict['fallback'])).distinct()
+        else:
+            qs = qs.filter(translations__language_code=lang_dict['code'])
+
+        return qs.order_by('level', 'translations__language_code', 'translations___cached_url')
 
     def lastmod(self, urlnode):
         """Return the last modification of the page."""
