@@ -46,7 +46,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         try:
             qs = self.filter(translations___cached_url__in=paths, translations__language_code=language_code) \
                      .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
-                     .order_by('-_url_length')
+                     .order_by('-level', '-_url_length')  # / and /news/ is both level 0
             object = qs[0]
             object.set_current_language(language_code)  # NOTE: Explicitly set language to the state the object was fetched in.
             return object
@@ -93,6 +93,14 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         Return only pages in the navigation.
         """
         return self.published().filter(in_navigation=True)
+
+
+    def url_pattern_types(self):
+        """
+        Return only page types which have a custom URLpattern attached.
+        """
+        from fluent_pages.extensions import page_type_pool
+        return self.filter(polymorphic_ctype_id__in=(page_type_pool.get_url_pattern_types()))
 
 
     def toplevel(self):

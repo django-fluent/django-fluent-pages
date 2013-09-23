@@ -126,7 +126,9 @@ class CmsPageDispatcher(GetPathMixin, View):
         """
         path = path or self.get_path()
         language_code = language_code or self.language_code
-        qs = self.get_queryset()
+
+        # Only check for nodes with custom urlpatterns
+        qs = self.get_queryset().url_pattern_types()
 
         return _try_languages(language_code, UrlNode.DoesNotExist,
             lambda lang: qs.best_match_for_path(path, language_code=lang)
