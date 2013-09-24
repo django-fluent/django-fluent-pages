@@ -4,7 +4,7 @@ The manager class for the CMS models
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
 from parler import is_multilingual_project
-from parler.managers import TranslatableQuerySet
+from parler.managers import TranslatableQuerySet, TranslatableManager
 from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
 from fluent_pages import appsettings
 from fluent_pages.utils.db import DecoratingQuerySet
@@ -126,7 +126,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
 
 
 
-class UrlNodeManager(PolymorphicMPTTModelManager):
+class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
     """
     Extra methods attached to ``UrlNode.objects`` and ``Page.objects``.
     """
