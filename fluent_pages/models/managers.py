@@ -157,3 +157,10 @@ class UrlNodeManager(PolymorphicMPTTModelManager):
         """
         items = self.toplevel().in_navigation().non_polymorphic()._mark_current(current_page)
         return items
+
+
+    def url_pattern_types(self):
+        """
+        Return only page types which have a custom URLpattern attached.
+        """
+        return self.get_query_set().url_pattern_types()
