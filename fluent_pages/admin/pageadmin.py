@@ -51,7 +51,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
     """
     base_model = Page
     base_form = PageAdminForm
-    readonly_shared_fields = UrlNodeChildAdmin.readonly_shared_fields + ('layout',)
+    readonly_shared_fields = UrlNodeChildAdmin.readonly_shared_fields
 
     #: The default template name, which is available in the template context.
     #: Use ``{% extend base_change_form_template %}`` in templates to inherit from it.

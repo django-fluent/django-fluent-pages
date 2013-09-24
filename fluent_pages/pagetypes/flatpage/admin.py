@@ -2,7 +2,7 @@ from fluent_pages.admin import HtmlPageAdmin
 
 
 class FlatPageAdmin(HtmlPageAdmin):
-    pass
+    readonly_shared_fields = HtmlPageAdmin.readonly_shared_fields + ('template_name', 'content')
 
     # Implicitly loaded:
     #change_form_template = "admin/fluent_pages/pagetypes/flatpage/change_form.html"

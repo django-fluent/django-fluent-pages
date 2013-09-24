@@ -16,6 +16,7 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     see the API documentation of `Creating a CMS system <http://django-fluent-contents.readthedocs.org/en/latest/cms.html>`_
     in the *django-fluent-contents* documentation to implement the required API's.
     """
+    readonly_shared_fields = HtmlPageAdmin.readonly_shared_fields + ('layout',)
 
     # By using base_fieldsets, the parent PageAdmin will
     # add an extra fieldset for all derived fields automatically.
