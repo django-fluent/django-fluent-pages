@@ -12,6 +12,16 @@ from fluent_pages.utils.compat import now
 
 
 class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQuerySet):
+    """
+    Queryset methods for UrlNode objects.
+    """
+
+    def active_translations(self, language_code=None):
+        # overwritten to honor our settings instead of the django-parler defaults
+        language_codes = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
+        return self.translated(*language_codes)
+
+
     def get_for_path(self, path, language_code=None):
         """
         Return the UrlNode for the given path.

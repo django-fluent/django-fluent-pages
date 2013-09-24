@@ -311,8 +311,10 @@ def _get_fallback_language(language_code):
     """
     Whether to try the default language.
     """
-    lang_dict = appsettings.get_language_settings(language_code)
-    if not lang_dict['hide_untranslated'] and lang_dict['fallback'] != language_code:
-        return lang_dict['fallback']
-    else:
+    # Re-use django-parler logic, which takes `hide_untranslated` into account.
+    # Choices = (language, fallback) or (language,)
+    choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
+    if len(choices) <= 1:
         return None
+    else:
+        return choices[-1]
