@@ -191,3 +191,10 @@ class UrlNodeManager(PolymorphicMPTTModelManager):
                 qs = qs.filter(translations__language_code=language)
 
         return qs
+
+
+    def url_pattern_types(self):
+        """
+        Return only page types which have a custom URLpattern attached.
+        """
+        return self.get_query_set().url_pattern_types()
