@@ -39,10 +39,16 @@ class AppUrlNode(BaseNode):
         url_args = tag_args[1::]
         url_kwargs = dict([(smart_str(name, 'ascii'), value) for name, value in tag_kwargs.items()])
 
-        # If the page is a UrlNode, use it as base for the pages.
-        page = context.get('page')
-        if not isinstance(page, UrlNode):
-            page = None
+        # The app_reverse() tag can handle multiple results fine if it knows what the current page is.
+        # Try to find it.
+        request = context.get('request')
+        page = getattr(request, '_current_fluent_page', None)
+        if not page:
+            # There might be a 'page' variable, that was retrieved via `{% get_fluent_page_vars %}`.
+            # However, django-haystack also uses this variable name, so check whether it's the correct object.
+            page = context.get('page')
+            if not isinstance(page, UrlNode):
+                page = None
 
         # Try a normal URLConf URL, then an app URL
         return mixed_reverse(view_name, args=url_args, kwargs=url_kwargs, current_app=context.current_app, current_page=page)
