@@ -150,7 +150,10 @@ class CmsPageDispatcher(GetPathMixin, View):
         except self.model.DoesNotExist:
             return None
 
-        self.request._current_fluent_page = self.object   # Avoid additional lookup in templatetags
+        # Store the current page. This is used in the `app_reverse()` code,
+        # and also avoids additional lookup in templatetags.
+        # NOTE: django-fluent-blogs actually reads this variable too.
+        self.request._current_fluent_page = self.object
 
         # Before returning the response of an object,
         # check if the plugin overwrites the root url with a custom view.
