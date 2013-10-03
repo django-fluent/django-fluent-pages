@@ -6,9 +6,10 @@ from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm, TranslatedField
 from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_pages.forms.fields import RelativeRootPathField
+import mptt
 
 
-class UrlNodeAdminForm(TranslatableModelForm, MPTTAdminForm):
+class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
     """
     The admin form for the main fields (the ``UrlNode`` object).
     """
@@ -21,6 +22,13 @@ class UrlNodeAdminForm(TranslatableModelForm, MPTTAdminForm):
     slug = TranslatedField()
     override_url = TranslatedField(form_class=RelativeRootPathField)
 
+    def __init__(self, *args, **kwargs):
+        if 'parent' not in self.base_fields and mptt.VERSION[:2] == (0, 6):
+            # Skip bug in django-mptt 0.6.0
+            # https://github.com/django-mptt/django-mptt/issues/275
+            TranslatableModelForm.__init__(self, *args, **kwargs)
+        else:
+            super(UrlNodeAdminForm, self).__init__(*args, **kwargs)
 
     def clean(self):
         """
