@@ -38,12 +38,12 @@ setup(
     install_requires=[
         'django-mptt>=0.5.4',
         'django-parler>=0.9.3',
-        'django-polymorphic>=0.5.2',        # Need 0.5.2 for several upstream fixes related to forms.
+        'django-polymorphic>=0.5.3',        # Need 0.5.3 for several upstream fixes related to forms.
         'django-polymorphic-tree>=0.8.10',  # Enforce latest bugfix version for consistent behavior.
         'django-tag-parser>=1.0.0',
     ],
     requires=[
-        'Django (>=1.3)',   # Using staticfiles
+        'Django (>=1.4)',
     ],
     extras_require={
         'flatpage': ['django-wysiwyg>=0.5.1'],
