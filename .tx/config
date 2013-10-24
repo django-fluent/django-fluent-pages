@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[django-fluent-pages.djangopo]
+file_filter = fluent_pages/locale/<lang>/LC_MESSAGES/django.po
+source_file = fluent_pages/locale/en/LC_MESSAGES/django.po
+source_lang = en
+type = PO

@@ -1,0 +1,270 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-10-24 11:34+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin/htmlpageadmin.py:23
+msgid "SEO settings"
+msgstr ""
+
+#: admin/urlnodechildadmin.py:59
+msgid "This URL is already taken by an other page."
+msgstr ""
+
+#: admin/urlnodechildadmin.py:70
+msgid "This slug is already used by an other page at the same level."
+msgstr ""
+
+#: admin/urlnodechildadmin.py:92
+msgid "Menu structure"
+msgstr ""
+
+#: admin/urlnodechildadmin.py:97
+msgid "Publication settings"
+msgstr ""
+
+#: admin/urlnodeparentadmin.py:14
+msgid "Page type"
+msgstr ""
+
+#: admin/urlnodeparentadmin.py:25
+msgid "page type"
+msgstr ""
+
+#: admin/urlnodeparentadmin.py:119
+msgid "Status"
+msgstr ""
+
+#: admin/urlnodeparentadmin.py:155
+msgid "Mark selected objects as published"
+msgstr ""
+
+#: models/db.py:63
+msgid "Published"
+msgstr ""
+
+#: models/db.py:64
+msgid "Draft"
+msgstr ""
+
+#: models/db.py:69
+msgid "parent"
+msgstr ""
+
+#: models/db.py:69
+msgid "You can also change the parent by dragging the page in the list."
+msgstr ""
+
+#: models/db.py:74
+msgid "status"
+msgstr ""
+
+#: models/db.py:75
+msgid "publication date"
+msgstr ""
+
+#: models/db.py:75
+msgid "When the page should go live, status must be \"Published\"."
+msgstr ""
+
+#: models/db.py:76
+msgid "publication end date"
+msgstr ""
+
+#: models/db.py:77
+msgid "show in navigation"
+msgstr ""
+
+#: models/db.py:81
+msgid "author"
+msgstr ""
+
+#: models/db.py:82
+msgid "creation date"
+msgstr ""
+
+#: models/db.py:83
+msgid "last modification"
+msgstr ""
+
+#: models/db.py:95
+msgid "URL Node"
+msgstr ""
+
+#: models/db.py:96
+msgid "URL Nodes"
+msgstr ""
+
+#: models/db.py:98
+msgid "Can change Shared fields"
+msgstr ""
+
+#: models/db.py:412 models/db.py:509
+msgid "title"
+msgstr ""
+
+#: models/db.py:413
+msgid "slug"
+msgstr ""
+
+#: models/db.py:413
+msgid "The slug is used in the URL of the page"
+msgstr ""
+
+#: models/db.py:414
+msgid "Override URL"
+msgstr ""
+
+#: models/db.py:414
+msgid ""
+"Override the target URL. Be sure to include slashes at the beginning and at "
+"the end if it is a local URL. This affects both the navigation and subpages' "
+"URLs."
+msgstr ""
+
+#: models/db.py:426
+msgid "URL Node translation"
+msgstr ""
+
+#: models/db.py:427
+msgid "URL Nodes translations"
+msgstr ""
+
+#: models/db.py:473 pagetypes/fluentpage/models.py:28
+msgid "Page"
+msgstr ""
+
+#: models/db.py:474 models/db.py:498 pagetypes/fluentpage/models.py:29
+msgid "Pages"
+msgstr ""
+
+#: models/db.py:491
+msgid "keywords"
+msgstr ""
+
+#: models/db.py:492
+msgid "description"
+msgstr ""
+
+#: models/db.py:508
+msgid "key"
+msgstr ""
+
+#: models/db.py:508
+msgid "A short name to identify the layout programmatically"
+msgstr ""
+
+#: models/db.py:531 pagetypes/flatpage/models.py:13
+#: pagetypes/fluentpage/models.py:18
+msgid "Layout"
+msgstr ""
+
+#: models/db.py:532
+msgid "Layouts"
+msgstr ""
+
+#: models/fields.py:28
+msgid "The selected page cannot have sub pages."
+msgstr ""
+
+#: pagetypes/flatpage/models.py:14
+msgid "Content"
+msgstr ""
+
+#: pagetypes/flatpage/models.py:20
+msgid "Flat Page"
+msgstr ""
+
+#: pagetypes/flatpage/models.py:21
+msgid "Flat Pages"
+msgstr ""
+
+#: pagetypes/fluentpage/models.py:31
+msgid "Can change Page layout"
+msgstr ""
+
+#: pagetypes/redirectnode/models.py:12
+msgid "Normal redirect"
+msgstr ""
+
+#: pagetypes/redirectnode/models.py:13
+msgid "Permanent redirect (for SEO ranking)"
+msgstr ""
+
+#: pagetypes/redirectnode/models.py:19
+msgid "New URL"
+msgstr ""
+
+#: pagetypes/redirectnode/models.py:20
+msgid "Redirect type"
+msgstr ""
+
+#: pagetypes/redirectnode/models.py:20
+msgid ""
+"Use 'normal redirect' unless you want to transfer SEO ranking to the new "
+"page."
+msgstr ""
+
+#: pagetypes/redirectnode/models.py:23
+msgid "Redirect"
+msgstr ""
+
+#: pagetypes/redirectnode/models.py:24
+msgid "Redirects"
+msgstr ""
+
+#: pagetypes/textfile/models.py:11
+msgid "Plain text"
+msgstr ""
+
+#: pagetypes/textfile/models.py:12
+msgid "XML"
+msgstr ""
+
+#: pagetypes/textfile/models.py:13
+msgid "HTML"
+msgstr ""
+
+#: pagetypes/textfile/models.py:19
+msgid "File contents"
+msgstr ""
+
+#: pagetypes/textfile/models.py:20
+msgid "File type"
+msgstr ""
+
+#: pagetypes/textfile/models.py:23
+msgid "Plain text file"
+msgstr ""
+
+#: pagetypes/textfile/models.py:24
+msgid "Plain text files"
+msgstr ""
+
+#: templates/admin/fluent_pages/page/change_form.html:23
+msgid "History"
+msgstr ""
+
+#: templates/admin/fluent_pages/page/change_form.html:24
+msgid "View on site"
+msgstr ""
+
+#: templates/admin/fluent_pages/page/change_form.html:36
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
