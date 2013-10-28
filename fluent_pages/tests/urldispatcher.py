@@ -1,6 +1,7 @@
-from fluent_pages.models import Page
+from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.utils import AppTestCase, script_name, override_settings
 from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
+from fluent_pages.views.dispatcher import _try_languages, _get_fallback_language
 
 
 class UrlDispatcherTests(AppTestCase):
@@ -101,6 +102,14 @@ class UrlDispatcherTests(AppTestCase):
         self.assertContains(response, 'test_webshop: article: foobar')
 
 
+    def test_app_page_unicode_url(self):
+        """
+        The URL that is a mix
+        """
+        response = self.client.get(u'/shop/\u20ac/')
+        self.assertContains(response, u'test_webshop: article: \u20ac')
+
+
     def test_app_page_append_slash(self):
         """
         The APPEND_SLASH setting should also work for app page URLs
@@ -126,12 +135,27 @@ class UrlDispatcherTests(AppTestCase):
         self.assertEqual(response['Content-Type'], 'text/plain')
 
 
+    def test_unicode_404_internal(self):
+        """
+        Test the internal code that is used for a 404 page.
+        """
+        qs = UrlNode.objects.published()
+
+        # This needs a language code that has a fallback to work. Typically,
+        # that is 'PARLER_DEFAULT_LANGUAGE_CODE', which is set to 'LANGUAGE_CODE' (en-us) by default.
+        self.assertTrue(_get_fallback_language('nl'))
+
+        self.assertRaises(UrlNode.DoesNotExist, lambda: _try_languages('nl', UrlNode.DoesNotExist,
+            lambda lang: qs.get_for_path(u'/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/', language_code=lang)
+        ))
+
+
     def test_unicode_404(self):
         """
         Urls with unicode characters should return proper 404 pages, not crash on it.
         """
-        url = u'/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/'
-        self.assert404(url)
+        # Non existing page
+        self.assert404(u'/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/')
 
 
     def test_admin_redirect(self):

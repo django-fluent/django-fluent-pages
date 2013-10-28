@@ -36,6 +36,13 @@ if not settings.configured:
         ),
         TEST_RUNNER='django.test.simple.DjangoTestSuiteRunner',   # for Django 1.6, see https://docs.djangoproject.com/en/dev/releases/1.6/#new-test-runner
         SITE_ID = 4,
+        PARLER_LANGUAGES = {
+            4: (
+                {'code': 'nl', 'fallback': 'en'},
+                {'code': 'en'},
+            ),
+        },
+        PARLER_DEFAULT_LANGUAGE_CODE = 'en',  # Having a good fallback causes more code to run, more error checking.
         ROOT_URLCONF = 'fluent_pages.tests.testapp.urls',
         FLUENT_PAGES_TEMPLATE_DIR = path.join(module_root, 'fluent_pages', 'tests', 'testapp', 'templates'),
     )

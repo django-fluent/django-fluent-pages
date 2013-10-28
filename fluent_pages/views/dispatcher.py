@@ -304,7 +304,7 @@ def _try_languages(language_code, exception_class, func):
     try:
         return func(fallback)
     except exception_class as e:
-        raise exception_class(str(e) + "\nTried languages: {0}, {1}".format(language_code, fallback), e)
+        raise exception_class(u"{0}\nTried languages: {1}, {2}".format(unicode(e), language_code, fallback), e)
 
 
 def _get_fallback_language(language_code):
