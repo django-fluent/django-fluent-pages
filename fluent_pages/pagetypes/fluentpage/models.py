@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 from fluent_pages.models import HtmlPage, PageLayout
 
-class FluentPageBase(HtmlPage):
+class AbstractFluentPage(HtmlPage):
     """
     A ```FluentPage``` represents one HTML page of the site.
 
@@ -32,8 +32,11 @@ class FluentPageBase(HtmlPage):
         )
 
 
+# Backwards compatibility
+FluentPageBase = AbstractFluentPage
 
-class FluentPage(FluentPageBase):
+
+class FluentPage(AbstractFluentPage):
     """
     A ```FluentPage``` represents one HTML page of the site.
     """
