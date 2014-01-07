@@ -93,9 +93,16 @@ var fluent_layouts = {
 
   fluent_layouts.fetch_layout = function(layout_id)
   {
+    // Get the ct_id from the template.
+    var ct_id = parseInt(fluent_layouts.ct_id);
+    if(isNaN(ct_id)) {
+        alert("Internal CMS error: missing `fluent_layouts.ct_id` variable in the template!");
+        return;
+    }
+
     // Get layout info.
     $.ajax({
-      url: ajax_root + "get_layout/" + parseInt(layout_id) + "/?ct_id=" + parseInt(fluent_layouts.ct_id),
+      url: ajax_root + "get_layout/" + parseInt(layout_id) + "/?ct_id=" + ct_id,
       success: function(layout, textStatus, xhr)
       {
         // Ask to update the tabs!
