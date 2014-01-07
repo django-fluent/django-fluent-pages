@@ -144,6 +144,16 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
         return request.user.has_perm(codename, obj=obj)
 
 
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        """
+        Allow formfield_overrides to contain field names too.
+        """
+        overrides = self.formfield_overrides.get(db_field.name)
+        if overrides:
+            kwargs.update(overrides)
+
+        return super(UrlNodeChildAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
 
     def save_model(self, request, obj, form, change):
         # Automatically store the user in the author field.

@@ -7,6 +7,7 @@ Changes in version 0.9 (dev)
 * Added ``FLUENT_PAGES_DEFAULT_IN_NAVIGATION`` setting to change the "in navigation" default value.
 * Added "Can change Shared fields" permission for all page types.
 * Added "Can change Page layout" permission for ``fluent_pages.pagetypes.fluentpage``.
+* Allow ``formfield_overrides`` to contain field names too.
 * API: renamed ``FluentPageBase`` to ``AbstractFluentPage``.
 * Dropped Django 1.3 support.
 
