@@ -16,10 +16,10 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
     Queryset methods for UrlNode objects.
     """
 
-    def active_translations(self, language_code=None):
+    def active_translations(self, language_code=None, **translated_fields):
         # overwritten to honor our settings instead of the django-parler defaults
         language_codes = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
-        return self.translated(*language_codes)
+        return self.translated(*language_codes, **translated_fields)
 
 
     def get_for_path(self, path, language_code=None):
