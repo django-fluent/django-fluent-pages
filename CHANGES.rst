@@ -4,7 +4,6 @@ Changes in version 0.9 (dev)
 * Added multilingual support, using django-parler_.
 * Added hooks for patching the admin; ``FLUENT_PAGES_PARENT_ADMIN_MIXIN`` and ``FLUENT_PAGES_CHILD_ADMIN_MIXIN``.
   Note that using this feature is comparable to monkey-patching, and future compatibility can't be fully guanteed.
-* Added ``FLUENT_PAGES_DEFAULT_IN_NAVIGATION`` setting to change the "in navigation" default value.
 * Added "Can change Shared fields" permission for all page types.
 * Added "Can change Page layout" permission for ``fluent_pages.pagetypes.fluentpage``.
 * Allow ``formfield_overrides`` to contain field names too.
@@ -15,7 +14,10 @@ Changes in version 0.9 (dev)
 Changes in version 0.8.6
 ------------------------
 
+* Add ``FLUENT_PAGES_DEFAULT_IN_NAVIGATION`` setting to change the "in navigation" default value.
 * Fix django-mptt_ 0.6 support.
+* Fix using `{% appurl %}` for modules with multiple results.
+* Widen "modification date" column, to support other languages.
 
 
 Changes in version 0.8.5
