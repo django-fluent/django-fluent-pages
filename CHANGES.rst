@@ -1,8 +1,10 @@
 Changes in version 0.8.6
 ------------------------
 
-* Fix django-mptt_ 0.6 support.
 * Add ``FLUENT_PAGES_DEFAULT_IN_NAVIGATION`` setting to change the "in navigation" default value.
+* Fix django-mptt_ 0.6 support.
+* Fix using `{% appurl %}` for modules with multiple results.
+* Widen "modification date" column, to support other languages.
 
 
 Changes in version 0.8.5
