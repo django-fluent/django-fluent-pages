@@ -286,7 +286,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         # Store this object
         self._make_slug_unique()
         self._update_cached_url()
-        url_changed = self._get_translated_model().is_cached_url_modified
+        url_changed = self._get_translated_model().is_cached_url_modified  # HACK!
         super(UrlNode, self).save(*args, **kwargs)  # Already saves translated model.
 
         # Detect changes
