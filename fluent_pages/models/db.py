@@ -164,10 +164,11 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         """
         Return all available URLs to this page.
         """
-        root = reverse('fluent-page').rstrip('/')
         result = {}
         for code, cached_url in self.translations.values_list('language_code', '_cached_url'):
-            result[code] = root + cached_url
+            with switch_language(self, code):
+                root = reverse('fluent-page').rstrip('/')
+                result[code] = root + cached_url
 
         return result
 
