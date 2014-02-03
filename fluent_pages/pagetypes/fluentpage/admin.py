@@ -1,10 +1,27 @@
-from fluent_pages.admin import HtmlPageAdmin
+from fluent_pages.admin import HtmlPageAdmin, PageAdminForm
 from fluent_pages.models import PageLayout
 from fluent_pages.utils.ajax import JsonResponse
 from fluent_pages.utils.compat import url, patterns
 from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 from .widgets import LayoutSelector
+
+
+class FluentPageAdminForm(PageAdminForm):
+    """
+    The form for the :class:`FluentPageAdmin` code.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(FluentPageAdminForm, self).__init__(*args, **kwargs)
+        if 'layout' in self.fields:
+            self.fields['layout'].queryset = self.get_layout_queryset(self.fields['layout'].queryset)
+
+    def get_layout_queryset(self, base_qs):
+        """
+        Allow to limit the layout choices
+        """
+        return base_qs
 
 
 
@@ -16,6 +33,7 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     see the API documentation of `Creating a CMS system <http://django-fluent-contents.readthedocs.org/en/latest/cms.html>`_
     in the *django-fluent-contents* documentation to implement the required API's.
     """
+    base_form = FluentPageAdminForm
     readonly_shared_fields = HtmlPageAdmin.readonly_shared_fields + ('layout',)
 
     # By using base_fieldsets, the parent PageAdmin will
