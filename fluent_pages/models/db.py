@@ -23,6 +23,7 @@ from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
+from parler.utils.context import switch_language
 
 
 def _get_current_site():
@@ -145,17 +146,18 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
                 'fluent_pages.Page': lambda o: "http://example.com" + o.default_url
             }
         """
-        try:
-            root = reverse('fluent-page').rstrip('/')
-        except NoReverseMatch:
-            raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
+        with switch_language(self):
+            try:
+                root = reverse('fluent-page').rstrip('/')
+            except NoReverseMatch:
+                raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
 
-        cached_url = self._cached_url  # May raise TranslationDoesNotExist
-        if cached_url is None:
-            # This happened with Django 1.3 projects, when .only() didn't have the 'id' field included.
-            raise ImproperlyConfigured("UrlNode._cached_url is None for UrlNode!\nUrlNode = {0}".format(self.__dict__))
+            cached_url = self._cached_url  # May raise TranslationDoesNotExist
+            if cached_url is None:
+                # This happened with Django 1.3 projects, when .only() didn't have the 'id' field included.
+                raise ImproperlyConfigured("UrlNode._cached_url is None for UrlNode!\nUrlNode = {0}".format(self.__dict__))
 
-        return root + cached_url
+            return root + cached_url
 
 
     def get_absolute_urls(self):
