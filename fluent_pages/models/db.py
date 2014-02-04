@@ -17,7 +17,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFieldsModel
 from parler.fields import TranslatedField
-from parler.utils import get_language_title
+from parler.utils import get_language_title, is_multilingual_project
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
@@ -277,6 +277,12 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
     # ---- Custom behavior ----
 
+    #@transaction_atomic
+    #def move_to(self, target, position='first-child'):
+    #    # This is called by django-polymorphic-tree when moving a page.
+    #    super(UrlNode, self).move_to(target, position)
+
+
     # This code runs in a transaction since it's potentially editing a lot of records (all descendant urls).
     @transaction_atomic
     def save(self, *args, **kwargs):
@@ -350,6 +356,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         if self.override_url:
             self._cached_url = self.override_url
         else:
+            # NOTE: PageTreeForeignKey sets parent object language.
             parent_url = self.parent._cached_url if not self.is_root_node() else '/'
 
             # The following shouldn't occur, it means a direct call to Page.objects.create()
@@ -373,14 +380,21 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         # (c) Matthias Kestenholz, BSD licensed
 
         # Keep cache
+        current_language = self.get_current_language()
+        fallback = self.get_fallback_language()
         cached_page_urls = {
             self.id: self._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
         }
 
         # Update all sub objects.
         # even if can_have_children is false, ensure a consistent state for the URL structure
-        subobjects = self.get_descendants().prefetch_related('translations').order_by('lft')
+        subobjects = self.get_descendants().order_by('lft')
         for subobject in subobjects:
+            if subobject.has_translation(current_language):
+                subobject.set_current_language(self.get_current_language())
+            else:
+                subobject.set_current_language(fallback)
+
             # Set URL, using cache for parent URL.
             if subobject.override_url:
                 subobject._cached_url = subobject.override_url  # reaffirms, so enforces consistency
