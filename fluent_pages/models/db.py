@@ -388,7 +388,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
         # Update all sub objects.
         # even if can_have_children is false, ensure a consistent state for the URL structure
-        subobjects = self.get_descendants().order_by('lft')
+        subobjects = self.get_descendants().order_by('lft', 'tree_id')
         for subobject in subobjects:
             if subobject.has_translation(current_language):
                 subobject.set_current_language(self.get_current_language())
