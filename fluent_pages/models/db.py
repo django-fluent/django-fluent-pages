@@ -119,6 +119,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         self._original_pub_date = self.publication_date if not self._deferred else None
         self._original_pub_end_date = self.publication_end_date if not self._deferred else None
         self._original_status = self.status if not self._deferred else None
+        self._original_parent = self.parent_id if not self._deferred else None
 
         self._cached_ancestors = None
         self.is_current = None    # Can be defined by mark_current()
@@ -277,10 +278,11 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
     # ---- Custom behavior ----
 
-    #@transaction_atomic
-    #def move_to(self, target, position='first-child'):
-    #    # This is called by django-polymorphic-tree when moving a page.
-    #    super(UrlNode, self).move_to(target, position)
+    @transaction_atomic
+    def move_to(self, target, position='first-child'):
+        # This is called by django-polymorphic-tree when moving a page.
+        super(UrlNode, self).move_to(target, position)
+        self.save()  # Trigger fill page rebuild
 
 
     # This code runs in a transaction since it's potentially editing a lot of records (all descendant urls).
@@ -289,28 +291,61 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         """
         Save the model, and update caches.
         """
-        # Store this object
-        self._make_slug_unique()
-        self._update_cached_url()
-        url_changed = self._get_translated_model().is_cached_url_modified  # HACK!
+        parent_changed = self.parent_id != self._original_parent
+        if parent_changed:
+            self._mark_all_translations_dirty()
+
         super(UrlNode, self).save(*args, **kwargs)  # Already saves translated model.
+
+        # Update state for next save (if object is persistent somewhere)
+        self._original_parent = self.parent_id
+        self._original_pub_date = self.publication_date
+        self._original_pub_end_date = self.publication_end_date
+        self._original_status = self.status
+
+
+    def _mark_all_translations_dirty(self):
+        # Update the cached_url of all translations.
+        # This triggers _update_cached_url() in save_translation() later.
+
+        # Find all translations that this object has,
+        # both in the database, and unsaved local objects.
+        all_languages = set(self.get_available_languages()) | set(self._translations_cache.iterkeys())  # HACK!
+        parent_urls = dict(UrlNode_Translation.objects.filter(master=self.parent_id).values_list('language_code', '_cached_url'))
+
+        for language_code in all_languages:
+            # Get the parent-url for the translation (fetched once to speed up)
+            parent_url = parent_urls.get(language_code, None)
+            if not parent_url:
+                fallback = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(language_code)
+                parent_url = parent_urls.get(fallback, None)
+
+            translation = self._get_translated_model(language_code)
+            translation._fetched_parent_url = parent_url
+
+
+    def save_translation(self, translation, *args, **kwargs):
+        """
+        Update the fields associated with the translation.
+        This also rebuilds the decedent URLs when the slug changed.
+        """
+        # Store this object
+        self._make_slug_unique(translation)
+        self._update_cached_url(translation)
+        url_changed = translation.is_cached_url_modified
+        super(UrlNode, self).save_translation(translation, *args, **kwargs)
 
         # Detect changes
         published_changed = self._original_pub_date != self.publication_date \
                          or self._original_pub_end_date != self.publication_end_date \
                          or self._original_status != self.status
 
-        if url_changed or published_changed:
+        if url_changed or published_changed or translation._fetched_parent_url:
             self._expire_url_caches()
-
-            # Update state for next save (if object is persistent somewhere)
-            self._original_pub_date = self.publication_date
-            self._original_pub_end_date = self.publication_end_date
-            self._original_status = self.status
 
             if url_changed:
                 # Performance optimisation: only traversing and updating many records when something changed in the URL.
-                self._update_decendant_urls()
+                self._update_decendant_urls(translation)
 
 
     def delete(self, *args, **kwargs):
@@ -322,17 +357,17 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
     # the save() method is split in the 3 methods below,
     # each "do one thing, and only one thing".
 
-    def _make_slug_unique(self):
+    def _make_slug_unique(self, translation):
         """
         Check for duplicate slugs at the same level, and make the current object unique.
         """
-        origslug = self.slug
+        origslug = translation.slug
         dupnr = 1
         while True:
             others = UrlNode.objects.filter(
                 parent=self.parent_id,
-                translations__slug=self.slug,
-                translations__language_code=self.get_current_language()
+                translations__slug=translation.slug,
+                translations__language_code=translation.language_code
             ).non_polymorphic()
 
             if self.pk:
@@ -342,22 +377,24 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
                 break
 
             dupnr += 1
-            self.slug = "%s-%d" % (origslug, dupnr)
+            translation.slug = "%s-%d" % (origslug, dupnr)
 
 
-    def _update_cached_url(self):
+    def _update_cached_url(self, translation):
         """
         Update the URLs
         """
         # This block of code is largely inspired and based on FeinCMS
         # (c) Matthias Kestenholz, BSD licensed
 
-        # determine own URL
-        if self.override_url:
-            self._cached_url = self.override_url
+        # determine own URL, taking translation language into account.
+        if translation.override_url:
+            translation._cached_url = translation.override_url
         else:
-            # NOTE: PageTreeForeignKey sets parent object language.
-            parent_url = self.parent._cached_url if not self.is_root_node() else '/'
+            if self.is_root_node():
+                parent_url = '/'
+            else:
+                parent_url = translation.get_parent_cached_url(self)
 
             # The following shouldn't occur, it means a direct call to Page.objects.create()
             # attempts to add a child node to a file object instead of calling model.full_clean().
@@ -366,12 +403,12 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
                 parent_url += '/'
 
             if self.is_file:
-                self._cached_url = u'{0}{1}'.format(parent_url, self.slug)
+                translation._cached_url = u'{0}{1}'.format(parent_url, translation.slug)
             else:
-                self._cached_url = u'{0}{1}/'.format(parent_url, self.slug)
+                translation._cached_url = u'{0}{1}/'.format(parent_url, translation.slug)
 
 
-    def _update_decendant_urls(self):
+    def _update_decendant_urls(self, translation):
         """
         Update the URLs of all decendant pages.
         The method is only called when the URL has changed.
@@ -380,10 +417,14 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         # (c) Matthias Kestenholz, BSD licensed
 
         # Keep cache
-        current_language = self.get_current_language()
-        fallback = self.get_fallback_language()
+        current_language = translation.language_code
+        fallback_language = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(current_language)
+
         cached_page_urls = {
-            self.id: self._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
+            self.id: translation._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
+        }
+        fallback_page_urls = {
+            self.id: self.safe_translation_getter('_cached_url', language_code=fallback_language).rstrip('/') + '/'
         }
 
         # Update all sub objects.
@@ -392,19 +433,38 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         for subobject in subobjects:
             if subobject.has_translation(current_language):
                 subobject.set_current_language(self.get_current_language())
+                use_fallback_base = (subobject.parent_id not in cached_page_urls)  # not present in previous object.
+            elif fallback_language:
+                # Subobject only has default language.
+                # Decendent URLs will be based on this default URL.
+                subobject.set_current_language(fallback_language)
+                use_fallback_base = True
             else:
-                subobject.set_current_language(fallback)
+                raise NotImplementedError("Tree node #{0} has no active ({1}) or fallback ({2}) language".format(
+                    subobject.id, current_language, fallback_language
+                ))
 
             # Set URL, using cache for parent URL.
             if subobject.override_url:
                 subobject._cached_url = subobject.override_url  # reaffirms, so enforces consistency
             else:
-                subobject._cached_url = u'%s%s/' % (cached_page_urls[subobject.parent_id], subobject.slug)
+                # Always construct the fallback URL, to revert to it when needed.
+                fallback_base = fallback_page_urls[subobject.parent_id]
+                fallback_page_urls[subobject] = u'{0}{1}/'.format(fallback_base, subobject.slug)
 
-            cached_page_urls[subobject.id] = subobject._cached_url
+                if use_fallback_base:
+                    base = fallback_base
+                else:
+                    base = cached_page_urls[subobject.parent_id]
+
+                subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
+
+            if not use_fallback_base:
+                cached_page_urls[subobject.id] = subobject._cached_url
 
             # call base class, do not recurse
-            super(UrlNode, subobject).save()
+            sub_translation = subobject._translations_cache[subobject.get_current_language()]  # HACK!
+            super(UrlNode, subobject).save_translation(sub_translation)
             subobject._expire_url_caches()
 
 
@@ -454,6 +514,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
     def __init__(self, *args, **kwargs):
         super(UrlNode_Translation, self).__init__(*args, **kwargs)
         self._original_cached_url = self._cached_url
+        self._fetched_parent_url = None  # Allow passing data in UrlNode.save()
 
     @property
     def is_cached_url_modified(self):
@@ -466,6 +527,32 @@ class UrlNode_Translation(TranslatedFieldsModel):
     def get_ancestors(self, ascending=False, include_self=False):
         # For the delete page, mptt_breadcrumb filter in the django-polymorphic-tree templates.
         return self.master.get_ancestors(ascending=ascending, include_self=include_self)
+
+    def get_parent_cached_url(self, master):
+        if self._fetched_parent_url:
+            return self._fetched_parent_url
+
+        # Need the _cached_url from the parent.
+        # Do this in the most efficient way possible.
+        qs = UrlNode_Translation.objects.filter(master=master.parent_id).values_list('_cached_url', flat=True)
+        try:
+            self._fetched_parent_url = qs.filter(language_code=self.language_code)[0]
+            return self._fetched_parent_url
+        except IndexError:
+            pass
+
+        # Need to use fallback
+        fallback_language = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(self.language_code)
+        try:
+            self._fetched_parent_url = qs.filter(language_code=fallback_language)[0]
+            return self._fetched_parent_url
+        except IndexError:
+            pass
+
+        raise NotImplementedError("Tree node #{0} has no active ({1}) or fallback ({2}) language".format(
+            self.master_id, self.language_code, fallback_language
+        ))
+
 
 
 class TranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
