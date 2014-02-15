@@ -43,6 +43,7 @@ class CmsPageDispatcher(GetPathMixin, View):
     This is not a ``DetailsView`` by design, as the rendering is redirected to the page type plugin.
     """
     model = UrlNode
+    prefetch_translations = appsettings.FLUENT_PAGES_PREFETCH_TRANSLATIONS
 
 
     def get(self, request, **kwargs):
@@ -104,7 +105,10 @@ class CmsPageDispatcher(GetPathMixin, View):
         Return the QuerySet used to find the pages.
         """
         # This can be limited or expanded in the future
-        return self.model.objects.published()
+        qs = self.model.objects.published()
+        if self.prefetch_translations:
+            qs = qs.prefetch_related('translations')
+        return qs
 
 
     def get_object(self, path=None, language_code=None):
