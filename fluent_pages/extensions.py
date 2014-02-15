@@ -265,9 +265,10 @@ class PageTypePool(object):
 
         # Make a single static instance, similar to ModelAdmin.
         plugin_instance = plugin()
+        ct_id = plugin_instance.type_id                  # DB query first before updating self, query may fail.
         self.plugins[name] = plugin_instance
         self.plugin_for_model[plugin.model] = name       # Track reverse for rendering
-        self.plugin_for_ctype_id[plugin_instance.type_id] = name
+        self.plugin_for_ctype_id[ct_id] = name
 
         return plugin  # Allow class decorator syntax
 
