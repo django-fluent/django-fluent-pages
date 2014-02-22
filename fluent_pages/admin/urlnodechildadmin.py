@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from mptt.forms import MPTTAdminForm
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
+from fluent_pages import appsettings
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm, TranslatedField
 from fluent_pages.models import UrlNode, UrlNode_Translation
@@ -40,6 +42,10 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
 
         # See if the current URLs don't overlap.
         all_translations = UrlNode_Translation.objects.all()
+        if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
+            site_id = (self.instance is not None and self.instance.parent_site_id) or settings.SITE_ID
+            all_translations = all_translations.filter(master__parent_site=site_id)
+
         if self.instance and self.instance.id:
             # Editing an existing page
             current_id = self.instance.id
@@ -122,6 +128,16 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     # NOTE: list page is configured in UrlNodeParentAdmin
     # as that class is used for the real admin screen.
     # This class is only a base class for the custom pagetype plugins.
+
+
+    def queryset(self, request):
+        qs = super(UrlNodeChildAdmin, self).queryset(request)
+
+        # Admin only shows current site for now,
+        # until there is decent filtering for it.
+        if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
+            qs = qs.filter(parent_site=settings.SITE_ID)
+        return qs
 
 
     def get_readonly_fields(self, request, obj=None):

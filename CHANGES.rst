@@ -2,6 +2,7 @@ Changes in version 0.9 (dev)
 ----------------------------
 
 * Added multilingual support, using django-parler_.
+* Added multisite support.
 * Added hooks for patching the admin; ``FLUENT_PAGES_PARENT_ADMIN_MIXIN`` and ``FLUENT_PAGES_CHILD_ADMIN_MIXIN``.
   Note that using this feature is comparable to monkey-patching, and future compatibility can't be fully guanteed.
 * Added "Can change Shared fields" permission for all page types.

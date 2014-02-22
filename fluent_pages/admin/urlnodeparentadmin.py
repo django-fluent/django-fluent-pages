@@ -2,6 +2,7 @@ import django
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from fluent_pages import appsettings
 from parler.admin import TranslatableAdmin
 from parler.models import TranslationDoesNotExist
 from parler.utils import is_multilingual_project
@@ -56,6 +57,16 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
         css = {
             'screen': ('fluent_pages/admin/pagetree.css',)
         }
+
+
+    def queryset(self, request):
+        qs = super(UrlNodeParentAdmin, self).queryset(request)
+
+        # Admin only shows current site for now,
+        # until there is decent filtering for it.
+        if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
+            qs = qs.filter(parent_site=settings.SITE_ID)
+        return qs
 
 
     # ---- Polymorphic tree overrides ----

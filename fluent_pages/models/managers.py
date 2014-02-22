@@ -1,6 +1,7 @@
 """
 The manager class for the CMS models
 """
+from django.conf import settings
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
 from parler import is_multilingual_project
@@ -84,10 +85,16 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
 
     def published(self):
         """
-        Return only published pages
+        Return only published pages for the current site.
         """
         from fluent_pages.models import UrlNode   # the import can't be globally, that gives a circular dependency
-        return self \
+
+        if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
+            qs = self.filter(parent_site_id=settings.SITE_ID)
+        else:
+            qs = self
+
+        return qs \
             .filter(status=UrlNode.PUBLISHED) \
             .filter(
                 Q(publication_date__isnull=True) |

@@ -370,6 +370,9 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
                 translations__language_code=translation.language_code
             ).non_polymorphic()
 
+            if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
+                others = others.filter(parent_site=self.parent_site_id)
+
             if self.pk:
                 others = others.exclude(pk=self.pk)
 
@@ -497,7 +500,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
     class Meta:
         app_label = 'fluent_pages'
         unique_together = (
-            ('_cached_url', 'language_code'),
+            #('master__parent_site', '_cached_url', 'language_code'),
             ('language_code', 'master'),
         )
         verbose_name = _('URL Node translation')
