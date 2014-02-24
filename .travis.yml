@@ -5,12 +5,10 @@ python:
 env:
   - PACKAGES="django==1.4.5 django-mptt==0.5.5"   # django-polymorphic >= 0.5 uses django.utils.six which is bundled as of Django 1.4.2
   - PACKAGES="django==1.5.0"
-  - PACKAGES="https://www.djangoproject.com/m/releases/1.6/Django-1.6b2.tar.gz"
-#matrix:
-#  allow_failures:
-#    - env: PACKAGES="https://www.djangoproject.com/m/releases/1.6/Django-1.6b2.tar.gz"
+  - PACKAGES="django==1.6.0"
 install:
   - pip install -q $PACKAGES
+  - pip install -e git+https://github.com/edoburu/django-parler.git@master#egg=django-parler-1.0dev
   - pip install -q -e .
 script:
   - python runtests.py
