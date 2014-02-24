@@ -50,7 +50,12 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
             # Editing an existing page
             current_id = self.instance.id
             other_translations = all_translations.exclude(master_id=current_id)
-            parent = UrlNode.objects.non_polymorphic().get(children__pk=current_id)
+
+            # Get original unmodified parent value.
+            try:
+                parent = UrlNode.objects.non_polymorphic().get(children__pk=current_id)
+            except UrlNode.DoesNotExist:
+                parent = None
         else:
             # Creating new page!
             parent = cleaned_data['parent']
