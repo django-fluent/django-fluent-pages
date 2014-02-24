@@ -453,7 +453,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
             else:
                 # Always construct the fallback URL, to revert to it when needed.
                 fallback_base = fallback_page_urls[subobject.parent_id]
-                fallback_page_urls[subobject] = u'{0}{1}/'.format(fallback_base, subobject.slug)
+                fallback_page_urls[subobject.id] = u'{0}{1}/'.format(fallback_base, subobject.slug)
 
                 if use_fallback_base:
                     base = fallback_base
