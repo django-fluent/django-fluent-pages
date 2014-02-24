@@ -16,6 +16,16 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
     """
     Queryset methods for UrlNode objects.
     """
+    def __init__(self, *args, **kwargs):
+        super(UrlNodeQuerySet, self).__init__(*args, **kwargs)
+        self._parent_site = None
+
+
+    def _clone(self, klass=None, setup=False, **kw):
+        c = super(UrlNodeQuerySet, self)._clone(klass, setup, **kw)
+        c._parent_site = self._parent_site
+        return c
+
 
     def active_translations(self, language_code=None, **translated_fields):
         # overwritten to honor our settings instead of the django-parler defaults
@@ -29,13 +39,15 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         The path is expected to start with an initial slash.
 
         Raises UrlNode.DoesNotExist when the item is not found.
+
+        .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
         if language_code is None:
             language_code = get_language()
 
         # Don't normalize slashes, expect the URLs to be sane.
         try:
-            object = self.get(translations___cached_url=path, translations__language_code=language_code)
+            object = self._single_site().get(translations___cached_url=path, translations__language_code=language_code)
             object.set_current_language(language_code)  # NOTE. Explicitly set language to the state the object was fetched in.
             return object
         except self.model.DoesNotExist:
@@ -47,6 +59,8 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         Return the UrlNode that is the closest parent to the given path.
 
         UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
+
+        .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
         if language_code is None:
             language_code = get_language()
@@ -55,7 +69,8 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         paths = self._split_path_levels(path)
 
         try:
-            qs = self.filter(translations___cached_url__in=paths, translations__language_code=language_code) \
+            qs = self._single_site() \
+                     .filter(translations___cached_url__in=paths, translations__language_code=language_code) \
                      .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
                      .order_by('-level', '-_url_length')  # / and /news/ is both level 0
             object = qs[0]
@@ -87,7 +102,19 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         """
         .. versionadded:: 0.9 Filter to the given site.
         """
+        # Avoid auto filter if site is already set.
+        self._parent_site = site
         return self.filter(parent_site=site)
+
+
+    def _single_site(self):
+        """
+        Make sure the queryset is filtered on a parent site, if that didn't happen already.
+        """
+        if appsettings.FLUENT_PAGES_FILTER_SITE_ID and self._parent_site is None:
+            return self.parent_site(settings.SITE_ID)
+        else:
+            return self
 
 
     def published(self):
@@ -98,12 +125,8 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         """
         from fluent_pages.models import UrlNode   # the import can't be globally, that gives a circular dependency
 
-        if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
-            qs = self.parent_site(settings.SITE_ID)
-        else:
-            qs = self
-
-        return qs \
+        return self \
+            ._single_site() \
             .filter(status=UrlNode.PUBLISHED) \
             .filter(
                 Q(publication_date__isnull=True) |
@@ -215,15 +238,9 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         qs = self.toplevel().in_navigation().non_polymorphic()._mark_current(current_page)
 
+        # Make sure only translated menu items are visible.
         if is_multilingual_project():
-            # Make sure only translated menu items are visible.
-            language = get_language()
-            fallback = appsettings.get_language_settings(language).get('fallback')
-
-            if fallback and fallback != language:
-                qs = qs.filter(translations__language_code__in=(language, fallback)).distinct()
-            else:
-                qs = qs.filter(translations__language_code=language)
+            qs = qs.active_translations()
 
         return qs
 
