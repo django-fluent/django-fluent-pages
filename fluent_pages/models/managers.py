@@ -85,7 +85,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
 
     def parent_site(self, site):
         """
-        Filter to the given site.
+        .. versionadded:: 0.9 Filter to the given site.
         """
         return self.filter(parent_site=site)
 
@@ -93,6 +93,8 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
     def published(self):
         """
         Return only published pages for the current site.
+
+        .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
         from fluent_pages.models import UrlNode   # the import can't be globally, that gives a circular dependency
 
@@ -177,7 +179,7 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
     def parent_site(self, site):
         """
-        Filter to the given site.
+        .. versionadded:: 0.9 Filter to the given site.
         """
         return self.get_query_set().parent_site(site)
 
@@ -185,6 +187,8 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
     def published(self):
         """
         Return only published pages for the current site.
+
+        .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
         return self.get_query_set().published()
 
