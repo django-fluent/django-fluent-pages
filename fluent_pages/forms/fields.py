@@ -73,8 +73,22 @@ class PageChoiceField(TreeNodeChoiceField):
         if not args and not kwargs.has_key('queryset'):
             from fluent_pages.models import UrlNode
             kwargs['queryset'] = UrlNode.objects.published().non_polymorphic()
+            self.custom_qs = False
+        else:
+            self.custom_qs = True
         super(PageChoiceField, self).__init__(*args, **kwargs)
 
+    def __deepcopy__(self, memo):
+        new_self = super(PageChoiceField, self).__deepcopy__(memo)
+
+        if not self.custom_qs:
+            # Reevaluate the queryset for django-multisite support.
+            # This is needed when SITE_ID is a threadlocal, because .published() freezes the SITE_ID.
+            from fluent_pages.models import UrlNode
+            mptt_opts = self.queryset.model._mptt_meta
+            new_self.queryset = UrlNode.objects.published().non_polymorphic().order_by(mptt_opts.tree_id_attr, mptt_opts.left_attr)
+
+        return new_self
 
     def label_from_instance(self, page):
         page_title = page.title or page.slug  # TODO: menu title?
