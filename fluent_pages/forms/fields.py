@@ -2,10 +2,11 @@
 Extra form fields.
 """
 from django import forms
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
+from django.utils import translation
+from django.utils.translation import get_language
 from mptt.forms import TreeNodeChoiceField
 from fluent_pages import appsettings
 import os
@@ -42,13 +43,17 @@ class RelativeRootPathField(forms.CharField):
     """
     A ``CharField`` which returns stored URL values relative to the fluent-page root.
     """
+    def __init__(self, *args, **kwargs):
+        super(RelativeRootPathField, self).__init__(*args, **kwargs)
+        self.language_code = get_language()
+
     def prepare_value(self, value):
         """
         Convert the database/model value to the displayed value.
         Adds the root of the CMS pages.
         """
         if value and value.startswith('/'):  # value is None for add page.
-            root = reverse('fluent-page').rstrip('/')
+            root = self.get_root(value)
             value = root + value
         return value
 
@@ -57,11 +62,15 @@ class RelativeRootPathField(forms.CharField):
         Convert the displayed value to the database/model value.
         Removes the root of the CMS pages.
         """
-        root = reverse('fluent-page').rstrip('/')
+        root = self.get_root(value)
         value = super(RelativeRootPathField, self).to_python(value)
         if root and value.startswith(root):
             value = value[len(root):]
         return value
+
+    def get_root(self, value):
+        with translation.override(self.language_code):
+            return reverse('fluent-page').rstrip('/')
 
 
 class PageChoiceField(TreeNodeChoiceField):
