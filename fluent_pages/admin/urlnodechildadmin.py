@@ -32,7 +32,8 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
         else:
             super(UrlNodeAdminForm, self).__init__(*args, **kwargs)
 
-        self.fields['override_url'].language_code = self.language_code
+        if 'override_url' in self.fields:
+            self.fields['override_url'].language_code = self.language_code
 
     def clean(self):
         """
