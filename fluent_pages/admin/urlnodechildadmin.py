@@ -41,7 +41,7 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
             for f_name in ('meta_description', 'meta_keywords', 'meta_title', 'new_url'):
                 if f_name in self.fields:
                     field = self.fields[f_name]
-                    #field.help_text += " " + ugettext("Note: this field is not yet translatable")
+                    field.help_text += " " + ugettext("Note: this field is not yet translatable")
 
     def clean(self):
         """
