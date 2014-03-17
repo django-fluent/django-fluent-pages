@@ -588,15 +588,27 @@ class Page(UrlNode):
     objects = UrlNode.objects
 
 
-class HtmlPage(Page):
+
+class SeoPageMixin(models.Model):
+    """
+    Mixin for adding SEO fields to a page.
+    """
+    # SEO fields
+    meta_keywords = models.CharField(_('keywords'), max_length=255, blank=True, null=True)
+    meta_description = models.CharField(_('description'), max_length=255, blank=True, null=True)
+    meta_title = models.CharField(_('description'), max_length=255, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+
+
+class HtmlPage(Page, SeoPageMixin):
     """
     The base fields for a HTML page of the web site.
 
-    This is an abstract model, which adds the :attr:`keyword` and :attr:`description` fields.
+    This is an abstract model, which adds the :attr:`meta_keyword` and :attr:`meta_description` fields.
     """
-    # SEO fields
-    keywords = models.CharField(_('keywords'), max_length=255, blank=True)
-    description = models.CharField(_('description'), max_length=255, blank=True)
 
 #    objects = UrlNodeManager()
 

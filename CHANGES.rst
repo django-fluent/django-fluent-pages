@@ -8,8 +8,29 @@ Changes in version 0.9 (dev)
 * Added "Can change Shared fields" permission for all page types.
 * Added "Can change Page layout" permission for ``fluent_pages.pagetypes.fluentpage``.
 * Allow ``formfield_overrides`` to contain field names too.
+* API: added ``SeoPageMixin`` model with ``meta_title``, ``meta_keywords`` and ``meta_description`` fields.
 * API: renamed ``FluentPageBase`` to ``AbstractFluentPage``.
+* API: **Backwards incompatible:** when inheriting from the abstract ``HtmlPage`` model, your app needs a South migration.
 * Dropped Django 1.3 support.
+
+
+Upgrade notices:
+~~~~~~~~~~~~~~~~
+
+* When using custom page types that inherit from inherited from ``HtmlPage``, ``FluentPageBase`` or ``AbstractFluentPage``,
+  please add a South migration to your application to handle the updated fields.
+
+ * The ``keywords`` field was renamed to ``meta_keywords``.
+ * The ``description`` field was renamed to ``meta_description``.
+ * The ``meta_title`` field was added.
+
+ * The South ``rename_column`` function can be used in the migration::
+
+   db.rename_column('your_model_table', 'keywords', 'meta_keywords')
+   db.rename_column('your_model_table', 'description', 'meta_description')
+
+* API: renamed ``FluentPageBase`` to ``AbstractFluentPage``.
+  The old name is still available.
 
 
 Changes in version 0.8.6

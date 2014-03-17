@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, ugettext
 from mptt.forms import MPTTAdminForm
+from parler import is_multilingual_project
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
 from fluent_pages import appsettings
 from parler.admin import TranslatableAdmin
@@ -34,6 +35,13 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
 
         if 'override_url' in self.fields:
             self.fields['override_url'].language_code = self.language_code
+
+        # Warn about django-parler issue that inherited models are not yet translatable.
+        if is_multilingual_project():
+            for f_name in ('meta_description', 'meta_keywords', 'meta_title', 'new_url'):
+                if f_name in self.fields:
+                    field = self.fields[f_name]
+                    #field.help_text += " " + ugettext("Note: this field is not yet translatable")
 
     def clean(self):
         """
