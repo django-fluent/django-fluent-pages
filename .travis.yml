@@ -8,7 +8,6 @@ env:
   - PACKAGES="django==1.6.0"
 install:
   - pip install -q $PACKAGES
-  - pip install -e git+https://github.com/edoburu/django-parler.git@master#egg=django-parler-1.0dev
   - pip install -q -e .
 script:
   - python runtests.py
