@@ -34,9 +34,9 @@ class HtmlPageAdmin(PageAdmin):
     readonly_shared_fields = PageAdmin.readonly_shared_fields + ('meta_title', 'meta_keywords', 'meta_description')
 
     def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name == 'keywords':
+        if db_field.name in ('meta_title', 'meta_keywords'):
             kwargs.setdefault('widget', AdminTextInputWidget(attrs={'class': 'vLargeTextField'}))
-        if db_field.name == 'description':
+        if db_field.name == 'meta_description':
             kwargs.setdefault('widget', AdminTextareaWidget(attrs={'rows': 3}))
 
         return super(HtmlPageAdmin, self).formfield_for_dbfield(db_field, **kwargs)

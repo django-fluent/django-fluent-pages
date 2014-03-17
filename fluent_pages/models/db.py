@@ -596,7 +596,7 @@ class SeoPageMixin(models.Model):
     # SEO fields
     meta_keywords = models.CharField(_('keywords'), max_length=255, blank=True, null=True)
     meta_description = models.CharField(_('description'), max_length=255, blank=True, null=True)
-    meta_title = models.CharField(_('description'), max_length=255, blank=True, null=True)
+    meta_title = models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used."))
 
     class Meta:
         abstract = True
