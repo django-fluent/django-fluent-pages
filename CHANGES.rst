@@ -12,6 +12,7 @@ Changes in version 0.9 (dev)
 * API: renamed ``FluentPageBase`` to ``AbstractFluentPage``.
 * API: added ``get_view_response`` to the ``PageTypePlugin`` class, allow adding middleware to custom views.
 * API: **Backwards incompatible:** when inheriting from the abstract ``HtmlPage`` model, your app needs a South migration.
+* Fixed calling ``reverse()`` on the resolved page urls.
 * Dropped Django 1.3 support.
 
 

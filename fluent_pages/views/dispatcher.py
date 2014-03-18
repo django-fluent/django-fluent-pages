@@ -265,7 +265,7 @@ class CmsPageDispatcher(GetPathMixin, View):
 
     def _is_own_view(self, match):
         return match.app_name == 'fluent_pages' \
-            or match.url_name == 'fluent-page'
+            or match.url_name in ('fluent-page', 'fluent-page-url')
 
 
 class CmsPageAdminRedirect(GetPathMixin, RedirectView):

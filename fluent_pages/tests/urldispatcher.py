@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse, resolve
 from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.utils import AppTestCase, script_name, override_settings
 from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
@@ -173,6 +174,23 @@ class UrlDispatcherTests(AppTestCase):
         # Same also applies to application URLs. Can be extended in the future to resolve to the
         # app page, or the actual object. Currently this is not supported.
         self.assertRedirects(self.client.get('/shop/foobar/@admin'), 'http://testserver/shop/foobar/', status_code=302)
+
+
+    def test_resolve_reverse(self):
+        """
+        Test that the resolve/reverse works on the URL conf.
+        """
+        match1 = resolve('/sibling1/')
+        reverse1 = reverse(match1.view_name, args=match1.args, kwargs=match1.kwargs)
+        self.assertEqual(reverse1, '/sibling1/')
+
+        match2 = resolve('/sibling1/foo')
+        reverse2 = reverse(match2.view_name, args=match2.args, kwargs=match2.kwargs)
+        self.assertEqual(reverse2, '/sibling1/foo')
+
+        match3 = resolve('/')
+        reverse3 = reverse(match3.view_name, args=match3.args, kwargs=match3.kwargs)
+        self.assertEqual(reverse3, '/')
 
 
 

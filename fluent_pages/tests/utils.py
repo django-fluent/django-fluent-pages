@@ -79,7 +79,8 @@ class AppTestCase(TestCase):
         """
         if msg_prefix:
             msg_prefix += ": "
-        self.assertEquals(self.client.get(url).status_code, 404, unicode(msg_prefix) + u"Page at {0} should return 404.".format(url))
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 404, unicode(msg_prefix) + u"Page at {0} should return 404, got {1}.".format(url, response.status_code))
 
 
 try:
