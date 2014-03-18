@@ -41,6 +41,8 @@ class CmsPageDispatcher(GetPathMixin, View):
     """
     The view which displays a CMS page.
     This is not a ``DetailsView`` by design, as the rendering is redirected to the page type plugin.
+
+    Regular pages are rendered using :func:`fluent_pages.extensions.PageTypePlugin.get_response`.
     """
     model = UrlNode
     prefetch_translations = appsettings.FLUENT_PAGES_PREFETCH_TRANSLATIONS
@@ -169,7 +171,7 @@ class CmsPageDispatcher(GetPathMixin, View):
             except Resolver404:
                 pass
             else:
-                return self._call_url_view(match)
+                return self._call_url_view(plugin, match)
 
         # Let page type plugin handle the request.
         response = plugin.get_response(self.request, self.object)
@@ -200,7 +202,8 @@ class CmsPageDispatcher(GetPathMixin, View):
             return None
 
         # See if the application can resolve URLs
-        resolver = self.get_plugin().get_url_resolver()
+        plugin = self.get_plugin()
+        resolver = plugin.get_url_resolver()
         if not resolver:
             return None
 
@@ -226,11 +229,11 @@ class CmsPageDispatcher(GetPathMixin, View):
         else:
             # Call application view.
             self.request._current_fluent_page = self.object   # Avoid additional lookup in templatetags
-            return self._call_url_view(match)
+            return self._call_url_view(plugin, match)
 
 
-    def _call_url_view(self, match):
-        response = match.func(self.request, *match.args, **match.kwargs)
+    def _call_url_view(self, plugin, match):
+        response = plugin.get_view_response(self.request, self.object, match.func, *match.args, **match.kwargs)
         if response is None:
             raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
 

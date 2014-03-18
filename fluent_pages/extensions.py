@@ -187,6 +187,14 @@ class PageTypePlugin(object):
         }
 
 
+    def get_view_response(self, request, page, view_func, *view_args, **view_kwargs):
+        """
+        Render the custom view that was exposed by the extra plugin URL patterns.
+        This gives the ability to add extra middleware logic.
+        """
+        return view_func(request, *view_args, **view_kwargs)
+
+
     def get_url_resolver(self):
         """
         Access the URL resolver of the page type.
