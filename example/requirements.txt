@@ -1,19 +1,24 @@
-# For the CMS:
-Django>=1.5.5, < 1.6
-django-polymorphic-tree>=0.8.10
-django-mptt>=0.5.4
-django-tag-parser>=1.0.0
+# Django version
+Django >= 1.5.5, < 1.6
 
-# For the pagetypes:
-django-fluent-contents>=0.9.0
-django-template-analyzer>=1.1.0
+# Deps of fluent-pages
+django-polymorphic-tree >= 0.8.10
+django-polymorphic >= 0.5.3
+django-mptt == 0.6.0
+django-tag-parser >= 1.0.0
+django-parler >= 1.0a1
 
-# For the fluent_contents plugins:
-django-wysiwyg>=0.5
-Markdown==2.2.0
-docutils==0.9.1
+# For the `fluent_pages.plugins.fluentpage` plugin:
+django-fluent-contents >= 0.9.0
+django-template-analyzer >= 1.1.0
+
+# For the `fluent_contents.plugins.*` apps:
+django-wysiwyg >= 0.5.1
+django-tinymce >= 1.5.1
+Markdown==2.4
+docutils==0.11
 textile==2.1.5
 Pygments==1.5
 
-# For upgrading support
+# For DB upgrading support
 South==0.8.4

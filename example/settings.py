@@ -112,12 +112,14 @@ INSTALLED_APPS = (
     'fluent_contents.plugins.rawhtml',
     'fluent_contents.plugins.text',
     'django_wysiwyg',
+    'tinymce',
 
     # For DB upgrades
     'south',
 )
 
-DJANGO_WYSIWYG_FLAVOR = 'yui_advanced'
+#DJANGO_WYSIWYG_FLAVOR = 'yui_advanced'
+DJANGO_WYSIWYG_FLAVOR = 'tinymce_advanced'
 
 
 LOGGING = {
