@@ -100,6 +100,7 @@ INSTALLED_APPS = (
     'mptt',
     'polymorphic',
     'polymorphic_tree',
+    'parler',
 
     # Content for fluentpage, with plugins that have no extra configuration requirements
     'fluent_contents',
@@ -110,9 +111,10 @@ INSTALLED_APPS = (
     'fluent_contents.plugins.markup',
     'fluent_contents.plugins.rawhtml',
     'fluent_contents.plugins.text',
-
-    # Other apps
     'django_wysiwyg',
+
+    # For DB upgrades
+    'south',
 )
 
 DJANGO_WYSIWYG_FLAVOR = 'yui_advanced'

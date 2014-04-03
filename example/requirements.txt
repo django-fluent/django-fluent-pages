@@ -1,11 +1,11 @@
 # For the CMS:
-Django>=1.4.2, < 1.5
-django-polymorphic-tree>=0.8.3
-django-mptt>=0.5.2
+Django>=1.5.5, < 1.6
+django-polymorphic-tree>=0.8.10
+django-mptt>=0.5.4
 django-tag-parser>=1.0.0
 
 # For the pagetypes:
-django-fluent-contents>=0.8.3
+django-fluent-contents>=0.9.0
 django-template-analyzer>=1.1.0
 
 # For the fluent_contents plugins:
@@ -14,3 +14,6 @@ Markdown==2.2.0
 docutils==0.9.1
 textile==2.1.5
 Pygments==1.5
+
+# For upgrading support
+South==0.8.4
