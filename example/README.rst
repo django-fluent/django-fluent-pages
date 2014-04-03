@@ -11,7 +11,7 @@ You can do this using::
 
 Next, you can setup the Django instance using::
 
-    ./manage.py syncdb
+    ./manage.py syncdb --migrate      # use "admin" as prompted username!
     ./manage.py loaddata welcome shop_example
 
 And run it off course::

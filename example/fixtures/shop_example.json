@@ -1,104 +1,117 @@
 [
-  {
-    "pk": 1, 
-    "model": "simpleshop.productcategory", 
-    "fields": {
-      "slug": "desktop-computers", 
-      "title": "Desktop computers"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "simpleshop.productcategory", 
-    "fields": {
-      "slug": "notebooks", 
-      "title": "Notebooks"
-    }
-  }, 
-  {
-    "pk": 4, 
-    "model": "simpleshop.product", 
-    "fields": {
-      "category": 2, 
-      "description": "Here is your example product, served via the page tree!", 
-      "price": "529", 
-      "slug": "dell-inspiron-17r", 
-      "title": "Dell Inspiron 17R"
-    }
-  }, 
-  {
-    "pk": 3, 
-    "model": "simpleshop.product", 
-    "fields": {
-      "category": 2, 
-      "description": "Another product example!", 
-      "price": "1199", 
-      "slug": "dell-xps-15-laptop", 
-      "title": "Dell XPS 15'' Laptop"
-    }
-  }, 
-  {
-    "pk": 5, 
-    "model": "simpleshop.product", 
-    "fields": {
-      "category": 2, 
-      "description": "Testing testing via the pagetree. :-)", 
-      "price": "1605", 
-      "slug": "hp-elitebook-8560w", 
-      "title": "HP EliteBook 8560w"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "simpleshop.product", 
-    "fields": {
-      "category": 2, 
-      "description": "Here is your example product, served via the page tree!", 
-      "price": "1199", 
-      "slug": "macbook-pro-13", 
-      "title": "MacBook Pro 13''"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "simpleshop.product", 
-    "fields": {
-      "category": 2, 
-      "description": "Another product example!", 
-      "price": "1799", 
-      "slug": "macbook-pro-15", 
-      "title": "MacBook Pro 15'"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "simpleshop.productcategorypage", 
-    "fields": {
-      "product_category": 2
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "fluent_pages.urlnode", 
-    "fields": {
-      "status": "p", 
-      "rght": 2, 
-      "author": 1, 
-      "parent": null, 
-      "level": 0, 
-      "title": "Notebooks", 
-      "publication_date": null, 
-      "override_url": "", 
-      "creation_date": "2012-07-18 21:52:53", 
-      "lft": 1, 
-      "publication_end_date": null, 
-      "modification_date": "2012-07-18 21:52:53", 
-      "tree_id": 2, 
-      "parent_site": 1, 
-      "in_navigation": true, 
-      "_cached_url": "/notebooks/", 
-      "slug": "notebooks", 
-      "polymorphic_ctype": 16
-    }
+{
+  "pk": 1,
+  "model": "simpleshop.productcategory",
+  "fields": {
+    "slug": "desktop-computers",
+    "title": "Desktop computers"
   }
+},
+{
+  "pk": 2,
+  "model": "simpleshop.productcategory",
+  "fields": {
+    "slug": "notebooks",
+    "title": "Notebooks"
+  }
+},
+{
+  "pk": 1,
+  "model": "simpleshop.product",
+  "fields": {
+    "category": 2,
+    "description": "Here is your example product, served via the page tree!",
+    "price": "1199",
+    "slug": "macbook-pro-13",
+    "title": "MacBook Pro 13''"
+  }
+},
+{
+  "pk": 2,
+  "model": "simpleshop.product",
+  "fields": {
+    "category": 2,
+    "description": "Another product example!",
+    "price": "1799",
+    "slug": "macbook-pro-15",
+    "title": "MacBook Pro 15'"
+  }
+},
+{
+  "pk": 3,
+  "model": "simpleshop.product",
+  "fields": {
+    "category": 2,
+    "description": "Another product example!",
+    "price": "1199",
+    "slug": "dell-xps-15-laptop",
+    "title": "Dell XPS 15'' Laptop"
+  }
+},
+{
+  "pk": 4,
+  "model": "simpleshop.product",
+  "fields": {
+    "category": 2,
+    "description": "Here is your example product, served via the page tree!",
+    "price": "529",
+    "slug": "dell-inspiron-17r",
+    "title": "Dell Inspiron 17R"
+  }
+},
+{
+  "pk": 5,
+  "model": "simpleshop.product",
+  "fields": {
+    "category": 2,
+    "description": "Testing testing via the pagetree. :-)",
+    "price": "1605",
+    "slug": "hp-elitebook-8560w",
+    "title": "HP EliteBook 8560w"
+  }
+},
+{
+  "pk": 2,
+  "model": "fluent_pages.urlnode",
+  "fields": {
+    "status": "p",
+    "rght": 2,
+    "modification_date": "2014-04-03T11:57:55.157",
+    "parent": null,
+    "level": 0,
+    "author": [
+      "admin"
+    ],
+    "publication_date": null,
+    "creation_date": "2014-04-03T11:57:55.157",
+    "lft": 1,
+    "publication_end_date": null,
+    "tree_id": 2,
+    "parent_site": 1,
+    "in_navigation": true,
+    "polymorphic_ctype": [
+      "simpleshop",
+      "productcategorypage"
+    ]
+  }
+},
+{
+  "pk": 2,
+  "model": "fluent_pages.urlnode_translation",
+  "fields": {
+    "title": "Notebooks",
+    "override_url": "",
+    "master": 2,
+    "language_code": "en-us",
+    "_cached_url": "/notebooks/",
+    "slug": "notebooks"
+  }
+},
+{
+  "pk": 2,
+  "model": "simpleshop.productcategorypage",
+  "fields": {
+    "product_category": 2
+  }
+}
 ]

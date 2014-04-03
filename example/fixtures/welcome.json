@@ -1,82 +1,105 @@
 [
-  {
-    "pk": 1, 
-    "model": "fluent_pages.urlnode", 
-    "fields": {
-      "status": "p", 
-      "rght": 2, 
-      "author": 1, 
-      "parent": null, 
-      "level": 0, 
-      "title": "Homepage", 
-      "publication_date": null, 
-      "override_url": "/", 
-      "creation_date": "2012-07-18 21:41:06", 
-      "lft": 1, 
-      "publication_end_date": null, 
-      "modification_date": "2012-07-18 21:41:23", 
-      "tree_id": 1, 
-      "parent_site": 1, 
-      "in_navigation": true, 
-      "_cached_url": "/", 
-      "slug": "homepage", 
-      "polymorphic_ctype": 11
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "fluentpage.fluentpage", 
-    "fields": {
-      "keywords": "", 
-      "layout": 1, 
-      "description": ""
-    }
-  },
-  {
-    "pk": 1, 
-    "model": "fluent_pages.pagelayout", 
-    "fields": {
-      "template_path": "theme1/pages/standard.html", 
-      "key": "standard", 
-      "title": "Standard"
-    }
-  }, 
-  {
-    "pk": 2, 
-    "model": "fluent_pages.pagelayout", 
-    "fields": {
-      "template_path": "theme1/pages/standard-twocols.html", 
-      "key": "standard-2-cols", 
-      "title": "Standard, 2 cols"
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "fluent_contents.placeholder", 
-    "fields": {
-      "slot": "main1", 
-      "parent_type": 11, 
-      "title": "Main content", 
-      "role": "m", 
-      "parent_id": 1
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "fluent_contents.contentitem", 
-    "fields": {
-      "parent_id": 1, 
-      "sort_order": 0, 
-      "parent_type": 11, 
-      "placeholder": 1, 
-      "polymorphic_ctype": 28
-    }
-  }, 
-  {
-    "pk": 1, 
-    "model": "text.textitem", 
-    "fields": {
-      "text": "Welcome to django-fluent-pages.<br>Open the <a href=\"/admin/\">admin page</a> to get started!"
-    }
+{
+  "pk": 1,
+  "model": "fluent_pages.urlnode",
+  "fields": {
+    "status": "p",
+    "rght": 2,
+    "modification_date": "2014-04-03T11:49:48.445",
+    "parent": null,
+    "level": 0,
+    "author": [
+      "admin"
+    ],
+    "publication_date": null,
+    "creation_date": "2014-04-03T11:49:36.656",
+    "lft": 1,
+    "publication_end_date": null,
+    "tree_id": 1,
+    "parent_site": 1,
+    "in_navigation": true,
+    "polymorphic_ctype": [
+      "fluentpage",
+      "fluentpage"
+    ]
   }
+},
+{
+  "pk": 1,
+  "model": "fluent_pages.urlnode_translation",
+  "fields": {
+    "title": "Homepage",
+    "override_url": "/",
+    "master": 1,
+    "language_code": "en-us",
+    "_cached_url": "/",
+    "slug": "homepage"
+  }
+},
+{
+  "pk": 1,
+  "model": "fluent_pages.pagelayout",
+  "fields": {
+    "template_path": "theme1/pages/standard.html",
+    "key": "standard",
+    "title": "standard"
+  }
+},
+{
+  "pk": 2,
+  "model": "fluent_pages.pagelayout",
+  "fields": {
+    "template_path": "theme1/pages/standard-twocols.html",
+    "key": "standard-2-cols",
+    "title": "Standard, 2 cols"
+  }
+},
+{
+  "pk": 1,
+  "model": "fluentpage.fluentpage",
+  "fields": {
+    "meta_description": "",
+    "meta_title": null,
+    "meta_keywords": "",
+    "layout": 1
+  }
+},
+{
+  "pk": 1,
+  "model": "fluent_contents.placeholder",
+  "fields": {
+    "slot": "main1",
+    "parent_type": [
+      "fluentpage",
+      "fluentpage"
+    ],
+    "title": "Main content",
+    "role": "m",
+    "parent_id": 1
+  }
+},
+{
+  "pk": 1,
+  "model": "fluent_contents.contentitem",
+  "fields": {
+    "parent_id": 1,
+    "sort_order": 0,
+    "parent_type": [
+      "fluentpage",
+      "fluentpage"
+    ],
+    "placeholder": 1,
+    "polymorphic_ctype": [
+      "text",
+      "textitem"
+    ]
+  }
+},
+{
+  "pk": 1,
+  "model": "text.textitem",
+  "fields": {
+    "text": "Welcome to django-fluent-pages.<br>Open the <a href=\"/admin/\">admin page</a>&nbsp;to get started!<br>More info: <a href=\"http://www.django-fluent.org/\">www.django-fluent.org</a>"
+  }
+}
 ]
