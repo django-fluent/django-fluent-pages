@@ -14,3 +14,4 @@ Markdown==2.2.0
 docutils==0.9.1
 textile==2.1.5
 Pygments==1.5
+South==0.8.4

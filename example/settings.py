@@ -110,9 +110,10 @@ INSTALLED_APPS = (
     'fluent_contents.plugins.markup',
     'fluent_contents.plugins.rawhtml',
     'fluent_contents.plugins.text',
-
-    # Other apps
     'django_wysiwyg',
+
+    # For DB upgrades
+    'south',
 )
 
 DJANGO_WYSIWYG_FLAVOR = 'yui_advanced'
