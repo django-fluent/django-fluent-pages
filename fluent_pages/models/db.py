@@ -585,7 +585,8 @@ class Page(UrlNode):
         return self.title or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
 
     # Make PyCharm happy
-    objects = UrlNode.objects
+    # Not reusing UrlNode.objects, as contribute_to_class will change the QuerySet.model value.
+    objects = UrlNodeManager()
 
 
 
