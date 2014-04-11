@@ -28,7 +28,7 @@ def _register_cmsfield_url_type():
     else:
         from django import forms
         from any_urlfield.forms.widgets import SimpleRawIdWidget
-        AnyUrlField.register_model(Page, form_field=PageChoiceField(widget=SimpleRawIdWidget(Page)))
+        AnyUrlField.register_model(Page, form_field=lambda: PageChoiceField(widget=SimpleRawIdWidget(Page)))
 
 
 if 'any_urlfield' in settings.INSTALLED_APPS:

@@ -233,7 +233,7 @@ class CmsPageDispatcher(GetPathMixin, View):
 
 
     def _call_url_view(self, plugin, match):
-        response = plugin.get_view_response(self.request, self.object, match.func, *match.args, **match.kwargs)
+        response = plugin.get_view_response(self.request, self.object, match.func, match.args, match.kwargs)
         if response is None:
             raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
 
