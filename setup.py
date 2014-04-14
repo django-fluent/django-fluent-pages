@@ -37,18 +37,18 @@ setup(
 
     install_requires=[
         'django-mptt>=0.5.4',
-        'django-parler>=1.0a1',
+        'django-parler>=1.0b1',
         'django-polymorphic>=0.5.3',        # Need 0.5.3 for several upstream fixes related to forms.
         'django-polymorphic-tree>=0.8.10',  # Enforce latest bugfix version for consistent behavior.
-        'django-tag-parser>=1.0.0',
+        'django-tag-parser>=1.0.3',
     ],
     requires=[
         'Django (>=1.4)',
     ],
     extras_require={
         'flatpage': ['django-wysiwyg>=0.5.1'],
-        'fluentpage': ['django-fluent-contents>=0.8.4'],
-        'redirectnode': ['django-any-urlfield>=1.0.1'],
+        'fluentpage': ['django-fluent-contents>=1.0b1'],
+        'redirectnode': ['django-any-urlfield>=2.0a1'],
     },
     description='A flexible, scalable CMS with custom node types, and flexible block content.',
     long_description=read('README.rst'),
