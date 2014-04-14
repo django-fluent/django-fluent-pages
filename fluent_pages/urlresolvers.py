@@ -1,6 +1,7 @@
 """
 URL Resolving for dynamically added pages.
 """
+from django.conf import settings
 from django.core.cache import cache
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.utils.translation import get_language
@@ -98,7 +99,7 @@ def _get_pages_of_type(model, language_code=None):
     if language_code is None:
         language_code = get_language()
 
-    cachekey = 'fluent_pages.instance_of.{0}'.format(model.__name__)
+    cachekey = 'fluent_pages.instance_of.{0}.{1}'.format(model.__name__, settings.SITE_ID)
     pages = cache.get(cachekey)
     if not pages:
         pages = UrlNode.objects.published().non_polymorphic().instance_of(model).only(
