@@ -476,7 +476,8 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         Reset all cache keys related to this model.
         """
         cachekeys = [
-            'fluent_pages.instance_of.{0}'.format(self.__class__.__name__),  # urlresolvers._get_pages_of_type()
+            # created by _get_pages_of_type()
+            'fluent_pages.instance_of.{0}.{1}'.format(self.__class__.__name__, self.parent_site_id),  # urlresolvers._get_pages_of_type()
         ]
         for cachekey in cachekeys:
             cache.delete(cachekey)
