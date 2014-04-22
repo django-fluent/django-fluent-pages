@@ -31,11 +31,10 @@ Upgrade notices:
  * The ``keywords`` field was renamed to ``meta_keywords``.
  * The ``description`` field was renamed to ``meta_description``.
  * The ``meta_title`` field was added.
-
  * The South ``rename_column`` function can be used in the migration::
 
-   db.rename_column('your_model_table', 'keywords', 'meta_keywords')
-   db.rename_column('your_model_table', 'description', 'meta_description')
+     db.rename_column('your_model_table', 'keywords', 'meta_keywords')
+     db.rename_column('your_model_table', 'description', 'meta_description')
 
 * API: renamed ``FluentPageBase`` to ``AbstractFluentPage``.
   The old name is still available.
@@ -127,6 +126,7 @@ First public release
 .. _django.contrib.flatpages: https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
 .. _django-haystack: http://haystacksearch.org/
+.. _django-mptt: https://github.com/django-mptt/django-mptt
 .. _django-parler: https://github.com/edoburu/django-parler
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 .. _django-tag-parser: https://github.com/edoburu/django-tag-parser
