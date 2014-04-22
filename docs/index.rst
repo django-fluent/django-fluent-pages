@@ -56,6 +56,7 @@ API documentation
 
    api/index
    dependencies
+   changelog
 
 
 Indices and tables
