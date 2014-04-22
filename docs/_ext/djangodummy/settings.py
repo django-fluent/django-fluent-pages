@@ -10,3 +10,7 @@ STATIC_URL = '/static/'
 
 # Required to pass module tests
 FLUENT_PAGES_TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates/')
+
+# Required by Django
+SECRET_KEY = 'foo'
+SITE_ID = 1
