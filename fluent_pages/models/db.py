@@ -92,7 +92,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
     class Meta:
         app_label = 'fluent_pages'
-        ordering = ('lft',)
+        ordering = ('tree_id', 'lft',)
         verbose_name = _('URL Node')
         verbose_name_plural = _('URL Nodes')  # Using Urlnode here makes it's way to the admin pages too.
         permissions = (
