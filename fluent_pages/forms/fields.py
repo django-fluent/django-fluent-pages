@@ -47,6 +47,13 @@ class RelativeRootPathField(forms.CharField):
         super(RelativeRootPathField, self).__init__(*args, **kwargs)
         self.language_code = get_language()
 
+    def bound_data(self, data, initial):
+        """
+        Make sure the BoundField.value() doesn't pass the displayed value to prepare_value() again.
+        Strip the root from the value, allowing prepare_value() to add it again.
+        """
+        return self.to_python(data)
+
     def prepare_value(self, value):
         """
         Convert the database/model value to the displayed value.
