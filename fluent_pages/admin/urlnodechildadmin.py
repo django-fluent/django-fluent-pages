@@ -52,14 +52,17 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
         cleaned_data = super(UrlNodeAdminForm, self).clean()
 
         # See if the current URLs don't overlap.
+        all_nodes = UrlNode.objects.all()
         all_translations = UrlNode_Translation.objects.all()
         if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
             site_id = (self.instance is not None and self.instance.parent_site_id) or settings.SITE_ID
+            all_nodes = all_nodes.filter(parent_site=site_id)
             all_translations = all_translations.filter(master__parent_site=site_id)
 
         if self.instance and self.instance.id:
             # Editing an existing page
             current_id = self.instance.id
+            other_nodes = all_nodes.exclude(id=current_id)
             other_translations = all_translations.exclude(master_id=current_id)
 
             # Get original unmodified parent value.
@@ -70,7 +73,14 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
         else:
             # Creating new page!
             parent = cleaned_data['parent']
+            other_nodes = all_nodes
             other_translations = all_translations
+
+        # Unique check for the `key` field.
+        if cleaned_data.get('key'):
+            if other_nodes.filter(key=cleaned_data['key']).count():
+                self._errors['key'] = self.error_class([_('This identifier is already used by an other page.')])
+                del cleaned_data['key']
 
         # If fields are filled in, and still valid, check for unique URL.
         # Determine new URL (note: also done in UrlNode model..)
@@ -117,9 +127,11 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     })
     #: The publication fields.
     FIELDSET_PUBLICATION = (_('Publication settings'), {
-        'fields': ('publication_date', 'publication_end_date', 'override_url'),
+        'fields': ('publication_date', 'publication_end_date', 'override_url',),
         'classes': ('collapse',),
     })
+    if appsettings.FLUENT_PAGES_KEY_CHOICES:
+        FIELDSET_PUBLICATION[1]['fields'] += ('key',)
 
     #: The fieldsets to display.
     #: Any missing fields will be displayed in a separate section (named :attr:`extra_fieldset_title`) automatically.
@@ -154,6 +166,13 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
         if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
             qs = qs.filter(parent_site=settings.SITE_ID)
         return qs
+
+
+    def get_form(self, request, obj=None, **kwargs):
+        if not appsettings.FLUENT_PAGES_KEY_CHOICES:
+            kwargs.setdefault('exclude', [])
+            kwargs['exclude'] += ('key',)
+        return super(UrlNodeChildAdmin, self).get_form(request, obj, **kwargs)
 
 
     def get_readonly_fields(self, request, obj=None):

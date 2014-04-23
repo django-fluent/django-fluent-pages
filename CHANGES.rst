@@ -4,6 +4,10 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+* Added ``key`` field to allow linking to specific user-created pages (e.g. a Terms and Conditions page).
+  This feature is only visible when ``FLUENT_PAGES_KEY_CHOICES`` is configured.
+
+
 Released in 0.9b1:
 ~~~~~~~~~~~~~~~~~~
 

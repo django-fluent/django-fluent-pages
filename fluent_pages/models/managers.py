@@ -98,6 +98,15 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         return paths
 
 
+    def get_for_key(self, key):
+        """
+        Return the UrlNode for the given key.
+
+        The key can be a slug-like value that was configured in ``FLUENT_PAGES_KEY_CHOICES``.
+        """
+        return self._single_site().get(key=key)
+
+
     def parent_site(self, site):
         """
         .. versionadded:: 0.9 Filter to the given site.
@@ -198,6 +207,15 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
         """
         return self.get_query_set().best_match_for_path(path)
+
+
+    def get_for_key(self, key):
+        """
+        .. versionadded:: 0.9 Return the UrlNode for the given key.
+
+        The key can be a slug-like value that was configured in ``FLUENT_PAGES_KEY_CHOICES``.
+        """
+        return self.get_query_set().get_for_key(key)
 
 
     def parent_site(self, site):

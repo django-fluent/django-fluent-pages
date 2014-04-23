@@ -78,6 +78,10 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
     in_navigation = models.BooleanField(_('show in navigation'), default=appsettings.FLUENT_PAGES_DEFAULT_IN_NAVIGATION, db_index=True)
     override_url = TranslatedField()
 
+    # For tagging nodes and locating them in code. This should be avoided if possible,
+    # but can be a last resort to link to pages (e.g. a "Terms of Service" page).
+    key = models.SlugField(_("page identifier"), choices=appsettings.FLUENT_PAGES_KEY_CHOICES, blank=True, null=True, help_text=_("A unique identifier that is used for linking to this page."))
+
     # Metadata
     author = models.ForeignKey(get_user_model_name(), verbose_name=_('author'), editable=False)
     creation_date = models.DateTimeField(_('creation date'), editable=False, auto_now_add=True)
@@ -95,6 +99,9 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         ordering = ('tree_id', 'lft',)
         verbose_name = _('URL Node')
         verbose_name_plural = _('URL Nodes')  # Using Urlnode here makes it's way to the admin pages too.
+        unique_together = (
+            ('parent_site', 'key'),
+        )
         permissions = (
             ('change_shared_fields_urlnode', _("Can change Shared fields")),  # The fields shared between languages.
         )

@@ -3,6 +3,7 @@ Overview of all settings which can be customized.
 """
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.text import slugify
 from parler import appsettings as parler_appsettings
 from parler.utils import normalize_language_code, is_supported_django_language
 import os
@@ -14,6 +15,7 @@ FLUENT_PAGES_RELATIVE_TEMPLATE_DIR = getattr(settings, 'FLUENT_PAGES_RELATIVE_TE
 
 # User-visible settings
 FLUENT_PAGES_DEFAULT_IN_NAVIGATION = getattr(settings, 'FLUENT_PAGES_DEFAULT_IN_NAVIGATION', True)
+FLUENT_PAGES_KEY_CHOICES = getattr(settings, 'FLUENT_PAGES_KEY_CHOICES', ())
 
 # Note: the default language setting is used during the migrations
 # Allow this module to have other settings, but default to the shared settings
@@ -57,6 +59,9 @@ FLUENT_PAGES_LANGUAGES = parler_appsettings.add_default_language_settings(
     code=FLUENT_PAGES_DEFAULT_LANGUAGE_CODE,
     fallback=FLUENT_PAGES_DEFAULT_LANGUAGE_CODE
 )
+
+# Using a slug field, enforce keys as slugs too.
+FLUENT_PAGES_KEY_CHOICES = [(slugify(unicode(key)), title) for key, title in FLUENT_PAGES_KEY_CHOICES]
 
 
 def get_language_settings(language_code, site_id=None):
