@@ -84,7 +84,7 @@ class PageNavigationNode(NavigationNode):
         self._page = page
         self._current_page = current_page
         self._parent_node = parent_node
-        self._children = []
+        self._children = None
         self._max_depth = max_depth
 
         # Depths starts relative to the first level.
@@ -110,18 +110,20 @@ class PageNavigationNode(NavigationNode):
     @property
     def children(self):
         self._read_children()
-        for child in self._children:
-            yield PageNavigationNode(child, parent_node=self, max_depth=self._max_depth, current_page=self._current_page)
+        if self._children is not None:
+            for child in self._children:
+                yield PageNavigationNode(child, parent_node=self, max_depth=self._max_depth, current_page=self._current_page)
 
     @property
     def has_children(self):
         self._read_children()
-        return self._children.count() > 0
+        return self._children is not None and self._children.count() > 0
 
     def _read_children(self):
-        if not self._children and (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
-            #children = self._page.get_children()  # Via MPTT
-            self._children = self._page.children.in_navigation()._mark_current(self._current_page)  # Via RelatedManager
+        if self._children is None:
+            if (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
+                #children = self._page.get_children()  # Via MPTT
+                self._children = self._page.children.in_navigation()._mark_current(self._current_page)  # Via RelatedManager
 
     @property
     def _mptt_meta(self):

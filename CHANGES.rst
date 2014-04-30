@@ -9,6 +9,7 @@ Changes in version 0.9 (dev)
 * Fix support for i18n_patterns() in the ``override_url`` field.
 * Added ``hide_untranslated_menu_items`` setting in ``FLUENT_PAGES_LANGUAGES`` / ``PARLER_LANGUAGES``.
 * Added ``page`` variable for menu items in ``PageNavigationNode``.
+* Fix exception in ``PageNavigationNode.has_children``.
 
 
 Released in 0.9b1:
