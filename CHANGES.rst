@@ -7,6 +7,7 @@ Changes in version 0.9 (dev)
 * Added ``key`` field to allow linking to specific user-created pages (e.g. a Terms and Conditions page).
   This feature is only visible when ``FLUENT_PAGES_KEY_CHOICES`` is configured.
 * Fix support for i18n_patterns() in the ``override_url`` field.
+* Added ``hide_untranslated_menu_items`` setting in ``FLUENT_PAGES_LANGUAGES`` / ``PARLER_LANGUAGES``.
 
 
 Released in 0.9b1:

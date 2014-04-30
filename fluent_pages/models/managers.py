@@ -258,7 +258,12 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         # Make sure only translated menu items are visible.
         if is_multilingual_project():
-            qs = qs.active_translations()
+            language_code = current_page.get_current_language() if current_page is not None else get_language()
+            lang_dict = appsettings.FLUENT_PAGES_LANGUAGES.get_language(language_code)
+            if lang_dict['hide_untranslated_menu_items']:
+                qs = qs.translated(language_code)
+            else:
+                qs = qs.active_translations(language_code)
 
         return qs
 

@@ -56,6 +56,7 @@ if not is_supported_django_language(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE):
 FLUENT_PAGES_LANGUAGES = parler_appsettings.add_default_language_settings(
     FLUENT_PAGES_LANGUAGES, 'FLUENT_PAGES_LANGUAGES',
     hide_untranslated=False,
+    hide_untranslated_menu_items=False,
     code=FLUENT_PAGES_DEFAULT_LANGUAGE_CODE,
     fallback=FLUENT_PAGES_DEFAULT_LANGUAGE_CODE
 )
