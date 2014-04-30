@@ -2,6 +2,7 @@ Changes in version 0.8.7 (dev)
 ------------------------------
 
 * Add support of django-polymorphic 0.6.
+* Add ``page`` variable for menu items in ``PageNavigationNode``.
 
 
 Changes in version 0.8.6
