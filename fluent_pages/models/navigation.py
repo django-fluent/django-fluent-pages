@@ -107,6 +107,11 @@ class PageNavigationNode(NavigationNode):
             self._parent_node = PageNavigationNode(self._page.get_parent(), max_depth=self._max_depth, current_page=self._current_page)
         return self._parent_node
 
+    @parent.setter
+    def parent(self, new_parent):
+        # Happens when django-mptt finds an object with a different level in the recursetree() / cache_tree_children() code.
+        raise AttributeError("can't set attribute 'parent' of '{0}' object.".format(self.__class__.__name__))
+
     @property
     def children(self):
         self._read_children()

@@ -165,7 +165,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         """
         Return all pages which have no parent.
         """
-        return self.filter(parent__isnull=True)
+        return self.filter(parent__isnull=True, level=0)
 
 
     def _mark_current(self, current_page):
