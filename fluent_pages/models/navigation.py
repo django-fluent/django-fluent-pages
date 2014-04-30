@@ -25,7 +25,7 @@ class NavigationNode(object):
         raise NotImplementedError("Missing property in NavigationNode!")
 
     def __dir__(self):
-        return ['slug', 'title', 'url', 'is_active', 'level', 'parent', 'children', 'has_children']
+        return ['slug', 'title', 'url', 'is_active', 'level', 'parent', 'children', 'has_children', 'page']
 
     # All properties the template can request:
     slug = property(_not_implemented, doc='The slug of the node.')
@@ -36,6 +36,7 @@ class NavigationNode(object):
     parent = property(_not_implemented, doc='The parent node.')
     children = property(_not_implemented, doc='The list of children.')
     has_children = property(_not_implemented, doc='Whether the node has children.')
+    page = None
 
     # TODO: active trail item
 
@@ -127,3 +128,10 @@ class PageNavigationNode(NavigationNode):
         # Needed since django-mptt 0.6.
         # Need to reconsider this design, for now this patch will suffice.
         return self._page._mptt_meta
+
+    @property
+    def page(self):
+        """
+        .. versionadded:: 0.9 Provide access to the underlying page object, if it exists.
+        """
+        return self._page

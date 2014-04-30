@@ -8,6 +8,7 @@ Changes in version 0.9 (dev)
   This feature is only visible when ``FLUENT_PAGES_KEY_CHOICES`` is configured.
 * Fix support for i18n_patterns() in the ``override_url`` field.
 * Added ``hide_untranslated_menu_items`` setting in ``FLUENT_PAGES_LANGUAGES`` / ``PARLER_LANGUAGES``.
+* Added ``page`` variable for menu items in ``PageNavigationNode``.
 
 
 Released in 0.9b1:
