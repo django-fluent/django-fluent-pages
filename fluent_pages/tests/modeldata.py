@@ -205,3 +205,11 @@ class ModelDataTests(AppTestCase):
             self.assertRaisesMessage(ValidationError, PageTreeForeignKey.default_error_messages['no_children_allowed'], lambda: text_file2.full_clean())
         else:
             self.assertRaises(ValidationError, lambda: text_file2.full_clean())
+
+
+    def test_empty_translation_check(self):
+        """
+        Make sure empty translations will never be saved.
+        """
+        from fluent_pages.models import UrlNode_Translation
+        self.assertRaises(RuntimeError, lambda: UrlNode_Translation.objects.create())

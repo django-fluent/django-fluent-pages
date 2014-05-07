@@ -532,6 +532,9 @@ class UrlNode_Translation(TranslatedFieldsModel):
         return self._cached_url != self._original_cached_url
 
     def save(self, *args, **kwargs):
+        if not self.title and not self.slug:
+            # If this object gets marked as dirty somehow, avoid corruption of the page tree.
+            raise RuntimeError("An UrlNode_Transaction object was created without slug or title, blocking save.")
         super(UrlNode_Translation, self).save(*args, **kwargs)
         self._original_cached_url = self._cached_url
 
