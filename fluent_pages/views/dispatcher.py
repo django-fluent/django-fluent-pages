@@ -113,30 +113,27 @@ class CmsPageDispatcher(GetPathMixin, View):
         return qs
 
 
-    def get_object(self, path=None, language_code=None):
+    def get_object(self, path=None):
         """
         Return the UrlNode subclass object of the current page.
         """
         path = path or self.get_path()
-        language_code = language_code or self.language_code
         qs = self.get_queryset()
 
-        return _try_languages(language_code, UrlNode.DoesNotExist,
+        return _try_languages(self.language_code, UrlNode.DoesNotExist,
             lambda lang: qs.get_for_path(path, language_code=lang)
         )
 
 
-    def get_best_match_object(self, path=None, language_code=None):
+    def get_best_match_object(self, path=None):
         """
         Return the nearest UrlNode object for an URL path.
         """
-        path = path or self.get_path()
-        language_code = language_code or self.language_code
-
         # Only check for nodes with custom urlpatterns
+        path = path or self.get_path()
         qs = self.get_queryset().url_pattern_types()
 
-        return _try_languages(language_code, UrlNode.DoesNotExist,
+        return _try_languages(self.language_code, UrlNode.DoesNotExist,
             lambda lang: qs.best_match_for_path(path, language_code=lang)
         )
 
