@@ -56,9 +56,14 @@ class CmsPageDispatcher(GetPathMixin, View):
         self.path = self.get_path()
 
         # See which view returns a valid response.
-        for func in (self._get_node, self._get_urlnode_redirect, self._get_appnode, self._get_append_slash_redirect):
+        for func in (
+            self._try_node,
+            self._try_node_redirect,
+            self._try_appnode,
+            self._try_append_slash_redirect
+        ):
             response = func()
-            if response:
+            if response is not None:
                 return response
 
         return self._page_not_found()
@@ -147,7 +152,7 @@ class CmsPageDispatcher(GetPathMixin, View):
 
     # -- Various resolver functions
 
-    def _get_node(self):
+    def _try_node(self):
         try:
             self.object = self.get_object()
         except self.model.DoesNotExist:
@@ -192,7 +197,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         return response
 
 
-    def _get_urlnode_redirect(self):
+    def _try_node_redirect(self):
         # Check if the URLnode would be returned if the path did end with a slash.
         if self.path.endswith('/') or not settings.APPEND_SLASH:
             return None
@@ -205,7 +210,7 @@ class CmsPageDispatcher(GetPathMixin, View):
             return HttpResponseRedirect(self.request.path + '/')
 
 
-    def _get_appnode(self):
+    def _try_appnode(self):
         try:
             self.object = self.get_best_match_object()
         except self.model.DoesNotExist:
@@ -262,7 +267,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         return response
 
 
-    def _get_append_slash_redirect(self):
+    def _try_append_slash_redirect(self):
         if self.path.endswith('/') or not settings.APPEND_SLASH:
             return None
 
