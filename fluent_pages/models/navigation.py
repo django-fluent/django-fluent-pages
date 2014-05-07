@@ -121,14 +121,18 @@ class PageNavigationNode(NavigationNode):
 
     @property
     def has_children(self):
-        self._read_children()
-        return self._children is not None and self._children.count() > 0
+        # This avoids queries, just checks that rght = lft + 1
+        return not self._page.is_leaf_node()
 
     def _read_children(self):
-        if self._children is None:
+        if self._children is None and not self._page.is_leaf_node():
             if (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
                 #children = self._page.get_children()  # Via MPTT
                 self._children = self._page.children.in_navigation()._mark_current(self._current_page)  # Via RelatedManager
+
+                # If the parent wasn't polymorphic, neither will it's children be.
+                if self._page.get_real_instance_class() is not self._page.__class__:
+                    self._children = self._children.non_polymorphic()
 
     @property
     def _mptt_meta(self):

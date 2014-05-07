@@ -10,6 +10,10 @@ Changes in version 0.9 (dev)
 * Added ``hide_untranslated_menu_items`` setting in ``FLUENT_PAGES_LANGUAGES`` / ``PARLER_LANGUAGES``.
 * Added ``page`` variable for menu items in ``PageNavigationNode``.
 * Fix exception in ``PageNavigationNode.has_children``.
+* Optimize queries for rendering menu's
+
+ * nodes without children no need a query in ``PageNavigationNode.children``.
+ * avoid polymorphic behavior for child menu nodes (unless the parent node was polymorphic).
 
 
 Released in 0.9b1:

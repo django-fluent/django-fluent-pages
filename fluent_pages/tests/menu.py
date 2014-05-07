@@ -81,6 +81,13 @@ class MenuTests(AppTestCase):
         self.assertEqual(menu[0].slug, 'home')
         self.assertEqual(menu[1].slug, 'root2')
 
+        self.assertNumQueries(0, lambda: menu[0].has_children)
+        self.assertNumQueries(1, lambda: list(menu[0].children))
+        self.assertNumQueries(0, lambda: list(menu[1].children))
+
+        self.assertEqual(menu[0].has_children, True)
+        self.assertEqual(menu[1].has_children, False)
+
         children = list(menu[0].children)
         self.assertEqual(children[0].slug, 'level1a')
         self.assertEqual(children[1].slug, 'level1b')
