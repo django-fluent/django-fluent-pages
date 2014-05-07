@@ -146,6 +146,13 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     radio_fields = {'status': admin.HORIZONTAL}
     readonly_shared_fields = ('status', 'in_navigation', 'parent', 'publication_date', 'publication_end_date',)
 
+    if not appsettings.FLUENT_PAGES_KEY_CHOICES:
+        # Not passing exclude= to get_form() because that overrides get_readonly_fields().
+        # Instead, declare it here to be read by get_form()
+        exclude = ('key',)
+    else:
+        exclude = ()
+
     # The static prepopulated_fields attribute is validated and fails.
     # The object function does work, and django-parler provides the media
     def get_prepopulated_fields(self, request, obj=None):
@@ -166,13 +173,6 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
         if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
             qs = qs.filter(parent_site=settings.SITE_ID)
         return qs
-
-
-    def get_form(self, request, obj=None, **kwargs):
-        if not appsettings.FLUENT_PAGES_KEY_CHOICES:
-            kwargs.setdefault('exclude', [])
-            kwargs['exclude'] += ('key',)
-        return super(UrlNodeChildAdmin, self).get_form(request, obj, **kwargs)
 
 
     def get_readonly_fields(self, request, obj=None):
