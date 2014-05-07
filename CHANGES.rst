@@ -6,9 +6,10 @@ Changes in version 0.9 (dev)
 
 * Added ``key`` field to allow linking to specific user-created pages (e.g. a Terms and Conditions page).
   This feature is only visible when ``FLUENT_PAGES_KEY_CHOICES`` is configured.
-* Fix support for i18n_patterns() in the ``override_url`` field.
+* Fix support for ``i18n_patterns()`` in the ``override_url`` field.
 * Added ``hide_untranslated_menu_items`` setting in ``FLUENT_PAGES_LANGUAGES`` / ``PARLER_LANGUAGES``.
 * Added ``page`` variable for menu items in ``PageNavigationNode``.
+* Fix resolving pages under their fallback language URL when a translated URL does exist.
 * Fix exception in ``PageNavigationNode.has_children``.
 * Optimize queries for rendering menu's
 

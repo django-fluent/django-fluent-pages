@@ -3,7 +3,7 @@ The view to display CMS content.
 """
 from django.conf import settings
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.template.response import TemplateResponse
 from django.utils import translation
 from django.views.generic.base import View
@@ -156,11 +156,6 @@ class CmsPageDispatcher(GetPathMixin, View):
         except self.model.DoesNotExist:
             return None
 
-        # Store the current page. This is used in the `app_reverse()` code,
-        # and also avoids additional lookup in templatetags.
-        # NOTE: django-fluent-blogs actually reads this variable too.
-        self.request._current_fluent_page = self.object
-
         # Before returning the response of an object,
         # check if the plugin overwrites the root url with a custom view.
         plugin = self.get_plugin()
@@ -171,7 +166,25 @@ class CmsPageDispatcher(GetPathMixin, View):
             except Resolver404:
                 pass
             else:
-                return self._call_url_view(plugin, match)
+                return self._call_url_view(plugin, '/', match)
+
+        return self._call_node_view(plugin)
+
+
+    def _call_node_view(self, plugin):
+        """
+        Call the regular view.
+        """
+        # Check that there wasn't a fetch in the fallback language,
+        # perform some service for the user if this is the case.
+        if _is_accidental_fallback(self.object, self.language_code):
+            self.object.set_current_language(self.language_code)
+            return HttpResponsePermanentRedirect(self.object.default_url)
+
+        # Store the current page. This is used in the `app_reverse()` code,
+        # and also avoids additional lookup in templatetags.
+        # NOTE: django-fluent-blogs actually reads this variable too.
+        self.request._current_fluent_page = self.object
 
         # Let page type plugin handle the request.
         response = plugin.get_response(self.request, self.object)
@@ -228,11 +241,23 @@ class CmsPageDispatcher(GetPathMixin, View):
             return None
         else:
             # Call application view.
-            self.request._current_fluent_page = self.object   # Avoid additional lookup in templatetags
-            return self._call_url_view(plugin, match)
+            return self._call_url_view(plugin, sub_path, match)
 
 
-    def _call_url_view(self, plugin, match):
+    def _call_url_view(self, plugin, sub_path, match):
+        """
+        Call the extra URLpattern view.
+        """
+        # Check that there wasn't a fetch in the fallback language,
+        # perform some service for the user if this is the case.
+        if _is_accidental_fallback(self.object, self.language_code):
+            self.object.set_current_language(self.language_code)
+            return HttpResponsePermanentRedirect(self.object.default_url.rstrip('/') + sub_path)
+
+        # Avoid additional lookup in templatetags
+        self.request._current_fluent_page = self.object
+
+        # Get view response
         response = plugin.get_view_response(self.request, self.object, match.func, match.args, match.kwargs)
         if response is None:
             raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
@@ -302,16 +327,28 @@ def _try_languages(language_code, exception_class, func):
     try:
         return func(language_code)
     except exception_class:
-        # Try for next row?
+        # see if there is a fallback language
         fallback = _get_fallback_language(language_code)
         if not fallback:
-            # There is not another attempt, raise.
+            # There is not another possible attempt, raise.
             raise
 
     try:
-        return func(fallback)
+        object = func(fallback)
     except exception_class as e:
         raise exception_class(u"{0}\nTried languages: {1}, {2}".format(unicode(e), language_code, fallback), e)
+
+    # NOTE: it could happen that objects are resolved using their fallback language,
+    # but the actual translation also exists. This is handled in _get_node() above.
+    setattr(object, "_fetched_in_fallback_language", True)
+    return object
+
+
+def _is_accidental_fallback(object, requested_language):
+    # The object was resolved via the fallback language, but it has an official URL in the translated language.
+    # Either _try_languages() can raise an exception, or we could perform a redirect on the users behalf.
+    return getattr(object, '_fetched_in_fallback_language', False) \
+       and object.has_translation(requested_language)
 
 
 def _get_fallback_language(language_code):
