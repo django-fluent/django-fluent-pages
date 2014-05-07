@@ -104,7 +104,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         )
         permissions = (
             ('change_shared_fields_urlnode', _("Can change Shared fields")),     # The fields shared between languages.
-            ('change_override_url_urlnode', _("Can change override_url field")), # Fpr overriding URLs (e.g. '/' for homepage).
+            ('change_override_url_urlnode', _("Can change Override URL field")), # Fpr overriding URLs (e.g. '/' for homepage).
         )
 
 #    class MPTTMeta:
