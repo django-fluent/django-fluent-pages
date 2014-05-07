@@ -9,6 +9,8 @@ Changes in version 0.9 (dev)
 * Fix support for ``i18n_patterns()`` in the ``override_url`` field.
 * Added ``hide_untranslated_menu_items`` setting in ``FLUENT_PAGES_LANGUAGES`` / ``PARLER_LANGUAGES``.
 * Added ``page`` variable for menu items in ``PageNavigationNode``.
+* Add "change override_url permission" flag.
+  South users: run ``manage.py syncdb --all`` to create the permission
 * Fix resolving pages under their fallback language URL when a translated URL does exist.
 * Fix exception in ``PageNavigationNode.has_children``.
 * Optimize queries for rendering menu's

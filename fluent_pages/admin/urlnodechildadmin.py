@@ -176,6 +176,10 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
 
 
     def get_readonly_fields(self, request, obj=None):
+        """
+        Determine which fields are readonly.
+        This includes the shared fields if the user has no permission to change them.
+        """
         fields = super(UrlNodeChildAdmin, self).get_readonly_fields(request, obj)
         if obj is not None:
             # Edit screen
@@ -184,6 +188,12 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
                 # This page is translated in multiple languages,
                 # language team is only allowed to update their own language.
                 fields += self.readonly_shared_fields
+
+        # The override_url is an advanced property that should typically only be set
+        # once for the homepage (set to '/') so avoid that other users can change it.
+        if not self.has_change_override_url_permission(request, obj):
+            fields += ('override_url',)
+
         return fields
 
 
@@ -192,6 +202,14 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
         Whether the user can change the page layout.
         """
         codename = '{0}.change_shared_fields_urlnode'.format(obj._meta.app_label)
+        return request.user.has_perm(codename, obj=obj)
+
+
+    def has_change_override_url_permission(self, request, obj=None):
+        """
+        Whether the user can change the page layout.
+        """
+        codename = '{0}.change_override_url_urlnode'.format(obj._meta.app_label)
         return request.user.has_perm(codename, obj=obj)
 
 
