@@ -201,7 +201,8 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
         """
         Whether the user can change the page layout.
         """
-        codename = '{0}.change_shared_fields_urlnode'.format(obj._meta.app_label)
+        opts = self.opts
+        codename = '{0}.change_shared_fields_urlnode'.format(opts.app_label)
         return request.user.has_perm(codename, obj=obj)
 
 
@@ -209,7 +210,8 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
         """
         Whether the user can change the page layout.
         """
-        codename = '{0}.change_override_url_urlnode'.format(obj._meta.app_label)
+        opts = self.opts
+        codename = '{0}.change_override_url_urlnode'.format(opts.app_label)
         return request.user.has_perm(codename, obj=obj)
 
 
