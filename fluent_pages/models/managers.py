@@ -104,7 +104,14 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
 
         The key can be a slug-like value that was configured in ``FLUENT_PAGES_KEY_CHOICES``.
         """
-        return self._single_site().get(key=key)
+        qs = self._single_site()
+        try:
+            return qs.get(key=key)
+        except self.model.DoesNotExist as e:
+            if self._parent_site is not None:
+                raise self.model.DoesNotExist("{0} with key='{1}' does not exist in site {2}.".format(self.model.__name__, key, self._parent_site))
+            else:
+                raise self.model.DoesNotExist("{0} with key='{1}' does not exist.".format(self.model.__name__, key))
 
 
     def parent_site(self, site):
