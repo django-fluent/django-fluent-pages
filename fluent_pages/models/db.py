@@ -286,13 +286,6 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
     # ---- Custom behavior ----
 
-    @transaction_atomic
-    def move_to(self, target, position='first-child'):
-        # This is called by django-polymorphic-tree when moving a page.
-        super(UrlNode, self).move_to(target, position)
-        self.save()  # Trigger fill page rebuild
-
-
     # This code runs in a transaction since it's potentially editing a lot of records (all descendant urls).
     @transaction_atomic
     def save(self, *args, **kwargs):

@@ -13,6 +13,7 @@ Changes in version 0.9 (dev)
   South users: run ``manage.py syncdb --all`` to create the permission
 * Fix resolving pages under their fallback language URL when a translated URL does exist.
 * Fix exception in ``PageNavigationNode.has_children``.
+* Fix moving pages in the admin list (changes were undone).
 * Optimize queries for rendering menu's
 
  * nodes without children no need a query in ``PageNavigationNode.children``.
