@@ -1,4 +1,11 @@
 import copy
+try:
+    from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
+except ImportError:
+    # Django <1.6 does not preserve filters
+    def add_preserved_filters(context, form_url):
+        return form_url
+from django.utils.http import urlencode
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.contrib.contenttypes.models import ContentType
 from django.template import TemplateDoesNotExist
@@ -96,6 +103,8 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
             'default_change_form_template': _lazy_get_default_change_form_template(self),
             'ct_id': long(ContentType.objects.get_for_model(obj).pk if change else request.GET['ct_id']) # HACK for polymorphic admin
         })
+        # django-parler does this, so we have to do it too, affects django>=1.6
+        form_url = add_preserved_filters({'preserved_filters': urlencode({'ct_id': context['ct_id']}), 'opts': self.model._meta}, form_url)
         return super(DefaultPageChildAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
 
 
