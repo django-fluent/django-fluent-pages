@@ -1,10 +1,4 @@
 import copy
-try:
-    from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
-except ImportError:
-    # Django <1.6 does not preserve filters
-    def add_preserved_filters(context, form_url):
-        return form_url
 from django.utils.http import urlencode
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.contrib.contenttypes.models import ContentType
@@ -14,6 +8,7 @@ from django.utils.functional import lazy
 from fluent_pages.admin.urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
 from fluent_pages.admin.urlnodeparentadmin import UrlNodeParentAdmin
 from fluent_pages.models import Page
+from fluent_pages.utils.compat import add_preserved_filters
 
 
 class PageAdminForm(UrlNodeAdminForm):

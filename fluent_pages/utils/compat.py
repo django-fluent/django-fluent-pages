@@ -9,6 +9,7 @@ __all__ = (
     'now', 'get_user_model', 'get_user_model_name', 'user_model_label',
     'patterns', 'url', 'include',
     'transaction_atomic',
+    'add_preserved_filters',
 )
 
 
@@ -55,3 +56,13 @@ try:
     transaction_atomic = transaction.atomic
 except AttributeError:
     transaction_atomic = transaction.commit_on_success
+
+
+# Preserving admin form filters when adding parameters to the URL
+try:
+    # Django 1.6 supports this, and django-parler also applies this fix.
+    from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
+except ImportError:
+    # Django <1.6 does not preserve filters
+    def add_preserved_filters(context, form_url):
+        return form_url

@@ -14,6 +14,7 @@ Changes in version 0.9 (dev)
 * Fix resolving pages under their fallback language URL when a translated URL does exist.
 * Fix exception in ``PageNavigationNode.has_children``.
 * Fix moving pages in the admin list (changes were undone).
+* Fix missing "ct_id" GET parmeter for Django 1.6 when filtering in the admin (due to the ``_changelist_filters`` parameter).
 * Optimize queries for rendering menu's
 
  * nodes without children no need a query in ``PageNavigationNode.children``.
