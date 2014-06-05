@@ -436,7 +436,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
         subobjects = self.get_descendants().order_by('lft', 'tree_id')
         for subobject in subobjects:
             if subobject.has_translation(current_language):
-                subobject.set_current_language(self.get_current_language())
+                subobject.set_current_language(current_language)
                 use_fallback_base = (subobject.parent_id not in cached_page_urls)  # not present in previous object.
             elif fallback_language:
                 # Subobject only has default language.
