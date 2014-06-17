@@ -76,6 +76,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True, help_text=_('''When the page should go live, status must be "Published".'''))
     publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=appsettings.FLUENT_PAGES_DEFAULT_IN_NAVIGATION, db_index=True)
+    login_required = models.BooleanField(_('login required'), default=False)
     override_url = TranslatedField()
 
     # For tagging nodes and locating them in code. This should be avoided if possible,

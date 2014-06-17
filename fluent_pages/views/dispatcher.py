@@ -3,6 +3,7 @@ The view to display CMS content.
 """
 from django.conf import settings
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
+from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.template.response import TemplateResponse
 from django.utils import translation
@@ -12,6 +13,8 @@ from fluent_pages.models import UrlNode
 from django.views.generic import RedirectView
 import re
 
+def check_login_required(view_func, obj):
+    return login_required(view_func) if obj.login_required else view_func
 
 # NOTE:
 # Since the URLconf of this module acts like a catch-all to serve files (e.g. paths without /),
@@ -189,7 +192,8 @@ class CmsPageDispatcher(GetPathMixin, View):
         self.request._current_fluent_page = self.object
 
         # Let page type plugin handle the request.
-        response = plugin.get_response(self.request, self.object)
+        response = check_login_required(plugin.get_response, self.object)(
+            self.request, self.object)
         if response is None:
             # Avoid automatic fallback to 404 page in this dispatcher.
             raise ValueError("The method '{0}.get_response()' didn't return an HttpResponse object.".format(plugin.__class__.__name__))
@@ -260,7 +264,9 @@ class CmsPageDispatcher(GetPathMixin, View):
         self.request._current_fluent_page = self.object
 
         # Get view response
-        response = plugin.get_view_response(self.request, self.object, match.func, match.args, match.kwargs)
+        response = plugin.get_view_response(self.request, self.object,
+            check_login_required(match.func, self.object), match.args,
+            match.kwargs)
         if response is None:
             raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
 

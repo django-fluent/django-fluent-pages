@@ -1,9 +1,13 @@
 from django.core.urlresolvers import reverse, resolve
+try: # django > 1.5
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+except: # django 1.4
+    from django.contrib.auth.models import User
 from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.utils import AppTestCase, script_name, override_settings
 from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
 from fluent_pages.views.dispatcher import _try_languages, _get_fallback_language
-
 
 class UrlDispatcherTests(AppTestCase):
     """
@@ -12,11 +16,14 @@ class UrlDispatcherTests(AppTestCase):
 
     @classmethod
     def setUpTree(cls):
+        User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
         SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
         SimpleTextPage.objects.create(title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
         SimpleTextPage.objects.create(title="Text1", slug="unpublished", status=SimpleTextPage.DRAFT, author=cls.user)
         WebShopPage.objects.create(title="Shop1", slug="shop", status=SimpleTextPage.PUBLISHED, author=cls.user)
         PlainTextFile.objects.create(slug='README', status=PlainTextFile.PUBLISHED, author=cls.user, content="This is the README")
+        SimpleTextPage.objects.create(title="Text1", slug="sibling2", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS", login_required=True)
+        WebShopPage.objects.create(title="Shop2", slug="shop2", status=SimpleTextPage.PUBLISHED, author=cls.user, login_required=True)
 
 
     def test_get_for_path(self):
@@ -192,7 +199,20 @@ class UrlDispatcherTests(AppTestCase):
         reverse3 = reverse(match3.view_name, args=match3.args, kwargs=match3.kwargs)
         self.assertEqual(reverse3, '/')
 
-
+    def test_login_required(self):
+        """
+        Test that login_required pages redirect to login page when not logged in
+        and resolves correctly when logged in.
+        """
+        # before login
+        self.assertRedirects(self.client.get('/sibling2/'), 'http://testserver/accounts/login/?next=/sibling2/', status_code=302)
+        self.assertRedirects(self.client.get('/shop2/'), 'http://testserver/accounts/login/?next=/shop2/', status_code=302)
+        self.assertRedirects(self.client.get('/shop2/foobar/'), 'http://testserver/accounts/login/?next=/shop2/foobar/', status_code=302)
+        self.client.login(username='temporary', password='temporary')
+        # after login
+        self.assert200('/sibling1/')
+        self.assert200('/shop2/')
+        self.assert200('/shop2/foobar/')
 
 class UrlDispatcherNonRootTests(AppTestCase):
     """

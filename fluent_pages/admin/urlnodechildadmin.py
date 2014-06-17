@@ -118,7 +118,7 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     # Expose fieldsets for subclasses to reuse
     #: The general fieldset to display
     FIELDSET_GENERAL = (None, {
-        'fields': ('title', 'slug', 'status', 'in_navigation'),
+        'fields': ('title', 'slug', 'status', 'in_navigation', 'login_required'),
     })
     #: The menu fieldset
     FIELDSET_MENU = (_('Menu structure'), {
@@ -144,7 +144,7 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     # Config add/edit page:
     raw_id_fields = ('parent',)
     radio_fields = {'status': admin.HORIZONTAL}
-    readonly_shared_fields = ('status', 'in_navigation', 'parent', 'publication_date', 'publication_end_date',)
+    readonly_shared_fields = ('status', 'in_navigation', 'login_required', 'parent', 'publication_date', 'publication_end_date',)
 
     if not appsettings.FLUENT_PAGES_KEY_CHOICES:
         # Not passing exclude= to get_form() because that overrides get_readonly_fields().
