@@ -58,7 +58,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('title',)", 'object_name': 'PageLayout'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
-            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'path': "'/Users/diederik/Sites/webapps/edoburu.nl/edoburu_site/themes/edoburu/templates/'", 'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
+            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'fluent_pages.urlnode': {

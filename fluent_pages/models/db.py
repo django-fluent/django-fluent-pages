@@ -632,10 +632,15 @@ class PageLayout(models.Model):
 
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
     title = models.CharField(_('title'), max_length=255)
-    template_path = TemplateFilePathField('template file', path=appsettings.FLUENT_PAGES_TEMPLATE_DIR)
+    template_path = TemplateFilePathField('template file')
     #no children
     #unique
     #allowed_children
+
+    def __init__(self, *args, **kwargs):
+        super(PageLayout, self).__init__(*args, **kwargs)
+        template_path = self._meta.get_field_by_name("template_path")[0]
+        template_path.path = appsettings.FLUENT_PAGES_TEMPLATE_DIR
 
 
     def get_template(self):

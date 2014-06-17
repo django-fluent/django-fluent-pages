@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     )
 
     def forwards(self, orm):
-        
+
         # Adding model 'FluentPage'
         db.create_table('pagetype_fluentpage_fluentpage', (
             ('urlnode_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fluent_pages.UrlNode'], unique=True, primary_key=True)),
@@ -22,7 +22,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        
+
         # Deleting model 'FluentPage'
         db.delete_table('pagetype_fluentpage_fluentpage')
 
@@ -86,7 +86,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('title',)", 'object_name': 'PageLayout'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'path': "'/srv/www/webapps/edoburu.nl/edoburu_site/themes/edoburu/templates/'", 'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
+            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'fluent_pages.urlnode': {
