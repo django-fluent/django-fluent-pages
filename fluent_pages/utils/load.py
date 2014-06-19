@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from future.builtins import str
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from fluent_pages import appsettings
@@ -33,7 +34,7 @@ def import_class(import_path, setting_name):
     try:
         mod = import_module(mod_name)
         cls = getattr(mod, class_name)
-    except ImportError, e:
+    except ImportError as e:
         if mod_name not in str(e):
             raise   # import error is a level deeper.
         else:
@@ -51,7 +52,7 @@ def import_apps_submodule(submodule):
     for app in settings.INSTALLED_APPS:
         try:
             import_module('.' + submodule, app)
-        except ImportError, e:
+        except ImportError as e:
             if submodule not in str(e):
                 raise   # import error is a level deeper.
             else:

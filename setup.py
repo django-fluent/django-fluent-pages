@@ -11,8 +11,11 @@ import sys
 if 'sdist' in sys.argv:
     try:
         os.chdir('fluent_pages')
-        from django.core.management.commands.compilemessages import compile_messages
-        compile_messages(sys.stderr)
+        try:
+            from django.core.management.commands.compilemessages import compile_messages
+            compile_messages(sys.stderr)
+        except ImportError:
+            pass
     finally:
         os.chdir('..')
 
@@ -41,6 +44,7 @@ setup(
         'django-polymorphic>=0.5.3',     # Need 0.5.3 for several upstream fixes related to forms.
         'django-polymorphic-tree>=0.9',  # Enforce latest bugfix version for consistent behavior.
         'django-tag-parser>=1.0.3',
+        'future>=0.12.2',
     ],
     requires=[
         'Django (>=1.4)',
@@ -75,6 +79,7 @@ setup(
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Application Frameworks',

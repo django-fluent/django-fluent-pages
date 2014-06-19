@@ -1,6 +1,7 @@
 """
 The view to display CMS content.
 """
+from future.builtins import str
 from django.conf import settings
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
 from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
@@ -23,7 +24,7 @@ class GetPathMixin(View):
         """
         Return the path argument of the view.
         """
-        if self.kwargs.has_key('path'):
+        if 'path' in self.kwargs:
             # Starting slash is removed by URLconf, restore it.
             return '/' + (self.kwargs['path'] or '')
         else:
@@ -336,21 +337,21 @@ def _try_languages(language_code, exception_class, func):
             raise
 
     try:
-        object = func(fallback)
+        obj = func(fallback)
     except exception_class as e:
-        raise exception_class(u"{0}\nTried languages: {1}, {2}".format(unicode(e), language_code, fallback), e)
+        raise exception_class(u"{0}\nTried languages: {1}, {2}".format(str(e), language_code, fallback), e)
 
     # NOTE: it could happen that objects are resolved using their fallback language,
     # but the actual translation also exists. This is handled in _get_node() above.
-    setattr(object, "_fetched_in_fallback_language", True)
-    return object
+    setattr(obj, "_fetched_in_fallback_language", True)
+    return obj
 
 
-def _is_accidental_fallback(object, requested_language):
+def _is_accidental_fallback(obj, requested_language):
     # The object was resolved via the fallback language, but it has an official URL in the translated language.
     # Either _try_languages() can raise an exception, or we could perform a redirect on the users behalf.
-    return getattr(object, '_fetched_in_fallback_language', False) \
-       and object.has_translation(requested_language)
+    return getattr(obj, '_fetched_in_fallback_language', False) \
+       and obj.has_translation(requested_language)
 
 
 def _get_fallback_language(language_code):

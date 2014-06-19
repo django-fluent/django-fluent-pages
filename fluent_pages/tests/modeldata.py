@@ -1,5 +1,6 @@
 import django
 from django.core.exceptions import ValidationError
+from django.utils.encoding import force_text
 from fluent_pages.models import Page
 from fluent_pages.models.fields import PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeQuerySet
@@ -107,8 +108,8 @@ class ModelDataTests(AppTestCase):
         root = SimpleTextPage.objects.get(translations__override_url='/')
         level1 = SimpleTextPage.objects.get(translations__slug='level1')
         level2 = SimpleTextPage.objects.get(translations__slug='level2')
-        self.assertEquals(level1.get_absolute_url(), '/level1/')
-        self.assertEquals(level2.get_absolute_url(), '/level1/level2/')
+        self.assertEqual(level1.get_absolute_url(), '/level1/')
+        self.assertEqual(level2.get_absolute_url(), '/level1/level2/')
 
         # Change root
         root.override_url = '/new_root/'
@@ -117,8 +118,8 @@ class ModelDataTests(AppTestCase):
         # Check result
         level1 = SimpleTextPage.objects.get(translations__slug='level1')
         level2 = SimpleTextPage.objects.get(translations__slug='level2')
-        self.assertEquals(level1.get_absolute_url(), '/new_root/level1/')
-        self.assertEquals(level2.get_absolute_url(), '/new_root/level1/level2/')
+        self.assertEqual(level1.get_absolute_url(), '/new_root/level1/')
+        self.assertEqual(level2.get_absolute_url(), '/new_root/level1/level2/')
 
         # TODO: note that things like .filter().update() won't work on override_url and slug properties.
 
@@ -133,8 +134,8 @@ class ModelDataTests(AppTestCase):
 
         level1 = SimpleTextPage.objects.get(pk=level1.pk)
         level2 = SimpleTextPage.objects.get(translations__slug='level2')
-        self.assertEquals(level1.get_absolute_url(), '/level1_b/')
-        self.assertEquals(level2.get_absolute_url(), '/level1_b/level2/')
+        self.assertEqual(level1.get_absolute_url(), '/level1_b/')
+        self.assertEqual(level2.get_absolute_url(), '/level1_b/level2/')
 
 
     def test_change_parent(self):
@@ -148,8 +149,8 @@ class ModelDataTests(AppTestCase):
 
         level1 = SimpleTextPage.objects.get(pk=level1.pk)
         level2 = SimpleTextPage.objects.get(translations__slug='level2')
-        self.assertEquals(level1.get_absolute_url(), '/root2/level1/')
-        self.assertEquals(level2.get_absolute_url(), '/root2/level1/level2/')
+        self.assertEqual(level1.get_absolute_url(), '/root2/level1/')
+        self.assertEqual(level2.get_absolute_url(), '/root2/level1/level2/')
 
 
     def test_duplicate_slug(self):
@@ -202,7 +203,7 @@ class ModelDataTests(AppTestCase):
 
         # Note that .save() doesn't validate, as per default Django behavior.
         if django.VERSION >= (1, 4):
-            self.assertRaisesMessage(ValidationError, PageTreeForeignKey.default_error_messages['no_children_allowed'], lambda: text_file2.full_clean())
+            self.assertRaisesMessage(ValidationError, force_text(PageTreeForeignKey.default_error_messages['no_children_allowed']), lambda: text_file2.full_clean())
         else:
             self.assertRaises(ValidationError, lambda: text_file2.full_clean())
 

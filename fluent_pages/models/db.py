@@ -9,6 +9,7 @@ It defines the following classes:
 * PageLayout
   The layout of a page, which has regions and a template.
 """
+from django.utils.encoding import python_2_unicode_compatible
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
@@ -24,6 +25,7 @@ from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 from parler.utils.context import switch_language
+from future.utils import with_metaclass
 
 
 def _get_current_site():
@@ -50,12 +52,11 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
 
         return new_class
 
-
-class UrlNode(PolymorphicMPTTModel, TranslatableModel):
+@python_2_unicode_compatible
+class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, TranslatableModel)):
     """
     The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
     """
-    __metaclass__ = URLNodeMetaClass
 
     # Some publication states
     DRAFT = 'd'
@@ -110,10 +111,10 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 #    class MPTTMeta:
 #        order_insertion_by = 'title'
 
-    def __unicode__(self):
+    def __str__(self):
         # This looks pretty nice on the delete page.
         # All other models derive from Page, so they get good titles in the breadcrumb.
-        return u", ".join(self.get_absolute_urls().itervalues())
+        return u", ".join(iter(self.get_absolute_urls().values()))
 
 
     # ---- Extra properties ----
@@ -311,7 +312,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
 
         # Find all translations that this object has,
         # both in the database, and unsaved local objects.
-        all_languages = set(self.get_available_languages()) | set(self._translations_cache.iterkeys())  # HACK!
+        all_languages = set(self.get_available_languages()) | set(iter(self._translations_cache.keys()))  # HACK!
         parent_urls = dict(UrlNode_Translation.objects.filter(master=self.parent_id).values_list('language_code', '_cached_url'))
 
         for language_code in all_languages:
@@ -484,7 +485,7 @@ class UrlNode(PolymorphicMPTTModel, TranslatableModel):
             cache.delete(cachekey)
 
 
-
+@python_2_unicode_compatible
 class UrlNode_Translation(TranslatedFieldsModel):
     """
     Translation table for UrlNode.
@@ -508,7 +509,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
         verbose_name = _('URL Node translation')
         verbose_name_plural = _('URL Nodes translations')  # Using Urlnode here makes it's way to the admin pages too.
 
-    def __unicode__(self):
+    def __str__(self):
         return u"{0}: {1}".format(get_language_title(self.language_code), self.title)
 
     def __repr__(self):
@@ -571,7 +572,7 @@ class TranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
 UrlNode_Translation.DoesNotExist = TranslationDoesNotExist
 
 
-
+@python_2_unicode_compatible
 class Page(UrlNode):
     """
     The base class for all all :class:`UrlNode` subclasses that display pages.
@@ -585,7 +586,7 @@ class Page(UrlNode):
         verbose_name = _('Page')
         verbose_name_plural = _('Pages')
 
-    def __unicode__(self):
+    def __str__(self):
         # self.title is configured with any_language=True, so always returns a value.
         return self.title or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
 
@@ -623,7 +624,7 @@ class HtmlPage(Page, SeoPageMixin):
         verbose_name_plural = _('Pages')
 
 
-
+@python_2_unicode_compatible
 class PageLayout(models.Model):
     """
     A ``PageLayout`` object defines a template that can be used by a page.
@@ -647,7 +648,7 @@ class PageLayout(models.Model):
 
 
     # Django stuff
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:

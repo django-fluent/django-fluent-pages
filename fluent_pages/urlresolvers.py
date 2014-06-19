@@ -1,6 +1,7 @@
 """
 URL Resolving for dynamically added pages.
 """
+from future.builtins import str
 from django.conf import settings
 from django.core.cache import cache
 from django.core.urlresolvers import NoReverseMatch, reverse
@@ -64,7 +65,7 @@ def app_reverse(viewname, args=None, kwargs=None, multiple=False, ignore_multipl
             viewname, ', '.join(page.get_absolute_url() for page in pages)
         ))
     elif not pages:
-        raise PageTypeNotMounted("Reverse for application URL '{0}' is not available, a '{1}' page needs to be added to the page tree.".format(viewname, unicode(plugin.verbose_name)))
+        raise PageTypeNotMounted("Reverse for application URL '{0}' is not available, a '{1}' page needs to be added to the page tree.".format(viewname, str(plugin.verbose_name)))
 
     # Return URL with page prefix.
     if multiple:

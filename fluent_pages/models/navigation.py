@@ -9,9 +9,11 @@ It offers properties such as :attr:`~fluent_pages.models.Page.parent`
 and :attr:`~fluent_pages.models.Page.children` (a :class:`~django.db.models.RelatedManager`),
 and methods such as `get_parent()` and `get_children()` through the `MPTTModel` base class.
 """
+from future.builtins import object
+from django.utils.encoding import python_2_unicode_compatible
 from parler.models import TranslationDoesNotExist
 
-
+@python_2_unicode_compatible
 class NavigationNode(object):
     """
     The base class for all navigation nodes, whether model-based on virtually inserted ones.
@@ -62,7 +64,7 @@ class NavigationNode(object):
             url = None
         return '<{0}: {1}>'.format(self.__class__.__name__, url)
 
-    def __unicode__(self):
+    def __str__(self):
         # This only exists in case a developer uses `{{ node }}` in the template.
         try:
             return self.title

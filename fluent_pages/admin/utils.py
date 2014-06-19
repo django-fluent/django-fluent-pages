@@ -1,6 +1,7 @@
 """
 Utility functions related to admin views.
 """
+from future.builtins import int
 from django.core import urlresolvers
 from fluent_pages.models import UrlNode
 
