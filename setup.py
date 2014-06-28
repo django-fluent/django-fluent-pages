@@ -39,11 +39,11 @@ setup(
     license='Apache License, Version 2.0',
 
     install_requires=[
-        'django-mptt>=0.5.4',
-        'django-parler>=1.0b2',
-        'django-polymorphic>=0.5.3',     # Need 0.5.3 for several upstream fixes related to forms.
-        'django-polymorphic-tree>=0.9',  # Enforce latest bugfix version for consistent behavior.
-        'django-tag-parser>=1.0.3',
+        'django-mptt>=0.6.0',              # Enforce Python 3 compatible versions
+        'django-parler>=1.0b3',
+        'django-polymorphic>=0.5.3',       # Need 0.5.3 for several upstream fixes related to forms.
+        'django-polymorphic-tree>=1.0b1',  # Enforce Python 3 compatible versions
+        'django-tag-parser>=2.0b1',
         'future>=0.12.2',
     ],
     requires=[
