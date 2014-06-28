@@ -4,6 +4,10 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+Released in 0.9b2:
+~~~~~~~~~~~~~~~~~~
+
+* Added Python 3 support!
 * Added ``key`` field to allow linking to specific user-created pages (e.g. a Terms and Conditions page).
   This feature is only visible when ``FLUENT_PAGES_KEY_CHOICES`` is configured.
 * Fix support for ``i18n_patterns()`` in the ``override_url`` field.
@@ -15,6 +19,7 @@ Changes in version 0.9 (dev)
 * Fix exception in ``PageNavigationNode.has_children``.
 * Fix moving pages in the admin list (changes were undone).
 * Fix missing "ct_id" GET parmeter for Django 1.6 when filtering in the admin (due to the ``_changelist_filters`` parameter).
+* Updated dependencies to their Python 3 compatible versions.
 * Optimize queries for rendering menu's
 
  * nodes without children no need a query in ``PageNavigationNode.children``.
