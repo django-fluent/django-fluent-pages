@@ -20,6 +20,17 @@ class TemplateFilePathField(models.FilePathField):
         defaults.update(kwargs)
         return super(TemplateFilePathField, self).formfield(**defaults)
 
+    def south_field_triple(self):
+        """
+        Returns a suitable description of this field for South.
+        """
+        from south.modelsinspector import introspector
+        field_class = "{0}.{1}".format(self.__class__.__module__, self.__class__.__name__)
+        args, kwargs = introspector(self)
+        del kwargs['path']
+        return (field_class, args, kwargs)
+
+
 
 class TranslatedForeignKeyDescriptor(ReverseSingleRelatedObjectDescriptor):
     def __get__(self, instance, instance_type=None):
