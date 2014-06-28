@@ -22,7 +22,7 @@ class TemplateTagTests(AppTestCase):
 
     def test_menu_404(self):
         response = self.client.get('/404/')
-        html = response.content
+        html = response.content.decode('utf-8')
 
         # Kind of JSON like, but not really (has trailing commma)
         menu = html[html.find('menu =') + 7:]

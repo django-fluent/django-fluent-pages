@@ -1,3 +1,4 @@
+from future.builtins import str
 from django.core.urlresolvers import reverse, resolve
 from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.utils import AppTestCase, script_name, override_settings
@@ -25,7 +26,7 @@ class UrlDispatcherTests(AppTestCase):
         """
         # Test basic state
         sibling1 = Page.objects.get_for_path('/sibling1/')
-        self.assertEquals(sibling1.get_absolute_url(), '/sibling1/', "Page at {0} has invalid absolute URL".format('/sibling1/'))
+        self.assertEqual(sibling1.get_absolute_url(), '/sibling1/', "Page at {0} has invalid absolute URL".format('/sibling1/'))
         self.assert200('/')
         self.assert200('/sibling1/')
 
@@ -63,7 +64,7 @@ class UrlDispatcherTests(AppTestCase):
         """
         with script_name('/_test_subdir_/'):
             sibling1 = Page.objects.get_for_path('/sibling1/')
-            self.assertEquals(sibling1.get_absolute_url(), '/_test_subdir_/sibling1/', "UrlNode.get_absolute_url() should take changes to SCRIPT_NAME into account (got: {0}).".format(sibling1.get_absolute_url()))
+            self.assertEqual(sibling1.get_absolute_url(), '/_test_subdir_/sibling1/', "UrlNode.get_absolute_url() should take changes to SCRIPT_NAME into account (got: {0}).".format(sibling1.get_absolute_url()))
             # Note the test client always operates relative to the Django script_name root.
             self.assert200('/')
             self.assert200('/sibling1/')
@@ -75,7 +76,7 @@ class UrlDispatcherTests(AppTestCase):
         """
         # Test initial state
         from fluent_pages.tests.testapp.page_type_plugins import SimpleTextPagePlugin  # Import here as it needs an existing DB
-        self.assertEquals(SimpleTextPagePlugin.render_template, 'testapp/simpletextpage.html')
+        self.assertEqual(SimpleTextPagePlugin.render_template, 'testapp/simpletextpage.html')
 
         # Test how a normal page is rendered
         response = self.client.get('/sibling1/')
@@ -89,7 +90,7 @@ class UrlDispatcherTests(AppTestCase):
         """
         # Test initial state
         from fluent_pages.tests.testapp.page_type_plugins import WebShopPagePlugin
-        self.assertEquals(WebShopPagePlugin.urls, 'fluent_pages.tests.testapp.urls_webshop')
+        self.assertEqual(WebShopPagePlugin.urls, 'fluent_pages.tests.testapp.urls_webshop')
 
         response = self.client.get('/shop/')
         self.assertContains(response, 'test_webshop: index_page')  # The URLconf is an overlay over the standard get_response()
@@ -132,7 +133,7 @@ class UrlDispatcherTests(AppTestCase):
         URLs that point to files should return properly.
         """
         response = self.client.get('/README')
-        self.assertEqual(response.content, 'This is the README')
+        self.assertEqual(response.content.decode('utf-8'), str('This is the README'))
         self.assertEqual(response['Content-Type'], 'text/plain')
 
 
@@ -215,9 +216,9 @@ class UrlDispatcherNonRootTests(AppTestCase):
 
         self.assert200('/pages/sibling1/')
         self.assert404('/sibling1/')
-        self.assertEquals(sibling1.get_absolute_url(), '/pages/sibling1/', "UrlNode.get_absolute_url() should other URLConf root into account (got: {0}).".format(sibling1.get_absolute_url()))
+        self.assertEqual(sibling1.get_absolute_url(), '/pages/sibling1/', "UrlNode.get_absolute_url() should other URLConf root into account (got: {0}).".format(sibling1.get_absolute_url()))
         sibling1.save()
-        self.assertEquals(sibling1._cached_url, '/sibling1/', "UrlNode keeps paths relative to the include()")
+        self.assertEqual(sibling1._cached_url, '/sibling1/', "UrlNode keeps paths relative to the include()")
         # NOTE: admin needs to be tested elsewhere for this too.
 
 

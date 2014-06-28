@@ -1,6 +1,7 @@
 """
 The manager class for the CMS models
 """
+from future.builtins import range
 from django.conf import settings
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
@@ -47,9 +48,9 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
 
         # Don't normalize slashes, expect the URLs to be sane.
         try:
-            object = self._single_site().get(translations___cached_url=path, translations__language_code=language_code)
-            object.set_current_language(language_code)  # NOTE. Explicitly set language to the state the object was fetched in.
-            return object
+            obj = self._single_site().get(translations___cached_url=path, translations__language_code=language_code)
+            obj.set_current_language(language_code)  # NOTE. Explicitly set language to the state the object was fetched in.
+            return obj
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
@@ -73,9 +74,9 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
                      .filter(translations___cached_url__in=paths, translations__language_code=language_code) \
                      .extra(select={'_url_length': 'LENGTH(_cached_url)'}) \
                      .order_by('-level', '-_url_length')  # / and /news/ is both level 0
-            object = qs[0]
-            object.set_current_language(language_code)  # NOTE: Explicitly set language to the state the object was fetched in.
-            return object
+            obj = qs[0]
+            obj.set_current_language(language_code)  # NOTE: Explicitly set language to the state the object was fetched in.
+            return obj
         except IndexError:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
@@ -259,7 +260,7 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         Return all toplevel items, ordered by menu ordering.
 
-        When current_page is passed, the object values such as 'is_current' will be set. 
+        When current_page is passed, the object values such as 'is_current' will be set.
         """
         qs = self.toplevel().in_navigation().non_polymorphic()._mark_current(current_page)
 

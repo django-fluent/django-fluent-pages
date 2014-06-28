@@ -37,7 +37,7 @@ class AppUrlNode(BaseNode):
     def render_tag(self, context, *tag_args, **tag_kwargs):
         view_name = tag_args[0]
         url_args = tag_args[1::]
-        url_kwargs = dict([(smart_str(name, 'ascii'), value) for name, value in tag_kwargs.items()])
+        url_kwargs = dict([(smart_str(name, 'ascii'), value) for name, value in iter(tag_kwargs.items())])
 
         # The app_reverse() tag can handle multiple results fine if it knows what the current page is.
         # Try to find it.

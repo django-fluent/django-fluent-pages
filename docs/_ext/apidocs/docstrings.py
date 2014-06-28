@@ -3,7 +3,7 @@ Automatically mention all model fields as parameters in the model construction.
 Based on http://djangosnippets.org/snippets/2533/
 """
 from django.utils.html import strip_tags
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 import inspect
 
 
@@ -12,8 +12,8 @@ def improve_model_docstring(app, what, name, obj, options, lines):
 
     if inspect.isclass(obj) and issubclass(obj, models.Model):
         for field in obj._meta._fields():
-            help_text = strip_tags(force_unicode(field.help_text))
-            verbose_name = force_unicode(field.verbose_name).capitalize()
+            help_text = strip_tags(force_text(field.help_text))
+            verbose_name = force_text(field.verbose_name).capitalize()
 
             # Add parameter
             if help_text:

@@ -1,3 +1,5 @@
+from future.builtins import str
+from future.builtins import object
 from functools import wraps
 from django.conf import settings, UserSettingsHolder
 from django.core.management import call_command
@@ -31,7 +33,7 @@ class AppTestCase(TestCase):
             run_syncdb = False
             for appname in cls.install_apps:
                 if appname not in settings.INSTALLED_APPS:
-                    print 'Adding {0} to INSTALLED_APPS'.format(appname)
+                    print('Adding {0} to INSTALLED_APPS'.format(appname))
                     settings.INSTALLED_APPS = (appname,) + tuple(settings.INSTALLED_APPS)
                     run_syncdb = True
 
@@ -70,7 +72,7 @@ class AppTestCase(TestCase):
         """
         if msg_prefix:
             msg_prefix += ": "
-        self.assertEquals(self.client.get(url).status_code, 200, unicode(msg_prefix) + u"Page at {0} should be found.".format(url))
+        self.assertEqual(self.client.get(url).status_code, 200, str(msg_prefix) + u"Page at {0} should be found.".format(url))
 
 
     def assert404(self, url, msg_prefix=''):
@@ -80,7 +82,7 @@ class AppTestCase(TestCase):
         if msg_prefix:
             msg_prefix += ": "
         response = self.client.get(url)
-        self.assertEquals(response.status_code, 404, unicode(msg_prefix) + u"Page at {0} should return 404, got {1}.".format(url, response.status_code))
+        self.assertEqual(response.status_code, 404, str(msg_prefix) + u"Page at {0} should return 404, got {1}.".format(url, response.status_code))
 
 
 try:
@@ -126,7 +128,7 @@ except ImportError:
 
         def enable(self):
             override = UserSettingsHolder(settings._wrapped)
-            for key, new_value in self.options.items():
+            for key, new_value in iter(self.options.items()):
                 setattr(override, key, new_value)
             settings._wrapped = override
 

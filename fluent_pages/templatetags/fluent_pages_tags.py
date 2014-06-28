@@ -6,7 +6,9 @@ Load this module using:
 
     {% load fluent_pages_tags %}
 """
+from future.builtins import str
 from django.contrib.sites.models import Site
+from django.utils.six import integer_types, string_types
 from django.template import Library, TemplateSyntaxError
 from fluent_pages.models import UrlNode, Page
 from fluent_pages.models.navigation import PageNavigationNode
@@ -52,7 +54,7 @@ def get_node_kwargs(tag_kwargs):
     """
     return dict(
         (k, v)
-        for k, v in tag_kwargs.iteritems()
+        for k, v in iter(tag_kwargs.items())
         if k in ('max_depth',)
     )
 
@@ -82,14 +84,14 @@ class MenuNode(BaseInclusionNode):
             # if we've been provided a parent kwarg then we want to filter
             parent_value = tag_kwargs['parent']
 
-            if isinstance(parent_value, basestring):
+            if isinstance(parent_value, string_types):
                 # if we've been provided a string then we lookup based on the path/url
                 try:
                     parent = UrlNode.objects.get_for_path(parent_value)
                 except UrlNode.DoesNotExist:
                     return {'menu_items': []}
                 top_pages = parent.children.in_navigation()  # Can't do parent___cached_key due to polymorphic queryset code.
-            elif isinstance(parent_value, (int, long)):
+            elif isinstance(parent_value, integer_types):
                 # If we've been provided an int then we lookup based on the id of the page
                 top_pages = UrlNode.objects.in_navigation().filter(parent_id=parent_value)
             elif isinstance(parent_value, UrlNode):
@@ -143,9 +145,9 @@ class GetVarsNode(BaseNode):
         # Automatically add 'site', allows "default:site.domain" to work.
         # ...and optionally - if a page exists - include 'page' too.
         extra_context = {}
-        if not context.has_key('site'):
+        if 'site' not in context:
             extra_context['site'] = current_site
-        if current_page and not context.has_key('page'):
+        if current_page and 'page' not in context:
             extra_context['page'] = current_page
 
         if extra_context:
@@ -173,10 +175,10 @@ def _get_current_page(context):
             try:
                 # Then try looking up environmental properties.
                 current_page = UrlNode.objects.get_for_path(request.path)
-            except UrlNode.DoesNotExist, e:
+            except UrlNode.DoesNotExist as e:
                 # Be descriptive. This saves precious developer time.
                 raise UrlNode.DoesNotExist("Could not detect current page.\n"
-                                           "- " + unicode(e) + "\n"
+                                           "- " + str(e) + "\n"
                                            "- No context variable named 'page' found.")
 
         if not isinstance(current_page, UrlNode):
@@ -193,6 +195,6 @@ def _get_request(context):
     This enforces the use of the template :class:`~django.template.RequestContext`,
     and provides meaningful errors if this is omitted.
     """
-    assert context.has_key('request'), "The fluent_pages_tags library requires a 'request' object in the context! Is RequestContext not used, or 'django.core.context_processors.request' not included in TEMPLATE_CONTEXT_PROCESSORS?"
+    assert 'request' in context, "The fluent_pages_tags library requires a 'request' object in the context! Is RequestContext not used, or 'django.core.context_processors.request' not included in TEMPLATE_CONTEXT_PROCESSORS?"
     return context['request']
 

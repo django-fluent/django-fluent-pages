@@ -8,6 +8,7 @@ The API uses a registration system.
 While plugins can be easily detected via ``__subclasses__()``, the register approach is less magic and more explicit.
 Having to do an explicit register ensures future compatibility with other API's like reversion.
 """
+from future.builtins import str, object, int
 from threading import Lock
 
 from django import forms
@@ -23,6 +24,8 @@ from fluent_pages import appsettings
 from fluent_pages.admin import PageAdmin
 from fluent_pages.models import UrlNode
 from fluent_pages.utils.load import import_apps_submodule
+from django.utils.six import string_types
+from future.utils import with_metaclass
 
 
 __all__ = (
@@ -31,7 +34,7 @@ __all__ = (
 
 
 
-class PageTypePlugin(object):
+class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
     """
     The base class for a page type plugin.
 
@@ -69,7 +72,6 @@ class PageTypePlugin(object):
     Provide an URLconf to the :attr:`urls` attribute to use this feature,
     and resolve those URLs using the :mod:`fluent_pages.urlresolvers` module.
     """
-    __metaclass__ = forms.MediaDefiningClass
 
     # -- Settings to override:
 
@@ -108,7 +110,7 @@ class PageTypePlugin(object):
 
 
     def __repr__(self):
-        return '<{0} for {1} model>'.format(self.__class__.__name__, unicode(self.model.__name__).encode('ascii'))
+        return '<{0} for {1} model>'.format(self.__class__.__name__, str(self.model.__name__).encode('ascii'))
 
 
     @property
@@ -202,7 +204,7 @@ class PageTypePlugin(object):
         if self._url_resolver is None:
             if self.urls is None:
                 return None
-            elif isinstance(self.urls, basestring):
+            elif isinstance(self.urls, string_types):
                 mod = import_module(self.urls)
                 if not hasattr(mod, 'urlpatterns'):
                     raise ImproperlyConfigured("URLConf `{0}` has no urlpatterns attribute".format(self.urls))
@@ -286,7 +288,7 @@ class PageTypePool(object):
         Return the :class:`PageTypePlugin` instances which are loaded.
         """
         self._import_plugins()
-        return self.plugins.values()
+        return list(self.plugins.values())
 
 
     def get_model_classes(self):
@@ -295,7 +297,7 @@ class PageTypePool(object):
         Each model derives from :class:`~fluent_pages.models.Page` .
         """
         self._import_plugins()
-        return [plugin.model for plugin in self.plugins.values()]
+        return [plugin.model for plugin in iter(self.plugins.values())]
 
 
     def get_plugin_by_model(self, model_class):

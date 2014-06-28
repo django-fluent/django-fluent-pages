@@ -1,6 +1,7 @@
 """
 Overview of all settings which can be customized.
 """
+from future.builtins import str
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.template.defaultfilters import slugify  # Django 1.4 location
@@ -62,7 +63,7 @@ FLUENT_PAGES_LANGUAGES = parler_appsettings.add_default_language_settings(
 )
 
 # Using a slug field, enforce keys as slugs too.
-FLUENT_PAGES_KEY_CHOICES = [(slugify(unicode(key)), title) for key, title in FLUENT_PAGES_KEY_CHOICES]
+FLUENT_PAGES_KEY_CHOICES = [(slugify(str(key)), title) for key, title in FLUENT_PAGES_KEY_CHOICES]
 
 
 def get_language_settings(language_code, site_id=None):

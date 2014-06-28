@@ -1,3 +1,4 @@
+from future.builtins import str, int
 import copy
 from django.utils.http import urlencode
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
@@ -96,7 +97,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
         context.update({
             'base_change_form_template': self.base_change_form_template,
             'default_change_form_template': _lazy_get_default_change_form_template(self),
-            'ct_id': long(ContentType.objects.get_for_model(obj).pk if change else request.GET['ct_id']) # HACK for polymorphic admin
+            'ct_id': int(ContentType.objects.get_for_model(obj).pk if change else request.GET['ct_id']) # HACK for polymorphic admin
         })
         # django-parler does this, so we have to do it too, affects django>=1.6
         form_url = add_preserved_filters({'preserved_filters': urlencode({'ct_id': context['ct_id']}), 'opts': self.model._meta}, form_url)
@@ -106,7 +107,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
 def _get_default_change_form_template(self):
     return _select_template_name(DefaultPageChildAdmin.change_form_template.__get__(self))
 
-_lazy_get_default_change_form_template = lazy(_get_default_change_form_template, unicode)
+_lazy_get_default_change_form_template = lazy(_get_default_change_form_template, str)
 
 
 _cached_name_lookups = {}
@@ -127,7 +128,7 @@ def _select_template_name(template_name_list):
             except TemplateDoesNotExist:
                 continue
             else:
-                template_name = unicode(template_name)  # consistent value for lazy() function.
+                template_name = str(template_name)  # consistent value for lazy() function.
                 _cached_name_lookups[template_name_list] = template_name
                 return template_name
 

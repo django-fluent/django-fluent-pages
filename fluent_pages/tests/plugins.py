@@ -19,7 +19,7 @@ class PluginTests(AppTestCase):
         """
         from fluent_pages.tests.testapp.page_type_plugins import WebShopPagePlugin
         from fluent_pages.tests.testapp.urls_webshop import webshop_index
-        self.assertEquals(WebShopPagePlugin.urls, 'fluent_pages.tests.testapp.urls_webshop')
+        self.assertEqual(WebShopPagePlugin.urls, 'fluent_pages.tests.testapp.urls_webshop')
 
         # See if the page points to the proper URL resolver
         shop = WebShopPage.objects.all()[0]
