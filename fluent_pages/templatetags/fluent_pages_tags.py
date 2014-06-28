@@ -7,8 +7,8 @@ Load this module using:
     {% load fluent_pages_tags %}
 """
 from future.builtins import str
+from future.utils.six import integer_types, string_types
 from django.contrib.sites.models import Site
-from django.utils.six import integer_types, string_types
 from django.template import Library, TemplateSyntaxError
 from fluent_pages.models import UrlNode, Page
 from fluent_pages.models.navigation import PageNavigationNode
