@@ -39,7 +39,7 @@ setup(
     license='Apache License, Version 2.0',
 
     install_requires=[
-        'django-mptt>=0.6.0',              # Enforce Python 3 compatible versions
+        'django-mptt>=0.5.5',              # Still supporting Django 1.4, use mptt 0.6 for Python 3 support.
         'django-parler>=1.0b3',
         'django-polymorphic>=0.5.3',       # Need 0.5.3 for several upstream fixes related to forms.
         'django-polymorphic-tree>=1.0b1',  # Enforce Python 3 compatible versions
