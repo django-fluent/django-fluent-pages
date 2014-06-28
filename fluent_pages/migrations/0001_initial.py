@@ -39,7 +39,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('key', self.gf('django.db.models.fields.SlugField')(max_length=50, db_index=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('template_path', self.gf('fluent_pages.models.fields.TemplateFilePathField')(path='/srv/www/webapps/edoburu.nl/edoburu_site/themes/edoburu/templates/', max_length=100, recursive=True, match='.*\\.html$')),
+            ('template_path', self.gf('fluent_pages.models.fields.TemplateFilePathField')(max_length=100, recursive=True, match='.*\\.html$')),
         ))
         db.send_create_signal('fluent_pages', ['PageLayout'])
 
@@ -94,7 +94,7 @@ class Migration(SchemaMigration):
             'Meta': {'ordering': "('title',)", 'object_name': 'PageLayout'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'path': "'/srv/www/webapps/edoburu.nl/edoburu_site/themes/edoburu/templates/'", 'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
+            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'fluent_pages.urlnode': {
