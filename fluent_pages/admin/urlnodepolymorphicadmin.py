@@ -64,10 +64,11 @@ class UrlNodePolymorphicAdmin(PolymorphicMPTTParentModelAdmin):
         return child_models
 
 
-    def get_child_type_choices(self):
+    def get_child_type_choices(self, request=None, action=None):
         """
         Return a list of polymorphic types which can be added.
         """
+        # The arguments are made optional, to support both django-polymorphic 0.5 and 0.6
         from fluent_pages.extensions import page_type_pool
 
         priorities = {}
