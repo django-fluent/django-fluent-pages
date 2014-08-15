@@ -2,7 +2,7 @@
 Internal module for the plugin system,
 the API is exposed via __init__.py
 """
-from future.builtins import str, object
+from future.builtins import str
 from future.utils import with_metaclass
 from future.utils.six import string_types
 
