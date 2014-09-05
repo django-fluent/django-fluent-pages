@@ -16,6 +16,7 @@ API documentation
    templatetags/fluent_pages_tags
    sitemaps
    urlresolvers
+   views
 
 
 Deprecated modules

@@ -6,6 +6,7 @@ Changes in version 0.9 (dev)
 
 * Created ``fluent_pages.integration.fluent_contents`` to simplify creating custom
   pagetypes that reuse the django-fluent-contents_ integration that the ``fluent_pages.pagetypes.fluentpage`` has.
+* Added ``CurrentPageMixin`` and ``CurrentPageTemplateMixin`` for custom views.
 * API: use ``FluentContentsPage`` instead of ``AbstractFluentPage``.
 
 
