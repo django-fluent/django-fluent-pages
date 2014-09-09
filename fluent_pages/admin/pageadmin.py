@@ -59,7 +59,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
 
     #: The default template name, which is available in the template context.
     #: Use ``{% extend base_change_form_template %}`` in templates to inherit from it.
-    base_change_form_template = "admin/fluent_pages/page/change_form.html"
+    base_change_form_template = "admin/fluent_pages/page/base_change_form.html"
 
 
     class Media:
