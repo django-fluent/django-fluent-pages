@@ -3,6 +3,7 @@ Admin classes to create page.
 Everything can be imported from ``__init__.py``.
 """
 from __future__ import absolute_import
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template
 from fluent_contents.admin import PlaceholderEditorAdmin
@@ -77,6 +78,26 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
                 return plugin_pool.get_plugins_by_name(*self.all_allowed_plugins)
             except PluginNotFound as e:
                 raise PluginNotFound(str(e) + " Update the plugin list of the {0}.all_allowed_plugins setting.".format(self.__class__.__name__))
+        elif self.placeholder_layout_template:
+            # This page is edited with a fixed template.
+            # Extract all slot names from the template, and base the list of plugins on that.
+            # Note that this actually parses the template, but it will be cached for production environments.
+            template = get_template(self.placeholder_layout_template)
+            slots = [placeholder.slot for placeholder in get_template_placeholder_data(template)]
+
+            # Resolve all plugins.
+            plugins = []
+            for slot in slots:
+                plugins.extend(plugin_pool.get_allowed_plugins(slot))
+            plugins = list(set(plugins))
+
+            # The list of names can be stored statically because it won't change anyway.
+            # Otherwise it would be read at least 3 times in a request,
+            # from the admin get_inline_instances(), get_formset() and
+            if not settings.DEBUG:
+                self.all_allowed_plugins = [plugin.name for plugin in plugins]
+
+            return plugins
         else:
             # Accepts all plugins by default
             return super(FluentContentsPageAdmin, self).get_all_allowed_plugins()
