@@ -8,6 +8,7 @@ Changes in version 0.9 (dev)
   pagetypes that reuse the django-fluent-contents_ integration that the ``fluent_pages.pagetypes.fluentpage`` has.
 * Added ``CurrentPageMixin`` and ``CurrentPageTemplateMixin`` for custom views.
 * Added ``in_sitemaps`` flag, which is now false for the ``RedirectNode`` by default.
+* Added ``SeoPageMixin.meta_robots`` property to automatically add ``noindex`` to pages outside the sitemaps.
 * API: use ``FluentContentsPage`` instead of ``AbstractFluentPage``.
 
 

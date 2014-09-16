@@ -608,6 +608,18 @@ class SeoPageMixin(models.Model):
     class Meta:
         abstract = True
 
+    @property
+    def meta_robots(self):
+        """
+        The value for the ``<meta name="robots" content=".."/>`` tag.
+        It defaults to ``noindex`` when :attr:`in_sitemaps` is ``False``.
+        """
+        # Also exclude from crawling if removed from sitemaps.
+        if not self.in_sitemaps:
+            return 'noindex'
+        else:
+            return None
+
 
 
 class HtmlPage(Page, SeoPageMixin):
