@@ -86,6 +86,11 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
     #: Defines whether users are allowed to place sub pages below this node. When :attr:`is_file` is ``True``, this is never possible.
     can_have_children = True
 
+    #: .. versionadded:: 0.9
+    #: Tell whether the page type should be displayed in the sitemaps by default.
+    #: This value can be changed for most pages in the admin interface.
+    default_in_sitemaps = True
+
     #: Defines the URLs that the page provides relative to the current node.
     #: This can either be the name of a Python module with ``urlpatterns`` in it,
     #: or a direct inline :func:`~django.conf.urls.patterns` list.

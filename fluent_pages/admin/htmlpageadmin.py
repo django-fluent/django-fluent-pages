@@ -21,7 +21,7 @@ class HtmlPageAdmin(PageAdmin):
         )
     """
     FIELDSET_SEO = (_('SEO settings'), {
-        'fields': ('meta_title', 'meta_keywords', 'meta_description'),
+        'fields': ('meta_title', 'meta_keywords', 'meta_description', 'in_sitemaps'),
         'classes': ('collapse',),
     })
 
@@ -31,7 +31,7 @@ class HtmlPageAdmin(PageAdmin):
         PageAdmin.FIELDSET_MENU,
         PageAdmin.FIELDSET_PUBLICATION,
     )
-    readonly_shared_fields = PageAdmin.readonly_shared_fields + ('meta_title', 'meta_keywords', 'meta_description')
+    readonly_shared_fields = PageAdmin.readonly_shared_fields + ('meta_title', 'meta_keywords', 'meta_description', 'in_sitemaps')
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name in ('meta_title', 'meta_keywords'):

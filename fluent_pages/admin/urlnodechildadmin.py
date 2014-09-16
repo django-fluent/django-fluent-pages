@@ -36,6 +36,11 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
         if 'override_url' in self.fields:
             self.fields['override_url'].language_code = self.language_code
 
+        # When the is_sitemap field is exposed, make sure it has the right default.
+        # This can't be set on the model level, because the default depends on the page type.
+        if 'in_sitemaps' in self.fields and not self.instance.pk:
+            self.fields['in_sitemaps'].initial = self.instance.plugin.default_in_sitemaps
+
         # Warn about django-parler issue that inherited models are not yet translatable.
         if is_multilingual_project():
             for f_name in ('meta_description', 'meta_keywords', 'meta_title', 'new_url'):
@@ -230,5 +235,11 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
         # Automatically store the user in the author field.
         if not change:
             obj.author = request.user
+
+            # The in_sitemaps field is only exposed in the HtmlPageAdmin and up.
+            # Hence, some object types don't have an "in_sitemaps" option in their form.
+            # Use the default in those cases.
+            if 'in_sitemaps' not in form.fields:
+                obj.in_sitemaps = obj.plugin.default_in_sitemaps
 
         super(UrlNodeChildAdmin, self).save_model(request, obj, form, change)

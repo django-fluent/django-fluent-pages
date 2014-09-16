@@ -8,6 +8,7 @@ from fluent_pages.pagetypes.redirectnode.models import RedirectNode
 class RedirectNodePlugin(PageTypePlugin):
     model = RedirectNode
     model_admin = RedirectNodeAdmin
+    default_in_sitemaps = False
 
     def get_response(self, request, redirectnode, **kwargs):
         response = HttpResponseRedirect(redirectnode.new_url)
