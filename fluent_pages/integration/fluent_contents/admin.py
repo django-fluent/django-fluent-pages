@@ -2,6 +2,7 @@
 Admin classes to create page.
 Everything can be imported from ``__init__.py``.
 """
+from __future__ import absolute_import
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template
 from fluent_contents.admin import PlaceholderEditorAdmin

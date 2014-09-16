@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 from fluent_pages.extensions import PageTypePlugin
 from .admin import FluentContentsPageAdmin
 
