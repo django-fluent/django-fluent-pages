@@ -161,7 +161,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         return self.published().filter(in_navigation=True)
 
 
-    def is_sitemap(self):
+    def in_sitemaps(self):
         """
         .. versionadded:: 0.9
         Return only pages that should be listed in the sitemap
