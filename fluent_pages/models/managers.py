@@ -166,7 +166,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         .. versionadded:: 0.9
         Return only pages that should be listed in the sitemap
         """
-        return self.published().fiter(in_sitemaps=True)
+        return self.published().filter(in_sitemaps=True)
 
 
     def url_pattern_types(self):
