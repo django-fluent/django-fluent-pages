@@ -8,6 +8,7 @@ Load this module using:
 """
 from future.builtins import str
 from future.utils.six import integer_types, string_types
+from future.utils.six import iteritems
 from django.contrib.sites.models import Site
 from django.template import Library, TemplateSyntaxError
 from fluent_pages.models import UrlNode, Page
@@ -54,7 +55,7 @@ def get_node_kwargs(tag_kwargs):
     """
     return dict(
         (k, v)
-        for k, v in iter(tag_kwargs.items())
+        for k, v in iteritems(tag_kwargs)
         if k in ('max_depth',)
     )
 

@@ -5,6 +5,7 @@ the API is exposed via __init__.py
 from future.builtins import object, int
 from threading import Lock
 from django.contrib.contenttypes.models import ContentType
+from future.utils.six import itervalues
 from fluent_pages.models import UrlNode
 from fluent_pages.utils.load import import_apps_submodule
 from .pagetypebase import PageTypePlugin
@@ -92,7 +93,7 @@ class PageTypePool(object):
         Each model derives from :class:`~fluent_pages.models.Page` .
         """
         self._import_plugins()
-        return [plugin.model for plugin in iter(self.plugins.values())]
+        return [plugin.model for plugin in itervalues(self.plugins)]
 
 
     def get_plugin_by_model(self, model_class):

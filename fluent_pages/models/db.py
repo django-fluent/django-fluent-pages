@@ -26,6 +26,7 @@ from fluent_pages import appsettings
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 from parler.utils.context import switch_language
 from future.utils import with_metaclass
+from future.utils.six import itervalues, iterkeys
 
 
 def _get_current_site():
@@ -114,7 +115,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     def __str__(self):
         # This looks pretty nice on the delete page.
         # All other models derive from Page, so they get good titles in the breadcrumb.
-        return u", ".join(iter(self.get_absolute_urls().values()))
+        return u", ".join(itervalues(self.get_absolute_urls()))
 
 
     # ---- Extra properties ----
@@ -312,7 +313,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
         # Find all translations that this object has,
         # both in the database, and unsaved local objects.
-        all_languages = set(self.get_available_languages()) | set(iter(self._translations_cache.keys()))  # HACK!
+        all_languages = set(self.get_available_languages()) | set(iterkeys(self._translations_cache))  # HACK!
         parent_urls = dict(UrlNode_Translation.objects.filter(master=self.parent_id).values_list('language_code', '_cached_url'))
 
         for language_code in all_languages:
