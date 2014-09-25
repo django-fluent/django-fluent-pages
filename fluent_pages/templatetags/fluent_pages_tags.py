@@ -10,11 +10,13 @@ from future.builtins import str
 from future.utils.six import integer_types, string_types
 from future.utils.six import iteritems
 from django.contrib.sites.models import Site
+from django.utils.functional import SimpleLazyObject
 from django.template import Library, TemplateSyntaxError
-from fluent_pages.models import UrlNode, Page
+from fluent_pages.models import UrlNode
 from fluent_pages.models.navigation import PageNavigationNode
 from tag_parser import template_tag
 from tag_parser.basetags import BaseInclusionNode, BaseNode
+from fluent_pages.utils.db import prefill_parent_site
 
 register = Library()
 
@@ -45,7 +47,7 @@ class BreadcrumbNode(BaseInclusionNode):
             'request': request,
             'breadcrumb': items,
             'page': page,
-            'site': page.parent_site,
+            'site': SimpleLazyObject(lambda: page.parent_site),  # Only read if really used, then cache.
         }
 
 
@@ -185,6 +187,7 @@ def _get_current_page(context):
         if not isinstance(current_page, UrlNode):
             raise UrlNode.DoesNotExist("The 'page' context variable is not a valid page")
 
+        prefill_parent_site(current_page)
         request._current_fluent_page = current_page
 
     return request._current_fluent_page  # is a UrlNode
@@ -198,4 +201,3 @@ def _get_request(context):
     """
     assert 'request' in context, "The fluent_pages_tags library requires a 'request' object in the context! Is RequestContext not used, or 'django.core.context_processors.request' not included in TEMPLATE_CONTEXT_PROCESSORS?"
     return context['request']
-
