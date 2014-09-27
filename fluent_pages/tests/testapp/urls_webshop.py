@@ -1,4 +1,4 @@
-from fluent_pages.utils.compat import patterns, url
+from django.conf.urls import patterns, url
 from django.http import HttpResponse
 
 
