@@ -6,11 +6,12 @@ from django.conf import settings
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
 from django.utils.timezone import now
+
 from parler import is_multilingual_project
 from parler.managers import TranslatableQuerySet, TranslatableManager
 from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
 from fluent_pages import appsettings
-from fluent_pages.utils.db import DecoratingQuerySet
+from .utils import DecoratingQuerySet
 
 
 class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQuerySet):

@@ -23,7 +23,7 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBa
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
+from fluent_utils.django_compat import transaction_atomic, AUTH_USER_MODEL
 from parler.utils.context import switch_language
 from future.utils import with_metaclass
 from future.utils.six import itervalues, iterkeys
@@ -85,7 +85,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     key = models.SlugField(_("page identifier"), choices=appsettings.FLUENT_PAGES_KEY_CHOICES, blank=True, null=True, help_text=_("A unique identifier that is used for linking to this page."))
 
     # Metadata
-    author = models.ForeignKey(get_user_model_name(), verbose_name=_('author'), editable=False)
+    author = models.ForeignKey(AUTH_USER_MODEL, verbose_name=_('author'), editable=False)
     creation_date = models.DateTimeField(_('creation date'), editable=False, auto_now_add=True)
     modification_date = models.DateTimeField(_('last modification'), editable=False, auto_now=True)
 

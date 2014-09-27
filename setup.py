@@ -39,6 +39,7 @@ setup(
     license='Apache License, Version 2.0',
 
     install_requires=[
+        'django-fluent-utils>=1.0',        # DRY utility code
         'django-mptt>=0.5.5',              # Still supporting Django 1.4, use mptt 0.6 for Python 3 support.
         'django-parler>=1.0',
         'django-polymorphic>=0.5.3',       # Need 0.5.3 for several upstream fixes related to forms.

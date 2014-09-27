@@ -1,6 +1,8 @@
 """
 The view to display CMS content.
 """
+import re
+
 from future.builtins import str
 from django.conf import settings
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
@@ -8,18 +10,18 @@ from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedi
 from django.template.response import TemplateResponse
 from django.utils import translation
 from django.views.generic.base import View
+from django.views.generic import RedirectView
+
 from fluent_pages import appsettings
 from fluent_pages.models import UrlNode
-from django.views.generic import RedirectView
-import re
+from fluent_pages.models.utils import prefill_parent_site
+
 
 
 # NOTE:
 # Since the URLconf of this module acts like a catch-all to serve files (e.g. paths without /),
 # the CommonMiddleware will not detect that the path could need an extra slash.
 # That logic also has to be implemented here.
-from fluent_pages.utils.db import prefill_parent_site
-
 
 class GetPathMixin(View):
     def get_path(self):

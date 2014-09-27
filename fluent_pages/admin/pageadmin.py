@@ -10,7 +10,7 @@ from django.utils.functional import lazy
 from fluent_pages.admin.urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
 from fluent_pages.admin.urlnodeparentadmin import UrlNodeParentAdmin
 from fluent_pages.models import Page
-from fluent_pages.utils.compat import add_preserved_filters
+from fluent_utils.django_compat import add_preserved_filters
 
 
 class PageAdminForm(UrlNodeAdminForm):
