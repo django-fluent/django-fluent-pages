@@ -374,7 +374,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             ).non_polymorphic()
 
             if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
-                others = others.filter(parent_site=self.parent_site_id)
+                others = others.parent_site(self.parent_site_id)
 
             if self.pk:
                 others = others.exclude(pk=self.pk)
