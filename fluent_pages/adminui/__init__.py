@@ -1,8 +1,9 @@
 """
 A set of base classes, to build custom admin pages, for your page types.
+
+These classes are separate from the :mod:fluent_pages.admin` module,
+so importing admin classes does not invoke the app registry yet.
 """
-from django.contrib import admin
-from fluent_pages.models import Page, PageLayout
 
 # Import trick: make the DefaultPage*Admin available first,
 # so the classes imported by .overrides can actually import those from this module already.
@@ -19,10 +20,3 @@ __all__ = (
     'PageLayoutAdmin',
     'PageAdminForm'
 )
-
-
-# -------- Model registration --------
-
-# Register the models with the admin site
-admin.site.register(Page, admin_class=PageParentAdmin)
-admin.site.register(PageLayout, admin_class=PageLayoutAdmin)

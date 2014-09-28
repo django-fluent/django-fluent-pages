@@ -16,7 +16,7 @@ from django.utils.functional import SimpleLazyObject
 from django.utils.importlib import import_module
 
 from fluent_pages import appsettings
-from fluent_pages.admin import PageAdmin
+from fluent_pages.adminui import PageAdmin
 
 
 __all__ = (

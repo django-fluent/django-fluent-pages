@@ -311,7 +311,7 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
     def get_redirect_url(self, **kwargs):
         # Avoid importing the admin too early via the URLconf.
         # This gives errors when 'fluent_pages' is not in INSTALLED_APPS yet.
-        from fluent_pages.admin.utils import get_page_admin_url
+        from fluent_pages.adminui.utils import get_page_admin_url
 
         path = self.get_path()
         language_code = self.get_language()

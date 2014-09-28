@@ -1,5 +1,5 @@
 from fluent_pages import appsettings
-from fluent_pages.admin import DefaultPageParentAdmin, DefaultPageChildAdmin
+from .pageadmin import DefaultPageParentAdmin, DefaultPageChildAdmin
 from fluent_utils.load import import_settings_class
 
 

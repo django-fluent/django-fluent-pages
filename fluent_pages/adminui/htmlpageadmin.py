@@ -1,6 +1,6 @@
 from django.contrib.admin.widgets import AdminTextareaWidget, AdminTextInputWidget
 from django.utils.translation import ugettext_lazy as _
-from fluent_pages.admin.overrides import PageAdmin
+from .overrides import PageAdmin
 
 
 class HtmlPageAdmin(PageAdmin):
