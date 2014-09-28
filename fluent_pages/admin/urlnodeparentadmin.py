@@ -8,6 +8,7 @@ from parler.models import TranslationDoesNotExist
 from parler.utils import is_multilingual_project
 from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
 from fluent_pages.models import UrlNode
+from fluent_utils.dry.admin import MultiSiteAdminMixin
 
 
 
@@ -36,11 +37,12 @@ else:
     extra_list_filters = (PageTypeListFilter,)
 
 
-class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
+class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
     """
+    filter_sites = appsettings.FLUENT_PAGES_FILTER_SITE_ID
     base_model = UrlNode
     add_type_form = PageTypeChoiceForm
 
@@ -57,16 +59,6 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
         css = {
             'screen': ('fluent_pages/admin/pagetree.css',)
         }
-
-
-    def queryset(self, request):
-        qs = super(UrlNodeParentAdmin, self).queryset(request)
-
-        # Admin only shows current site for now,
-        # until there is decent filtering for it.
-        if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
-            qs = qs.filter(parent_site=settings.SITE_ID)
-        return qs
 
 
     # ---- Polymorphic tree overrides ----

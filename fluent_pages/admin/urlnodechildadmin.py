@@ -9,6 +9,7 @@ from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm, TranslatedField
 from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_pages.forms.fields import RelativeRootPathField
+from fluent_utils.dry.admin import MultiSiteAdminMixin
 import mptt
 
 
@@ -111,11 +112,12 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
 
 
 
-class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
+class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
     """
+    filter_site = appsettings.FLUENT_PAGES_FILTER_SITE_ID
     base_model = UrlNode
     base_form = UrlNodeAdminForm
 
@@ -168,16 +170,6 @@ class UrlNodeChildAdmin(PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     # NOTE: list page is configured in UrlNodeParentAdmin
     # as that class is used for the real admin screen.
     # This class is only a base class for the custom pagetype plugins.
-
-
-    def queryset(self, request):
-        qs = super(UrlNodeChildAdmin, self).queryset(request)
-
-        # Admin only shows current site for now,
-        # until there is decent filtering for it.
-        if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
-            qs = qs.filter(parent_site=settings.SITE_ID)
-        return qs
 
 
     def get_readonly_fields(self, request, obj=None):
