@@ -5,10 +5,11 @@ the API is exposed via __init__.py
 from future.builtins import object, int
 from threading import Lock
 from django.contrib.contenttypes.models import ContentType
-from future.utils.six import itervalues
 from fluent_pages.models import UrlNode
 from fluent_pages.utils.load import import_apps_submodule
 from .pagetypebase import PageTypePlugin
+from six import itervalues
+
 
 __all__ = (
     'PageTypeAlreadyRegistered', 'PageTypeNotFound', 'PageTypePool', 'page_type_pool'
@@ -77,7 +78,7 @@ class PageTypePool(object):
         # Only update lazy indexes if already created
         if self._name_for_ctype_id is not None:
             self._name_for_ctype_id[plugin_instance.type_id] = name
-            
+
         return plugin  # Allow class decorator syntax
 
 

@@ -26,7 +26,7 @@ from fluent_pages import appsettings
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 from parler.utils.context import switch_language
 from future.utils import with_metaclass
-from future.utils.six import itervalues, iterkeys
+from six import itervalues, iterkeys
 
 
 def _get_current_site():
