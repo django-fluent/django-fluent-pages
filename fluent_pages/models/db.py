@@ -30,7 +30,7 @@ from six import itervalues, iterkeys
 
 
 def _get_current_site():
-    return Site.objects.get_current()
+    return Site.objects.get_current().pk
 
 
 class URLNodeMetaClass(PolymorphicMPTTModelBase):
