@@ -1,6 +1,8 @@
 # Django version
 Django >= 1.5.5
 
+django-fluent-utils
+
 # Deps of fluent-pages
 django-polymorphic-tree >= 1.0b1
 django-polymorphic >= 0.5.5
