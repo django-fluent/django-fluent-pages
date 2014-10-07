@@ -7,6 +7,20 @@ from django.conf import settings
 import fluent_pages.models.fields
 
 
+def make_site(apps, schema_editor):
+    Site = apps.get_model("sites", "Site")
+    if Site.objects.count() == 0:
+        site = Site()
+        site.pk = settings.SITE_ID
+        site.name = 'example'
+        site.domain = 'example.com'
+        site.save()
+
+
+def remove_site(apps, schema_editor):
+    pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -16,6 +30,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(make_site, reverse_code=remove_site),
         migrations.CreateModel(
             name='PageLayout',
             fields=[
