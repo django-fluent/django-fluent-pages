@@ -4,7 +4,6 @@ the API is exposed via __init__.py
 """
 from future.builtins import str
 from future.utils import with_metaclass
-from future.utils.six import string_types
 
 from django import forms
 from django.contrib.contenttypes.models import ContentType
@@ -18,6 +17,7 @@ from django.utils.importlib import import_module
 from fluent_pages import appsettings
 from fluent_pages.adminui import PageAdmin
 
+from six import string_types
 
 __all__ = (
     'PageTypePlugin',
