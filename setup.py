@@ -45,6 +45,7 @@ setup(
         'django-polymorphic-tree>=1.0b1',  # Enforce Python 3 compatible versions
         'django-tag-parser>=2.0b1',
         'future>=0.12.2',
+        'six>=1.5.2',
     ],
     requires=[
         'Django (>=1.4)',
