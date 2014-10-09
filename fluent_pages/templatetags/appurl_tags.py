@@ -19,7 +19,7 @@ Usage:
 """
 from django.template import Library
 from django.utils.encoding import smart_str
-from future.utils.six import iteritems
+from six import iteritems
 from fluent_pages.models.db import UrlNode
 from fluent_pages.urlresolvers import mixed_reverse
 from tag_parser.basetags import BaseNode

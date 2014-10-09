@@ -1,5 +1,5 @@
-from future.builtins import str, object
-from future.utils.six import iteritems
+from future.builtins import str
+from six import iteritems
 from functools import wraps
 from django.conf import settings, UserSettingsHolder
 from django.core.management import call_command
