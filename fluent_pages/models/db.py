@@ -25,8 +25,7 @@ from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 from parler.utils.context import switch_language
-from future.utils import with_metaclass
-from six import itervalues, iterkeys
+from future.utils import with_metaclass, itervalues, iteritems
 
 
 def _get_current_site():
@@ -313,7 +312,8 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
         # Find all translations that this object has,
         # both in the database, and unsaved local objects.
-        all_languages = set(self.get_available_languages()) | set(iterkeys(self._translations_cache))  # HACK!
+        # HACK: accessing _translations_cache, skipping <IsMissing> sentinel values.
+        all_languages = set(self.get_available_languages()) | set(k for k,v in iteritems(self._translations_cache) if v)  # HACK!
         parent_urls = dict(UrlNode_Translation.objects.filter(master=self.parent_id).values_list('language_code', '_cached_url'))
 
         for language_code in all_languages:
