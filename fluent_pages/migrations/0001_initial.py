@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=255, verbose_name='title')),
                 ('slug', models.SlugField(help_text='The slug is used in the URL of the page', verbose_name='slug')),
                 ('override_url', models.CharField(help_text="Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages' URLs.", max_length=300, verbose_name='Override URL', blank=True)),
-                ('_cached_url', models.CharField(default=b'', max_length=300, editable=False, db_index=True, blank=True)),
+                ('_cached_url', models.CharField(db_index=True, max_length=300, null=True, editable=False, blank=True)),
                 ('master', models.ForeignKey(related_name=b'translations', to='fluent_pages.UrlNode', null=True)),
             ],
             options={
