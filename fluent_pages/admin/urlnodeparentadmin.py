@@ -91,14 +91,15 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
 
         can_have_children = None
 
-        parent = request.GET.get(self.model._mptt_meta.parent_attr, None)
-        # if we have a parent check to see if it exists and get can_have_children
-        if parent is not None:
-            try:
-                can_have_children = self.base_model.objects.get(pk=parent
-                    ).can_have_children
-            except self.base_model.DoesNotExist:
-                pass
+        if request is not None:
+            parent = request.GET.get(self.model._mptt_meta.parent_attr, None)
+            # if we have a parent check to see if it exists and get can_have_children
+            if parent is not None:
+                try:
+                    can_have_children = self.base_model.objects.get(pk=parent
+                        ).can_have_children
+                except self.base_model.DoesNotExist:
+                    pass
 
         priorities = {}
         choices = []
