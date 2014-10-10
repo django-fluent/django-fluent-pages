@@ -161,6 +161,14 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         return self.published().filter(in_navigation=True)
 
 
+    def in_sitemaps(self):
+        """
+        .. versionadded:: 0.9
+        Return only pages that should be listed in the sitemap
+        """
+        return self.published().filter(in_sitemaps=True)
+
+
     def url_pattern_types(self):
         """
         Return only page types which have a custom URLpattern attached.
@@ -247,6 +255,14 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         Return only pages in the navigation.
         """
         return self.get_query_set().in_navigation()
+
+
+    def in_sitemaps(self):
+        """
+        .. versionadded:: 0.9
+        Return only pages in the navigation.
+        """
+        return self.get_query_set().in_sitemaps()
 
 
     def toplevel(self):

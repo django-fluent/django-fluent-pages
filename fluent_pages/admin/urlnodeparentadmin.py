@@ -26,7 +26,7 @@ else:
         title = _('page type')
 
         def lookups(self, request, model_admin):
-            return model_admin.get_child_type_choices(request, 'change')
+            return model_admin.get_child_type_choices()
 
         def queryset(self, request, queryset):
             if self.value():
@@ -83,7 +83,7 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
         return child_models
 
 
-    def get_child_type_choices(self, request, action):
+    def get_child_type_choices(self, request=None, action=None):
         """
         Return a list of polymorphic types which can be added.
         """

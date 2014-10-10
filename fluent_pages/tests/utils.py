@@ -1,5 +1,5 @@
 from future.builtins import str
-from future.builtins import object
+from six import iteritems
 from functools import wraps
 from django.conf import settings, UserSettingsHolder
 from django.core.management import call_command
@@ -128,7 +128,7 @@ except ImportError:
 
         def enable(self):
             override = UserSettingsHolder(settings._wrapped)
-            for key, new_value in iter(self.options.items()):
+            for key, new_value in iteritems(self.options):
                 setattr(override, key, new_value)
             settings._wrapped = override
 

@@ -1,8 +1,20 @@
 """
 Custom generic managers
 """
+from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.query import QuerySet
+
+
+def prefill_parent_site(page):
+    """
+    Optimize the ``parent_site`` field of a page if possible, fill it's cache.
+    """
+    if Site._meta.installed:
+        current_site = Site.objects.get_current()
+
+        if page.parent_site_id == current_site.id:
+            page.parent_site = current_site  # Fill the ORM cache.
 
 
 # Based on django-queryset-transform.

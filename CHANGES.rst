@@ -4,6 +4,14 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+* Created ``fluent_pages.integration.fluent_contents`` to simplify creating custom
+  pagetypes that reuse the django-fluent-contents_ integration that the ``fluent_pages.pagetypes.fluentpage`` has.
+* Added ``CurrentPageMixin`` and ``CurrentPageTemplateMixin`` for custom views.
+* Added ``in_sitemaps`` flag, which is now false for the ``RedirectNode`` by default.
+* Added ``SeoPageMixin.meta_robots`` property to automatically add ``noindex`` to pages outside the sitemaps.
+* API: use ``FluentContentsPage`` instead of ``AbstractFluentPage``.
+
+
 Released in 0.9b2:
 ~~~~~~~~~~~~~~~~~~
 
@@ -47,7 +55,7 @@ Released in 0.9b1:
 Upgrade notices:
 ~~~~~~~~~~~~~~~~
 
-* When using custom page types that inherit from inherited from ``HtmlPage``, ``FluentPageBase`` or ``AbstractFluentPage``,
+* When using custom page types that inherit from inherited from ``HtmlPage``, ``FluentPageBase`` or ``FluentContentsPage``,
   please add a South migration to your application to handle the updated fields.
 
  * The ``keywords`` field was renamed to ``meta_keywords``.
@@ -58,7 +66,7 @@ Upgrade notices:
      db.rename_column('your_model_table', 'keywords', 'meta_keywords')
      db.rename_column('your_model_table', 'description', 'meta_description')
 
-* API: renamed ``FluentPageBase`` to ``AbstractFluentPage``.
+* API: renamed ``FluentPageBase`` to ``FluentContentsPage``.
   The old name is still available.
 
 

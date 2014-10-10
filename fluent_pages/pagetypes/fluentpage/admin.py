@@ -1,8 +1,8 @@
 from fluent_pages.admin import HtmlPageAdmin, PageAdminForm
+from fluent_pages.integration.fluent_contents import FluentContentsPageAdmin
 from fluent_pages.models import PageLayout
 from fluent_pages.utils.ajax import JsonResponse
 from fluent_pages.utils.compat import url, patterns
-from fluent_contents.admin.placeholdereditor import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 from .widgets import LayoutSelector
 
@@ -24,13 +24,19 @@ class FluentPageAdminForm(PageAdminForm):
         return base_qs
 
 
-
-class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
+class FluentPageAdmin(FluentContentsPageAdmin):
     """
     This admin is a small binding between the pagetypes of *django-fluent-pages*
-    and page contents of *django-fluent-contents*. In fact, most code only concerns with the layout
-    mechanism that is custom for each implementation. To build a variation of this page,
-    see the API documentation of `Creating a CMS system <http://django-fluent-contents.readthedocs.org/en/latest/cms.html>`_
+    and page contents of *django-fluent-contents*.
+
+    .. note::
+
+        To create custom page types that combine boths apps,
+        consider using :class:`fluent_pages.integration.fluent_contents.admin.FluentContentsPageAdmin` instead.
+        In fact, the code in this class concerns with the layout mechanism that is specific for this implementation.
+
+    To build a variation of this page, see the API documentation
+    of `Creating a CMS system <http://django-fluent-contents.readthedocs.org/en/latest/cms.html>`_
     in the *django-fluent-contents* documentation to implement the required API's.
     """
     base_form = FluentPageAdminForm
@@ -49,9 +55,10 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
         HtmlPageAdmin.FIELDSET_PUBLICATION,
     )
 
-    #change_form_template = ["admin/fluentpage/page/page_editor.html",
-    #                        HtmlPageAdmin.base_change_form_template
-    #                        ]
+    #change_form_template = [
+    #  "admin/fluentpage/change_form.html",
+    #  FluentContentsPageAdmin.base_change_form_template
+    # ]
 
     class Media:
         js = ('fluent_pages/fluentpage/fluent_layouts.js',)
@@ -60,7 +67,7 @@ class FluentPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     # ---- fluent-contents integration ----
 
 
-    def get_placeholder_data(self, request, obj):
+    def get_placeholder_data(self, request, obj=None):
         """
         Provides a list of :class:`fluent_contents.models.PlaceholderData` classes,
         that describe the contents of the template.

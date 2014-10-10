@@ -25,7 +25,7 @@ from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 from fluent_pages.utils.compat import get_user_model_name, transaction_atomic
 from parler.utils.context import switch_language
-from future.utils import with_metaclass
+from future.utils import with_metaclass, itervalues, iteritems
 
 
 def _get_current_site():
@@ -57,7 +57,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     """
     The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
     """
-
     # Some publication states
     DRAFT = 'd'
     PUBLISHED = 'p'
@@ -77,6 +76,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True, help_text=_('''When the page should go live, status must be "Published".'''))
     publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True)
     in_navigation = models.BooleanField(_('show in navigation'), default=appsettings.FLUENT_PAGES_DEFAULT_IN_NAVIGATION, db_index=True)
+    in_sitemaps = models.BooleanField(_('include in search engine sitemaps'), default=True, db_index=True)
     override_url = TranslatedField()
 
     # For tagging nodes and locating them in code. This should be avoided if possible,
@@ -114,7 +114,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     def __str__(self):
         # This looks pretty nice on the delete page.
         # All other models derive from Page, so they get good titles in the breadcrumb.
-        return u", ".join(iter(self.get_absolute_urls().values()))
+        return u", ".join(itervalues(self.get_absolute_urls()))
 
 
     # ---- Extra properties ----
@@ -312,7 +312,8 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
         # Find all translations that this object has,
         # both in the database, and unsaved local objects.
-        all_languages = set(self.get_available_languages()) | set(iter(self._translations_cache.keys()))  # HACK!
+        # HACK: accessing _translations_cache, skipping <IsMissing> sentinel values.
+        all_languages = set(self.get_available_languages()) | set(k for k,v in iteritems(self._translations_cache) if v)  # HACK!
         parent_urls = dict(UrlNode_Translation.objects.filter(master=self.parent_id).values_list('language_code', '_cached_url'))
 
         for language_code in all_languages:
@@ -428,9 +429,17 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         cached_page_urls = {
             self.id: translation._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
         }
-        fallback_page_urls = {
-            self.id: self.safe_translation_getter('_cached_url', language_code=fallback_language).rstrip('/') + '/'
-        }
+        fallback_url = self.safe_translation_getter('_cached_url', language_code=fallback_language)
+        if not fallback_url:
+            # Page only has a slug for the current language.
+            # Can't generate any URLs for sub objects, if they need a fallback language.
+            fallback_page_urls = {
+                self.id: None,
+            }
+        else:
+            fallback_page_urls = {
+                self.id: fallback_url.rstrip('/') + '/'
+            }
 
         # Update all sub objects.
         # even if can_have_children is false, ensure a consistent state for the URL structure
@@ -455,14 +464,22 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             else:
                 # Always construct the fallback URL, to revert to it when needed.
                 fallback_base = fallback_page_urls[subobject.parent_id]
-                fallback_page_urls[subobject.id] = u'{0}{1}/'.format(fallback_base, subobject.slug)
+                if fallback_base is None:
+                    # no base, no URL for sub object. (be explicit here, to detect KeyError)
+                    fallback_page_urls[subobject.id] = None
+                else:
+                    fallback_page_urls[subobject.id] = u'{0}{1}/'.format(fallback_base, subobject.slug)
 
                 if use_fallback_base:
                     base = fallback_base
                 else:
                     base = cached_page_urls[subobject.parent_id]
 
-                subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
+                if base is None:
+                    #  no base, no URL for sub object. (be explicit here, to detect KeyError)
+                    subobject._cached_url = None
+                else:
+                    subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
 
             if not use_fallback_base:
                 cached_page_urls[subobject.id] = subobject._cached_url
@@ -495,7 +512,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
     title = models.CharField(_("title"), max_length=255)
     slug = models.SlugField(_("slug"), max_length=50, help_text=_("The slug is used in the URL of the page"))
     override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
-    _cached_url = models.CharField(default='', max_length=300, db_index=True, blank=True, editable=False)
+    _cached_url = models.CharField(max_length=300, db_index=True, null=True, blank=True, editable=False)
 
     # Base fields
     master = models.ForeignKey(UrlNode, related_name='translations', null=True)
@@ -607,6 +624,18 @@ class SeoPageMixin(models.Model):
 
     class Meta:
         abstract = True
+
+    @property
+    def meta_robots(self):
+        """
+        The value for the ``<meta name="robots" content=".."/>`` tag.
+        It defaults to ``noindex`` when :attr:`in_sitemaps` is ``False``.
+        """
+        # Also exclude from crawling if removed from sitemaps.
+        if not self.in_sitemaps:
+            return 'noindex'
+        else:
+            return None
 
 
 

@@ -1,0 +1,31 @@
+{% extends "admin/fluent_pages/page/base_change_form.html" %}
+{% comment %}
+
+  This is the base template that all pagetypes will use
+  which like to combine django-fluent-pages with django-fluent-contents.
+  It's defined in FluentContentsPageAdmin
+
+{% endcomment %}
+{% load i18n %}
+
+{% block after_first_fieldset %}
+{# the inlines for django-fluent-contents, to show the PlaceholderEditor first #}
+<div id="fluent_contents_inlines">
+  {% for inline_admin_formset in inline_admin_formsets %}
+    {% if inline_admin_formset.opts.is_fluent_editor_inline %}
+      {% include inline_admin_formset.opts.template %}
+    {% endif %}
+  {% endfor %}
+</div><!-- /fluent_contents_inlines -->
+{% endblock %}
+
+{% block inline_field_sets %}
+{# remaining inlines added by pagetypes #}
+<div id="fluent_contents_inlines">
+  {% for inline_admin_formset in inline_admin_formsets %}
+    {% if not inline_admin_formset.opts.is_fluent_editor_inline %}
+      {% include inline_admin_formset.opts.template %}
+    {% endif %}
+  {% endfor %}
+</div><!-- /fluent_contents_inlines -->
+{% endblock %}

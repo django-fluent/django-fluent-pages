@@ -1,4 +1,5 @@
 import django
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_text
 from fluent_pages.models import Page
@@ -14,6 +15,12 @@ class ModelDataTests(AppTestCase):
     """
     root_url = '/'
     subpage1_url = '/test_subpage1/'
+
+
+    def setUp(self):
+        # Need to make sure that django-parler's cache isn't reused,
+        # because the transaction is rolled back on each test method.
+        cache.clear()
 
 
     @classmethod

@@ -1,4 +1,5 @@
-from future.builtins import str, int
+native_str = str  # no future.builtins.str, breaks default_change_form_template in Django 1.5, Python 2.7.5
+from future.builtins import int
 import copy
 from django.utils.http import urlencode
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
@@ -58,7 +59,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
 
     #: The default template name, which is available in the template context.
     #: Use ``{% extend base_change_form_template %}`` in templates to inherit from it.
-    base_change_form_template = "admin/fluent_pages/page/change_form.html"
+    base_change_form_template = "admin/fluent_pages/page/base_change_form.html"
 
 
     class Media:
@@ -107,7 +108,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
 def _get_default_change_form_template(self):
     return _select_template_name(DefaultPageChildAdmin.change_form_template.__get__(self))
 
-_lazy_get_default_change_form_template = lazy(_get_default_change_form_template, str)
+_lazy_get_default_change_form_template = lazy(_get_default_change_form_template, native_str)
 
 
 _cached_name_lookups = {}
@@ -128,7 +129,7 @@ def _select_template_name(template_name_list):
             except TemplateDoesNotExist:
                 continue
             else:
-                template_name = str(template_name)  # consistent value for lazy() function.
+                template_name = native_str(template_name)  # consistent value for lazy() function.
                 _cached_name_lookups[template_name_list] = template_name
                 return template_name
 

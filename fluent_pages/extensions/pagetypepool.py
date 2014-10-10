@@ -8,6 +8,8 @@ from django.contrib.contenttypes.models import ContentType
 from fluent_pages.models import UrlNode
 from fluent_pages.utils.load import import_apps_submodule
 from .pagetypebase import PageTypePlugin
+from six import itervalues
+
 
 __all__ = (
     'PageTypeAlreadyRegistered', 'PageTypeNotFound', 'PageTypePool', 'page_type_pool'
@@ -37,8 +39,8 @@ class PageTypePool(object):
 
     def __init__(self):
         self.plugins = {}
-        self.plugin_for_model = {}
-        self.plugin_for_ctype_id = {}
+        self._name_for_model = {}
+        self._name_for_ctype_id = None
         self.detected = False
         self._file_types = None
         self._folder_types = None
@@ -70,10 +72,12 @@ class PageTypePool(object):
 
         # Make a single static instance, similar to ModelAdmin.
         plugin_instance = plugin()
-        ct_id = plugin_instance.type_id                  # DB query first before updating self, query may fail.
         self.plugins[name] = plugin_instance
-        self.plugin_for_model[plugin.model] = name       # Track reverse for rendering
-        self.plugin_for_ctype_id[ct_id] = name
+        self._name_for_model[plugin.model] = name       # Track reverse for rendering
+
+        # Only update lazy indexes if already created
+        if self._name_for_ctype_id is not None:
+            self._name_for_ctype_id[plugin_instance.type_id] = name
 
         return plugin  # Allow class decorator syntax
 
@@ -92,7 +96,7 @@ class PageTypePool(object):
         Each model derives from :class:`~fluent_pages.models.Page` .
         """
         self._import_plugins()
-        return [plugin.model for plugin in iter(self.plugins.values())]
+        return [plugin.model for plugin in itervalues(self.plugins)]
 
 
     def get_plugin_by_model(self, model_class):
@@ -103,7 +107,7 @@ class PageTypePool(object):
         assert issubclass(model_class, UrlNode)  # avoid confusion between model instance and class here!
 
         try:
-            name = self.plugin_for_model[model_class]
+            name = self._name_for_model[model_class]
         except KeyError:
             raise PageTypeNotFound("No plugin found for model '{0}'.".format(model_class.__name__))
         return self.plugins[name]
@@ -111,10 +115,11 @@ class PageTypePool(object):
 
     def _get_plugin_by_content_type(self, contenttype):
         self._import_plugins()
+        self._setup_lazy_indexes()
 
         ct_id = contenttype.id if isinstance(contenttype, ContentType) else int(contenttype)
         try:
-            name = self.plugin_for_ctype_id[ct_id]
+            name = self._name_for_ctype_id[ct_id]
         except KeyError:
             # ContentType not found, likely a plugin is no longer registered or the app has been removed.
             try:

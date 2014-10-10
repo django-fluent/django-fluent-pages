@@ -9,14 +9,24 @@ API documentation
    admin
    admin.utils
    extensions
+   integration/fluent_contents
    models
    models.navigation
-   pagetypes.fluentpage.admin
-   pagetypes.fluentpage.models
    templatetags/appurl_tags
    templatetags/fluent_pages_tags
    sitemaps
    urlresolvers
+   views
+
+
+Deprecated modules
+------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   pagetypes.fluentpage.admin
+   pagetypes.fluentpage.models
 
 ..
     Kept out of public API:

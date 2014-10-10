@@ -2,9 +2,8 @@
 Internal module for the plugin system,
 the API is exposed via __init__.py
 """
-from future.builtins import str, object
+from future.builtins import str
 from future.utils import with_metaclass
-from future.utils.six import string_types
 
 from django import forms
 from django.contrib.contenttypes.models import ContentType
@@ -18,6 +17,7 @@ from django.utils.importlib import import_module
 from fluent_pages import appsettings
 from fluent_pages.admin import PageAdmin
 
+from six import string_types
 
 __all__ = (
     'PageTypePlugin',
@@ -85,6 +85,11 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
 
     #: Defines whether users are allowed to place sub pages below this node. When :attr:`is_file` is ``True``, this is never possible.
     can_have_children = True
+
+    #: .. versionadded:: 0.9
+    #: Tell whether the page type should be displayed in the sitemaps by default.
+    #: This value can be changed for most pages in the admin interface.
+    default_in_sitemaps = True
 
     #: Defines the URLs that the page provides relative to the current node.
     #: This can either be the name of a Python module with ``urlpatterns`` in it,

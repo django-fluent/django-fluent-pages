@@ -18,6 +18,8 @@ import re
 # Since the URLconf of this module acts like a catch-all to serve files (e.g. paths without /),
 # the CommonMiddleware will not detect that the path could need an extra slash.
 # That logic also has to be implemented here.
+from fluent_pages.utils.db import prefill_parent_site
+
 
 class GetPathMixin(View):
     def get_path(self):
@@ -186,8 +188,9 @@ class CmsPageDispatcher(GetPathMixin, View):
 
         # Store the current page. This is used in the `app_reverse()` code,
         # and also avoids additional lookup in templatetags.
-        # NOTE: django-fluent-blogs actually reads this variable too.
+        # NOTE: django-fluent-blogs actually reads this variable too (should use CurrentPageMixin now)
         self.request._current_fluent_page = self.object
+        prefill_parent_site(self.object)
 
         # Let page type plugin handle the request.
         response = plugin.get_response(self.request, self.object)
@@ -259,6 +262,7 @@ class CmsPageDispatcher(GetPathMixin, View):
 
         # Avoid additional lookup in templatetags
         self.request._current_fluent_page = self.object
+        prefill_parent_site(self.object)
 
         # Get view response
         response = plugin.get_view_response(self.request, self.object, match.func, match.args, match.kwargs)
