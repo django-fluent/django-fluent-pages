@@ -26,7 +26,7 @@ else:
         title = _('page type')
 
         def lookups(self, request, model_admin):
-            return model_admin.get_child_type_choices()
+            return model_admin.get_child_type_choices(request, 'change')
 
         def queryset(self, request, queryset):
             if self.value():
@@ -83,18 +83,45 @@ class UrlNodeParentAdmin(TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
         return child_models
 
 
-    def get_child_type_choices(self):
+    def get_child_type_choices(self, request, action):
         """
         Return a list of polymorphic types which can be added.
         """
         from fluent_pages.extensions import page_type_pool
 
+        can_have_children = None
+
+        parent = request.GET.get(self.model._mptt_meta.parent_attr, None)
+        # if we have a parent check to see if it exists and get can_have_children
+        if parent is not None:
+            try:
+                can_have_children = self.base_model.objects.get(pk=parent
+                    ).can_have_children
+            except self.base_model.DoesNotExist:
+                pass
+
         priorities = {}
         choices = []
-        for plugin in page_type_pool.get_plugins():
-            ct = ContentType.objects.get_for_model(plugin.model)
-            choices.append((ct.id, plugin.verbose_name))
-            priorities[ct.id] = plugin.sort_priority
+        def fill_choices(filter=lambda x : True):
+            for plugin in page_type_pool.get_plugins():
+                ct_id = ContentType.objects.get_for_model(plugin.model).id
+                if not filter(ct_id):
+                    continue
+                choices.append((ct_id, plugin.verbose_name))
+                priorities[ct_id] = plugin.sort_priority
+
+        if can_have_children is not None:
+            try:
+                iter(can_have_children)
+            except TypeError:
+                # if we have a boolean True then fill the choices
+                if can_have_children:
+                    fill_choices()
+            else:
+                # filter the choices
+                fill_choices(lambda ct_id : ct_id in can_have_children)
+        else: # all choices
+            fill_choices()
 
         choices.sort(key=lambda choice: (priorities[choice[0]], choice[1]))
         return choices
