@@ -9,6 +9,7 @@ It defines the following classes:
 * PageLayout
   The layout of a page, which has regions and a template.
 """
+from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
@@ -332,6 +333,10 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         Update the fields associated with the translation.
         This also rebuilds the decedent URLs when the slug changed.
         """
+        # Make sure there is a slug!
+        if not translation.slug and translation.title:
+            translation.slug = slugify(translation.title)
+
         # Store this object
         self._make_slug_unique(translation)
         self._update_cached_url(translation)
@@ -545,7 +550,8 @@ class UrlNode_Translation(TranslatedFieldsModel):
 
     def save(self, *args, **kwargs):
         if not self.title and not self.slug:
-            # If this object gets marked as dirty somehow, avoid corruption of the page tree.
+            # If this empty object gets marked as dirty somehow, avoid corruption of the page tree.
+            # The real checks for slug happen in save_translation(), this is only to catch internal state errors.
             raise RuntimeError("An UrlNode_Transaction object was created without slug or title, blocking save.")
         super(UrlNode_Translation, self).save(*args, **kwargs)
         self._original_cached_url = self._cached_url
