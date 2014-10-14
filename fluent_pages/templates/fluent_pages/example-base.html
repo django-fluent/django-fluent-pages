@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+{% block fullheadtitle %}{% if page.meta_title %}{{ page.meta_title }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block meta-keywords %}{{ page.meta_keywords }}{% endblock %}
+{% block meta-description %}{{ page.meta_description }}{% endblock %}
+
+{% block extrahead %}{{ block.super }}{% if page.meta_robots %}
+    <meta name="robots" content="{{ page.meta_robots }}" />
+{% endif %}{% endblock %}
+
+{% comment %}
+  When integrating django-staff-toolbar, use:
+
+{% load staff_toolbar_tags %}
+
+{% block staff_toolbar %}
+  {% set_staff_object page %}
+  {{ block.super }}
+{% endblock %}
+
+{% endcomment %}
