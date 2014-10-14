@@ -3,6 +3,7 @@ The view to display CMS content.
 """
 from future.builtins import str
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
 from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.template.response import TemplateResponse
@@ -107,7 +108,10 @@ class CmsPageDispatcher(GetPathMixin, View):
 
 
     def _intro_page(self):
-        return TemplateResponse(self.request, "fluent_pages/intro_page.html", {})
+        return TemplateResponse(self.request, "fluent_pages/intro_page.html", {
+            'request': self.request,
+            'site': Site.objects.get_current(),
+        })
 
 
     def get_queryset(self):

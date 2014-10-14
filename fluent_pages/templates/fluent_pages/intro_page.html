@@ -9,9 +9,9 @@
     body { font:small sans-serif; background: #fff; }
     body>div { border-bottom:1px solid #ddd; }
     h1 { font-weight:normal; margin: 0; }
-    h2 { margin-bottom:.8em; }
-    h2 span { font-size:80%; color:#666; font-weight:normal; }
-    h3 { margin:1em 0 .5em 0; }
+    h2 { margin-bottom:.8em; color:#666; }
+    h2 span { font-size:80%; font-weight:normal; }
+    h3 { margin:1.5em 0 1em 0; color:#666; }
     h4 { margin:0 0 .5em 0; font-weight: normal; }
     table { border:1px solid #ccc; border-collapse: collapse; width:100%; background:white; }
     tbody td, tbody th { vertical-align:top; padding:2px 3px; }
@@ -38,13 +38,15 @@
 </div>
 
 <div id="instructions">
+  <h2>The website on <span>{{ site.domain|default:request.get_host }}</span> is empty</h2>
   <p>You can start by <a href="{% url 'admin:fluent_pages_page_add' %}">adding your first page</a> in the <a href="{% url 'admin:index' %}">admin interface</a>.</p>
 
 
   <div class="more-info">
-    <p>More info:</p>
+    <h3>Developer help</h3>
+    <p>See the documentation to get started:</p>
     <ul>
-      <li><a href="http://django-fluent.org/">django-fluent.org</a></li>
+      <li><a href="http://django-fluent.org/">main website</a></li>
       <li><a href=https://django-fluent-pages.readthedocs.org/>documentation</a></li>
     </ul>
 
