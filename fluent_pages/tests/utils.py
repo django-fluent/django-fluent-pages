@@ -6,7 +6,6 @@ from django.core.management import call_command
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.contrib.sites.models import Site
 from django.db.models import loading
-from django.template.loaders import app_directories
 from django.test import TestCase
 from django.utils.importlib import import_module
 from fluent_pages.models.db import UrlNode
@@ -26,6 +25,8 @@ class AppTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # Avoid early import, triggers AppCache
+        from django.template.loaders import app_directories
         User = get_user_model()
 
         if cls.install_apps:
