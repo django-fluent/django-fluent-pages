@@ -12,11 +12,13 @@ from six import iteritems
 from django.contrib.sites.models import Site
 from django.utils.functional import SimpleLazyObject
 from django.template import Library, TemplateSyntaxError
-from fluent_pages.models import UrlNode
-from fluent_pages.models.navigation import PageNavigationNode
 from tag_parser import template_tag
 from tag_parser.basetags import BaseInclusionNode, BaseNode
-from fluent_pages.utils.db import prefill_parent_site
+
+from fluent_pages.models import UrlNode
+from fluent_pages.models.navigation import PageNavigationNode
+from fluent_pages.models.utils import prefill_parent_site
+
 
 register = Library()
 

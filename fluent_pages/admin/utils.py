@@ -1,25 +1,7 @@
-"""
-Utility functions related to admin views.
-"""
-from future.builtins import int
-from django.core import urlresolvers
-from fluent_pages.models import UrlNode
+import warnings
+from fluent_pages.adminui.utils import get_page_admin_url, get_current_edited_page
 
-
-def get_page_admin_url(page):
-    """
-    Return the admin URL for a page.
-    """
-    return urlresolvers.reverse('admin:fluent_pages_page_change', args=(page.pk,))
-
-
-def get_current_edited_page(request):
-    """
-    Return the :class:`~fluent_pages.models.Page` object which is currently being edited in the admin.
-    Returns ``None`` if the current view isn't the "change view" of the the :class:`~fluent_pages.models.Page` model.
-    """
-    match = urlresolvers.resolve(request.path_info)
-    if match.namespace == 'admin' and match.url_name == 'fluent_pages_page_change':
-        page_id = int(match.args[0])
-        return UrlNode.objects.get(pk=page_id)
-    return None
+warnings.warn(
+    "Please use `fluent_pages.adminui.utils` instead, the `fluent_pages.admin.utils` module is deprecated for Django 1.7 compatibility.",
+    DeprecationWarning
+)

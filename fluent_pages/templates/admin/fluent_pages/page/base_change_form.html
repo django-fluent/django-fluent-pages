@@ -1,5 +1,5 @@
 {% extends "admin/polymorphic_tree/change_form.html" %}
-{% load i18n admin_modify %}
+{% load i18n admin_urls admin_modify %}
 
 {% comment %}
     Override the content block, so all templates will have the same set of blocks.
@@ -7,20 +7,16 @@
     This adds:
     * after_first_fieldset
     * the check of "original.is_published" in the toolbar
-
-    And Django 1.3 also gets:
-    * object-tools-items
-    * field_sets
-    * inline_field_sets
-    * submit_buttons_top
-    * submit_buttons_bottom
 {% endcomment %}
 {% block content %}<div id="content-main">
 {% block object-tools %}
 {% if change and not is_popup %}
   <ul class="object-tools">
     {% block object-tools-items %}
-    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+    <li>
+        {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
+        <a href="{{ history_url }}" class="historylink">{% trans "History" %}</a>
+    </li>
     {% if original.is_published and original.url %}<li><a href="{{ original.url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
     {% endblock %}
   </ul>

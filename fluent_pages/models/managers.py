@@ -1,16 +1,18 @@
 """
 The manager class for the CMS models
 """
+import django
 from future.builtins import range
 from django.conf import settings
 from django.db.models.query_utils import Q
 from django.utils.translation import get_language
+from django.utils.timezone import now
+
 from parler import is_multilingual_project
 from parler.managers import TranslatableQuerySet, TranslatableManager
 from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
 from fluent_pages import appsettings
-from fluent_pages.utils.db import DecoratingQuerySet
-from fluent_pages.utils.compat import now
+from .utils import DecoratingQuerySet
 
 
 class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQuerySet):
@@ -206,6 +208,15 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
     """
     queryset_class = UrlNodeQuerySet
 
+    if hasattr(TranslatableManager, 'get_queryset'):
+        # Django 1.6 and up
+        def _get_queryset(self):
+            return self.get_queryset()
+    else:
+        # Django 1.5
+        def _get_queryset(self):
+            return self.get_query_set()
+
 
     def get_for_path(self, path):
         """
@@ -213,7 +224,7 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         Raises UrlNode.DoesNotExist when the item is not found.
         """
-        return self.get_query_set().get_for_path(path)
+        return self._get_queryset().get_for_path(path)
 
 
     def best_match_for_path(self, path):
@@ -222,7 +233,7 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
         """
-        return self.get_query_set().best_match_for_path(path)
+        return self._get_queryset().best_match_for_path(path)
 
 
     def get_for_key(self, key):
@@ -231,14 +242,14 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         The key can be a slug-like value that was configured in ``FLUENT_PAGES_KEY_CHOICES``.
         """
-        return self.get_query_set().get_for_key(key)
+        return self._get_queryset().get_for_key(key)
 
 
     def parent_site(self, site):
         """
         .. versionadded:: 0.9 Filter to the given site.
         """
-        return self.get_query_set().parent_site(site)
+        return self._get_queryset().parent_site(site)
 
 
     def published(self):
@@ -247,14 +258,14 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        return self.get_query_set().published()
+        return self._get_queryset().published()
 
 
     def in_navigation(self):
         """
         Return only pages in the navigation.
         """
-        return self.get_query_set().in_navigation()
+        return self._get_queryset().in_navigation()
 
 
     def in_sitemaps(self):
@@ -262,14 +273,14 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         .. versionadded:: 0.9
         Return only pages in the navigation.
         """
-        return self.get_query_set().in_sitemaps()
+        return self._get_queryset().in_sitemaps()
 
 
     def toplevel(self):
         """
         Return all pages which have no parent.
         """
-        return self.get_query_set().toplevel()
+        return self._get_queryset().toplevel()
 
 
     def toplevel_navigation(self, current_page=None):
@@ -296,4 +307,4 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         Return only page types which have a custom URLpattern attached.
         """
-        return self.get_query_set().url_pattern_types()
+        return self._get_queryset().url_pattern_types()

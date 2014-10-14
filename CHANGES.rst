@@ -4,6 +4,13 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+* Preliminary Django 1.7 support, migrations are not available yet.
+* **Backwards incompatible:** had to rename ``fluent_pages.admin`` to ``fluent_pages.adminui`` to support Django 1.7 app loading.
+
+
+Released in 0.9b3:
+~~~~~~~~~~~~~~~~~~
+
 * Created ``fluent_pages.integration.fluent_contents`` to simplify creating custom
   pagetypes that reuse the django-fluent-contents_ integration that the ``fluent_pages.pagetypes.fluentpage`` has.
 * Added ``CurrentPageMixin`` and ``CurrentPageTemplateMixin`` for custom views.

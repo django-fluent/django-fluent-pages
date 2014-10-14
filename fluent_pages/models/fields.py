@@ -30,6 +30,13 @@ class TemplateFilePathField(models.FilePathField):
         del kwargs['path']
         return (field_class, args, kwargs)
 
+    def deconstruct(self):
+        # For Django 1.7 migrations
+        name, path, args, kwargs = super(TemplateFilePathField, self).deconstruct()
+        if 'path' in kwargs:
+            del kwargs["path"]
+        return name, path, args, kwargs
+
 
 
 class TranslatedForeignKeyDescriptor(ReverseSingleRelatedObjectDescriptor):

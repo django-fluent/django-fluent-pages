@@ -1,40 +1,30 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from fluent_pages.utils.compat import user_model_label
+
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ("fluent_pages", "0004_remove_sort_order"),
+    )
 
     def forwards(self, orm):
-
-        # Adding index on 'UrlNode', fields ['status']
-        db.create_index('fluent_pages_urlnode', ['status'])
-
-        # Adding index on 'UrlNode', fields ['publication_end_date']
-        db.create_index('fluent_pages_urlnode', ['publication_end_date'])
-
-        # Adding index on 'UrlNode', fields ['publication_date']
-        db.create_index('fluent_pages_urlnode', ['publication_date'])
-
-        # Adding index on 'UrlNode', fields ['in_navigation']
-        db.create_index('fluent_pages_urlnode', ['in_navigation'])
+        # Adding model 'FlatPage'
+        db.create_table('pagetype_flatpage_flatpage', (
+            ('urlnode_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fluent_pages.UrlNode'], unique=True, primary_key=True)),
+            ('keywords', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('description', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('template_name', self.gf('django.db.models.fields.CharField')(default='fluent_pages/pagetypes/flatpage/default.html', max_length=200, null=True)),
+            ('content', self.gf('django.db.models.fields.TextField')(blank=True)),
+        ))
+        db.send_create_signal('flatpage', ['FlatPage'])
 
 
     def backwards(self, orm):
-
-        # Removing index on 'UrlNode', fields ['in_navigation']
-        db.delete_index('fluent_pages_urlnode', ['in_navigation'])
-
-        # Removing index on 'UrlNode', fields ['publication_date']
-        db.delete_index('fluent_pages_urlnode', ['publication_date'])
-
-        # Removing index on 'UrlNode', fields ['publication_end_date']
-        db.delete_index('fluent_pages_urlnode', ['publication_end_date'])
-
-        # Removing index on 'UrlNode', fields ['status']
-        db.delete_index('fluent_pages_urlnode', ['status'])
+        # Deleting model 'FlatPage'
+        db.delete_table('pagetype_flatpage_flatpage')
 
 
     models = {
@@ -51,8 +41,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        user_model_label: {
-            'Meta': {'object_name': user_model_label.split('.')[-1]},
+        'auth.user': {
+            'Meta': {'object_name': 'User'},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -74,17 +64,18 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'fluent_pages.pagelayout': {
-            'Meta': {'ordering': "('title',)", 'object_name': 'PageLayout'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        'flatpage.flatpage': {
+            'Meta': {'object_name': 'FlatPage', 'db_table': "'pagetype_flatpage_flatpage'"},
+            'content': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'keywords': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
+            'template_name': ('django.db.models.fields.CharField', [], {'default': "'fluent_pages/pagetypes/flatpage/default.html'", 'max_length': '200', 'null': 'True'}),
+            'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         },
         'fluent_pages.urlnode': {
-            'Meta': {'ordering': "('lft', 'sort_order', 'title')", 'object_name': 'UrlNode'},
+            'Meta': {'ordering': "('lft', 'title')", 'object_name': 'UrlNode'},
             '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm[user_model_label]"}),
+            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_navigation': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
@@ -92,14 +83,13 @@ class Migration(SchemaMigration):
             'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modification_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
-            'parent': ('mptt.fields.TreeForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
+            'parent': ('fluent_pages.models.fields.PageTreeForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
             'parent_site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['sites.Site']"}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_fluent_pages.urlnode_set'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
             'publication_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'publication_end_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'sort_order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'d'", 'max_length': '1', 'db_index': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
@@ -112,4 +102,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['fluent_pages']
+    complete_apps = ['flatpage']

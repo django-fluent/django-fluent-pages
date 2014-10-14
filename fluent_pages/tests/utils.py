@@ -10,7 +10,7 @@ from django.template.loaders import app_directories
 from django.test import TestCase
 from django.utils.importlib import import_module
 from fluent_pages.models.db import UrlNode
-from fluent_pages.utils.compat import get_user_model
+from fluent_utils.django_compat import get_user_model
 import os
 
 

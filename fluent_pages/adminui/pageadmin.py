@@ -7,10 +7,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import TemplateDoesNotExist
 from django.template.loader import find_template
 from django.utils.functional import lazy
-from fluent_pages.admin.urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
-from fluent_pages.admin.urlnodeparentadmin import UrlNodeParentAdmin
+from fluent_utils.django_compat import add_preserved_filters
 from fluent_pages.models import Page
-from fluent_pages.utils.compat import add_preserved_filters
+from .urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
+from .urlnodeparentadmin import UrlNodeParentAdmin
 
 
 class PageAdminForm(UrlNodeAdminForm):

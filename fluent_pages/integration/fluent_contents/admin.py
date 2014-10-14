@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template
 from fluent_contents.admin import PlaceholderEditorAdmin
-from fluent_pages.admin import HtmlPageAdmin
+from fluent_pages.adminui import HtmlPageAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_contents.extensions import plugin_pool, PluginNotFound
 

@@ -3,49 +3,19 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from fluent_pages.urlresolvers import clear_app_reverse_cache
+from fluent_utils.django_compat import AUTH_USER_MODEL
 
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'UrlNode.slug'
-        db.delete_column(u'fluent_pages_urlnode', 'slug')
-
-        # Deleting field 'UrlNode.title'
-        db.delete_column(u'fluent_pages_urlnode', 'title')
-
-        # Deleting field 'UrlNode.override_url'
-        db.delete_column(u'fluent_pages_urlnode', 'override_url')
-
-        # Deleting field 'UrlNode._cached_url'
-        db.delete_column(u'fluent_pages_urlnode', '_cached_url')
-
-        # Make sure pickled data in memcache doesn't interfere with our new model layout.
-        if not db.dry_run:
-            clear_app_reverse_cache()
+        # Removing unique constraint on 'UrlNode_Translation', fields ['_cached_url', 'language_code']
+        db.delete_unique(u'fluent_pages_urlnode_translation', ['_cached_url', 'language_code'])
 
 
     def backwards(self, orm):
-        # Adding field 'UrlNode.slug'
-        db.add_column(u'fluent_pages_urlnode', 'slug',
-                      self.gf('django.db.models.fields.SlugField')(default='', max_length=50),
-                      keep_default=False)
-
-        # Adding field 'UrlNode.title'
-        db.add_column(u'fluent_pages_urlnode', 'title',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=255),
-                      keep_default=False)
-
-        # Adding field 'UrlNode.override_url'
-        db.add_column(u'fluent_pages_urlnode', 'override_url',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=300, blank=True),
-                      keep_default=False)
-
-        # Adding field 'UrlNode._cached_url'
-        db.add_column(u'fluent_pages_urlnode', '_cached_url',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=300, blank=True, db_index=True),
-                      keep_default=False)
+        # Adding unique constraint on 'UrlNode_Translation', fields ['_cached_url', 'language_code']
+        db.create_unique(u'fluent_pages_urlnode_translation', ['_cached_url', 'language_code'])
 
     models = {
         u'auth.group': {
@@ -61,8 +31,8 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        u'auth.user': {
-            'Meta': {'object_name': 'User'},
+        AUTH_USER_MODEL.lower(): {
+            'Meta': {'object_name': AUTH_USER_MODEL.split('.')[-1]},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -110,7 +80,7 @@ class Migration(SchemaMigration):
             'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
         },
         'fluent_pages.urlnode_translation': {
-            'Meta': {'object_name': 'UrlNode_Translation'},
+            'Meta': {'unique_together': "(('language_code', 'master'),)", 'object_name': 'UrlNode_Translation'},
             '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),

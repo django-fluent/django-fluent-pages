@@ -1,27 +1,53 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
 
 class Migration(SchemaMigration):
+    dependencies = [
+        ('fluent_pages', '0001_initial'),
+    ]
 
     def forwards(self, orm):
+        # Adding model 'ProductCategory'
+        db.create_table(u'simpleshop_productcategory', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50)),
+        ))
+        db.send_create_signal(u'simpleshop', ['ProductCategory'])
 
-        # Adding unique constraint on 'UrlNode_Translation', fields ['language_code', 'master']
-        db.create_unique(u'fluent_pages_urlnode_translation', ['language_code', 'master_id'])
+        # Adding model 'Product'
+        db.create_table(u'simpleshop_product', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='products', to=orm['simpleshop.ProductCategory'])),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=200)),
+            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50)),
+            ('description', self.gf('django.db.models.fields.TextField')()),
+            ('price', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
+        ))
+        db.send_create_signal(u'simpleshop', ['Product'])
 
-        # Adding unique constraint on 'UrlNode_Translation', fields ['_cached_url', 'language_code']
-        db.create_unique(u'fluent_pages_urlnode_translation', ['_cached_url', 'language_code'])
+        # Adding model 'ProductCategoryPage'
+        db.create_table('pagetype_simpleshop_productcategorypage', (
+            (u'urlnode_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fluent_pages.UrlNode'], unique=True, primary_key=True)),
+            ('product_category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['simpleshop.ProductCategory'])),
+        ))
+        db.send_create_signal(u'simpleshop', ['ProductCategoryPage'])
 
 
     def backwards(self, orm):
-        # Removing unique constraint on 'UrlNode_Translation', fields ['_cached_url', 'language_code']
-        db.delete_unique(u'fluent_pages_urlnode_translation', ['_cached_url', 'language_code'])
+        # Deleting model 'ProductCategory'
+        db.delete_table(u'simpleshop_productcategory')
 
-        # Removing unique constraint on 'UrlNode_Translation', fields ['language_code', 'master']
-        db.delete_unique(u'fluent_pages_urlnode_translation', ['language_code', 'master_id'])
+        # Deleting model 'Product'
+        db.delete_table(u'simpleshop_product')
+
+        # Deleting model 'ProductCategoryPage'
+        db.delete_table('pagetype_simpleshop_productcategorypage')
+
 
     models = {
         u'auth.group': {
@@ -60,40 +86,48 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'fluent_pages.pagelayout': {
-            'Meta': {'ordering': "('title',)", 'object_name': 'PageLayout'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
-            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        'fluent_pages.page': {
+            'Meta': {'ordering': "('tree_id', 'lft')", 'object_name': 'Page', 'db_table': "u'fluent_pages_urlnode'", '_ormbases': ['fluent_pages.UrlNode'], 'proxy': 'True'}
         },
         'fluent_pages.urlnode': {
-            'Meta': {'ordering': "('lft',)", 'object_name': 'UrlNode'},
+            'Meta': {'ordering': "('tree_id', 'lft')", 'unique_together': "(('parent_site', 'key'),)", 'object_name': 'UrlNode'},
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_navigation': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
-            'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
-            'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            'in_sitemaps': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
+            'key': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'null': 'True', 'blank': 'True'}),
+            u'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modification_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'parent': ('fluent_pages.models.fields.PageTreeForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
             'parent_site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']"}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_fluent_pages.urlnode_set'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
             'publication_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
             'publication_end_date': ('django.db.models.fields.DateTimeField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
-            'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
+            u'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'d'", 'max_length': '1', 'db_index': 'True'}),
-            'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
+            u'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
         },
-        'fluent_pages.urlnode_translation': {
-            'Meta': {'unique_together': "(('_cached_url', 'language_code'), ('language_code', 'master'))", 'object_name': 'UrlNode_Translation'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
+        u'simpleshop.product': {
+            'Meta': {'ordering': "('title',)", 'object_name': 'Product'},
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'products'", 'to': u"orm['simpleshop.ProductCategory']"}),
+            'description': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
-            'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '10', 'decimal_places': '2'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+        },
+        u'simpleshop.productcategory': {
+            'Meta': {'ordering': "('title',)", 'object_name': 'ProductCategory'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+        },
+        u'simpleshop.productcategorypage': {
+            'Meta': {'ordering': "('tree_id', 'lft')", 'object_name': 'ProductCategoryPage', 'db_table': "'pagetype_simpleshop_productcategorypage'", '_ormbases': ['fluent_pages.Page']},
+            'product_category': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['simpleshop.ProductCategory']"}),
+            u'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         },
         u'sites.site': {
             'Meta': {'ordering': "('domain',)", 'object_name': 'Site', 'db_table': "'django_site'"},
@@ -103,4 +137,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['fluent_pages']
+    complete_apps = ['simpleshop']

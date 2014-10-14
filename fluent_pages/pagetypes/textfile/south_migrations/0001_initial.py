@@ -3,20 +3,27 @@ import datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
-from fluent_pages.utils.compat import user_model_label
 
 class Migration(SchemaMigration):
+    depends_on = (
+        ("fluent_pages", "0004_remove_sort_order"),
+    )
 
     def forwards(self, orm):
-
-        # Rename field 'UrlNode.expire_date'
-        db.rename_column('fluent_pages_urlnode', 'expire_date', 'publication_end_date')
+        
+        # Adding model 'TextFile'
+        db.create_table('pagetype_textfile_textfile', (
+            ('urlnode_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fluent_pages.UrlNode'], unique=True, primary_key=True)),
+            ('content', self.gf('django.db.models.fields.TextField')()),
+            ('content_type', self.gf('django.db.models.fields.CharField')(default='text/plain', max_length=100)),
+        ))
+        db.send_create_signal('textfile', ['TextFile'])
 
 
     def backwards(self, orm):
-
-        # Rename field 'UrlNode.publication_end_date'
-        db.rename_column('fluent_pages_urlnode', 'publication_end_date', 'expire_date')
+        
+        # Deleting model 'TextFile'
+        db.delete_table('pagetype_textfile_textfile')
 
 
     models = {
@@ -33,8 +40,8 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        user_model_label: {
-            'Meta': {'object_name': user_model_label.split('.')[-1]},
+        'auth.user': {
+            'Meta': {'object_name': 'User'},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
@@ -56,18 +63,15 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'fluent_pages.pagelayout': {
-            'Meta': {'ordering': "('title',)", 'object_name': 'PageLayout'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
+        'fluent_pages.page': {
+            'Meta': {'ordering': "('lft', 'sort_order', 'title')", 'object_name': 'Page', 'db_table': "'fluent_pages_urlnode'", '_ormbases': ['fluent_pages.UrlNode'], 'proxy': 'True'}
         },
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft', 'sort_order', 'title')", 'object_name': 'UrlNode'},
             '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm[user_model_label]"}),
+            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'expire_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_navigation': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
@@ -78,7 +82,6 @@ class Migration(SchemaMigration):
             'parent_site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['sites.Site']"}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_fluent_pages.urlnode_set'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
             'publication_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'publication_end_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
             'sort_order': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
@@ -91,7 +94,13 @@ class Migration(SchemaMigration):
             'domain': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        'textfile.textfile': {
+            'Meta': {'ordering': "('lft', 'sort_order', 'title')", 'object_name': 'TextFile', 'db_table': "'pagetype_textfile_textfile'", '_ormbases': ['fluent_pages.Page']},
+            'content': ('django.db.models.fields.TextField', [], {}),
+            'content_type': ('django.db.models.fields.CharField', [], {'default': "'text/plain'", 'max_length': '100'}),
+            'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         }
     }
 
-    complete_apps = ['fluent_pages']
+    complete_apps = ['textfile']

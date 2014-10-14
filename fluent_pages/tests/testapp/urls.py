@@ -1,5 +1,5 @@
 import fluent_pages.admin  # Register model
-from fluent_pages.utils.compat import patterns, url, include
+from django.conf.urls import patterns, url, include
 from django.contrib import admin
 
 urlpatterns = patterns('',

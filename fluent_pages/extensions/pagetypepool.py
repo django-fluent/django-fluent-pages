@@ -6,7 +6,7 @@ from future.builtins import object, int
 from threading import Lock
 from django.contrib.contenttypes.models import ContentType
 from fluent_pages.models import UrlNode
-from fluent_pages.utils.load import import_apps_submodule
+from fluent_utils.load import import_apps_submodule
 from .pagetypebase import PageTypePlugin
 from six import itervalues
 
