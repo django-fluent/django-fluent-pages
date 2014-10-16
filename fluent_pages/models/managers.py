@@ -208,8 +208,9 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
     """
     queryset_class = UrlNodeQuerySet
 
-    if django.VERSION >= (1,6):
+    if django.VERSION >= (1,6) and hasattr(TranslatableManager, 'get_queryset'):
         # Django 1.6 and up
+        # Should not be used for Django 1.4/1.5 all all, as that breaks the RelatedManager
         def _get_queryset(self):
             return self.get_queryset()
     else:
