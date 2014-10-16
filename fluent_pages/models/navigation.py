@@ -119,6 +119,10 @@ class PageNavigationNode(NavigationNode):
         self._read_children()
         if self._children is not None:
             for child in self._children:
+                if child.pk == self._page.pk:
+                    # This happened with the get_query_set() / get_queryset() transition for Django 1.7, affecting Django 1.4/1.5
+                    raise RuntimeError("Page #{0} children contained self!".format(self._page.pk))
+
                 yield PageNavigationNode(child, parent_node=self, max_depth=self._max_depth, current_page=self._current_page)
 
     @property
@@ -135,6 +139,9 @@ class PageNavigationNode(NavigationNode):
                 # If the parent wasn't polymorphic, neither will it's children be.
                 if self._page.get_real_instance_class() is not self._page.__class__:
                     self._children = self._children.non_polymorphic()
+
+                self._children = list(self._children)
+
 
     @property
     def _mptt_meta(self):
