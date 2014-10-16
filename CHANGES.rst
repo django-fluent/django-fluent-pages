@@ -6,6 +6,7 @@ Changes in version 0.9 (dev)
 
 * Preliminary Django 1.7 support, migrations are not available yet.
 * **Backwards incompatible:** had to rename ``fluent_pages.admin`` to ``fluent_pages.adminui`` to support Django 1.7 app loading.
+* **Backwards incompatible:** South 1.0 is required to run the migrations (or set ``SOUTH_MIGRATION_MODULES`` for all plugins).
 
 
 Released in 0.9b3:
