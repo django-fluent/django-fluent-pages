@@ -587,14 +587,6 @@ class UrlNode_Translation(TranslatedFieldsModel):
 
 
 
-class TranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
-    """
-    The operation can't be completed, because a translation is missing.
-    """
-
-UrlNode_Translation.DoesNotExist = TranslationDoesNotExist
-
-
 @python_2_unicode_compatible
 class Page(UrlNode):
     """
