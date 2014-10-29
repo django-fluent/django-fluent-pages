@@ -14,7 +14,7 @@ class Migration(SchemaMigration):
         # Adding model 'RedirectNode'
         db.create_table('pagetype_redirectnode_redirectnode', (
             ('urlnode_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fluent_pages.UrlNode'], unique=True, primary_key=True)),
-            ('new_url', self.gf('fluent_pages.pagetypes.redirectnode.fields.UrlField')(max_length=300)),
+            ('new_url', self.gf('django.db.models.fields.URLField')(max_length=300)),
             ('redirect_type', self.gf('django.db.models.fields.IntegerField')(default=302)),
         ))
         db.send_create_signal('redirectnode', ['RedirectNode'])
@@ -87,7 +87,7 @@ class Migration(SchemaMigration):
         },
         'redirectnode.redirectnode': {
             'Meta': {'ordering': "('lft', 'title')", 'object_name': 'RedirectNode', 'db_table': "'pagetype_redirectnode_redirectnode'", '_ormbases': ['fluent_pages.Page']},
-            'new_url': ('fluent_pages.pagetypes.redirectnode.fields.UrlField', [], {'max_length': '300'}),
+            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '300'}),
             'redirect_type': ('django.db.models.fields.IntegerField', [], {'default': '302'}),
             'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         },

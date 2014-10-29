@@ -41,7 +41,7 @@ setup(
     install_requires=[
         'django-fluent-utils>=1.0',        # DRY utility code
         'django-mptt>=0.5.5',              # Still supporting Django 1.4, use mptt 0.6 for Python 3 support.
-        'django-parler>=1.1.1',            # Needed Django 1.7 compatibility, and latest bugfixes
+        'django-parler>=1.2',              # Needed for multi-table translation support
         'django-polymorphic>=0.6',         # Needed for Django 1.7 compatibility
         'django-polymorphic-tree>=1.0.1',  # Enforce Python 3 compatible versions
         'django-tag-parser>=2.0',

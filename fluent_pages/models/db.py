@@ -17,7 +17,7 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFieldsModel
+from parler.models import TranslatableModel, TranslatedFieldsModel, TranslatedFields
 from parler.fields import TranslatedField
 from parler.utils import get_language_title, is_multilingual_project
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
@@ -311,10 +311,8 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         # Update the cached_url of all translations.
         # This triggers _update_cached_url() in save_translation() later.
 
-        # Find all translations that this object has,
-        # both in the database, and unsaved local objects.
-        # HACK: accessing _translations_cache, skipping <IsMissing> sentinel values.
-        all_languages = set(self.get_available_languages()) | set(k for k,v in iteritems(self._translations_cache) if v)  # HACK!
+        # Find all translations that this object has, both in the database, and unsaved local objects.
+        all_languages = self.get_available_languages(include_unsaved=True)
         parent_urls = dict(UrlNode_Translation.objects.filter(master=self.parent_id).values_list('language_code', '_cached_url'))
 
         for language_code in all_languages:
@@ -490,7 +488,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 cached_page_urls[subobject.id] = subobject._cached_url
 
             # call base class, do not recurse
-            sub_translation = subobject._translations_cache[subobject.get_current_language()]  # HACK!
+            sub_translation = subobject.get_translation(subobject.get_current_language())  # reads from _translations_cache!
             super(UrlNode, subobject).save_translation(sub_translation)
             subobject._expire_url_caches()
 
@@ -610,18 +608,30 @@ class Page(UrlNode):
     objects = UrlNodeManager()
 
 
+class HtmlPage(Page):
+    """
+    The base fields for a HTML page of the web site.
 
-class SeoPageMixin(models.Model):
+    This is a proxy model, which adds translatable SEO fields.
+
+    .. versionchanged 0.9: This model used to be abstract, now it's a proxy model because all fields are translated.
     """
-    Mixin for adding SEO fields to a page.
-    """
-    # SEO fields
-    meta_keywords = models.CharField(_('keywords'), max_length=255, blank=True, null=True)
-    meta_description = models.CharField(_('description'), max_length=255, blank=True, null=True)
-    meta_title = models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used."))
+    # Just to be explicit
+    meta_keywords = TranslatedField()
+    meta_description = TranslatedField()
+    meta_title = TranslatedField()
+
+    # SEO fields, the underlying HtmlPageTranslation model can be created dynamically.
+    seo_translations = TranslatedFields(
+        meta_keywords = models.CharField(_('keywords'), max_length=255, blank=True, null=True),
+        meta_description = models.CharField(_('description'), max_length=255, blank=True, null=True),
+        meta_title = models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used.")),
+    )
 
     class Meta:
-        abstract = True
+        app_label = 'fluent_pages'
+        proxy = True
+        verbose_name_plural = _('Pages')
 
     @property
     def meta_robots(self):
@@ -636,19 +646,6 @@ class SeoPageMixin(models.Model):
             return None
 
 
-
-class HtmlPage(Page, SeoPageMixin):
-    """
-    The base fields for a HTML page of the web site.
-
-    This is an abstract model, which adds the :attr:`meta_keyword` and :attr:`meta_description` fields.
-    """
-
-#    objects = UrlNodeManager()
-
-    class Meta:
-        abstract = True
-        verbose_name_plural = _('Pages')
 
 
 @python_2_unicode_compatible

@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db import models
 
 
+
 # subclassing here so South migrations detect a single class.
 if 'any_urlfield' in settings.INSTALLED_APPS:
     from any_urlfield.models import AnyUrlField

@@ -11,8 +11,8 @@ The following parts are provided:
 * The page type model: :class:`FluentContentsPage`
 * The plugin class: :class:`FluentContentsPagePlugin`
 """
-from .admin import FluentContentsPageAdmin
 from .models import FluentContentsPage
+from .admin import FluentContentsPageAdmin
 from .page_type_plugins import FluentContentsPagePlugin
 
 __all__ = (
