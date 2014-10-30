@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template
 from fluent_contents.admin import PlaceholderEditorAdmin
+from fluent_contents.models import ContentItem
 from fluent_pages.adminui import HtmlPageAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_contents.extensions import plugin_pool, PluginNotFound
@@ -101,3 +102,14 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
         else:
             # Accepts all plugins by default
             return super(FluentContentsPageAdmin, self).get_all_allowed_plugins()
+
+
+    def get_translation_objects(self, request, language_code, obj=None, inlines=True):
+        """
+        Make sure the translated ContentItem objects are also deleted when a translation is removed.
+        """
+        for qs in super(FluentContentsPageAdmin, self).get_translation_objects(request, language_code, obj=obj, inlines=inlines):
+            yield qs
+
+        if obj is not None and inlines:
+            yield ContentItem.objects.parent(obj, limit_parent_language=False).filter(language_code=language_code)
