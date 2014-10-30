@@ -331,6 +331,10 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         Update the fields associated with the translation.
         This also rebuilds the decedent URLs when the slug changed.
         """
+        # Skip objects from derived models
+        if translation.related_name != 'translations':
+            return super(UrlNode, self).save_translation(translation, *args, **kwargs)
+
         # Make sure there is a slug!
         if not translation.slug and translation.title:
             translation.slug = slugify(translation.title)
