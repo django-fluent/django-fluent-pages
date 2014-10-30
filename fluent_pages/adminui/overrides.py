@@ -5,15 +5,15 @@ from fluent_utils.load import import_settings_class
 
 # Allow to extend the admin. Note this is pretty invasive,
 # and custom changes always need to be tested.
-if appsettings.FLUENT_PAGES_PARENT_ADMIN_MIXIN:
-    PageParentAdmin = type("PageParentAdmin", (import_settings_class('FLUENT_PAGES_PARENT_ADMIN_MIXIN'), DefaultPageParentAdmin), {})
-else:
+if not appsettings.FLUENT_PAGES_PARENT_ADMIN_MIXIN:
     PageParentAdmin = DefaultPageParentAdmin
-
-if appsettings.FLUENT_PAGES_CHILD_ADMIN_MIXIN:
-    PageChildAdmin = type("PageAdmin", (import_settings_class('FLUENT_PAGES_CHILD_ADMIN_MIXIN'), DefaultPageChildAdmin), {})
 else:
+    PageParentAdmin = type("PageParentAdmin", (import_settings_class('FLUENT_PAGES_PARENT_ADMIN_MIXIN'), DefaultPageParentAdmin), {})
+
+if not appsettings.FLUENT_PAGES_CHILD_ADMIN_MIXIN:
     PageChildAdmin = DefaultPageChildAdmin
+else:
+    PageChildAdmin = type("PageAdmin", (import_settings_class('FLUENT_PAGES_CHILD_ADMIN_MIXIN'), DefaultPageChildAdmin), {})
 
 
 # Keep using the older import name everywhere.
