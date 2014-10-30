@@ -23,10 +23,14 @@ Previously, the SEO fields were provided by abstract models, requiring projects 
 All translated SEO fields are now managed in a single table, which is under the control of this app.
 Fortunately, this solves any future migration issues for changes in the ``HtmlPage`` model.
 
-If your page types inherited from ``HtmlPage``, you'll have to migrate the data of your apps one more time.
+If your page types inherited from ``HtmlPage``, ``FluentContentsPage`` or it's old name ``FluentPage``,
+you'll have to migrate the data of your apps one more time.
 The bundled pagetypes have two migrations for this: ``move_seo_fields`` and ``remove_untranslatad_fields``.
 The first migration moves all data to the ``HtmlPageTranslation`` table (manually added to the datamigration).
 The second migration can simply by generated with ``./manage.py schemamigration <yourapp> --auto "remove_untranslatad_fields"``.
+
+If you have overridden ``save_translation()`` in your models, make sure to check for ``translation.related_name``,
+as both the base object and derived object translations are passed through this method now.
 
 The ``SeoPageMixin`` was removed too, instead inherit directly from ``HtmlPage``.
 
