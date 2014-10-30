@@ -39,7 +39,7 @@ setup(
     license='Apache License, Version 2.0',
 
     install_requires=[
-        'django-fluent-utils>=1.0',        # DRY utility code
+        'django-fluent-utils>=1.1',        # DRY utility code
         'django-mptt>=0.5.5',              # Still supporting Django 1.4, use mptt 0.6 for Python 3 support.
         'django-parler>=1.2',              # Needed for multi-table translation support
         'django-polymorphic>=0.6',         # Needed for Django 1.7 compatibility
