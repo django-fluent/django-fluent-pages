@@ -98,6 +98,15 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         raise DeprecationWarning("Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages.")
 
 
+    # ---- parler overrides ----
+
+    def delete_translation(self, request, object_id, language_code):
+        # Since we use django-polymorphic, the django-parler view should also be redirected to the child admin.
+        # This also enables FluentContentsPageAdmin.get_translation_objects() to be called.
+        real_admin = self._get_real_admin(object_id)
+        return real_admin.delete_translation(request, object_id, language_code)
+
+
     # ---- List code ----
 
     # NOTE: the regular results table is replaced client-side with a jqTree list.

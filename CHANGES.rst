@@ -5,8 +5,30 @@ Changes in version 0.9 (dev)
 ----------------------------
 
 * Preliminary Django 1.7 support, migrations are not available yet.
-* **Backwards incompatible:** had to rename ``fluent_pages.admin`` to ``fluent_pages.adminui`` to support Django 1.7 app loading.
-* **Backwards incompatible:** South 1.0 is required to run the migrations (or set ``SOUTH_MIGRATION_MODULES`` for all plugins).
+* Added translation support for the SEO fields (meta keywords/description/title) and redirect URL.
+* All base models are proxy models now; there will be no more need to update south migrations in your own apps.
+* Fixed stale translated ``ContentItem`` objects from django-fluent-contents_ when deleting a translation of a page.
+
+Upgrade notices:
+~~~~~~~~~~~~~~~~
+
+Due to Django 1.7 support, the following changes had to be made:
+
+* ``fluent_pages.admin`` is renamed to ``fluent_pages.adminui``.
+* South 1.0 is now required to run the migrations (or set ``SOUTH_MIGRATION_MODULES`` for all plugins).
+
+Secondly, there were database changes to making the SEO-fields translatable.
+Previously, the SEO fields were provided by abstract models, requiring projects to upgrade their apps too.
+
+All translated SEO fields are now managed in a single table, which is under the control of this app.
+Fortunately, this solves any future migration issues for changes in the ``HtmlPage`` model.
+
+If your page types inherited from ``HtmlPage``, you'll have to migrate the data of your apps one more time.
+The bundled pagetypes have two migrations for this: ``move_seo_fields`` and ``remove_untranslatad_fields``.
+The first migration moves all data to the ``HtmlPageTranslation`` table (manually added to the datamigration).
+The second migration can simply by generated with ``./manage.py schemamigration <yourapp> --auto "remove_untranslatad_fields"``.
+
+The ``SeoPageMixin`` was removed too, instead inherit directly from ``HtmlPage``.
 
 
 Released in 0.9b3:

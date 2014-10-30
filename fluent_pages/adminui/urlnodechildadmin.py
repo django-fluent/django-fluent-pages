@@ -42,13 +42,6 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
         if 'in_sitemaps' in self.fields and not self.instance.pk:
             self.fields['in_sitemaps'].initial = self.instance.plugin.default_in_sitemaps
 
-        # Warn about django-parler issue that inherited models are not yet translatable.
-        if is_multilingual_project():
-            for f_name in ('meta_description', 'meta_keywords', 'meta_title', 'new_url'):
-                if f_name in self.fields:
-                    field = self.fields[f_name]
-                    field.help_text += " " + ugettext("Note: this field is not yet translatable")
-
     def clean(self):
         """
         Extend valiation of the form, checking whether the URL is unique.
