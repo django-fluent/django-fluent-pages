@@ -10,16 +10,28 @@ from fluent_pages import appsettings
 class Migration(DataMigration):
 
     def forwards(self, orm):
-        db.execute(
-            'INSERT INTO redirectnode_redirectnode_translation(new_url, redirect_type, language_code, master_id)'
-            ' SELECT new_url, redirect_type, %s, urlnode_ptr_id FROM pagetype_redirectnode_redirectnode',
-            [appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE]
-        )
+        UrlNode_Translation = orm['fluent_pages.UrlNode_Translation']
+        RedirectNodeTranslation = orm['redirectnode.RedirectNodeTranslation']
+        default_choices = ('en', 'en-us', appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+
+        for redirectnode in orm['redirectnode.RedirectNode'].objects.all():
+            available_languages = list(UrlNode_Translation.objects.filter(master_id=redirectnode.id).values_list('language_code', flat=True))
+
+            # Find the first language that is usable.
+            # Move the fields to the translation of that language.
+            lang = next((code for code in default_choices if code in available_languages), available_languages[0])
+            RedirectNodeTranslation.objects.create(
+                master_id=redirectnode.pk,
+                language_code=lang,
+                new_url=redirectnode.new_url,
+                redirect_type=redirectnode.redirect_type
+            )
 
     def backwards(self, orm):
+        RedirectNodeTranslation = orm['redirectnode.RedirectNodeTranslation']
         # Convert all fields back to the single-language table.
         for redirectnode in orm['redirectnode.RedirectNode'].objects.all():
-            translations = orm['redirectnode.RedirectNodeTranslation'].objects.filter(master_id=redirectnode.id)
+            translations = RedirectNodeTranslation.objects.filter(master_id=redirectnode.id)
             try:
                 # Try default translation
                 translation = translations.get(language_code=appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
@@ -94,6 +106,16 @@ class Migration(DataMigration):
             u'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'d'", 'max_length': '1', 'db_index': 'True'}),
             u'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
+        },
+        'fluent_pages.urlnode_translation': {
+            'Meta': {'unique_together': "(('language_code', 'master'),)", 'object_name': 'UrlNode_Translation'},
+            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '300', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
+            'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'redirectnode.redirectnode': {
             'Meta': {'ordering': "('tree_id', 'lft')", 'object_name': 'RedirectNode', 'db_table': "'pagetype_redirectnode_redirectnode'", '_ormbases': ['fluent_pages.Page']},

@@ -12,16 +12,28 @@ class Migration(DataMigration):
     )
 
     def forwards(self, orm):
-        db.execute(
-            'INSERT INTO fluent_pages_htmlpage_translation(meta_keywords, meta_description, meta_title, language_code, master_id)'
-            ' SELECT meta_keywords, meta_description, meta_title, %s, urlnode_ptr_id FROM pagetype_fluentpage_fluentpage',
-            [appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE]
-        )
+        UrlNode_Translation = orm['fluent_pages.UrlNode_Translation']
+        HtmlPageTranslation = orm['fluent_pages.HtmlPageTranslation']
+        default_choices = ('en', 'en-us', appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+
+        for fluentpage in orm['fluentpage.FluentPage'].objects.all():
+            available_languages = list(UrlNode_Translation.objects.filter(master_id=fluentpage.pk).values_list('language_code', flat=True))
+
+            # Find the first language that is usable.
+            # Move the fields to the translation of that language.
+            lang = next((code for code in default_choices if code in available_languages), available_languages[0])
+            HtmlPageTranslation.objects.create(
+                master_id=fluentpage.pk,
+                language_code=lang,
+                meta_keywords=fluentpage.meta_keywords,
+                meta_description=fluentpage.meta_description,
+                meta_title=fluentpage.meta_title,
+            )
 
     def backwards(self, orm):
         # Convert all fields back to the single-language table.
         for htmlpage in orm['fluentpage.FluentPage'].objects.all():
-            translations = orm['fluent_pages.HtmlPageTranslation'].objects.filter(master_id=htmlpage.id)
+            translations = orm['fluent_pages.HtmlPageTranslation'].objects.filter(master_id=htmlpage.pk)
             try:
                 # Try default translation
                 translation = translations.get(language_code=appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
@@ -82,6 +94,15 @@ class Migration(DataMigration):
             'template_path': ('fluent_pages.models.fields.TemplateFilePathField', [], {'max_length': '100', 'recursive': 'True', 'match': "'.*\\\\.html$'"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
+        'fluent_pages.htmlpagetranslation': {
+            'Meta': {'unique_together': "[(u'language_code', u'master')]", 'object_name': 'HtmlPageTranslation', 'db_table': "u'fluent_pages_htmlpage_translation'"},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
+            u'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'seo_translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
+            'meta_description': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'meta_keywords': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'meta_title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
+        },
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('tree_id', 'lft')", 'unique_together': "(('parent_site', 'key'),)", 'object_name': 'UrlNode'},
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
@@ -101,6 +122,16 @@ class Migration(DataMigration):
             u'rght': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'d'", 'max_length': '1', 'db_index': 'True'}),
             u'tree_id': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'})
+        },
+        'fluent_pages.urlnode_translation': {
+            'Meta': {'unique_together': "(('language_code', 'master'),)", 'object_name': 'UrlNode_Translation'},
+            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '300', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
+            'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'fluentpage.fluentpage': {
             'Meta': {'object_name': 'FluentPage', 'db_table': "'pagetype_fluentpage_fluentpage'"},
