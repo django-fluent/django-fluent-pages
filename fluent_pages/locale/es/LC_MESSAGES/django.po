@@ -1,0 +1,317 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fluent_pages\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-02 20:40-0600\n"
+"PO-Revision-Date: 2014-11-02 21:32-0600\n"
+"Last-Translator: David Loaiza M. <david@zooluciones.com>\n"
+"Language-Team: es <webmaster@zooluciones.com>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.6.9\n"
+
+#: admin/htmlpageadmin.py:23
+msgid "SEO settings"
+msgstr "Configuraciones para posicionamiento en buscadores"
+
+#: admin/urlnodechildadmin.py:44
+msgid "Note: this field is not yet translatable"
+msgstr "Nota: este campo todavía no es traducible"
+
+#: admin/urlnodechildadmin.py:82
+msgid "This identifier is already used by an other page."
+msgstr "Este identificador ya es utilizado por otra página."
+
+#: admin/urlnodechildadmin.py:91
+msgid "This URL is already taken by an other page."
+msgstr "Esta URL ya está en uso por otra página."
+
+#: admin/urlnodechildadmin.py:102
+msgid "This slug is already used by an other page at the same level."
+msgstr ""
+"Esta \"URL amigagle\" ya es utilizada por otra página en el mismo nivel."
+
+#: admin/urlnodechildadmin.py:124
+msgid "Menu structure"
+msgstr "Estructura del menú"
+
+#: admin/urlnodechildadmin.py:129
+msgid "Publication settings"
+msgstr "Configuraciones de publicación"
+
+#: admin/urlnodeparentadmin.py:15
+msgid "Page type"
+msgstr "Tipo de página"
+
+#: admin/urlnodeparentadmin.py:26
+msgid "page type"
+msgstr "tipo de página"
+
+#: admin/urlnodeparentadmin.py:130
+msgid "Status"
+msgstr "Estado"
+
+#: admin/urlnodeparentadmin.py:166
+msgid "Mark selected objects as published"
+msgstr "Marcar los objetos seleccionados como publicados"
+
+#: management/commands/prefix_pagetypes.py:25
+#, python-brace-format
+msgid "{count} item updated."
+msgid_plural "{count} items updated."
+msgstr[0] "{count} elemento actualizado."
+msgstr[1] "{count} elementos actualizados."
+
+#: models/db.py:65
+msgid "Published"
+msgstr "Publicada"
+
+#: models/db.py:66
+msgid "Draft"
+msgstr "Borrador"
+
+#: models/db.py:71
+msgid "parent"
+msgstr "padre"
+
+#: models/db.py:71
+msgid "You can also change the parent by dragging the page in the list."
+msgstr "También puede cambiar el padre arrastrando la página del listado."
+
+#: models/db.py:76
+msgid "status"
+msgstr "estado"
+
+#: models/db.py:77
+msgid "publication date"
+msgstr "fecha de publicación"
+
+#: models/db.py:77
+msgid "When the page should go live, status must be \"Published\"."
+msgstr ""
+"Cuando la página debe salir en línea, el estado debe ser \"Publicado \"."
+
+#: models/db.py:78
+msgid "publication end date"
+msgstr "fecha de cierre de publicación"
+
+#: models/db.py:79
+msgid "show in navigation"
+msgstr "mostrar en la navegación"
+
+#: models/db.py:84
+msgid "page identifier"
+msgstr "identificador de página"
+
+#: models/db.py:84
+msgid "A unique identifier that is used for linking to this page."
+msgstr "Un identificador único que se utiliza para enlazar a esta página."
+
+#: models/db.py:87
+msgid "author"
+msgstr "autor"
+
+#: models/db.py:88
+msgid "creation date"
+msgstr "fecha de creación"
+
+#: models/db.py:89
+msgid "last modification"
+msgstr "última modificación"
+
+#: models/db.py:101
+msgid "URL Node"
+msgstr "Nodo URL"
+
+#: models/db.py:102
+msgid "URL Nodes"
+msgstr "Nodos URL"
+
+#: models/db.py:107
+msgid "Can change Shared fields"
+msgstr "Poder cambiar los campos Compartidos"
+
+#: models/db.py:108
+msgid "Can change Override URL field"
+msgstr "Poder cambiar el campo Reemplazar URL"
+
+#: models/db.py:495 models/db.py:635
+msgid "title"
+msgstr "título"
+
+#: models/db.py:496
+msgid "slug"
+msgstr "URL amigable"
+
+#: models/db.py:496
+msgid "The slug is used in the URL of the page"
+msgstr "Con la \"URL amigable\" se conforma la dirección URL de la página"
+
+#: models/db.py:497
+msgid "Override URL"
+msgstr "Reemplazar URL"
+
+#: models/db.py:497
+msgid ""
+"Override the target URL. Be sure to include slashes at the beginning and at "
+"the end if it is a local URL. This affects both the navigation and subpages' "
+"URLs."
+msgstr ""
+"Reemplaza la dirección URL final. Asegúrese de incluir barras al principio y "
+"al final si es una dirección URL local. Esto afecta tanto a la navegación y "
+"a las direciones URLs de las subpáginas."
+
+#: models/db.py:509
+msgid "URL Node translation"
+msgstr "Traducción de Nodo URL"
+
+#: models/db.py:510
+msgid "URL Nodes translations"
+msgstr "Traducciones de Nodos URL"
+
+#: models/db.py:586 pagetypes/fluentpage/models.py:28
+msgid "Page"
+msgstr "Página"
+
+#: models/db.py:587 models/db.py:624 pagetypes/fluentpage/models.py:29
+msgid "Pages"
+msgstr "Páginas"
+
+#: models/db.py:604
+msgid "keywords"
+msgstr "palabras clave"
+
+#: models/db.py:605
+msgid "description"
+msgstr "descripción"
+
+#: models/db.py:606
+msgid "page title"
+msgstr "título de la página"
+
+#: models/db.py:606
+msgid "When this field is not filled in, the menu title text will be used."
+msgstr ""
+"Cuando este campo no se rellena, se utilizará el texto del título del menú."
+
+#: models/db.py:634
+msgid "key"
+msgstr "clave"
+
+#: models/db.py:634
+msgid "A short name to identify the layout programmatically"
+msgstr "Un nombre corto para identificar la plantilla programáticamente"
+
+#: models/db.py:657 pagetypes/flatpage/models.py:13
+#: pagetypes/fluentpage/models.py:18
+msgid "Layout"
+msgstr "Plantilla"
+
+#: models/db.py:658
+msgid "Layouts"
+msgstr "Plantillas"
+
+#: models/fields.py:39
+msgid "The selected page cannot have sub pages."
+msgstr "La página seleccionada no puede tener subpáginas."
+
+#: pagetypes/flatpage/models.py:14
+msgid "Content"
+msgstr "Contenido"
+
+#: pagetypes/flatpage/models.py:20
+msgid "Flat Page"
+msgstr "Página Plana"
+
+#: pagetypes/flatpage/models.py:21
+msgid "Flat Pages"
+msgstr "Páginas Planas"
+
+#: pagetypes/fluentpage/models.py:31
+msgid "Can change Page layout"
+msgstr "Poder cambiar el diseño de página"
+
+#: pagetypes/redirectnode/models.py:12
+msgid "Normal redirect"
+msgstr "Redirección normal"
+
+#: pagetypes/redirectnode/models.py:13
+msgid "Permanent redirect (for SEO ranking)"
+msgstr "Redirección permanente (para el ranking de buscadores)"
+
+#: pagetypes/redirectnode/models.py:19
+msgid "New URL"
+msgstr "Nueva URL"
+
+#: pagetypes/redirectnode/models.py:20
+msgid "Redirect type"
+msgstr "Tipo de redirección"
+
+#: pagetypes/redirectnode/models.py:20
+msgid ""
+"Use 'normal redirect' unless you want to transfer SEO ranking to the new "
+"page."
+msgstr ""
+"Use 'redirección normal' a menos que desee transferir el ranking de "
+"buscadores a la nueva página."
+
+#: pagetypes/redirectnode/models.py:23
+msgid "Redirect"
+msgstr "Redirección"
+
+#: pagetypes/redirectnode/models.py:24
+msgid "Redirects"
+msgstr "Redirecciones"
+
+#: pagetypes/textfile/models.py:11
+msgid "Plain text"
+msgstr "Texto simple"
+
+#: pagetypes/textfile/models.py:12
+msgid "XML"
+msgstr "XML"
+
+#: pagetypes/textfile/models.py:13
+msgid "HTML"
+msgstr "HTML"
+
+#: pagetypes/textfile/models.py:19
+msgid "File contents"
+msgstr "Contenido del archivo"
+
+#: pagetypes/textfile/models.py:20
+msgid "File type"
+msgstr "Tipo de archivo"
+
+#: pagetypes/textfile/models.py:23
+msgid "Plain text file"
+msgstr "Archivo de texto simple"
+
+#: pagetypes/textfile/models.py:24
+msgid "Plain text files"
+msgstr "Archivos de texto simple"
+
+#: templates/admin/fluent_pages/page/change_form.html:23
+msgid "History"
+msgstr "Historial"
+
+#: templates/admin/fluent_pages/page/change_form.html:24
+msgid "View on site"
+msgstr "Ver en el sitio"
+
+#: templates/admin/fluent_pages/page/change_form.html:36
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Por favor, corrija el siguiente error."
+msgstr[1] "Por favor, corrija los errores siguientes."
+
+#~ msgid "Cached URL"
+#~ msgstr "URL en Caché"
