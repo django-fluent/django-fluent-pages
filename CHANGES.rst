@@ -4,10 +4,23 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
-* Preliminary Django 1.7 support, migrations are not available yet.
+Released in 0.9b3:
+~~~~~~~~~~~~~~~~~~
+
+* Added preliminary Django 1.7 support, migrations are not fully working yet.
 * Added translation support for the SEO fields (meta keywords/description/title) and redirect URL.
 * All base models are proxy models now; there will be no more need to update south migrations in your own apps.
+* Added ``fluent_pages.integration.fluent_contents`` to simplify creating custom
+* Added ``CurrentPageMixin`` and ``CurrentPageTemplateMixin`` for custom views.
+* Added ``HtmPage.meta_robots`` property to automatically add ``noindex`` to pages outside the sitemaps.
+* Added ``in_sitemaps`` flag, which is now false for the ``RedirectNode`` by default.
+  pagetypes that reuse the django-fluent-contents_ integration that the ``fluent_pages.pagetypes.fluentpage`` has.
 * Fixed stale translated ``ContentItem`` objects from django-fluent-contents_ when deleting a translation of a page.
+* Fixed support for: future >= 0.13.
+* Fixed support for: django-polymorphic >= 0.6.
+* Fixed support for: django-parler >= 1.2.
+* API: use ``FluentContentsPage`` instead of ``AbstractFluentPage``.
+
 
 Upgrade notices:
 ~~~~~~~~~~~~~~~~
@@ -32,18 +45,7 @@ The second migration can simply by generated with ``./manage.py schemamigration 
 If you have overridden ``save_translation()`` in your models, make sure to check for ``translation.related_name``,
 as both the base object and derived object translations are passed through this method now.
 
-The ``SeoPageMixin`` was removed too, instead inherit directly from ``HtmlPage``.
-
-
-Released in 0.9b3:
-~~~~~~~~~~~~~~~~~~
-
-* Created ``fluent_pages.integration.fluent_contents`` to simplify creating custom
-  pagetypes that reuse the django-fluent-contents_ integration that the ``fluent_pages.pagetypes.fluentpage`` has.
-* Added ``CurrentPageMixin`` and ``CurrentPageTemplateMixin`` for custom views.
-* Added ``in_sitemaps`` flag, which is now false for the ``RedirectNode`` by default.
-* Added ``SeoPageMixin.meta_robots`` property to automatically add ``noindex`` to pages outside the sitemaps.
-* API: use ``FluentContentsPage`` instead of ``AbstractFluentPage``.
+The ``SeoPageMixin`` from 0.9b1 was removed too, instead inherit directly from ``HtmlPage``.
 
 
 Released in 0.9b2:
