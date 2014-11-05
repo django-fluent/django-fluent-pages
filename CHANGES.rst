@@ -83,7 +83,7 @@ Released in 0.9b1:
 * API: added ``get_view_response`` to the ``PageTypePlugin`` class, allow adding middleware to custom views.
 * API: **Backwards incompatible:** when inheriting from the abstract ``HtmlPage`` model, your app needs a South migration.
 * Fixed calling ``reverse()`` on the resolved page urls.
-* Dropped Django 1.3 support.
+* Dropped Django 1.3 and 1.4 support.
 
 
 Upgrade notices:

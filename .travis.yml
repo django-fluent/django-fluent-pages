@@ -4,9 +4,9 @@ python:
   - "2.7"
   - "2.6"
 env:
-  - PACKAGES="django==1.4.13 django-mptt==0.5.5"   # django-polymorphic >= 0.5 uses django.utils.six which is bundled as of Django 1.4.2
   - PACKAGES="django==1.5.8"
   - PACKAGES="django==1.6.5"
+  - PACKAGES="django==1.7.1"
 install:
   - pip install -q $PACKAGES
   - pip install -q -e .
@@ -27,7 +27,3 @@ notifications:
       - travis@edoburu.nl
     on_success: never
     on_failure: always
-matrix:
-  exclude:
-    - python: "3.3"
-      env: PACKAGES="django==1.4.13 django-mptt==0.5.5"
