@@ -4,6 +4,7 @@ from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.utils import AppTestCase, script_name, override_settings
 from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
 from fluent_pages.views.dispatcher import _try_languages, _get_fallback_language
+import django
 
 
 class UrlDispatcherTests(AppTestCase):
@@ -13,11 +14,11 @@ class UrlDispatcherTests(AppTestCase):
 
     @classmethod
     def setUpTree(cls):
-        SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
-        SimpleTextPage.objects.create(title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
-        SimpleTextPage.objects.create(title="Text1", slug="unpublished", status=SimpleTextPage.DRAFT, author=cls.user)
-        WebShopPage.objects.create(title="Shop1", slug="shop", status=SimpleTextPage.PUBLISHED, author=cls.user)
-        PlainTextFile.objects.create(slug='README', status=PlainTextFile.PUBLISHED, author=cls.user, content="This is the README")
+        SimpleTextPage.objects.create(id=1, title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
+        SimpleTextPage.objects.create(id=2, title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
+        SimpleTextPage.objects.create(id=3, title="Text1", slug="unpublished", status=SimpleTextPage.DRAFT, author=cls.user)
+        WebShopPage.objects.create(id=4, title="Shop1", slug="shop", status=SimpleTextPage.PUBLISHED, author=cls.user)
+        PlainTextFile.objects.create(id=5, slug='README', status=PlainTextFile.PUBLISHED, author=cls.user, content="This is the README")
 
 
     def test_get_for_path(self):
@@ -164,9 +165,16 @@ class UrlDispatcherTests(AppTestCase):
         """
         Urls can end with @admin to be redirected to the admin.
         """
-        self.assertRedirects(self.client.get('/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302)
-        self.assertRedirects(self.client.get('/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/2/', status_code=302)
-        self.assertRedirects(self.client.get('/shop/@admin'), 'http://testserver/admin/fluent_pages/page/4/', status_code=302)
+        if django.VERSION >= (1,7):
+            # Redirects again to fixed login URL.
+            target_status_code = 302
+        else:
+            # Admin login appears at the page itself
+            target_status_code = 200
+
+        self.assertRedirects(self.client.get('/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302, target_status_code=target_status_code)
+        self.assertRedirects(self.client.get('/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/2/', status_code=302, target_status_code=target_status_code)
+        self.assertRedirects(self.client.get('/shop/@admin'), 'http://testserver/admin/fluent_pages/page/4/', status_code=302, target_status_code=target_status_code)
 
         # Anything that doesn't match, is redirected to the URL without @admin suffix
         self.assertRedirects(self.client.get('/unpublished/@admin'), 'http://testserver/unpublished/', status_code=302, target_status_code=404)
@@ -205,7 +213,7 @@ class UrlDispatcherNonRootTests(AppTestCase):
 
     @classmethod
     def setUpTree(cls):
-        SimpleTextPage.objects.create(title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
+        SimpleTextPage.objects.create(id=1, title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
 
 
     def test_urlconf_root(self):
@@ -226,5 +234,12 @@ class UrlDispatcherNonRootTests(AppTestCase):
         """
         Urls can end with @admin to be redirected to the admin.
         """
-        self.assertRedirects(self.client.get('/pages/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302)
+        if django.VERSION >= (1,7):
+            # Redirects again to fixed login URL.
+            target_status_code = 302
+        else:
+            # Admin login appears at the page itself
+            target_status_code = 200
+
+        self.assertRedirects(self.client.get('/pages/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302, target_status_code=target_status_code)
         self.assertRedirects(self.client.get('/pages/non-existent/@admin'), 'http://testserver/pages/non-existent/', status_code=302, target_status_code=404)
