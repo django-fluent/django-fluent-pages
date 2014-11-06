@@ -23,7 +23,7 @@ class Migration(SchemaMigration):
             ('in_navigation', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('sort_order', self.gf('django.db.models.fields.IntegerField')(default=1)),
             ('override_url', self.gf('django.db.models.fields.CharField')(max_length=300, blank=True)),
-            ('author', self.gf('django.db.models.fields.related.ForeignKey')(to=orm[user_model_label])),
+            ('author', self.gf('django.db.models.fields.related.ForeignKey')(to=orm[AUTH_USER_MODEL])),
             ('creation_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('modification_date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('_cached_url', self.gf('django.db.models.fields.CharField')(default='', max_length=300, db_index=True, blank=True)),
@@ -100,7 +100,7 @@ class Migration(SchemaMigration):
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft', 'sort_order', 'title')", 'object_name': 'UrlNode'},
             '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm[user_model_label]"}),
+            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm[AUTH_USER_MODEL]"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'expire_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),

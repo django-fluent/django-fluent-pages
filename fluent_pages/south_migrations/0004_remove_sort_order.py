@@ -64,7 +64,7 @@ class Migration(SchemaMigration):
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft', 'title')", 'object_name': 'UrlNode'},
             '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm[user_model_label]"}),
+            'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm[AUTH_USER_MODEL]"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'in_navigation': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
