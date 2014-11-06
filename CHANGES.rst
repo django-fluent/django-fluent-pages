@@ -4,6 +4,12 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+Released in 0.9b4:
+~~~~~~~~~~~~~~~~~~
+
+* Fix South migrations for flexible ``AUTH_USER_MODEL``
+
+
 Released in 0.9b3:
 ~~~~~~~~~~~~~~~~~~
 
