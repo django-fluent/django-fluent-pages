@@ -41,15 +41,22 @@ class BreadcrumbNode(BaseInclusionNode):
 
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
         request = _get_request(parent_context)
-        page  = _get_current_page(parent_context)  # UrlNode
-        items = page.breadcrumb # list(UrlNode)
+        try:
+            page  = _get_current_page(parent_context)  # UrlNode
+        except UrlNode.DoesNotExist:
+            items = []
+            page = None
+            site = None
+        else:
+            items = page.breadcrumb # list(UrlNode)
+            site = SimpleLazyObject(lambda: page.parent_site),  # Only read if really used, then cache.
 
         return {
             'parent': parent_context,
             'request': request,
             'breadcrumb': items,
             'page': page,
-            'site': SimpleLazyObject(lambda: page.parent_site),  # Only read if really used, then cache.
+            'site': site,
         }
 
 

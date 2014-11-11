@@ -4,6 +4,9 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+* Avoid ``UrlNode.DoesNotExist`` exception when using ``{% render_breadcrumb %}`` on 404 pages.
+
+
 Released in 0.9b4:
 ~~~~~~~~~~~~~~~~~~
 
