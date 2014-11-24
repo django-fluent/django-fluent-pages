@@ -45,9 +45,10 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
 
         # Update the table name.
         # Inspired by from Django-CMS, (c) , BSD licensed.
-        if name not in ['UrlNode', 'Page']:
+        if name not in ['UrlNode', 'Page', 'HtmlPage']:
             meta = new_class._meta
-            if meta.db_table.startswith(meta.app_label + '_'):
+            # Make sure only values are updated if there is no manual edit, or a proxy model for UrlNode (e.g. HtmlPage)
+            if meta.db_table.startswith(meta.app_label + '_') and meta.db_table != 'fluent_pages_urlnode':
                 model_name = meta.db_table[len(meta.app_label)+1:]
                 meta.db_table = "pagetype_{0}_{1}".format(meta.app_label, model_name)
 
