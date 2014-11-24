@@ -44,6 +44,9 @@ class BreadcrumbNode(BaseInclusionNode):
         try:
             page  = _get_current_page(parent_context)  # UrlNode
         except UrlNode.DoesNotExist:
+            # Typically happens when {% render_breadcrumb %} is used on 404 pages,
+            # there is no breadcrumb possible there.
+            # NOTE: if desired, we could add an option to use UrlNode.objects.best_match_for_path() here.
             items = []
             page = None
             site = None
