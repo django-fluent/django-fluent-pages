@@ -1,6 +1,7 @@
 """
 URL Resolving for dynamically added pages.
 """
+from django.utils.functional import lazy
 from future.builtins import str
 from django.conf import settings
 from django.core.cache import cache
@@ -12,7 +13,13 @@ from django.utils.translation import get_language
 # By reducing the import statements here, other apps (e.g. django-fluent-blogs) can already import this module safely.
 
 __all__ = (
-    'MultipleReverseMatch', 'PageTypeNotMounted', 'mixed_reverse', 'app_reverse', 'clear_app_reverse_cache',
+    'MultipleReverseMatch',
+    'PageTypeNotMounted',
+    'mixed_reverse',
+    'mixed_reverse_lazy',
+    'app_reverse',
+    'app_reverse_lazy',
+    'clear_app_reverse_cache',
 )
 
 class MultipleReverseMatch(NoReverseMatch):
@@ -73,6 +80,10 @@ def app_reverse(viewname, args=None, kwargs=None, multiple=False, ignore_multipl
     else:
         # single result, or ignoring multiple results.
         return pages[0].get_absolute_url() + url_end
+
+
+mixed_reverse_lazy = lazy(mixed_reverse, str)
+app_reverse_lazy = lazy(app_reverse, str)
 
 
 def _find_plugin_reverse(viewname, args, kwargs):
