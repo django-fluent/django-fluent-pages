@@ -4,6 +4,7 @@ Everything can be imported from ``__init__.py``.
 """
 from __future__ import absolute_import
 from django.utils.translation import ugettext_lazy as _
+from fluent_contents.models import Placeholder
 from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
 from fluent_pages.models import HtmlPage
 
@@ -26,6 +27,17 @@ class FluentContentsPage(HtmlPage):
         abstract = True
         verbose_name = _("Page")
         verbose_name_plural = _("Pages")
+
+    def create_placeholder(self, slot):
+        """
+        Create a placeholder on this page.
+
+        To fill the content items, use
+        :func:`ContentItemModel.objects.create_for_placeholder() <fluent_contents.models.managers.ContentItemManager.create_for_placeholder>`.
+
+        :rtype: :class:`~fluent_contents.models.Placeholder`
+        """
+        return Placeholder.objects.create_for_object(self, slot)
 
     def get_placeholder_by_slot(self, slot):
         """
