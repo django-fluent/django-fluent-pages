@@ -28,7 +28,7 @@ class FluentContentsPage(HtmlPage):
         verbose_name = _("Page")
         verbose_name_plural = _("Pages")
 
-    def create_placeholder(self, slot):
+    def create_placeholder(self, slot, role='m', title=None):
         """
         Create a placeholder on this page.
 
@@ -37,7 +37,7 @@ class FluentContentsPage(HtmlPage):
 
         :rtype: :class:`~fluent_contents.models.Placeholder`
         """
-        return Placeholder.objects.create_for_object(self, slot)
+        return Placeholder.objects.create_for_object(self, slot, role=role, title=title)
 
     def get_placeholder_by_slot(self, slot):
         """
