@@ -11,19 +11,35 @@ class Command(NoArgsCommand):
     """
     help = "Update the cached_url for the translated URL node tree"
     option_list = (
-        make_option('-p', '--dry-run', action='store_true', dest='dry-run', default=False,
-            help="Only list what will change, don't make the actual changes"),
+        make_option(
+            '-p', '--dry-run', action='store_true', dest='dry-run', default=False,
+            help="Only list what will change, don't make the actual changes."
+        ),
+        make_option(
+            '-m', '--mptt-only', action='store_true', dest='mptt-only', default=False,
+            help="Only fix the MPTT fields, leave URLs unchanged."
+        ),
     ) + NoArgsCommand.option_list
 
     def handle_noargs(self, **options):
         is_dry_run = options.get('dry-run', False)
+        mptt_only = options.get('mptt-only', False)
         slugs = {}
         overrides = {}
         parents = dict(UrlNode.objects.values_list('id', 'parent_id'))
 
+        self.stdout.write("Updated MPTT columns")
+        if is_dry_run and mptt_only:
+            # Can't really do anything
+            return
+
         if not is_dry_run:
-            self.stdout.write("Updated MPTT columns")
+            # Fix MPTT first, that is the basis for walking through all nodes.
             UrlNode.objects.rebuild()
+            self.stdout.write("Updated MPTT columns")
+            if mptt_only:
+                return
+
             self.stdout.write("Updating cached URLs")
             self.stdout.write("Page tree nodes:\n\n")
 
@@ -39,7 +55,15 @@ class Command(NoArgsCommand):
             overrides.setdefault(translation.language_code, {})[translation.master_id] = translation.override_url
 
             old_url = translation._cached_url
-            new_url = self._construct_url(translation.language_code, translation.master_id, parents, slugs, overrides)
+            try:
+                new_url = self._construct_url(translation.language_code, translation.master_id, parents, slugs, overrides)
+            except KeyError:
+                if is_dry_run:
+                    # When the mptt tree is broken, some URLs can't be correctly generated yet.
+                    self.stderr.write("Failed to determine new URL for {0}, please run with --mptt-only first.".format(old_url))
+                    return
+                raise
+
             if old_url != new_url:
                 translation._cached_url = new_url
                 if not is_dry_run:

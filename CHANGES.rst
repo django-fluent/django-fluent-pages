@@ -7,6 +7,7 @@ Changes in version 0.9 (dev)
 * Avoid ``UrlNode.DoesNotExist`` exception when using ``{% render_breadcrumb %}`` on 404 pages.
 * Change ``slug`` size to 100 characters.
 * Added ``FluentContentsPage.create_placeholder(slot)`` API.
+* Added ``--mptt-only`` option to ``manage.py rebuild_page_tree`` command.
 
 
 Released in 0.9b4:
