@@ -86,6 +86,10 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
     #: Defines whether users are allowed to place sub pages below this node. When :attr:`is_file` is ``True``, this is never possible.
     can_have_children = True
 
+    #: Defines which pages can be children of this node.
+    #: List of values similar to those values accepted in a model ForeignKey.
+    child_types = []
+
     #: .. versionadded:: 0.9
     #: Tell whether the page type should be displayed in the sitemaps by default.
     #: This value can be changed for most pages in the admin interface.

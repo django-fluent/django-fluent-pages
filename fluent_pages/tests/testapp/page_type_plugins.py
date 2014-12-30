@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from fluent_pages.extensions import page_type_pool, PageTypePlugin
-from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
+from fluent_pages.tests.testapp.models import (
+    SimpleTextPage, PlainTextFile, WebShopPage, ChildTypesPage)
 
 
 @page_type_pool.register
@@ -10,6 +11,18 @@ class SimpleTextPagePlugin(PageTypePlugin):
     """
     model = SimpleTextPage
     render_template = "testapp/simpletextpage.html"
+
+
+@page_type_pool.register
+class ChildTypesPagePlugin(PageTypePlugin):
+    """
+    Place a simple page in the page tree.
+    """
+    model = ChildTypesPage
+    render_template = "testapp/simpletextpage.html"
+
+    child_types = ['self', 'SimpleTextPage', 'testapp.PlainTextFile',
+                   WebShopPage]
 
 
 @page_type_pool.register
