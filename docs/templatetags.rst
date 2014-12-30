@@ -88,7 +88,7 @@ Fetching 'site' and 'page' variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The templates receive a ``site`` and ``page`` variable by default.
-In case the template is rendered outsite the regular loop, these fields can be fetched:
+In case the template is rendered outside the regular loop, these fields can be fetched:
 
 .. code-block:: html+django
 
