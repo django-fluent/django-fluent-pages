@@ -219,22 +219,27 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
             return self.get_query_set()
 
 
-    def get_for_path(self, path):
+    def get_for_path(self, path, language_code=None):
         """
         Return the UrlNode for the given path.
+        The path is expected to start with an initial slash.
 
         Raises UrlNode.DoesNotExist when the item is not found.
+
+        .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        return self._get_queryset().get_for_path(path)
+        return self._get_queryset().get_for_path(path, language_code=language_code)
 
 
-    def best_match_for_path(self, path):
+    def best_match_for_path(self, path, language_code=None):
         """
         Return the UrlNode that is the closest parent to the given path.
 
         UrlNode.objects.best_match_for_path('/photos/album/2008/09') might return the page with url '/photos/album/'.
+
+        .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        return self._get_queryset().best_match_for_path(path)
+        return self._get_queryset().best_match_for_path(path, language_code=language_code)
 
 
     def get_for_key(self, key):
