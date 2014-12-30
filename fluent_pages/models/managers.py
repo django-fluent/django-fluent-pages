@@ -208,15 +208,9 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
     """
     queryset_class = UrlNodeQuerySet
 
-    if django.VERSION >= (1,6) and hasattr(TranslatableManager, 'get_queryset'):
-        # Django 1.6 and up
-        # Should not be used for Django 1.4/1.5 all all, as that breaks the RelatedManager
-        def _get_queryset(self):
-            return self.get_queryset()
-    else:
-        # Django 1.5
-        def _get_queryset(self):
-            return self.get_query_set()
+    # NOTE: Fetching the queryset is done by calling self.all() here on purpose.
+    # By using .all(), the proper get_query_set()/get_queryset() will be used for each Django version.
+    # Django 1.4/1.5 need to use get_query_set(), because the RelatedManager overrides that.
 
 
     def get_for_path(self, path, language_code=None):
@@ -228,7 +222,7 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        return self._get_queryset().get_for_path(path, language_code=language_code)
+        return self.all().get_for_path(path, language_code=language_code)
 
 
     def best_match_for_path(self, path, language_code=None):
@@ -239,7 +233,7 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        return self._get_queryset().best_match_for_path(path, language_code=language_code)
+        return self.all().best_match_for_path(path, language_code=language_code)
 
 
     def get_for_key(self, key):
@@ -248,14 +242,14 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         The key can be a slug-like value that was configured in ``FLUENT_PAGES_KEY_CHOICES``.
         """
-        return self._get_queryset().get_for_key(key)
+        return self.all().get_for_key(key)
 
 
     def parent_site(self, site):
         """
         .. versionadded:: 0.9 Filter to the given site.
         """
-        return self._get_queryset().parent_site(site)
+        return self.all().parent_site(site)
 
 
     def published(self):
@@ -264,14 +258,14 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        return self._get_queryset().published()
+        return self.all().published()
 
 
     def in_navigation(self):
         """
         Return only pages in the navigation.
         """
-        return self._get_queryset().in_navigation()
+        return self.all().in_navigation()
 
 
     def in_sitemaps(self):
@@ -279,14 +273,14 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         .. versionadded:: 0.9
         Return only pages in the navigation.
         """
-        return self._get_queryset().in_sitemaps()
+        return self.all().in_sitemaps()
 
 
     def toplevel(self):
         """
         Return all pages which have no parent.
         """
-        return self._get_queryset().toplevel()
+        return self.all().toplevel()
 
 
     def toplevel_navigation(self, current_page=None):
@@ -313,4 +307,4 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         Return only page types which have a custom URLpattern attached.
         """
-        return self._get_queryset().url_pattern_types()
+        return self.all().url_pattern_types()
