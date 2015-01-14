@@ -239,3 +239,16 @@ class ModelDataTests(AppTestCase):
         """
         from fluent_pages.models import UrlNode_Translation
         self.assertRaises(RuntimeError, lambda: UrlNode_Translation.objects.create())
+
+    def test_seo_translations(self):
+        """
+        Seo translations are direct injected onto a concrete model from the
+        HtmlPage proxy model. The field must be visible to the django admin or
+        else there will be an integrity error on deletion.
+        """
+        level2 = SimpleTextPage.objects.get(translations__slug='level2')
+        try:
+            # `get_field_by_name` is deprecated >= django 2.0
+            level2._meta.get_field_by_name('seo_translations')
+        except AttributeError:
+            level2._meta.get_field('seo_translations')

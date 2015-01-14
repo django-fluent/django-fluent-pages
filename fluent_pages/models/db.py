@@ -613,7 +613,22 @@ class Page(UrlNode):
     objects = UrlNodeManager()
 
 
-class HtmlPage(Page):
+class InjectSEOTranslationsMetaclass(URLNodeMetaClass):
+    def __new__(cls, name, bases, attrs):
+        # Only assign new attrs if not a proxy model.
+        if not ("Meta" in attrs and getattr(attrs["Meta"], "proxy", False)):
+            field = TranslatedFields(
+                meta={'db_table':'fluent_pages_htmlpage_translation'},
+                meta_keywords=models.CharField(_('keywords'), max_length=255, blank=True, null=True),
+                meta_description=models.CharField(_('description'), max_length=255, blank=True, null=True),
+                meta_title=models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used.")),
+            )
+            attrs["seo_translations"] = field
+        args = (cls, name, bases, attrs)
+        return super(InjectSEOTranslationsMetaclass, cls).__new__(*args)
+
+
+class HtmlPage(with_metaclass(InjectSEOTranslationsMetaclass, Page)):
     """
     The base fields for a HTML page of the web site.
 
@@ -625,13 +640,6 @@ class HtmlPage(Page):
     meta_keywords = TranslatedField()
     meta_description = TranslatedField()
     meta_title = TranslatedField()
-
-    # SEO fields, the underlying HtmlPageTranslation model can be created dynamically.
-    seo_translations = TranslatedFields(
-        meta_keywords = models.CharField(_('keywords'), max_length=255, blank=True, null=True),
-        meta_description = models.CharField(_('description'), max_length=255, blank=True, null=True),
-        meta_title = models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used.")),
-    )
 
     class Meta:
         app_label = 'fluent_pages'
