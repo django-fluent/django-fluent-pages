@@ -8,6 +8,7 @@ Changes in version 0.9 (dev)
 * Change ``slug`` size to 100 characters.
 * Added ``FluentContentsPage.create_placeholder(slot)`` API.
 * Added ``--mptt-only`` option to ``manage.py rebuild_page_tree`` command.
+* Fix deleting pages with ``HtmlPageTranslation``.
 
 
 Released in 0.9b4:

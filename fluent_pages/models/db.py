@@ -650,6 +650,17 @@ class HtmlPage(Page):
         else:
             return None
 
+    def delete(self, *args, **kwargs):
+        # Fix deleting pages, Django's collector doesn't detect the HtmlPageTranslation model
+        # because the FK points to a proxy. This is a workaround for:
+        # https://code.djangoproject.com/ticket/16128
+        # https://code.djangoproject.com/ticket/18491
+        # By using .all() we avoid the get_query_set/get_queryset() difference.
+        self.seo_translations.all().delete()  # Accesses RelatedManager
+
+        # Continue regular delete.
+        super(HtmlPage, self).delete(*args, **kwargs)
+
 
 
 
