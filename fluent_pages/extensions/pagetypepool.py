@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from fluent_pages.models import UrlNode
 from fluent_utils.load import import_apps_submodule
 from .pagetypebase import PageTypePlugin
-from six import itervalues
+from six import itervalues, iteritems
 
 
 __all__ = (
@@ -132,6 +132,13 @@ class PageTypePool(object):
             raise PageTypeNotFound("No plugin found for content type #{0} ({1}).".format(contenttype, ct_name))
 
         return self.plugins[name]
+
+
+    def _setup_lazy_indexes(self):
+        if self._name_for_ctype_id is None:
+            self._name_for_ctype_id = {}
+            for name, plugin_instance in iteritems(self.plugins):
+                self._name_for_ctype_id[plugin_instance.type_id] = name
 
 
     def get_file_types(self):
