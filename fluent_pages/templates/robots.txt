@@ -1,0 +1,5 @@
+Sitemap: {{ ROOT_URL }}sitemap.xml
+{% if ROBOTS_TXT_DISALLOW_ALL %}
+User-agent: *
+Disallow: /
+{% endif %}
