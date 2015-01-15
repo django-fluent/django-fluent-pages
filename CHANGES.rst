@@ -4,11 +4,16 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
-* Avoid ``UrlNode.DoesNotExist`` exception when using ``{% render_breadcrumb %}`` on 404 pages.
+Released in 0.9c1:
+~~~~~~~~~~~~~~~~~~
+
+* Fix deleting pages which have SEO fields filled in (the ``HtmlPageTranslation`` model).
+* Fix ``UrlNode.DoesNotExist`` exception when using ``{% render_breadcrumb %}`` on 404 pages.
 * Change ``slug`` size to 100 characters.
+* Added ``RobotsTxtView`` for easier sitemaps integration
 * Added ``FluentContentsPage.create_placeholder(slot)`` API.
 * Added ``--mptt-only`` option to ``manage.py rebuild_page_tree`` command.
-* Fix deleting pages which have a ``HtmlPageTranslation`` filled in.
+* Added lazy-resolver functions: ``app_reverse_lazy()`` / ``mixed_reverse_lazy()``.
 
 
 Released in 0.9b4:
