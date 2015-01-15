@@ -99,7 +99,9 @@ This allowed editing the opening view, and "thank you view" as 2 separate area's
 
 
     class DonationViewBase(CurrentPageTemplateMixin):
-        #template_name = 'pages/donation.html'   # Auto selected by the plugin from the admin
+        # There is no need to redeclare the template here,
+        # it's auto selected from the plugin/admin by CurrentPageTemplateMixin.
+        #template_name = 'pages/donation.html'
         render_tab = ''
 
         def get_context_data(self, **kwargs):
