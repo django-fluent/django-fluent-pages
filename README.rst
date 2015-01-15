@@ -5,15 +5,32 @@
 django-fluent-pages
 ===================
 
-This is a stand-alone module, which provides:
+This is a stand-alone module, which provides a flexible,
+scalable CMS with custom node types, and flexible block content.
 
-  " A polymorphic page structure to display CMS content in a tree. "
+Features:
 
-In other words, this module provides a page tree, where each node type can be a different model.
-This allows you to structure your site tree as you see fit. For example:
+* A fully customizable page hierarchy.
+* Support for multilingual websites.
+* Support for multiple websites in a single database.
+* Fast SEO-friendly page URLs.
+* SEO optimized (meta keywords, description, title, 301-redirects, sitemaps integration).
+* Plugin support for custom page types, which:
+
+ * Integrate application logic in page trees.
+ * Integrate advanced block editing (via as django-fluent-contents_).
+
+For more details, see the documentation_ at Read The Docs.
+
+Page tree customization
+-----------------------
+
+This module provides a page tree, where each node type can be a different model.
+This allows developers like yourself to structure your site tree as you see fit. For example:
 
 * Build a tree structure of RST pages, by defining a ``RstPage`` type.
 * Build a tree with widget-based pages, by integrating django-fluent-contents_.
+* Build a "product page", which exposes all products as sub nodes.
 * Build a tree of a *homepage*, *subsection*, and *article* node, each with custom fields like professional CMSes have.
 
 Each node type can have it's own custom fields, attributes and rendering.
@@ -21,8 +38,6 @@ Each node type can have it's own custom fields, attributes and rendering.
 In case you're building a custom CMS, this module might just be suited for you,
 since it provides the tree for you, without bothering with anything else.
 The actual page contents is defined via page type plugins.
-
-For more details, see the documentation_ at Read The Docs.
 
 
 Installation
@@ -221,10 +236,13 @@ Pull requests are welcome too. :-)
 
 
 .. _documentation: http://django-fluent-pages.readthedocs.org/
+.. _django.contrib.sites: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
+.. _django.contrib.sitemaps: https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/
 
 .. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
 .. _django-mptt: https://github.com/django-mptt/django-mptt
+.. _django-parler: https://github.com/edoburu/django-parler
 .. _django-polymorphic: https://github.com/chrisglass/django_polymorphic
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 

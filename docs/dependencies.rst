@@ -64,12 +64,20 @@ This is a quick overview of all used Django packages:
             label = "django-fluent-contents"
         ]
 
+        fluent_utils [
+            label = "django-fluent-utils (internal)"
+        ]
+
         django_polymorphic [
             label = "django-polymorphic"
         ]
 
         django_mptt [
             label = "django-mptt"
+        ]
+
+        django_parler [
+            label = "django-parler"
         ]
 
         django_polymorphic_tree [
@@ -79,8 +87,11 @@ This is a quick overview of all used Django packages:
         fluentpage -> fluent_contents
         flatpage -> django_wysiwyg
         redirectnode -> any_urlfield [style=dashed]
+        fluent_utils -> any_urlfield [style=dashed]
 
         fluent_pages -> django_polymorphic_tree [lhead=clusterFluentPages]
+        fluent_pages -> django_parler
+        fluent_pages -> fluent_utils
         django_polymorphic_tree -> django_polymorphic
         django_polymorphic_tree -> django_mptt
     }
@@ -97,6 +108,10 @@ The used packages are:
 
         The widget engine for flexible block positions.
 
+    django-fluent-utils_:
+
+        Internal utilities for code sharing between django-fluent modules.
+
     django-mptt_:
 
         The structure to store tree data in the database.
@@ -104,6 +119,10 @@ The used packages are:
         Note that *django-fluent-pages* doesn't
         use a 100% pure MPTT tree, as it also stores a ``parent_id`` and ``_cached_url`` field in the database.
         These fields are added for performance reasons, to quickly resolve parents, children and pages by URL.
+
+    django-parler_:
+
+        Translation support for all models.
 
     django-polymorphic_:
 
@@ -120,7 +139,9 @@ The used packages are:
 
 .. _django-any-urlfield: https://github.com/edoburu/django-any-urlfield
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
+.. _django-fluent-utils: https://github.com/edoburu/django-fluent-utils
 .. _django-mptt: https://github.com/django-mptt/django-mptt
+.. _django-parler: https://github.com/edoburu/django-parler
 .. _django-polymorphic: https://github.com/chrisglass/django_polymorphic
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 .. _django-wysiwyg: https://github.com/pydanny/django-wysiwyg

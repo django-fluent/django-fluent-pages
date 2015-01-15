@@ -615,9 +615,8 @@ class Page(UrlNode):
 
 class HtmlPage(Page):
     """
-    The base fields for a HTML page of the web site.
-
-    This is a proxy model, which adds translatable SEO fields.
+    The ``HtmlPage`` is the base for all page types that display HTML.
+    This is a proxy model, which adds translatable SEO fields and a customizable title.
 
     .. versionchanged 0.9: This model used to be abstract, now it's a proxy model because all fields are translated.
     """

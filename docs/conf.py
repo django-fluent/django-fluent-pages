@@ -20,12 +20,6 @@ sys.path.insert(0, os.path.abspath('_ext'))
 sys.path.insert(0, os.path.abspath('..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'djangodummy.settings'
 
-# Generate docstrings for Django model fields
-# Register the docstring processor with sphinx
-from apidocs.docstrings import improve_model_docstring
-def setup(app):
-    app.connect('autodoc-process-docstring', improve_model_docstring)
-
 
 # -- General configuration -----------------------------------------------------
 
@@ -37,7 +31,9 @@ def setup(app):
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.graphviz',
-    'sphinx.ext.intersphinx'
+    'sphinx.ext.intersphinx',
+    'djangoext.docstrings',
+    'djangoext.roles',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -259,6 +255,7 @@ texinfo_documents = [
 intersphinx_mapping = {
     'http://docs.python.org/': None,
     'https://docs.djangoproject.com/en/dev': 'https://docs.djangoproject.com/en/dev/_objects',
-    'fluentcontents': ('http://django-fluent-contents.readthedocs.org/en/latest/', None),
     'anyurlfield': ('http://django-any-urlfield.readthedocs.org/en/latest/', None),
+    'fluentcontents': ('http://django-fluent-contents.readthedocs.org/en/latest/', None),
+    'parler': ('http://django-parler.readthedocs.org/en/latest/', None),
 }

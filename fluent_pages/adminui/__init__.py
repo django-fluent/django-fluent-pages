@@ -1,8 +1,10 @@
 """
 A set of base classes, to build custom admin pages, for your page types.
 
-These classes are separate from the :mod:fluent_pages.admin` module,
-so importing admin classes does not invoke the app registry yet.
+These classes are separate from the :mod:`fluent_pages.admin` module on purpose.
+Custom page type plugins can inherit these classes to provide their enhanced admin interface.
+If this module could be called :mod:`fluent_pages.admin`, it would invoke the app registry
+and prevent any further model initialization.
 """
 
 # Import trick: make the DefaultPage*Admin available first,

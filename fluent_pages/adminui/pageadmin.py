@@ -28,6 +28,8 @@ class DefaultPageParentAdmin(UrlNodeParentAdmin):
 
     Since this admin displays polymorphic objects, the edit/delete pages
     are actually handled by the :class:`PageAdmin` class.
+
+    The admin class can be extended with mixins by defining :ref:`FLUENT_PAGES_PARENT_ADMIN_MIXIN`.
     """
     pass
 
@@ -52,6 +54,8 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
     any additional fields from a derived model will be displayed in a separate fieldset automatically.
     The title of the fieldset is configurable with the :attr:`extra_fieldset_title` attribute.
     It's "Contents" by default.
+
+    The admin class can be extended with mixins by defining :ref:`FLUENT_PAGES_CHILD_ADMIN_MIXIN`.
     """
     base_model = Page
     base_form = PageAdminForm

@@ -1,7 +1,7 @@
 .. _flatpage:
 
 The flatpage page type
-========================
+======================
 
 The *flatpage* provides a simple page type with a WYSIWYG ("What You See is What You Get") editor.
 
@@ -38,7 +38,7 @@ Add the following settings to ``settings.py``:
 
 
 Using CKEditor
-~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 To use CKEditor_, install django-ckeditor_::
 
@@ -100,9 +100,9 @@ In case your website base template uses different names for those blocks, create
 
 .. code-block:: html+django
 
-    {% extends "mysite/pages/standard.html" %}
+    {% extends "pages/base.html" %}
 
-    {% block headtitle %}{% block title %}{% endblock %}{% endblock %}
+    {% block head-title %}{% block title %}{% endblock %}{% endblock %}
 
     {% block main %}{% block content %}{% endblock %}{% endblock %}
 

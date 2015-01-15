@@ -36,6 +36,7 @@ Getting started
    configuration
    templatetags
    sitemaps
+   multilingual
 
 
 Using the page type plugins

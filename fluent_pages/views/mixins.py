@@ -13,7 +13,7 @@ class CurrentPageMixin(ViewUrlMixin):
     in :attr:`PageTypePlugin.urls <fluent_pages.extensions.PageTypePlugin.urls>`.
 
     The template context will have the same variables as the page template itself would have;
-    which are ``page``, ``site`` and ``FLUENT_PAGES_BASE_TEMPLATE`` by default.
+    which are ``page``, ``site`` and :ref:`FLUENT_PAGES_BASE_TEMPLATE` by default.
     """
 
     def get_current_page(self):

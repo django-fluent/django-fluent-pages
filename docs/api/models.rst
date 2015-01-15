@@ -29,3 +29,8 @@ The ``PageLayout`` class
 .. autoclass:: fluent_pages.models.PageLayout
    :members:
 
+The ``UrlNodeManager`` class
+------------------------------------
+
+.. autoclass:: fluent_pages.models.UrlNodeManager
+   :members:

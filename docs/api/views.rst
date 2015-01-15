@@ -17,3 +17,8 @@ The ``CurrentPageTemplateMixin`` class
 .. autoclass:: fluent_pages.views.CurrentPageTemplateMixin
    :members:
 
+The ``RobotsTxtView`` class
+---------------------------
+
+.. autoclass:: fluent_pages.views.RobotsTxtView
+   :members:

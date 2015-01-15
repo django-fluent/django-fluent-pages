@@ -19,6 +19,23 @@ To integrate it with this module, configure it using:
 
 See the documentation of django-fluent-blogs_ for details.
 
+FAQ page
+--------
+
+The django-fluent-faq_ module provides a "FAQ page" type,
+which displays a list of FAQ questions and categories.
+
+To integrate it with this module, configure it using:
+
+.. code-block:: python
+
+    INSTALLED_APPS += (
+        'fluent_faq',
+        'fluent_faq.pagetypes.faqpage',
+    )
+
+See the documentation of django-fluent-faq_ for details.
+
 
 Open ideas
 -----------
@@ -35,3 +52,4 @@ See the next chapter, :ref:`newpagetypes` to create such plugins.
 
 
 .. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
+.. _django-fluent-faq: https://github.com/edoburu/django-fluent-faq

@@ -1,3 +1,5 @@
+.. _pagetypes:
+
 Bundled Page Type Plugins
 =========================
 

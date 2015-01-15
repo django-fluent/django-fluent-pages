@@ -84,7 +84,7 @@ This can be used to generate the HTML:
 
 .. code-block:: html+django
 
-    {% extends "mysite/base.html" %}
+    {% extends "pages/base.html" %}
 
     {% block headtitle %}{{ page.title }}{% endblock %}
 

@@ -6,8 +6,8 @@ API documentation
 .. toctree::
    :maxdepth: 2
 
-   admin
-   admin.utils
+   adminui
+   adminui.utils
    extensions
    integration/fluent_contents
    models

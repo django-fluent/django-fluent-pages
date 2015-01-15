@@ -5,14 +5,14 @@ fluent_pages.pagetypes.fluentpage.models
 
 .. automodule:: fluent_pages.pagetypes.fluentpage.models
 
-The ``FluentPageBase`` class
-------------------------------------
+The ``AbstractFluentPage`` class
+--------------------------------
 
-.. autoclass:: fluent_pages.pagetypes.fluentpage.models.FluentPageBase
+.. autoclass:: fluent_pages.pagetypes.fluentpage.models.AbstractFluentPage
    :members:
 
 The ``FluentPage`` class
------------------------------------
+------------------------
 
 .. autoclass:: fluent_pages.pagetypes.fluentpage.models.FluentPage
    :members:

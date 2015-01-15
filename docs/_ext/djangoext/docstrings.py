@@ -3,7 +3,7 @@ Automatically mention all model fields as parameters in the model construction.
 Based on http://djangosnippets.org/snippets/2533/
 """
 from django.utils.html import strip_tags
-from django.utils.encoding import force_text
+from django.utils.encoding import force_unicode
 import inspect
 
 
@@ -11,9 +11,14 @@ def improve_model_docstring(app, what, name, obj, options, lines):
     from django.db import models  # must be inside the function, to allow settings initialization first.
 
     if inspect.isclass(obj) and issubclass(obj, models.Model):
-        for field in obj._meta._fields():
-            help_text = strip_tags(force_text(field.help_text))
-            verbose_name = force_text(field.verbose_name).capitalize()
+        try:
+            fields = obj._meta._fields()  # Really old Django
+        except AttributeError:
+            fields = obj._meta.local_fields + obj._meta.local_many_to_many
+
+        for field in fields:
+            help_text = strip_tags(force_unicode(field.help_text))
+            verbose_name = force_unicode(field.verbose_name).capitalize()
 
             # Add parameter
             if help_text:
@@ -30,3 +35,10 @@ def improve_model_docstring(app, what, name, obj, options, lines):
 
     # Return the extended docstring
     return lines
+
+# Allow this module to be used as sphinx extension:
+def setup(app):
+    # Generate docstrings for Django model fields
+    # Register the docstring processor with sphinx
+    app.connect('autodoc-process-docstring', improve_model_docstring)
+

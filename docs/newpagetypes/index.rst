@@ -15,4 +15,4 @@ Creating these is easy, as shown in the following sections:
    rendering
    admin
    urls
-
+   fluent_contents

@@ -1,7 +1,7 @@
 .. _textfile:
 
 The textfile page type
-========================
+======================
 
 The *textfile* allows adding a URL node that displays plain text.
 
@@ -11,7 +11,7 @@ The *textfile* allows adding a URL node that displays plain text.
 
 
 This page type serves as simple demo, and can also be used to add a
-custom ``robots.txt``, ``humans.txt`` or ``README`` file to the page tree.
+custom ``robots.txt``, `humans.txt <http://humanstxt.org/>`_ file or ``README`` file to the page tree.
 
 
 .. note::
