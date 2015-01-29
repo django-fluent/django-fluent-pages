@@ -10,12 +10,12 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
 
         # Changing field 'UrlNode_Translation._cached_url'
-        db.alter_column(u'fluent_pages_urlnode_translation', '_cached_url', self.gf('django.db.models.fields.CharField')(max_length=300, null=True))
+        db.alter_column(u'fluent_pages_urlnode_translation', '_cached_url', self.gf('django.db.models.fields.CharField')(max_length=255, null=True))
 
     def backwards(self, orm):
 
         # Changing field 'UrlNode_Translation._cached_url'
-        db.alter_column(u'fluent_pages_urlnode_translation', '_cached_url', self.gf('django.db.models.fields.CharField')(max_length=300))
+        db.alter_column(u'fluent_pages_urlnode_translation', '_cached_url', self.gf('django.db.models.fields.CharField')(max_length=255))
 
     models = {
         u'auth.group': {
@@ -83,11 +83,11 @@ class Migration(SchemaMigration):
         },
         'fluent_pages.urlnode_translation': {
             'Meta': {'unique_together': "(('language_code', 'master'),)", 'object_name': 'UrlNode_Translation'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '300', 'null': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '255', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },

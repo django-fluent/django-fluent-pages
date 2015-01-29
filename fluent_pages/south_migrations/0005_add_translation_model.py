@@ -16,8 +16,8 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
             ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50)),
-            ('override_url', self.gf('django.db.models.fields.CharField')(max_length=300, blank=True)),
-            ('_cached_url', self.gf('django.db.models.fields.CharField')(default='', max_length=300, db_index=True, blank=True)),
+            ('override_url', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
+            ('_cached_url', self.gf('django.db.models.fields.CharField')(default='', max_length=255, db_index=True, blank=True)),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
             ('master', self.gf('django.db.models.fields.related.ForeignKey')(related_name='translations', null=True, to=orm['fluent_pages.UrlNode'])),
         ))
@@ -73,7 +73,7 @@ class Migration(SchemaMigration):
         },
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft',)", 'object_name': 'UrlNode'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'db_index': 'True', 'blank': 'True'}),
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -81,7 +81,7 @@ class Migration(SchemaMigration):
             'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modification_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'parent': ('fluent_pages.models.fields.PageTreeForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
             'parent_site': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['sites.Site']"}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_fluent_pages.urlnode_set'", 'null': 'True', 'to': u"orm['contenttypes.ContentType']"}),
@@ -95,11 +95,11 @@ class Migration(SchemaMigration):
         },
         'fluent_pages.urlnode_translation': {
             'Meta': {'object_name': 'UrlNode_Translation'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'db_index': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },

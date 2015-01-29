@@ -18,6 +18,8 @@ class Migration(DataMigration):
 
         for fluentpage in orm['fluentpage.FluentPage'].objects.all():
             available_languages = list(UrlNode_Translation.objects.filter(master_id=fluentpage.pk).values_list('language_code', flat=True))
+            if not available_languages:
+                raise RuntimeError("No languages for page #{0}?".format(fluentpage.pk))
 
             # Find the first language that is usable.
             # Move the fields to the translation of that language.
@@ -125,11 +127,11 @@ class Migration(DataMigration):
         },
         'fluent_pages.urlnode_translation': {
             'Meta': {'unique_together': "(('language_code', 'master'),)", 'object_name': 'UrlNode_Translation'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '300', 'null': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '255', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },

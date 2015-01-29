@@ -109,17 +109,17 @@ class Migration(DataMigration):
         },
         'fluent_pages.urlnode_translation': {
             'Meta': {'unique_together': "(('language_code', 'master'),)", 'object_name': 'UrlNode_Translation'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '300', 'null': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '255', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'translations'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'redirectnode.redirectnode': {
             'Meta': {'ordering': "('tree_id', 'lft')", 'object_name': 'RedirectNode', 'db_table': "'pagetype_redirectnode_redirectnode'", '_ormbases': ['fluent_pages.Page']},
-            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '300'}),
+            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '255'}),
             'redirect_type': ('django.db.models.fields.IntegerField', [], {'default': '302'}),
             u'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         },
@@ -128,7 +128,7 @@ class Migration(DataMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             u'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'redirect_translations'", 'null': 'True', 'to': u"orm['redirectnode.RedirectNode']"}),
-            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '300'}),
+            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '255'}),
             'redirect_type': ('django.db.models.fields.IntegerField', [], {'default': '302'})
         },
         u'sites.site': {

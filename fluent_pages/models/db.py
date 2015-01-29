@@ -519,8 +519,8 @@ class UrlNode_Translation(TranslatedFieldsModel):
     # Translated fields
     title = models.CharField(_("title"), max_length=255)
     slug = models.SlugField(_("slug"), max_length=100, help_text=_("The slug is used in the URL of the page"))
-    override_url = models.CharField(_('Override URL'), editable=True, max_length=300, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
-    _cached_url = models.CharField(max_length=300, db_index=True, null=True, blank=True, editable=False)
+    override_url = models.CharField(_('Override URL'), editable=True, max_length=255, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
+    _cached_url = models.CharField(max_length=255, db_index=True, null=True, blank=True, editable=False)
 
     # Base fields
     master = models.ForeignKey(UrlNode, related_name='translations', null=True)

@@ -17,7 +17,7 @@ class Migration(SchemaMigration):
     def backwards(self, orm):
         # Adding field 'RedirectNode.new_url'
         db.add_column('pagetype_redirectnode_redirectnode', 'new_url',
-                      self.gf('django.db.models.fields.URLField')(default='', max_length=300),
+                      self.gf('django.db.models.fields.URLField')(default='', max_length=255),
                       keep_default=False)
 
         # Adding field 'RedirectNode.redirect_type'
@@ -94,7 +94,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             u'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'redirect_translations'", 'null': 'True', 'to': u"orm['redirectnode.RedirectNode']"}),
-            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '300'}),
+            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '255'}),
             'redirect_type': ('django.db.models.fields.IntegerField', [], {'default': '302'})
         },
         u'sites.site': {

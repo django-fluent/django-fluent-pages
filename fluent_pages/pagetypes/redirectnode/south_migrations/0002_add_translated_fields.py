@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table(u'redirectnode_redirectnode_translation', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
-            ('new_url', self.gf('django.db.models.fields.URLField')(max_length=300)),
+            ('new_url', self.gf('django.db.models.fields.URLField')(max_length=255)),
             ('redirect_type', self.gf('django.db.models.fields.IntegerField')(default=302)),
             (u'master', self.gf('django.db.models.fields.related.ForeignKey')(related_name='redirect_translations', null=True, to=orm['redirectnode.RedirectNode'])),
         ))
@@ -90,7 +90,7 @@ class Migration(SchemaMigration):
         },
         u'redirectnode.redirectnode': {
             'Meta': {'ordering': "('tree_id', 'lft')", 'object_name': 'RedirectNode', 'db_table': "'pagetype_redirectnode_redirectnode'", '_ormbases': ['fluent_pages.Page']},
-            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '300'}),
+            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '255'}),
             'redirect_type': ('django.db.models.fields.IntegerField', [], {'default': '302'}),
             u'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         },
@@ -99,7 +99,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             u'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'redirect_translations'", 'null': 'True', 'to': u"orm['redirectnode.RedirectNode']"}),
-            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '300'}),
+            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '255'}),
             'redirect_type': ('django.db.models.fields.IntegerField', [], {'default': '302'})
         },
         u'sites.site': {

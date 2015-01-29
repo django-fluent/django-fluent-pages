@@ -4,6 +4,9 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+* Fix initial migrations on MySQL with InnoDB/utf8 charset.
+
+
 Released in 0.9c1:
 ~~~~~~~~~~~~~~~~~~
 

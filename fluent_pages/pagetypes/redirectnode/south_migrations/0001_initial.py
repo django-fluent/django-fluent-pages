@@ -14,7 +14,7 @@ class Migration(SchemaMigration):
         # Adding model 'RedirectNode'
         db.create_table('pagetype_redirectnode_redirectnode', (
             ('urlnode_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['fluent_pages.UrlNode'], unique=True, primary_key=True)),
-            ('new_url', self.gf('django.db.models.fields.URLField')(max_length=300)),
+            ('new_url', self.gf('django.db.models.fields.URLField')(max_length=255)),
             ('redirect_type', self.gf('django.db.models.fields.IntegerField')(default=302)),
         ))
         db.send_create_signal('redirectnode', ['RedirectNode'])
@@ -65,7 +65,7 @@ class Migration(SchemaMigration):
         },
         'fluent_pages.urlnode': {
             'Meta': {'ordering': "('lft', 'title')", 'object_name': 'UrlNode'},
-            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '300', 'db_index': 'True', 'blank': 'True'}),
+            '_cached_url': ('django.db.models.fields.CharField', [], {'default': "''", 'max_length': '255', 'db_index': 'True', 'blank': 'True'}),
             'author': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -73,7 +73,7 @@ class Migration(SchemaMigration):
             'level': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'lft': ('django.db.models.fields.PositiveIntegerField', [], {'db_index': 'True'}),
             'modification_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '300', 'blank': 'True'}),
+            'override_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
             'parent': ('mptt.fields.TreeForeignKey', [], {'blank': 'True', 'related_name': "'children'", 'null': 'True', 'to': "orm['fluent_pages.UrlNode']"}),
             'parent_site': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['sites.Site']"}),
             'polymorphic_ctype': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'polymorphic_fluent_pages.urlnode_set'", 'null': 'True', 'to': "orm['contenttypes.ContentType']"}),
@@ -87,7 +87,7 @@ class Migration(SchemaMigration):
         },
         'redirectnode.redirectnode': {
             'Meta': {'ordering': "('lft', 'title')", 'object_name': 'RedirectNode', 'db_table': "'pagetype_redirectnode_redirectnode'", '_ormbases': ['fluent_pages.Page']},
-            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '300'}),
+            'new_url': ('django.db.models.fields.URLField', [], {'max_length': '255'}),
             'redirect_type': ('django.db.models.fields.IntegerField', [], {'default': '302'}),
             'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         },
