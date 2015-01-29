@@ -5,6 +5,7 @@ Changes in version 0.9 (dev)
 ----------------------------
 
 * Fix initial migrations on MySQL with InnoDB/utf8 charset.
+* Fix missing ``robots.txt`` in the PyPI package.
 
 
 Released in 0.9c1:
