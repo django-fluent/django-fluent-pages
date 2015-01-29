@@ -40,6 +40,8 @@ Note that the :file:`robots.txt` file should point to the sitemap with the full 
 
     Sitemap: http://full-website-domain/sitemap.xml
 
+For more details about the ``robots.txt`` URL, see the documentation at
+http://www.robotstxt.org/ and https://support.google.com/webmasters/answer/6062608?hl=en&rd=1
 
 .. note::
 
