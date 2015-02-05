@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-11 01:16+0200\n"
+"POT-Creation-Date: 2015-02-05 11:24+0100\n"
 "PO-Revision-Date: 2011-01-10 23:54+0100\n"
 "Last-Translator: Diederik van der Boor <vdboor@edoburu.nl>\n"
 "Language-Team: Dutch <NL@li.org>\n"
@@ -17,117 +17,159 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.1\n"
 
-#: admin/htmlpageadmin.py:23
+#: adminui/htmlpageadmin.py:23
 msgid "SEO settings"
 msgstr "Zoekmachine opties"
 
-#: admin/urlnodechildadmin.py:52
+#: adminui/urlnodechildadmin.py:81
+#, fuzzy
+msgid "This identifier is already used by an other page."
+msgstr "Deze URL wordt al gebruikt door een andere pagina."
+
+#: adminui/urlnodechildadmin.py:90
 msgid "This URL is already taken by an other page."
 msgstr "Deze URL wordt al gebruikt door een andere pagina."
 
-#: admin/urlnodechildadmin.py:63
+#: adminui/urlnodechildadmin.py:101
 msgid "This slug is already used by an other page at the same level."
 msgstr "Deze waarde wordt gebruikt door een andere pagina op hetzelfde niveau."
 
-#: admin/urlnodechildadmin.py:85
+#: adminui/urlnodechildadmin.py:124
 msgid "Menu structure"
 msgstr "Menustructuur"
 
-#: admin/urlnodechildadmin.py:90
+#: adminui/urlnodechildadmin.py:129
 msgid "Publication settings"
 msgstr "Publicatievoorkeuren"
 
-#: admin/urlnodeparentadmin.py:13
+#: adminui/urlnodeparentadmin.py:16
 msgid "Page type"
 msgstr "Paginatype"
 
-#: admin/urlnodeparentadmin.py:24
+#: adminui/urlnodeparentadmin.py:27
 msgid "page type"
 msgstr "paginatype"
 
-#: admin/urlnodeparentadmin.py:118
+#: adminui/urlnodeparentadmin.py:132
 msgid "Status"
 msgstr "Status"
 
-#: admin/urlnodeparentadmin.py:138
+#: adminui/urlnodeparentadmin.py:168
 msgid "Mark selected objects as published"
 msgstr "Publiceer geselecteerde CMS pagina's"
 
-#: models/db.py:63
+#: integration/fluent_contents/models.py:28 models/db.py:604
+#: pagetypes/fluentpage/models.py:28
+msgid "Page"
+msgstr "Pagina"
+
+#: integration/fluent_contents/models.py:29 models/db.py:605 models/db.py:638
+#: pagetypes/fluentpage/models.py:29
+msgid "Pages"
+msgstr "Pagina's"
+
+#: management/commands/prefix_pagetypes.py:25
+#, python-brace-format
+msgid "{count} item updated."
+msgid_plural "{count} items updated."
+msgstr[0] ""
+msgstr[1] ""
+
+#: models/db.py:66
 msgid "Published"
 msgstr "Gepubliceerd"
 
-#: models/db.py:64
+#: models/db.py:67
 msgid "Draft"
 msgstr "Concept"
 
-#: models/db.py:69
+#: models/db.py:72
 msgid "parent"
 msgstr "ouder"
 
-#: models/db.py:69
+#: models/db.py:72
 msgid "You can also change the parent by dragging the page in the list."
 msgstr ""
 "Je kunt ook de ouder veranderen door de pagina in de lijstweergave te "
 "verslepen."
 
-#: models/db.py:74
+#: models/db.py:77
 msgid "status"
 msgstr "status"
 
-#: models/db.py:75
+#: models/db.py:78
 msgid "publication date"
 msgstr "gepubliceerd op"
 
-#: models/db.py:75
+#: models/db.py:78
 msgid "When the page should go live, status must be \"Published\"."
 msgstr "Zet de status op 'gepubliceerd' zodra de pagina live moet staan."
 
-#: models/db.py:76
+#: models/db.py:79
 msgid "publication end date"
 msgstr "gepubliceerd tot"
 
-#: models/db.py:77
+#: models/db.py:80
 msgid "show in navigation"
 msgstr "toon in menu"
 
 #: models/db.py:81
+msgid "include in search engine sitemaps"
+msgstr ""
+
+#: models/db.py:86
+msgid "page identifier"
+msgstr ""
+
+#: models/db.py:86
+msgid "A unique identifier that is used for linking to this page."
+msgstr ""
+
+#: models/db.py:89
 msgid "author"
 msgstr "auteur"
 
-#: models/db.py:82
+#: models/db.py:90
 msgid "creation date"
 msgstr "aanmaak datum"
 
-#: models/db.py:83
+#: models/db.py:91
 msgid "last modification"
 msgstr "laatste wijziging"
 
-#: models/db.py:95
+#: models/db.py:103
 msgid "URL Node"
 msgstr "URL Pad"
 
-#: models/db.py:96
+#: models/db.py:104
 msgid "URL Nodes"
 msgstr "URL Paden"
 
-#: models/db.py:414 models/db.py:517
+#: models/db.py:109
+msgid "Can change Shared fields"
+msgstr ""
+
+#: models/db.py:110
+msgid "Can change Override URL field"
+msgstr ""
+
+#: models/db.py:520 models/db.py:674
 msgid "title"
 msgstr "Titel"
 
-#: models/db.py:415
+#: models/db.py:521
 msgid "slug"
 msgstr "Slug"
 
-#: models/db.py:415
+#: models/db.py:521
 msgid "The slug is used in the URL of the page"
 msgstr "Deze waarde wordt gebruikt in het URL adres van de pagina."
 
-#: models/db.py:416
+#: models/db.py:522
 msgid "Override URL"
 msgstr "Overschrijf URL"
 
-#: models/db.py:416
+#: models/db.py:522
 msgid ""
 "Override the target URL. Be sure to include slashes at the beginning and at "
 "the end if it is a local URL. This affects both the navigation and subpages' "
@@ -137,48 +179,49 @@ msgstr ""
 "weerszijden  een / staan. Dit veld heeft betrekking op zowel de navigatie "
 "als de URLs van subpagina's."
 
-#: models/db.py:428
+#: models/db.py:534
 msgid "URL Node translation"
 msgstr "URL Pad vertaling"
 
-#: models/db.py:429
+#: models/db.py:535
 msgid "URL Nodes translations"
 msgstr "URL Pad vertalingen"
 
-#: models/db.py:475 pagetypes/fluentpage/models.py:28
-msgid "Page"
-msgstr "Pagina"
-
-#: models/db.py:476 models/db.py:506 pagetypes/fluentpage/models.py:29
-msgid "Pages"
-msgstr "Pagina's"
-
-#: models/db.py:499
+#: models/db.py:630
 msgid "keywords"
 msgstr "zoekwoorden"
 
-#: models/db.py:500
+#: models/db.py:631
 msgid "description"
 msgstr "beschrijving"
 
-#: models/db.py:516
+#: models/db.py:632
+#, fuzzy
+msgid "page title"
+msgstr "paginatype"
+
+#: models/db.py:632
+msgid "When this field is not filled in, the menu title text will be used."
+msgstr ""
+
+#: models/db.py:673
 msgid "key"
 msgstr "code"
 
-#: models/db.py:516
+#: models/db.py:673
 msgid "A short name to identify the layout programmatically"
 msgstr "Een korte naam om de layout te identificeren in de code"
 
-#: models/db.py:539 pagetypes/flatpage/models.py:13
-#: pagetypes/fluentpage/models.py:18
+#: models/db.py:696 pagetypes/flatpage/models.py:13
+#: pagetypes/fluentpage/models.py:24
 msgid "Layout"
 msgstr "Layout"
 
-#: models/db.py:540
+#: models/db.py:697
 msgid "Layouts"
 msgstr "Layouts"
 
-#: models/fields.py:28
+#: models/fields.py:57
 msgid "The selected page cannot have sub pages."
 msgstr "De gekozen pagina kan geen subpagina's bevatten."
 
@@ -194,23 +237,32 @@ msgstr "Platte pagina"
 msgid "Flat Pages"
 msgstr "Platte pagina's"
 
-#: pagetypes/redirectnode/models.py:12
+#: pagetypes/fluentpage/models.py:31
+msgid "Can change Page layout"
+msgstr ""
+
+#: pagetypes/redirectnode/admin.py:8
+#, fuzzy
+msgid "Redirect settings"
+msgstr "Doorverwijzingen"
+
+#: pagetypes/redirectnode/models.py:13
 msgid "Normal redirect"
 msgstr "Normale doorverwijzing"
 
-#: pagetypes/redirectnode/models.py:13
+#: pagetypes/redirectnode/models.py:14
 msgid "Permanent redirect (for SEO ranking)"
 msgstr "Permanente doorverwijzing (voor SEO waardering)"
 
-#: pagetypes/redirectnode/models.py:19
+#: pagetypes/redirectnode/models.py:21
 msgid "New URL"
 msgstr "Nieuwe URL"
 
-#: pagetypes/redirectnode/models.py:20
+#: pagetypes/redirectnode/models.py:22
 msgid "Redirect type"
 msgstr "Type doorverwijzing"
 
-#: pagetypes/redirectnode/models.py:20
+#: pagetypes/redirectnode/models.py:22
 msgid ""
 "Use 'normal redirect' unless you want to transfer SEO ranking to the new "
 "page."
@@ -218,11 +270,11 @@ msgstr ""
 "Gebruik 'normale doorverwijzing' tenzij je de SEO waardering wilt overdragen "
 "op de nieuwe pagina."
 
-#: pagetypes/redirectnode/models.py:23
+#: pagetypes/redirectnode/models.py:29
 msgid "Redirect"
 msgstr "Doorverwijzing"
 
-#: pagetypes/redirectnode/models.py:24
+#: pagetypes/redirectnode/models.py:30
 msgid "Redirects"
 msgstr "Doorverwijzingen"
 
@@ -254,15 +306,15 @@ msgstr "Plat tekstbestand"
 msgid "Plain text files"
 msgstr "Plat tekstbestanden"
 
-#: templates/admin/fluent_pages/page/change_form.html:23
+#: templates/admin/fluent_pages/page/base_change_form.html:18
 msgid "History"
 msgstr ""
 
-#: templates/admin/fluent_pages/page/change_form.html:24
+#: templates/admin/fluent_pages/page/base_change_form.html:20
 msgid "View on site"
 msgstr "Bekijk op website"
 
-#: templates/admin/fluent_pages/page/change_form.html:36
+#: templates/admin/fluent_pages/page/base_change_form.html:32
 msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] "Corrigeer a.u.b. de volgende fout:"
