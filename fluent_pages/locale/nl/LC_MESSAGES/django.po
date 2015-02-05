@@ -22,9 +22,8 @@ msgid "SEO settings"
 msgstr "Zoekmachine opties"
 
 #: adminui/urlnodechildadmin.py:81
-#, fuzzy
 msgid "This identifier is already used by an other page."
-msgstr "Deze URL wordt al gebruikt door een andere pagina."
+msgstr "Deze identificatie wordt al gebruikt door een andere pagina."
 
 #: adminui/urlnodechildadmin.py:90
 msgid "This URL is already taken by an other page."
@@ -115,15 +114,15 @@ msgstr "toon in menu"
 
 #: models/db.py:81
 msgid "include in search engine sitemaps"
-msgstr ""
+msgstr "opnemen in sitemaps voor zoekmachines"
 
 #: models/db.py:86
 msgid "page identifier"
-msgstr ""
+msgstr "pagina identificatie"
 
 #: models/db.py:86
 msgid "A unique identifier that is used for linking to this page."
-msgstr ""
+msgstr "Een unieke identificatie om te kunnen verwijzen naar deze pagina."
 
 #: models/db.py:89
 msgid "author"
@@ -196,13 +195,12 @@ msgid "description"
 msgstr "beschrijving"
 
 #: models/db.py:632
-#, fuzzy
 msgid "page title"
-msgstr "paginatype"
+msgstr "pagina titel"
 
 #: models/db.py:632
 msgid "When this field is not filled in, the menu title text will be used."
-msgstr ""
+msgstr "Indien dit veld niet ingevuld is, wordt de menu titel tekst gebruikt."
 
 #: models/db.py:673
 msgid "key"
@@ -242,9 +240,8 @@ msgid "Can change Page layout"
 msgstr ""
 
 #: pagetypes/redirectnode/admin.py:8
-#, fuzzy
 msgid "Redirect settings"
-msgstr "Doorverwijzingen"
+msgstr "Doorverwijsopties"
 
 #: pagetypes/redirectnode/models.py:13
 msgid "Normal redirect"
