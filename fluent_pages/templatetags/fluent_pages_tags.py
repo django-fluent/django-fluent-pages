@@ -213,3 +213,11 @@ def _get_request(context):
     """
     assert 'request' in context, "The fluent_pages_tags library requires a 'request' object in the context! Is RequestContext not used, or 'django.core.context_processors.request' not included in TEMPLATE_CONTEXT_PROCESSORS?"
     return context['request']
+
+
+if False and __debug__:
+    # This only exists to make PyCharm happy:
+    # The real syntax should be passing the ``.parse`` method to the function.
+    register.tag('render_breadcrumb', BreadcrumbNode)
+    register.tag('render_menu', MenuNode)
+    register.tag('get_fluent_page_vars', GetVarsNode)
