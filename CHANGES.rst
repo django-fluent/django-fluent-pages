@@ -6,6 +6,8 @@ Changes in version 0.9 (dev)
 
 * Fix initial migrations on MySQL with InnoDB/utf8 charset.
 * Fix missing ``robots.txt`` in the PyPI package.
+* Fix behavior of ``Page.objects.language(..).get_for_path()`` and ``best_match_for_path()``, use the currently selected language.
+  This is similar to django-parler_'s ``TranslatableModel.objects.language(..).create(..)`` support.
 
 
 Released in 0.9c1:

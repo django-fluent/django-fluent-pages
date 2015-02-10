@@ -46,7 +46,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
         if language_code is None:
-            language_code = get_language()
+            language_code = self._language or get_language()
 
         # Don't normalize slashes, expect the URLs to be sane.
         try:
@@ -66,7 +66,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
         if language_code is None:
-            language_code = get_language()
+            language_code = self._language or get_language()
 
         # Based on FeinCMS:
         paths = self._split_path_levels(path)
