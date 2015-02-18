@@ -121,7 +121,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         Return the QuerySet used to find the pages.
         """
         # This can be limited or expanded in the future
-        qs = self.model.objects.published()
+        qs = self.model.objects.published(for_user=self.request.user)
         if self.prefetch_translations:
             qs = qs.prefetch_related('translations')
         return qs
@@ -319,7 +319,7 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
 
         path = self.get_path()
         language_code = self.get_language()
-        qs = UrlNode.objects.non_polymorphic().published()
+        qs = UrlNode.objects.non_polymorphic().published(for_user=self.request.user)
 
         try:
             page = _try_languages(language_code, UrlNode.DoesNotExist,
