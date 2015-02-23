@@ -4,6 +4,7 @@ Changelog
 Changes in version 0.9 (dev)
 ----------------------------
 
+* Non-published pages can now be seen by staff members
 * Fix initial migrations on MySQL with InnoDB/utf8 charset.
 * Fix missing ``robots.txt`` in the PyPI package.
 * Fix behavior of ``Page.objects.language(..).get_for_path()`` and ``best_match_for_path()``, use the currently selected language.
