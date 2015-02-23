@@ -136,13 +136,16 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             return self
 
 
-    def published(self):
+    def published(self, for_user=None):
         """
         Return only published pages for the current site.
 
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
         from fluent_pages.models import UrlNode   # the import can't be globally, that gives a circular dependency
+
+        if for_user is not None and for_user.is_staff:
+            return self._single_site()
 
         return self \
             ._single_site() \
@@ -156,11 +159,11 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             )
 
 
-    def in_navigation(self):
+    def in_navigation(self, for_user=None):
         """
         Return only pages in the navigation.
         """
-        return self.published().filter(in_navigation=True)
+        return self.published(for_user=for_user).filter(in_navigation=True)
 
 
     def in_sitemaps(self):
@@ -252,20 +255,20 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         return self.all().parent_site(site)
 
 
-    def published(self):
+    def published(self, for_user=None):
         """
         Return only published pages for the current site.
 
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        return self.all().published()
+        return self.all().published(for_user=for_user)
 
 
-    def in_navigation(self):
+    def in_navigation(self, for_user=None):
         """
         Return only pages in the navigation.
         """
-        return self.all().in_navigation()
+        return self.all().in_navigation(for_user=for_user)
 
 
     def in_sitemaps(self):
@@ -283,13 +286,13 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         return self.all().toplevel()
 
 
-    def toplevel_navigation(self, current_page=None):
+    def toplevel_navigation(self, current_page=None, for_user=None):
         """
         Return all toplevel items, ordered by menu ordering.
 
         When current_page is passed, the object values such as 'is_current' will be set.
         """
-        qs = self.toplevel().in_navigation().non_polymorphic()._mark_current(current_page)
+        qs = self.toplevel().in_navigation(for_user=for_user).non_polymorphic()._mark_current(current_page)
 
         # Make sure only translated menu items are visible.
         if is_multilingual_project():
