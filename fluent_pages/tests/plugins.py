@@ -67,6 +67,24 @@ class PluginTests(AppTestCase):
         self.assertEqual(mixed_reverse('webshop_article', current_page=shop2, kwargs={'slug': 'foobar'}), '/shop2/foobar/')
 
 
+    def test_app_reverse_multiple_language(self):
+        """
+        The app_reverse functions should skip pages that are not translated in the current language.
+        """
+        # Recreate models for clarity
+        for page in WebShopPage.objects.all():
+            page.delete()  # Allow signals to be sent, and clear caches
+
+        WebShopPage.objects.language('en').create(title="Shop3-en", slug="shop3-en", status=WebShopPage.PUBLISHED, author=self.user)
+        WebShopPage.objects.language('fr').create(title="Shop4-fr", slug="shop4-fr", status=WebShopPage.PUBLISHED, author=self.user)
+        self.assertEqual(WebShopPage.objects.published().count(), 2)
+
+        # Depending on the language, multiple objects can be found.
+        # This tests whether _get_pages_of_type() properly filters the language.
+        self.assertEqual(app_reverse('webshop_index', language_code='en'), '/shop3-en/')
+        self.assertRaises(MultipleReverseMatch, lambda: app_reverse('webshop_index', language_code='fr'))
+
+
     def test_app_reverse_unmounted(self):
         """
         The app_reverse functions should raise an exception when the pagetype is not added in the page tree.
@@ -76,6 +94,7 @@ class PluginTests(AppTestCase):
         self.assertEqual(WebShopPage.objects.published().count(), 0)
         self.assertRaises(PageTypeNotMounted, lambda: app_reverse('webshop_index'))
         self.assertRaises(PageTypeNotMounted, lambda: mixed_reverse('webshop_index'))
+
 
 
 class PluginUrlTests(AppTestCase):

@@ -9,6 +9,7 @@ Changes in version 0.9 (dev)
 * Fix missing ``robots.txt`` in the PyPI package.
 * Fix behavior of ``Page.objects.language(..).get_for_path()`` and ``best_match_for_path()``, use the currently selected language.
   This is similar to django-parler_'s ``TranslatableModel.objects.language(..).create(..)`` support.
+* Fix skipping mount-points in ``app_reverse()`` when the root is not translated.
 
 
 Released in 0.9c1:
