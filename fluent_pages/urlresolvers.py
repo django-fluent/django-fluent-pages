@@ -125,10 +125,16 @@ def _get_pages_of_type(model, language_code=None):
 
     # Return in desired language
     # This is effectively what qs.language(..) does
+    result = []
     for page in pages:
         page.set_current_language(language_code)
 
-    return pages
+        # Filter the pages that are not available in the given language code.
+        # Currently not splitting the cached query, makes invalidation much harder.
+        if page.has_translation(language_code) or page.has_translation(page.get_fallback_language()):
+            result.append(page)
+
+    return result
 
 
 def clear_app_reverse_cache():
