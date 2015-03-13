@@ -41,6 +41,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
     """
 
     def __new__(mcs, name, bases, attrs):
+
         new_class = super(URLNodeMetaClass, mcs).__new__(mcs, name, bases, attrs)
 
         # Update the table name.
@@ -51,12 +52,13 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
             if meta.db_table.startswith(meta.app_label + '_') and meta.db_table != 'fluent_pages_urlnode':
                 model_name = meta.db_table[len(meta.app_label)+1:]
                 meta.db_table = "pagetype_{0}_{1}".format(meta.app_label, model_name)
-                # https://github.com/edoburu/django-fluent-contents/issues/38
-                # Went for the second solution because it has vbdoor's preference,
-                # but jthiard's one might be cleaner 
-                # cf https://github.com/jthiard/django-fluent-contents/commit/58fefbd5dc5ca57e566d9578cde8b575bcb21fc4
-                new_class._meta.original_attrs['db_table'] = meta.db_table
-            
+
+                if hasattr(meta, 'original_attrs'):
+                    # Make sure that the Django 1.7 migrations also pick up this change!
+                    # Changing the db_table beforehand might be cleaner,
+                    # but also requires duplicating the whole algorithm that Django uses.
+                    meta.original_attrs['db_table'] = meta.db_table
+
         return new_class
 
 @python_2_unicode_compatible
