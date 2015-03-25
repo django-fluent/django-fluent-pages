@@ -10,6 +10,9 @@ Changes in version 0.9 (dev)
 * Fix behavior of ``Page.objects.language(..).get_for_path()`` and ``best_match_for_path()``, use the currently selected language.
   This is similar to django-parler_'s ``TranslatableModel.objects.language(..).create(..)`` support.
 * Fix skipping mount-points in ``app_reverse()`` when the root is not translated.
+* *Backwards incompatible* with previous beta releases: split the ``fluent_pages.integration.fluent_contents`` package.
+  You'll need to import from the ``.models.``, ``.admin`` and ``.page_type_plugins`` explicitly.
+  This removes many cases where projects suffered from circular import errors.
 
 
 Released in 0.9c1:

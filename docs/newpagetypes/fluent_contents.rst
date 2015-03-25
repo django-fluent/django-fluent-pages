@@ -6,7 +6,7 @@ Integration with fluent-contents
 The bundled :ref:`fluent page type <fluentpage>` provides a page type
 where parts of the page can be filled with flexible content blocks.
 This feature can be used in your custom page types as well.
-The :mod:`fluent_pages.integration.fluent_contents` package contains
+The :mod:`fluent_pages.integration.fluent_contents` package provides
 all classes to make this integration painless.
 
 .. note::
@@ -32,7 +32,7 @@ This allowed editing the opening view, and "thank you view" as 2 separate area's
 
 .. code-block:: python
 
-    from fluent_pages.integration.fluent_contents import FluentContentsPage
+    from fluent_pages.integration.fluent_contents.models import FluentContentsPage
 
     class DonationPage(FluentContentsPage):
         """
@@ -48,7 +48,7 @@ This allowed editing the opening view, and "thank you view" as 2 separate area's
 
 .. code-block:: python
 
-    from fluent_pages.integration.fluent_contents import FluentContentsPageAdmin
+    from fluent_pages.integration.fluent_contents.admin import FluentContentsPageAdmin
 
     class DonationPageAdmin(FluentContentsPageAdmin):
         """
@@ -65,7 +65,7 @@ This allowed editing the opening view, and "thank you view" as 2 separate area's
 
     from django.conf.urls import url
     from fluent_pages.extensions import page_type_pool
-    from fluent_pages.integration.fluent_contents import FluentContentsPagePlugin
+    from fluent_pages.integration.fluent_contents.page_type_plugins import FluentContentsPagePlugin
     from .admin import DonationPageAdmin
     from .models import DonationPage
     from .views import DonationSuccessView
