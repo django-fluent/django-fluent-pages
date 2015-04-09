@@ -19,6 +19,7 @@ class Migration(migrations.Migration):
                 ('content_type', models.CharField(default=b'text/plain', max_length=100, verbose_name='File type', choices=[(b'text/plain', 'Plain text'), (b'text/xml', 'XML'), (b'text/html', 'HTML')])),
             ],
             options={
+                'db_table': 'pagetype_textfile_textfile',
                 'verbose_name': 'Plain text file',
                 'verbose_name_plural': 'Plain text files',
             },
