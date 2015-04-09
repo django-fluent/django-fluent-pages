@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
                 ('author', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, verbose_name='author')),
                 ('parent', fluent_pages.models.fields.PageTreeForeignKey(related_name='children', blank=True, to='fluent_pages.UrlNode', help_text='You can also change the parent by dragging the page in the list.', null=True, verbose_name='parent')),
                 ('parent_site', models.ForeignKey(default=fluent_pages.models.db._get_current_site, editable=False, to='sites.Site')),
-                ('polymorphic_ctype', models.ForeignKey(related_name='polymorphic_fluent_pages.urlnode_set', editable=False, to='contenttypes.ContentType', null=True)),
+                ('polymorphic_ctype', models.ForeignKey(related_name='polymorphic_fluent_pages.urlnode_set+', editable=False, to='contenttypes.ContentType', null=True)),
             ],
             options={
                 'ordering': ('tree_id', 'lft'),
