@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import django
 from django.conf import settings, global_settings as default_settings
 from django.core.management import execute_from_command_line
 from os import path
@@ -40,7 +41,7 @@ if not settings.configured:
             'django.middleware.csrf.CsrfViewMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',
         ),
-        TEST_RUNNER='django.test.simple.DjangoTestSuiteRunner',   # for Django 1.6, see https://docs.djangoproject.com/en/dev/releases/1.6/#new-test-runner
+        TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner' if django.VERSION < (1.6) else 'django.test.runner.DiscoverRunner',
         SITE_ID = 4,
         PARLER_LANGUAGES = {
             4: (
