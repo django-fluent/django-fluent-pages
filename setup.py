@@ -37,7 +37,7 @@ setup(
 
     install_requires=[
         'django-fluent-utils>=1.1.4',      # DRY utility code
-        'django-mptt>=0.5.5',              # Still supporting Django 1.4, use mptt 0.6 for Python 3 support.
+        'django-mptt>=0.5.5',              # Still supporting Django 1.5, use mptt 0.6 for Python 3 support.
         'django-parler>=1.4',              # Needed for Django 1.8 compatibility
         'django-polymorphic>=0.7',         # Needed for Django 1.8 compatibility
         'django-polymorphic-tree>=1.1',    # Enforce Python 3 compatible versions
@@ -46,7 +46,7 @@ setup(
         'six>=1.5.2',
     ],
     requires=[
-        'Django (>=1.4)',
+        'Django (>=1.5)',
     ],
     extras_require={
         'flatpage': ['django-wysiwyg>=0.7.0'],
@@ -79,6 +79,11 @@ setup(
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.3',
+        'Framework :: Django',
+        'Framework :: Django :: 1.5',
+        'Framework :: Django :: 1.6',
+        'Framework :: Django :: 1.7',
+        'Framework :: Django :: 1.8',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
