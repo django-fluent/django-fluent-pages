@@ -102,7 +102,7 @@ class PageNavigationNode(NavigationNode):
 
     @property
     def is_active(self):
-        return self._page.pk and self._page.pk == self._current_page.pk
+        return self._page.pk and self._current_page is not None and self._page.pk == self._current_page.pk
 
     @property
     def parent(self):

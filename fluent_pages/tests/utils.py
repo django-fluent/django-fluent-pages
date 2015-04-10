@@ -25,6 +25,8 @@ class AppTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
+        super(AppTestCase, cls).setUpClass()
+
         # Avoid early import, triggers AppCache
         from django.template.loaders import app_directories
         User = get_user_model()
