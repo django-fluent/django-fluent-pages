@@ -1,9 +1,10 @@
 Changelog
 =========
 
-Changes in version 0.9 (dev)
-----------------------------
+Changes in version 0.9
+----------------------
 
+* Added Django 1.8 support
 * Non-published pages can now be seen by staff members
 * Fix initial migrations on MySQL with InnoDB/utf8 charset.
 * Fix missing ``robots.txt`` in the PyPI package.
