@@ -33,7 +33,7 @@ def find_version(*parts):
 setup(
     name='django-fluent-pages',
     version=find_version('fluent_pages', '__init__.py'),
-    license='Apache License, Version 2.0',
+    license='Apache 2.0',
 
     install_requires=[
         'django-fluent-utils>=1.1.4',      # DRY utility code
