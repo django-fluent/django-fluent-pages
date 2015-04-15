@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Changes in git
+--------------
+
+* Add ``draft`` CSS class to unpublished menu items that are visible for staff members.
+
 Changes in version 0.9
 ----------------------
 
