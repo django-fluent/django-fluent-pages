@@ -27,8 +27,13 @@ class PageSitemap(Sitemap):
         Return all items of the sitemap.
         """
         # Note that .active_translations() can't be combined with other filters for translations__.. fields.
-        return UrlNode.objects.in_sitemaps().non_polymorphic().active_translations() \
+        return (UrlNode.objects
+                .in_sitemaps()
+                .non_polymorphic()
+                .active_translations()
+                .prefetch_related('translations')
                 .order_by('level', 'translations__language_code', 'translations___cached_url')
+            )
 
     def lastmod(self, urlnode):
         """Return the last modification of the page."""
