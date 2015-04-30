@@ -121,6 +121,10 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         """
         .. versionadded:: 0.9 Filter to the given site.
         """
+        # Since .published() calls ._single_site(), this already filters the queryset.
+        # Make sure .parent_site() is used first.
+        assert self._parent_site is None, "Can't filter for a parent_site() twice. Perhaps .published() was already used?"
+
         # Avoid auto filter if site is already set.
         self._parent_site = site
         return self.filter(parent_site=site)

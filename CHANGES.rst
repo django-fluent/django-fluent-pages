@@ -7,6 +7,7 @@ Changes in git
 * Added ``draft`` CSS class to unpublished menu items that are only visible for staff members.
 * Improve performance of ``PageSitemap`` for sites with a lot of pages.
 * Fixed Django 1.8 issues in the "Change Page" view.
+* Fixed silent behavior of using ``.parent_site()`` too late in an already filtered queryset.
 
 
 Changes in version 0.9
