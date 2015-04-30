@@ -10,7 +10,7 @@
 {% endcomment %}
 {% block content %}<div id="content-main">
 {% block object-tools %}
-{% if change and not is_popup %}
+{% if change %}{% if not is_popup %}
   <ul class="object-tools">
     {% block object-tools-items %}
     <li>
@@ -20,16 +20,17 @@
     {% if original.is_published and original.url %}<li><a href="{{ original.url }}" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif %}
     {% endblock %}
   </ul>
-{% endif %}
+{% endif %}{% endif %}
 {% if language_tabs %}{% include "admin/parler/language_tabs.html" %}{% endif %}{# manually included, this template overrides parler defaults #}
 {% endblock %}
-<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form" novalidate>{% csrf_token %}{% block form_top %}{% endblock %}
 <div>
-{% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
+{% if is_popup %}<input type="hidden" name="{{ is_popup_var }}" value="1" />{% endif %}
+{% if to_field %}<input type="hidden" name="{{ to_field_var }}" value="{{ to_field }}" />{% endif %}
 {% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
 {% if errors %}
     <p class="errornote">
-    {% blocktrans count errors|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
     </p>
     {{ adminform.form.non_field_errors }}
 {% endif %}
@@ -60,9 +61,25 @@
 
 {% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
 
-{% if adminform and add %}
-   <script type="text/javascript">document.getElementById("{{ adminform.first_field.id_for_label }}").focus();</script>
-{% endif %}
+{% block admin_change_form_document_ready %}
+    <script type="text/javascript">
+        (function($) {
+            $(document).ready(function() {
+                $('.add-another').click(function(e) {
+                    e.preventDefault();
+                    showAddAnotherPopup(this);
+                });
+                $('.related-lookup').click(function(e) {
+                    e.preventDefault();
+                    showRelatedObjectLookupPopup(this);
+                });
+            {% if adminform and add %}
+                $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
+            {% endif %}
+            });
+        })(django.jQuery);
+    </script>
+{% endblock %}
 
 {# JavaScript for prepopulated fields #}
 {% prepopulated_fields_js %}
