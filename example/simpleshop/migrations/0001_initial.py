@@ -48,6 +48,7 @@ class Migration(migrations.Migration):
                 ('product_category', models.ForeignKey(to='simpleshop.ProductCategory')),
             ],
             options={
+                'db_table': 'pagetype_simpleshop_productcategorypage',
                 'verbose_name': 'Product category page',
                 'verbose_name_plural': 'Product category pages',
             },

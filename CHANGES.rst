@@ -4,8 +4,9 @@ Changelog
 Changes in git
 --------------
 
-* Add ``draft`` CSS class to unpublished menu items that are visible for staff members.
+* Added ``draft`` CSS class to unpublished menu items that are only visible for staff members.
 * Improve performance of ``PageSitemap`` for sites with a lot of pages.
+* Fixed Django 1.8 issues in the "Change Page" view.
 
 
 Changes in version 0.9
