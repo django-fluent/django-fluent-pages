@@ -1,4 +1,4 @@
-{% load url from future %}<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en"><head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="robots" content="NONE,NOARCHIVE">
@@ -70,22 +70,3 @@
   </p>
 </div>
 </body></html>
-
-{% comment %}{% load i18n %}{% load url from future %}<!doctype html>
-<html xml:lang="{{ LANGUAGE_CODE|default:"nl" }}" lang="{{ LANGUAGE_CODE|default:"nl" }}">
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="generator" content="Powered by Django" />
-    <title>Welcome to django-fluent-pages</title>
-  </head>
-
-      <div id="content">
-        <div id="main">
-          {% block main %}{% block content %}{% endblock %}{% endblock %}
-        </div>
-      </div>
-    </div>
-  </body>
-</html>
-{% endcomment %}
