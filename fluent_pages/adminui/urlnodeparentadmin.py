@@ -153,6 +153,14 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         return language_code.upper()
 
 
+    def get_search_results(self, request, queryset, search_term):
+        # HACK: make sure MPTT doesn't cause errors when finding sub-level results.
+        # The list code should be fixed instead, but that is much harder.
+        if search_term:
+            queryset = queryset.filter(level=0)
+        return super(UrlNodeParentAdmin, self).get_search_results(request, queryset, search_term)
+
+
     # ---- Bulk actions ----
 
     def make_published(self, request, queryset):
