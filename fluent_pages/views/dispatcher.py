@@ -66,7 +66,8 @@ class CmsPageDispatcher(GetPathMixin, View):
             self._try_node,
             self._try_node_redirect,
             self._try_appnode,
-            self._try_append_slash_redirect
+            self._try_append_slash_redirect,
+            self._try_homepage
         ):
             response = func()
             if response is not None:
@@ -180,6 +181,18 @@ class CmsPageDispatcher(GetPathMixin, View):
                 return self._call_url_view(plugin, '/', match)
 
         return self._call_node_view(plugin)
+
+    
+    def _try_homepage(self):
+        if not self.get_queryset().toplevel().exists():
+            return None
+
+        try:
+            self.object = self.get_queryset().toplevel()[0]
+        except IndexError:
+            return None
+
+        return self._call_node_view(self.get_plugin())
 
 
     def _call_node_view(self, plugin):
