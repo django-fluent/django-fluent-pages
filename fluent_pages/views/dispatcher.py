@@ -184,6 +184,9 @@ class CmsPageDispatcher(GetPathMixin, View):
 
     
     def _try_homepage(self):
+        if not self.path == '/':
+            return None
+
         if not self.get_queryset().toplevel().exists():
             return None
 
