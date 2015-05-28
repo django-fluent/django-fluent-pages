@@ -445,7 +445,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             self.id: translation._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
         }
 
-        fallback_page_urls = []
+        fallback_page_urls = {}
         for lang in fallback_languages:
             fallback_url = self.safe_translation_getter('_cached_url', language_code=lang)
             if not fallback_url:
