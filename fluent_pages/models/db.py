@@ -434,27 +434,30 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         Update the URLs of all decendant pages.
         The method is only called when the URL has changed.
         """
-        # This block of code is largely inspired and based on FeinCMS
-        # (c) Matthias Kestenholz, BSD licensed
-
-        # Keep cache
+        # Fetch the language settings.
+        # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
+        # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
         current_language = translation.language_code
-        fallback_language = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(current_language)
+        fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(current_language)[1:]
 
+        # Init the caches that are used for tracking generated URLs
         cached_page_urls = {
             self.id: translation._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
         }
-        fallback_url = self.safe_translation_getter('_cached_url', language_code=fallback_language)
-        if not fallback_url:
-            # Page only has a slug for the current language.
-            # Can't generate any URLs for sub objects, if they need a fallback language.
-            fallback_page_urls = {
-                self.id: None,
-            }
-        else:
-            fallback_page_urls = {
-                self.id: fallback_url.rstrip('/') + '/'
-            }
+
+        fallback_page_urls = []
+        for lang in fallback_languages:
+            fallback_url = self.safe_translation_getter('_cached_url', language_code=lang)
+            if not fallback_url:
+                # The fallback language does not exist, mark explicitly as not available.
+                # Can't generate any URLs for sub objects, if they need a fallback language.
+                fallback_page_urls[lang] = {
+                    self.id: None,
+                }
+            else:
+                fallback_page_urls[lang] = {
+                    self.id: fallback_url.rstrip('/') + '/'
+                }
 
         # Update all sub objects.
         # even if can_have_children is false, ensure a consistent state for the URL structure
@@ -463,31 +466,43 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             if subobject.has_translation(current_language):
                 subobject.set_current_language(current_language)
                 use_fallback_base = (subobject.parent_id not in cached_page_urls)  # not present in previous object.
-            elif fallback_language:
+            elif fallback_languages:
                 # Subobject only has default language.
                 # Decendent URLs will be based on this default URL.
-                subobject.set_current_language(fallback_language)
                 use_fallback_base = True
             else:
                 raise NotImplementedError("Tree node #{0} has no active ({1}) or fallback ({2}) language".format(
-                    subobject.id, current_language, fallback_language
+                    subobject.id, current_language, ','.join(fallback_languages)
                 ))
 
             # Set URL, using cache for parent URL.
             if subobject.override_url:
-                subobject._cached_url = subobject.override_url  # reaffirms, so enforces consistency
+                # Sub object has an explicit URL, the assignment reaffirms this to ensure consistency
+                subobject._cached_url = subobject.override_url
             else:
-                # Always construct the fallback URL, to revert to it when needed.
-                fallback_base = fallback_page_urls[subobject.parent_id]
-                if fallback_base is None:
-                    # no base, no URL for sub object. (be explicit here, to detect KeyError)
-                    fallback_page_urls[subobject.id] = None
-                else:
-                    fallback_page_urls[subobject.id] = u'{0}{1}/'.format(fallback_base, subobject.slug)
+                # Construct the fallback URLs for all fallback languages (typically 1).
+                # Even though a regular URL was found, construct it, in case sub objects need it.
+                fallback_base = None
+                fallback_lang = None
+                for lang in fallback_languages:
+                    parent_url = fallback_page_urls[lang][subobject.parent_id]
+                    if parent_url is None:
+                        # The parent didn't have a fallback for this language, hence the subobjects can't have it either.
+                        # There is no base nor URL for the sub object in this language. (be explicit here, to detect KeyError)
+                        fallback_page_urls[lang][subobject.id] = None
+                    else:
+                        # There is a translation in this language, construct the fallback URL
+                        fallback_page_urls[lang][subobject.id] = u'{0}{1}/'.format(parent_url, subobject.slug)
+                        if fallback_base is None and subobject.has_translation(lang):
+                            fallback_base = parent_url
+                            fallback_lang = lang
 
                 if use_fallback_base:
+                    # Generate URLs using the fallback language in all path parts, no exception.
                     base = fallback_base
+                    subobject.set_current_language(fallback_lang)
                 else:
+                    # Keep appending to the real translated URL
                     base = cached_page_urls[subobject.parent_id]
 
                 if base is None:
@@ -499,7 +514,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             if not use_fallback_base:
                 cached_page_urls[subobject.id] = subobject._cached_url
 
-            # call base class, do not recurse
+            # call base class, so this function doesn't recurse
             sub_translation = subobject.get_translation(subobject.get_current_language())  # reads from _translations_cache!
             super(UrlNode, subobject).save_translation(sub_translation)
             subobject._expire_url_caches()
