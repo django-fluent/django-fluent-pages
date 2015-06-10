@@ -43,7 +43,7 @@ class Command(NoArgsCommand):
             self.stdout.write("Updating cached URLs")
             self.stdout.write("Page tree nodes:\n\n")
 
-        col_style = "| {0:6} | {1:6} | {2:6} | {3}"
+        col_style = u"| {0:6} | {1:6} | {2:6} | {3}"
         header = col_style.format("Site", "Page", "Locale", "URL")
         sep = '-' * (len(header) + 40)
         self.stdout.write(sep)
