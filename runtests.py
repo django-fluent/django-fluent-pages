@@ -54,8 +54,15 @@ if not settings.configured:
         FLUENT_PAGES_TEMPLATE_DIR = path.join(module_root, 'fluent_pages', 'tests', 'testapp', 'templates'),
     )
 
+DEFAULT_TEST_APPS = [
+    'fluent_pages',
+]
+
+
 def runtests():
-    argv = sys.argv[:1] + ['test', 'fluent_pages', '--traceback'] + sys.argv[1:]
+    other_args = list(filter(lambda arg: arg.startswith('-'), sys.argv[1:]))
+    test_apps = list(filter(lambda arg: not arg.startswith('-'), sys.argv[1:])) or DEFAULT_TEST_APPS
+    argv = sys.argv[:1] + ['test', '--traceback'] + other_args + test_apps
     execute_from_command_line(argv)
 
 if __name__ == '__main__':
