@@ -1,12 +1,15 @@
 import django
+from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
+from django.utils import translation
 from django.utils.encoding import force_text
 from fluent_pages.models import Page
 from fluent_pages.models.fields import PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeQuerySet
 from fluent_pages.tests.utils import AppTestCase
 from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
+from parler.models import TranslationDoesNotExist
 
 
 class ModelDataTests(AppTestCase):
@@ -176,6 +179,37 @@ class ModelDataTests(AppTestCase):
         level2 = SimpleTextPage.objects.get(translations__slug='level2')
         self.assertEqual(level1.get_absolute_url(), '/root2/level1/')
         self.assertEqual(level2.get_absolute_url(), '/root2/level1/level2/')
+
+
+    def test_impossible_translation(self):
+        """
+        Placing a translated node under a non-translated node should use the fallback translation.
+        """
+        level1 = SimpleTextPage.objects.get(translations__slug='level1')
+        self.assertRaises(TranslationDoesNotExist, lambda: level1.create_translation('af', slug='level1-af'))
+
+
+    def test_move_translation(self):
+        level1 = SimpleTextPage.objects.get(translations__slug='level1')
+        root = SimpleTextPage.objects.get(translations__override_url='/')
+        root2 = SimpleTextPage.objects.get(translations__slug='root2')
+
+        # Create translation for Root, then for sublevel
+        root.create_translation('af', slug='home', override_url='/')
+        level1.create_translation('af', slug='level1-af')  # Now you can.
+
+        self.assertEqual(sorted(root.get_available_languages()), ['af', 'en-us'])
+        self.assertEqual(sorted(level1.get_available_languages()), ['af', 'en-us'])
+
+        # When there is no fallback, it can't create the URL
+        level1.parent = root2
+        self.assertRaises(TranslationDoesNotExist, lambda: level1.save())
+
+        # However, with a fallback in place, it will adjust the sublevels too.
+        root2.create_translation('en', slug='home', override_url='/')
+        level1.save()
+        urls = level1.translations.values_list('language_code', '_cached_url')
+        self.assertEqual(sorted(urls), [(u'af', u'/level1-af/'), (u'en-us', None)])
 
 
     def test_duplicate_slug(self):

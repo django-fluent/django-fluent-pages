@@ -471,9 +471,12 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 # Decendent URLs will be based on this default URL.
                 use_fallback_base = True
             else:
-                raise NotImplementedError("Tree node #{0} has no active ({1}) or fallback ({2}) language".format(
-                    subobject.id, current_language, ','.join(fallback_languages)
-                ))
+                raise UrlNode_Translation.DoesNotExist(
+                    "Tree node #{0} has no active ({1}) or fallback ({2}) language"
+                    "Available languages are: {3}".format(
+                        subobject.id, current_language, ','.join(fallback_languages),
+                        ','.join(subobject.get_available_languages())
+                    ))
 
             # Set URL, using cache for parent URL.
             if subobject.override_url:
@@ -506,7 +509,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                     base = cached_page_urls[subobject.parent_id]
 
                 if base is None:
-                    #  no base, no URL for sub object. (be explicit here, to detect KeyError)
+                    # no base == no URL for sub object. (be explicit here)
                     subobject._cached_url = None
                 else:
                     subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
@@ -599,16 +602,22 @@ class UrlNode_Translation(TranslatedFieldsModel):
             pass
 
         # Need to use fallback
-        fallback_language = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(self.language_code)
-        try:
-            self._fetched_parent_url = qs.filter(language_code=fallback_language)[0]
-            return self._fetched_parent_url
-        except IndexError:
-            pass
+        # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
+        # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
+        fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(self.language_code)[1:]
+        for lang in fallback_languages:
+            try:
+                self._fetched_parent_url = qs.filter(language_code=lang)[0]
+                return self._fetched_parent_url
+            except IndexError:
+                pass
 
-        raise NotImplementedError("Tree node #{0} has no active ({1}) or fallback ({2}) language".format(
-            self.master_id, self.language_code, fallback_language
-        ))
+        raise UrlNode_Translation.DoesNotExist(
+            "Tree node #{0} has no active ({1}) or fallback ({2}) language.\n"
+            "Available languages are: {3}".format(
+                self.master_id, self.language_code, ','.join(fallback_languages),
+                ",".join(master.get_available_languages())
+            ))
 
 
 
