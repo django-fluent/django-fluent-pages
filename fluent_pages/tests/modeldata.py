@@ -36,6 +36,14 @@ class ModelDataTests(AppTestCase):
         cls.shop = WebShopPage.objects.create(title="Shop1", slug="shop", status=WebShopPage.PUBLISHED, author=cls.user)
 
 
+    def assertUrls(self, node, expected, msg=None):
+        """
+        Check whether the given URLs are set as expected.
+        """
+        urls = dict(node.translations.values_list('language_code', '_cached_url'))
+        self.assertEqual(urls, expected, msg=msg)
+
+
     def test_get_for_path(self):
         """
         The get for path should work strictly on the path.
@@ -190,12 +198,18 @@ class ModelDataTests(AppTestCase):
 
 
     def test_move_translation(self):
+        draft1 = SimpleTextPage.objects.get(translations__slug='draft1')
         level1 = SimpleTextPage.objects.get(translations__slug='level1')
         root = SimpleTextPage.objects.get(translations__override_url='/')
         root2 = SimpleTextPage.objects.get(translations__slug='root2')
 
+        self.assertUrls(draft1, {'en-us': '/draft1/'})
+
         # Create translation for Root, then for sublevel
         root.create_translation('af', slug='home', override_url='/')
+        self.assertUrls(root, {'en-us': '/', 'af': '/'})
+        self.assertUrls(draft1, {'en-us': '/draft1/'})
+
         level1.create_translation('af', slug='level1-af')  # Now you can.
 
         self.assertEqual(sorted(root.get_available_languages()), ['af', 'en-us'])
@@ -206,10 +220,11 @@ class ModelDataTests(AppTestCase):
         self.assertRaises(TranslationDoesNotExist, lambda: level1.save())
 
         # However, with a fallback in place, it will adjust the sublevels too.
-        #root2.create_translation('en', slug='home', override_url='/')
-        #level1.save()
-        #urls = level1.translations.values_list('language_code', '_cached_url')
-        #self.assertEqual(sorted(urls), [(u'af', u'/level1-af/'), (u'en-us', None)])
+        self.assertUrls(level1, {'af': u'/level1-af/', 'en-us': '/level1/'})
+        root2.create_translation('en', slug='home', override_url='/')
+        level1.parent = root2
+        level1.save()
+        self.assertUrls(level1, {'af': u'/level1-af/', 'en-us': '/level1/'})
 
 
     def test_duplicate_slug(self):

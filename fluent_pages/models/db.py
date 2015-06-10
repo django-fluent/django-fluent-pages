@@ -438,24 +438,26 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
         # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
         current_language = translation.language_code
-        fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(current_language)[1:]
+        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(current_language)
+        fallback_languages = active_choices[1:]
 
         # Init the caches that are used for tracking generated URLs
         cached_page_urls = {
-            self.id: translation._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
+            current_language: {
+                self.id: translation._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
+            }
         }
 
-        fallback_page_urls = {}
         for lang in fallback_languages:
             fallback_url = self.safe_translation_getter('_cached_url', language_code=lang)
             if not fallback_url:
                 # The fallback language does not exist, mark explicitly as not available.
                 # Can't generate any URLs for sub objects, if they need a fallback language.
-                fallback_page_urls[lang] = {
+                cached_page_urls[lang] = {
                     self.id: None,
                 }
             else:
-                fallback_page_urls[lang] = {
+                cached_page_urls[lang] = {
                     self.id: fallback_url.rstrip('/') + '/'
                 }
 
@@ -464,21 +466,14 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         subobjects = self.get_descendants().order_by('lft', 'tree_id')
         for subobject in subobjects:
             if subobject.has_translation(current_language):
+                # Subobject has the current translation. Use that
+                # If the level in between does not have that translation, will use the fallback instead.
                 subobject.set_current_language(current_language)
-                use_fallback_base = (subobject.parent_id not in cached_page_urls)  # not present in previous object.
-            elif fallback_languages:
-                # The site has fallback languages, will be using that.
-                # Subobject only has default language.
-                # Decendent URLs will be based on this default URL.
-                use_fallback_base = True
+                use_fallback_base = (subobject.parent_id not in cached_page_urls[current_language])
             else:
-                # The site doesn't have fallback languages. No change of getting this fixed.
-                raise UrlNode_Translation.DoesNotExist(
-                    "Tree node #{0} has no active ({1}) or fallback ({2}) language.\n"
-                    "Available languages are: {3}".format(
-                        subobject.id, current_language, ','.join(fallback_languages),
-                        ','.join(subobject.get_available_languages())
-                    ))
+                # The subobject is not yet translated in the parent's language.
+                # There is nothing to update here.
+                continue
 
             # Set URL, using cache for parent URL.
             if subobject.override_url:
@@ -486,18 +481,18 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 subobject._cached_url = subobject.override_url
             else:
                 # Construct the fallback URLs for all fallback languages (typically 1).
-                # Even though a regular URL was found, construct it, in case sub objects need it.
+                # Even though a regular URL was found, construct it, in case sub-sub objects need it.
                 fallback_base = None
                 fallback_lang = None
-                for lang in fallback_languages:
-                    parent_url = fallback_page_urls[lang][subobject.parent_id]
+                for lang in active_choices:
+                    parent_url = cached_page_urls[lang][subobject.parent_id]
                     if parent_url is None:
                         # The parent didn't have a fallback for this language, hence the subobjects can't have it either.
                         # There is no base nor URL for the sub object in this language. (be explicit here, to detect KeyError)
-                        fallback_page_urls[lang][subobject.id] = None
+                        cached_page_urls[lang][subobject.id] = None
                     else:
                         # There is a translation in this language, construct the fallback URL
-                        fallback_page_urls[lang][subobject.id] = u'{0}{1}/'.format(parent_url, subobject.slug)
+                        cached_page_urls[lang][subobject.id] = u'{0}{1}/'.format(parent_url, subobject.slug)
                         if fallback_base is None and subobject.has_translation(lang):
                             fallback_base = parent_url
                             fallback_lang = lang
@@ -508,11 +503,9 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                     subobject.set_current_language(fallback_lang)
                 else:
                     # Keep appending to the real translated URL
-                    base = cached_page_urls[subobject.parent_id]
+                    base = cached_page_urls[current_language][subobject.parent_id]
 
                 if base is None:
-                    ## no base == no URL for sub object. (be explicit here)
-                    #subobject._cached_url = None
                     # The site doesn't have fallback languages.
                     # TODO: deside whether such objects should have NO url, or block moving/reparenting objects.
                     raise UrlNode_Translation.DoesNotExist(
@@ -521,11 +514,15 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                             subobject.id, current_language, ','.join(fallback_languages),
                             ','.join(subobject.get_available_languages())
                         ))
+
+                    # Alternative:
+                    ## no base == no URL for sub object. (be explicit here)
+                    #subobject._cached_url = None
                 else:
                     subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
 
             if not use_fallback_base:
-                cached_page_urls[subobject.id] = subobject._cached_url
+                cached_page_urls[current_language][subobject.id] = subobject._cached_url
 
             # call base class, so this function doesn't recurse
             sub_translation = subobject.get_translation(subobject.get_current_language())  # reads from _translations_cache!
