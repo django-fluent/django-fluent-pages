@@ -19,14 +19,14 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFieldsModel, TranslatedFields
 from parler.fields import TranslatedField
-from parler.utils import get_language_title, is_multilingual_project
+from parler.utils import get_language_title
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 from fluent_utils.django_compat import transaction_atomic, AUTH_USER_MODEL
 from parler.utils.context import switch_language
-from future.utils import with_metaclass, itervalues, iteritems
+from future.utils import with_metaclass, itervalues
 
 
 def _get_current_site():
@@ -467,12 +467,14 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 subobject.set_current_language(current_language)
                 use_fallback_base = (subobject.parent_id not in cached_page_urls)  # not present in previous object.
             elif fallback_languages:
+                # The site has fallback languages, will be using that.
                 # Subobject only has default language.
                 # Decendent URLs will be based on this default URL.
                 use_fallback_base = True
             else:
+                # The site doesn't have fallback languages. No change of getting this fixed.
                 raise UrlNode_Translation.DoesNotExist(
-                    "Tree node #{0} has no active ({1}) or fallback ({2}) language"
+                    "Tree node #{0} has no active ({1}) or fallback ({2}) language.\n"
                     "Available languages are: {3}".format(
                         subobject.id, current_language, ','.join(fallback_languages),
                         ','.join(subobject.get_available_languages())
@@ -509,8 +511,16 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                     base = cached_page_urls[subobject.parent_id]
 
                 if base is None:
-                    # no base == no URL for sub object. (be explicit here)
-                    subobject._cached_url = None
+                    ## no base == no URL for sub object. (be explicit here)
+                    #subobject._cached_url = None
+                    # The site doesn't have fallback languages.
+                    # TODO: deside whether such objects should have NO url, or block moving/reparenting objects.
+                    raise UrlNode_Translation.DoesNotExist(
+                        "Tree node #{0} has no active ({1}) or fallback ({2}) language.\n"
+                        "Available languages are: {3}".format(
+                            subobject.id, current_language, ','.join(fallback_languages),
+                            ','.join(subobject.get_available_languages())
+                        ))
                 else:
                     subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
 
@@ -581,6 +591,9 @@ class UrlNode_Translation(TranslatedFieldsModel):
             # If this empty object gets marked as dirty somehow, avoid corruption of the page tree.
             # The real checks for slug happen in save_translation(), this is only to catch internal state errors.
             raise RuntimeError("An UrlNode_Transaction object was created without slug or title, blocking save.")
+        if not self._cached_url:
+            raise RuntimeError("An UrlNode_Transaction object was created without cached_url, blocking save.")
+
         super(UrlNode_Translation, self).save(*args, **kwargs)
         self._original_cached_url = self._cached_url
 
