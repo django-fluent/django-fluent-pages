@@ -26,7 +26,7 @@ from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 from fluent_utils.django_compat import transaction_atomic, AUTH_USER_MODEL
 from parler.utils.context import switch_language
-from future.utils import with_metaclass, itervalues
+from future.utils import with_metaclass, itervalues, iteritems
 
 
 def _get_current_site():
@@ -629,7 +629,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
             "The current object has translations for: {3}".format(
                 self.master_id, self.language_code, ','.join(fallback_languages),
                 ",".join(master.get_available_languages()),
-                ", ".join("{0}:{1}".format(k,v) for k,v in parent_urls.iteritems()),
+                ", ".join("{0}:{1}".format(k,v) for k,v in iteritems(parent_urls)),
             ))
 
 

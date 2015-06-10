@@ -203,12 +203,12 @@ class ModelDataTests(AppTestCase):
         root = SimpleTextPage.objects.get(translations__override_url='/')
         root2 = SimpleTextPage.objects.get(translations__slug='root2')
 
-        self.assertUrls(draft1, {'en-us': '/draft1/'})
+        self.assertUrls(draft1, {'en-us': u'/draft1/'})
 
         # Create translation for Root, then for sublevel
         root.create_translation('af', slug='home', override_url='/')
-        self.assertUrls(root, {'en-us': '/', 'af': '/'})
-        self.assertUrls(draft1, {'en-us': '/draft1/'})
+        self.assertUrls(root, {u'en-us': u'/', u'af': u'/'})
+        self.assertUrls(draft1, {u'en-us': u'/draft1/'})
 
         level1.create_translation('af', slug='level1-af')  # Now you can.
 
@@ -220,11 +220,11 @@ class ModelDataTests(AppTestCase):
         self.assertRaises(TranslationDoesNotExist, lambda: level1.save())
 
         # However, with a fallback in place, it will adjust the sublevels too.
-        self.assertUrls(level1, {'af': u'/level1-af/', 'en-us': '/level1/'})
+        self.assertUrls(level1, {u'af': u'/level1-af/', u'en-us': u'/level1/'})
         root2.create_translation('en', slug='home', override_url='/')
         level1.parent = root2
         level1.save()
-        self.assertUrls(level1, {'af': u'/level1-af/', 'en-us': '/level1/'})
+        self.assertUrls(level1, {u'af': u'/level1-af/', u'en-us': u'/level1/'})
 
 
     def test_duplicate_slug(self):
