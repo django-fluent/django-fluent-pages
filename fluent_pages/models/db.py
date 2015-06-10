@@ -510,9 +510,11 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                     # TODO: deside whether such objects should have NO url, or block moving/reparenting objects.
                     raise UrlNode_Translation.DoesNotExist(
                         "Tree node #{0} has no active ({1}) or fallback ({2}) language.\n"
+                        "Can't generate URL to connect to parent {4}.\n"
                         "Available languages are: {3}".format(
                             subobject.id, current_language, ','.join(fallback_languages),
-                            ','.join(subobject.get_available_languages())
+                            ','.join(subobject.get_available_languages()),
+                            subobject.parent_id
                         ))
 
                     # Alternative:
@@ -604,11 +606,11 @@ class UrlNode_Translation(TranslatedFieldsModel):
 
         # Need the _cached_url from the parent.
         # Do this in the most efficient way possible.
-        qs = UrlNode_Translation.objects.filter(master=master.parent_id).values_list('_cached_url', flat=True)
+        parent_urls = dict(UrlNode_Translation.objects.filter(master=master.parent_id).values_list('language_code', '_cached_url'))
         try:
-            self._fetched_parent_url = qs.filter(language_code=self.language_code)[0]
+            self._fetched_parent_url = parent_urls[self.language_code]
             return self._fetched_parent_url
-        except IndexError:
+        except KeyError:
             pass
 
         # Need to use fallback
@@ -617,16 +619,17 @@ class UrlNode_Translation(TranslatedFieldsModel):
         fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(self.language_code)[1:]
         for lang in fallback_languages:
             try:
-                self._fetched_parent_url = qs.filter(language_code=lang)[0]
+                self._fetched_parent_url = parent_urls[lang]
                 return self._fetched_parent_url
-            except IndexError:
+            except KeyError:
                 pass
 
         raise UrlNode_Translation.DoesNotExist(
-            "Tree node #{0} has no active ({1}) or fallback ({2}) language.\n"
-            "Available languages are: {3}".format(
+            "Can't determine URL for active language ({1}) or fallback language ({2}) when parent node #{0} only has URLs in {4}.\n"
+            "The current object has translations for: {3}".format(
                 self.master_id, self.language_code, ','.join(fallback_languages),
-                ",".join(master.get_available_languages())
+                ",".join(master.get_available_languages()),
+                ", ".join("{0}:{1}".format(k,v) for k,v in parent_urls.iteritems()),
             ))
 
 
