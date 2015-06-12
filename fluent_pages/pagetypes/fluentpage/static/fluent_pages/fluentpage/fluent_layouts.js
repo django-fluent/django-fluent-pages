@@ -111,6 +111,12 @@ var fluent_layouts = {
       dataType: 'json',
       error: function(xhr, textStatus, ex)
       {
+        // When the server has DEBUG enabled, show the Django response in the console.
+        response = xhr.responseText;
+        if(response && window.console && response.indexOf('DJANGO_SETTINGS_MODULE') != -1) {
+          console.error(response);
+        }
+
         alert("Internal CMS error: failed to fetch layout data!");    // can't yet rely on $.ajaxError
       }
     })
