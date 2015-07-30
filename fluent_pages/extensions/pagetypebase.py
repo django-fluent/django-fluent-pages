@@ -177,6 +177,10 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
         """
         Return the context to use in the template defined by :attr:`render_template` (or :func:`get_render_template`).
         By default, it returns the model instance as ``instance`` field in the template.
+
+        Note that this function can also be called by custom views
+        when those views implement the :class:`~fluent_pages.views.CurrentPageMixin`
+        or :class:`~fluent_pages.views.CurrentPageTemplateMixin`
         """
         return {
             'FLUENT_PAGES_BASE_TEMPLATE': appsettings.FLUENT_PAGES_BASE_TEMPLATE,
