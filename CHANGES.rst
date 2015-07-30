@@ -7,7 +7,10 @@ Changes in git
 * Added ``draft`` CSS class to unpublished menu items that are only visible for staff members.
 * Added ``FluentPagesConfig`` to use Django 1.7 appconfigs.
 * Added multiple fallback language support for django-parler_ 1.5.
+* Improve error messages when URLs can't be created.
 * Improve performance of ``PageSitemap`` for sites with a lot of pages.
+* Temporary fix: Block moving pages to untranslated sub nodes, until a design decision can be made how to handle this.
+* Temporary fix: Hide subpages when searching in the admin, to avoid errors with partial MPTT trees.
 * Fixed Django 1.8 issues in the "Change Page" view.
 * Fixed silent behavior of using ``.parent_site()`` too late in an already filtered queryset.
 * Fixed unicode handling in ``rebuild_page_tree``.
