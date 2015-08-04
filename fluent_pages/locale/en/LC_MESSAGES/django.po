@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 11:24+0100\n"
+"POT-Creation-Date: 2015-08-04 15:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -53,16 +53,16 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: adminui/urlnodeparentadmin.py:168
+#: adminui/urlnodeparentadmin.py:176
 msgid "Mark selected objects as published"
 msgstr ""
 
-#: integration/fluent_contents/models.py:28 models/db.py:604
+#: integration/fluent_contents/models.py:28 models/db.py:648
 #: pagetypes/fluentpage/models.py:28
 msgid "Page"
 msgstr ""
 
-#: integration/fluent_contents/models.py:29 models/db.py:605 models/db.py:638
+#: integration/fluent_contents/models.py:29 models/db.py:649 models/db.py:682
 #: pagetypes/fluentpage/models.py:29
 msgid "Pages"
 msgstr ""
@@ -74,143 +74,143 @@ msgid_plural "{count} items updated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: models/db.py:66
+#: models/db.py:73
 msgid "Published"
 msgstr ""
 
-#: models/db.py:67
+#: models/db.py:74
 msgid "Draft"
 msgstr ""
 
-#: models/db.py:72
+#: models/db.py:79
 msgid "parent"
 msgstr ""
 
-#: models/db.py:72
+#: models/db.py:79
 msgid "You can also change the parent by dragging the page in the list."
 msgstr ""
 
-#: models/db.py:77
+#: models/db.py:84
 msgid "status"
 msgstr ""
 
-#: models/db.py:78
+#: models/db.py:85
 msgid "publication date"
 msgstr ""
 
-#: models/db.py:78
+#: models/db.py:85
 msgid "When the page should go live, status must be \"Published\"."
 msgstr ""
 
-#: models/db.py:79
+#: models/db.py:86
 msgid "publication end date"
 msgstr ""
 
-#: models/db.py:80
+#: models/db.py:87
 msgid "show in navigation"
 msgstr ""
 
-#: models/db.py:81
+#: models/db.py:88
 msgid "include in search engine sitemaps"
 msgstr ""
 
-#: models/db.py:86
+#: models/db.py:93
 msgid "page identifier"
 msgstr ""
 
-#: models/db.py:86
+#: models/db.py:93
 msgid "A unique identifier that is used for linking to this page."
 msgstr ""
 
-#: models/db.py:89
+#: models/db.py:96
 msgid "author"
 msgstr ""
 
-#: models/db.py:90
+#: models/db.py:97
 msgid "creation date"
 msgstr ""
 
-#: models/db.py:91
+#: models/db.py:98
 msgid "last modification"
 msgstr ""
 
-#: models/db.py:103
+#: models/db.py:110
 msgid "URL Node"
 msgstr ""
 
-#: models/db.py:104
+#: models/db.py:111
 msgid "URL Nodes"
 msgstr ""
 
-#: models/db.py:109
+#: models/db.py:116
 msgid "Can change Shared fields"
 msgstr ""
 
-#: models/db.py:110
+#: models/db.py:117
 msgid "Can change Override URL field"
 msgstr ""
 
-#: models/db.py:520 models/db.py:674
+#: models/db.py:554 models/db.py:718
 msgid "title"
 msgstr ""
 
-#: models/db.py:521
+#: models/db.py:555
 msgid "slug"
 msgstr ""
 
-#: models/db.py:521
+#: models/db.py:555
 msgid "The slug is used in the URL of the page"
 msgstr ""
 
-#: models/db.py:522
+#: models/db.py:556
 msgid "Override URL"
 msgstr ""
 
-#: models/db.py:522
+#: models/db.py:556
 msgid ""
 "Override the target URL. Be sure to include slashes at the beginning and at "
 "the end if it is a local URL. This affects both the navigation and subpages' "
 "URLs."
 msgstr ""
 
-#: models/db.py:534
+#: models/db.py:568
 msgid "URL Node translation"
 msgstr ""
 
-#: models/db.py:535
+#: models/db.py:569
 msgid "URL Nodes translations"
 msgstr ""
 
-#: models/db.py:630
+#: models/db.py:674
 msgid "keywords"
 msgstr ""
 
-#: models/db.py:631
+#: models/db.py:675
 msgid "description"
 msgstr ""
 
-#: models/db.py:632
+#: models/db.py:676
 msgid "page title"
 msgstr ""
 
-#: models/db.py:632
+#: models/db.py:676
 msgid "When this field is not filled in, the menu title text will be used."
 msgstr ""
 
-#: models/db.py:673
+#: models/db.py:717
 msgid "key"
 msgstr ""
 
-#: models/db.py:673
+#: models/db.py:717
 msgid "A short name to identify the layout programmatically"
 msgstr ""
 
-#: models/db.py:696 pagetypes/flatpage/models.py:13
+#: models/db.py:740 pagetypes/flatpage/models.py:13
 #: pagetypes/fluentpage/models.py:24
 msgid "Layout"
 msgstr ""
 
-#: models/db.py:697
+#: models/db.py:741
 msgid "Layouts"
 msgstr ""
 
@@ -304,8 +304,10 @@ msgstr ""
 msgid "View on site"
 msgstr ""
 
-#: templates/admin/fluent_pages/page/base_change_form.html:32
+#: templates/admin/fluent_pages/page/base_change_form.html:33
 msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
-msgstr[0] ""
-msgstr[1] ""
+msgstr ""
+
+#: templates/admin/fluent_pages/page/base_change_form.html:33
+msgid "Please correct the errors below."
+msgstr ""

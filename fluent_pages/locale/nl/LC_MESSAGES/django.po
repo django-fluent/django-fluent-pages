@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 11:24+0100\n"
+"POT-Creation-Date: 2015-08-04 15:01+0200\n"
 "PO-Revision-Date: 2011-01-10 23:54+0100\n"
 "Last-Translator: Diederik van der Boor <vdboor@edoburu.nl>\n"
 "Language-Team: Dutch <NL@li.org>\n"
@@ -53,16 +53,16 @@ msgstr "paginatype"
 msgid "Status"
 msgstr "Status"
 
-#: adminui/urlnodeparentadmin.py:168
+#: adminui/urlnodeparentadmin.py:176
 msgid "Mark selected objects as published"
 msgstr "Publiceer geselecteerde CMS pagina's"
 
-#: integration/fluent_contents/models.py:28 models/db.py:604
+#: integration/fluent_contents/models.py:28 models/db.py:648
 #: pagetypes/fluentpage/models.py:28
 msgid "Page"
 msgstr "Pagina"
 
-#: integration/fluent_contents/models.py:29 models/db.py:605 models/db.py:638
+#: integration/fluent_contents/models.py:29 models/db.py:649 models/db.py:682
 #: pagetypes/fluentpage/models.py:29
 msgid "Pages"
 msgstr "Pagina's"
@@ -74,101 +74,101 @@ msgid_plural "{count} items updated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: models/db.py:66
+#: models/db.py:73
 msgid "Published"
 msgstr "Gepubliceerd"
 
-#: models/db.py:67
+#: models/db.py:74
 msgid "Draft"
 msgstr "Concept"
 
-#: models/db.py:72
+#: models/db.py:79
 msgid "parent"
 msgstr "ouder"
 
-#: models/db.py:72
+#: models/db.py:79
 msgid "You can also change the parent by dragging the page in the list."
 msgstr ""
 "Je kunt ook de ouder veranderen door de pagina in de lijstweergave te "
 "verslepen."
 
-#: models/db.py:77
+#: models/db.py:84
 msgid "status"
 msgstr "status"
 
-#: models/db.py:78
+#: models/db.py:85
 msgid "publication date"
 msgstr "gepubliceerd op"
 
-#: models/db.py:78
+#: models/db.py:85
 msgid "When the page should go live, status must be \"Published\"."
 msgstr "Zet de status op 'gepubliceerd' zodra de pagina live moet staan."
 
-#: models/db.py:79
+#: models/db.py:86
 msgid "publication end date"
 msgstr "gepubliceerd tot"
 
-#: models/db.py:80
+#: models/db.py:87
 msgid "show in navigation"
 msgstr "toon in menu"
 
-#: models/db.py:81
+#: models/db.py:88
 msgid "include in search engine sitemaps"
 msgstr "opnemen in sitemaps voor zoekmachines"
 
-#: models/db.py:86
+#: models/db.py:93
 msgid "page identifier"
 msgstr "pagina identificatie"
 
-#: models/db.py:86
+#: models/db.py:93
 msgid "A unique identifier that is used for linking to this page."
 msgstr "Een unieke identificatie om te kunnen verwijzen naar deze pagina."
 
-#: models/db.py:89
+#: models/db.py:96
 msgid "author"
 msgstr "auteur"
 
-#: models/db.py:90
+#: models/db.py:97
 msgid "creation date"
 msgstr "aanmaak datum"
 
-#: models/db.py:91
+#: models/db.py:98
 msgid "last modification"
 msgstr "laatste wijziging"
 
-#: models/db.py:103
+#: models/db.py:110
 msgid "URL Node"
 msgstr "URL Pad"
 
-#: models/db.py:104
+#: models/db.py:111
 msgid "URL Nodes"
 msgstr "URL Paden"
 
-#: models/db.py:109
+#: models/db.py:116
 msgid "Can change Shared fields"
 msgstr ""
 
-#: models/db.py:110
+#: models/db.py:117
 msgid "Can change Override URL field"
 msgstr ""
 
-#: models/db.py:520 models/db.py:674
+#: models/db.py:554 models/db.py:718
 msgid "title"
 msgstr "Titel"
 
-#: models/db.py:521
+#: models/db.py:555
 msgid "slug"
 msgstr "Slug"
 
-#: models/db.py:521
+#: models/db.py:555
 msgid "The slug is used in the URL of the page"
 msgstr "Deze waarde wordt gebruikt in het URL adres van de pagina."
 
-#: models/db.py:522
+#: models/db.py:556
 msgid "Override URL"
 msgstr "Overschrijf URL"
 
-#: models/db.py:522
+#: models/db.py:556
 msgid ""
 "Override the target URL. Be sure to include slashes at the beginning and at "
 "the end if it is a local URL. This affects both the navigation and subpages' "
@@ -178,44 +178,44 @@ msgstr ""
 "weerszijden  een / staan. Dit veld heeft betrekking op zowel de navigatie "
 "als de URLs van subpagina's."
 
-#: models/db.py:534
+#: models/db.py:568
 msgid "URL Node translation"
 msgstr "URL Pad vertaling"
 
-#: models/db.py:535
+#: models/db.py:569
 msgid "URL Nodes translations"
 msgstr "URL Pad vertalingen"
 
-#: models/db.py:630
+#: models/db.py:674
 msgid "keywords"
 msgstr "zoekwoorden"
 
-#: models/db.py:631
+#: models/db.py:675
 msgid "description"
 msgstr "beschrijving"
 
-#: models/db.py:632
+#: models/db.py:676
 msgid "page title"
 msgstr "pagina titel"
 
-#: models/db.py:632
+#: models/db.py:676
 msgid "When this field is not filled in, the menu title text will be used."
 msgstr "Indien dit veld niet ingevuld is, wordt de menu titel tekst gebruikt."
 
-#: models/db.py:673
+#: models/db.py:717
 msgid "key"
 msgstr "code"
 
-#: models/db.py:673
+#: models/db.py:717
 msgid "A short name to identify the layout programmatically"
 msgstr "Een korte naam om de layout te identificeren in de code"
 
-#: models/db.py:696 pagetypes/flatpage/models.py:13
+#: models/db.py:740 pagetypes/flatpage/models.py:13
 #: pagetypes/fluentpage/models.py:24
 msgid "Layout"
 msgstr "Layout"
 
-#: models/db.py:697
+#: models/db.py:741
 msgid "Layouts"
 msgstr "Layouts"
 
@@ -311,8 +311,16 @@ msgstr ""
 msgid "View on site"
 msgstr "Bekijk op website"
 
-#: templates/admin/fluent_pages/page/base_change_form.html:32
+#: templates/admin/fluent_pages/page/base_change_form.html:33
+#, fuzzy
+#| msgid "Please correct the error below."
+#| msgid_plural "Please correct the errors below."
 msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
-msgstr[0] "Corrigeer a.u.b. de volgende fout:"
-msgstr[1] "Corrigeer a.u.b. de volgende fouten:"
+msgstr "Corrigeer a.u.b. de volgende fout:"
+
+#: templates/admin/fluent_pages/page/base_change_form.html:33
+#, fuzzy
+#| msgid "Please correct the error below."
+#| msgid_plural "Please correct the errors below."
+msgid "Please correct the errors below."
+msgstr "Corrigeer a.u.b. de volgende fout:"
