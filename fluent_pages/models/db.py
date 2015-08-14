@@ -589,9 +589,9 @@ class UrlNode_Translation(TranslatedFieldsModel):
         if not self.title and not self.slug:
             # If this empty object gets marked as dirty somehow, avoid corruption of the page tree.
             # The real checks for slug happen in save_translation(), this is only to catch internal state errors.
-            raise RuntimeError("An UrlNode_Transaction object was created without slug or title, blocking save.")
+            raise RuntimeError("An UrlNode_Translation object was created without slug or title, blocking save.")
         if not self._cached_url:
-            raise RuntimeError("An UrlNode_Transaction object was created without cached_url, blocking save.")
+            raise RuntimeError("An UrlNode_Translation object was created without _cached_url, blocking save.")
 
         super(UrlNode_Translation, self).save(*args, **kwargs)
         self._original_cached_url = self._cached_url
