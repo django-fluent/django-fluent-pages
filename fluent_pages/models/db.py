@@ -26,6 +26,7 @@ from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
 from fluent_utils.django_compat import transaction_atomic, AUTH_USER_MODEL
 from parler.utils.context import switch_language
+from slug_preview.models import SlugPreviewField
 from future.utils import with_metaclass, itervalues, iteritems
 
 
@@ -150,6 +151,27 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         # when the application is mounted at a subfolder, or the 'cms.urls' config
         # is included at a sublevel, it needs to be prepended.
         return self.default_url
+
+    def get_absolute_url_format(self):
+        if self.is_file:
+            url_format = '/{slug}'
+        else:
+            url_format = '/{slug}/'
+
+        # Extra for django-slug-preview
+        if self.parent_id:
+            # TODO: optimize this call. In some cases this would also work..
+            #       that is, unless get_absolute_url() is redefined or ABSOLUTE_URL_OVERRIDES was used.
+            #parent_url = self.get_translation(self.get_current_language()).get_parent_cached_url(self)
+
+            # Need to fetch the whole parent to make sure the URL matches the actual URL being used.
+            parent = self.parent
+            with switch_language(parent, self.get_current_language()):
+                parent_url = parent.get_absolute_url()
+
+            return parent_url.rstrip('/') + url_format
+        else:
+            return url_format
 
     @property
     def default_url(self):
@@ -530,7 +552,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
     """
     # Translated fields
     title = models.CharField(_("title"), max_length=255)
-    slug = models.SlugField(_("slug"), max_length=100, help_text=_("The slug is used in the URL of the page"))
+    slug = SlugPreviewField(_("slug"), max_length=100, help_text=_("The slug is used in the URL of the page"))
     override_url = models.CharField(_('Override URL'), editable=True, max_length=255, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
     _cached_url = models.CharField(max_length=255, db_index=True, null=True, blank=True, editable=False)
 

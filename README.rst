@@ -71,6 +71,7 @@ To have a standard setup with django-fluent-contents_ integrated, use::
         'parler',
         'polymorphic',
         'polymorphic_tree',
+        'slug_preview',
 
         # Optional widget pages via django-fluent-contents
         'fluent_pages.pagetypes.fluentpage',

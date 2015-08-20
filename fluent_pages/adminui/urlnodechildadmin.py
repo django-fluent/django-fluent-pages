@@ -7,13 +7,14 @@ from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
 from fluent_pages import appsettings
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm, TranslatedField
+from slug_preview.forms import SlugPreviewFormMixin
 from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_pages.forms.fields import RelativeRootPathField
 from fluent_utils.dry.admin import MultiSiteAdminMixin
 import mptt
 
 
-class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
+class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelForm):
     """
     The admin form for the main fields (the ``UrlNode`` object).
     """

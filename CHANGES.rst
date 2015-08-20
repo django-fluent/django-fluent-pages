@@ -10,6 +10,7 @@ Changes in git
 * Added multiple fallback language support for django-parler_ 1.5.
 * Added ``make_language_redirects`` management command for redirecting an unmaintained language to another.
 * Added ``is_child_active`` variable in ``PageNavigationNode`` for menu templates.
+* Added django-slug-preview_ for nicer slug appearance in the admin.
 * Improve error messages when URLs can't be created.
 * Improve performance of ``PageSitemap`` for sites with a lot of pages.
 * Temporary fix: Block moving pages to untranslated sub nodes, until a design decision can be made how to handle this.
@@ -256,4 +257,5 @@ First public release
 .. _django-mptt: https://github.com/django-mptt/django-mptt
 .. _django-parler: https://github.com/edoburu/django-parler
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
+.. _django-slug-preview: https://github.com/edoburu/django-slug-preview
 .. _django-tag-parser: https://github.com/edoburu/django-tag-parser

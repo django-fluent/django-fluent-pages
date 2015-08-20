@@ -107,6 +107,7 @@ INSTALLED_APPS = (
     'polymorphic',
     'polymorphic_tree',
     'parler',
+    'slug_preview',
 
     # Content for fluentpage, with plugins that have no extra configuration requirements
     'fluent_contents',
