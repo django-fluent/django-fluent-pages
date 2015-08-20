@@ -14,6 +14,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -650,7 +651,11 @@ class Page(UrlNode):
 
     def __str__(self):
         # self.title is configured with any_language=True, so always returns a value.
-        return self.title or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
+        try:
+            return self.title or self.safe_translation_getter(
+                'slug', u"#{0}".format(self.pk), any_language=True)
+        except ObjectDoesNotExist:
+            return "Page ID #{0}".format(self.pk)
 
     # Make PyCharm happy
     # Not reusing UrlNode.objects, as contribute_to_class will change the QuerySet.model value.
