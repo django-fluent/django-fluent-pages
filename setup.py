@@ -44,6 +44,7 @@ setup(
         'django-parler>=1.4',              # Needed for Django 1.8 compatibility
         'django-polymorphic>=0.7',         # Needed for Django 1.8 compatibility
         'django-polymorphic-tree>=1.1',    # Enforce Python 3 compatible versions
+        'django-slug-preview>=0.9',
         'django-tag-parser>=2.1',
         'future>=0.12.2',
         'six>=1.5.2',

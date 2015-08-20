@@ -7,8 +7,9 @@ django-fluent-utils
 django-polymorphic-tree >= 1.0b1
 django-polymorphic >= 0.5.5
 django-mptt >= 0.6.0
-django-tag-parser >= 2.0b1
 django-parler >= 1.0
+django-slug-preview >= 0.9
+django-tag-parser >= 2.0
 
 # For the `fluent_pages.plugins.fluentpage` plugin:
 django-fluent-contents >= 1.0b2
