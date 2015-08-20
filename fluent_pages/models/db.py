@@ -702,7 +702,6 @@ class HtmlPage(Page):
         # because the FK points to a proxy model. This is a workaround for:
         # https://code.djangoproject.com/ticket/18491
         # https://code.djangoproject.com/ticket/16128
-        # By using .all() we avoid the get_query_set/get_queryset() difference.
         self.seo_translations.all().delete()  # Accesses RelatedManager
 
         # Continue regular delete.
