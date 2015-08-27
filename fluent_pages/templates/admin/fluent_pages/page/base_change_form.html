@@ -65,11 +65,11 @@
     <script type="text/javascript">
         (function($) {
             $(document).ready(function() {
-                $('.add-another').click(function(e) {
+                $(document).on('click', '.add-another', function(e) {
                     e.preventDefault();
                     showAddAnotherPopup(this);
                 });
-                $('.related-lookup').click(function(e) {
+                $(document).on('click', '.related-lookup', function(e) {
                     e.preventDefault();
                     showRelatedObjectLookupPopup(this);
                 });
