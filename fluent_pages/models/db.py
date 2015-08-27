@@ -649,8 +649,10 @@ class Page(UrlNode):
         verbose_name_plural = _('Pages')
 
     def __str__(self):
-        # self.title is configured with any_language=True, so always returns a value.
-        return self.title or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
+        # Even through self.title is configured with any_language=True to always return a value,
+        # this will still fail for situations where a Page() is created without having a language at all.
+        return self.safe_translation_getter('title', any_language=True) \
+               or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
 
     # Make PyCharm happy
     # Not reusing UrlNode.objects, as contribute_to_class will change the QuerySet.model value.
