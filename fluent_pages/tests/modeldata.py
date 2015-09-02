@@ -198,6 +198,8 @@ class ModelDataTests(AppTestCase):
 
 
     def test_move_translation(self):
+        cache.clear()
+
         draft1 = SimpleTextPage.objects.get(translations__slug='draft1')
         level1 = SimpleTextPage.objects.get(translations__slug='level1')
         root = SimpleTextPage.objects.get(translations__override_url='/')
@@ -218,13 +220,19 @@ class ModelDataTests(AppTestCase):
         # When there is no fallback, it can't create the URL
         level1.parent = root2
         self.assertRaises(TranslationDoesNotExist, lambda: level1.save())
+        level1 = SimpleTextPage.objects.get(pk=level1.pk)
 
         # However, with a fallback in place, it will adjust the sublevels too.
         self.assertUrls(level1, {u'af': u'/level1-af/', u'en-us': u'/level1/'})
-        root2.create_translation('en', slug='home', override_url='/')
+        root2.create_translation('en', slug='home2')
+        root2.save()   # TODO: make this call redundant.
+
         level1.parent = root2
         level1.save()
-        self.assertUrls(level1, {u'af': u'/level1-af/', u'en-us': u'/level1/'})
+        self.assertUrls(root2, {u'en': u'/home2/', u'en-us': u'/root2/'})
+        self.assertUrls(level1, {u'af': u'/home2/level1-af/', u'en-us': u'/root2/level1/'})
+
+        cache.clear()
 
 
     def test_duplicate_slug(self):
