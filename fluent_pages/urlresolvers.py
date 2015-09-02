@@ -3,14 +3,13 @@ URL Resolving for dynamically added pages.
 """
 from django.utils.functional import lazy
 from future.builtins import str
-from django.conf import settings
-from django.core.cache import cache
 from django.core.urlresolvers import NoReverseMatch, reverse
 from django.utils.translation import get_language
 
 # Several imports in this file are placed inline, to avoid loading the models too early.
 # Because fluent_pages.models creates a QuerySet, all all apps will be imported.
 # By reducing the import statements here, other apps (e.g. django-fluent-blogs) can already import this module safely.
+# Also, note that mixed_reverse_lazy() could be used from the Django settings file.
 
 __all__ = (
     'MultipleReverseMatch',
@@ -107,6 +106,8 @@ def _get_pages_of_type(model, language_code=None):
     """
     Find where a given model is hosted.
     """
+    from django.conf import settings
+    from django.core.cache import cache
     from fluent_pages.models.db import UrlNode
     if language_code is None:
         language_code = get_language()
@@ -142,6 +143,7 @@ def clear_app_reverse_cache():
     Clear the cache for the :func:`app_reverse` function.
     This only has to be called when doing bulk update/delete actions that circumvent the individual model classes.
     """
+    from django.core.cache import cache
     from fluent_pages.extensions import page_type_pool
     for model in page_type_pool.get_model_classes():
         cache.delete('fluent_pages.instance_of.{0}'.format(model.__name__))

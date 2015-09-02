@@ -14,6 +14,7 @@ Changes in git
 * Fixed Django 1.8 issues in the "Change Page" view.
 * Fixed silent behavior of using ``.parent_site()`` too late in an already filtered queryset.
 * Fixed unicode handling in ``rebuild_page_tree``.
+* Fixed importing ``mixed_reverse_lazy()`` from django settings.
 
 
 Changes in version 0.9
