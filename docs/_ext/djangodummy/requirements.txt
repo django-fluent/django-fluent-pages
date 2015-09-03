@@ -1,6 +1,11 @@
 # for readthedocs
-Django==1.4.5
-django-mptt>=0.5.4
-django-polymorphic-tree>=0.8.6
-django-tag-parser>=1.0.0
-django-fluent-contents>=0.8.4
+Django == 1.8.4
+django-fluent-contents >= 1.0.2
+django-fluent-utils >= 1.1.4
+django-mptt >= 0.7.4
+django-parler >= 1.5
+django-polymorphic-tree >= 1.1.1
+django-polymorphic >= 0.7
+django-tag-parser >= 2.1
+future >= 0.12.2
+six >= 1.5.2

@@ -4,10 +4,10 @@ Django >= 1.5.5
 django-fluent-utils
 
 # Deps of fluent-pages
-django-polymorphic-tree >= 1.0b1
+django-polymorphic-tree >= 1.0
 django-polymorphic >= 0.5.5
 django-mptt >= 0.6.0
-django-tag-parser >= 2.0b1
+django-tag-parser >= 2.1
 django-parler >= 1.0
 
 # For the `fluent_pages.plugins.fluentpage` plugin:
