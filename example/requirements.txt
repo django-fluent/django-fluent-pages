@@ -1,26 +1,26 @@
 # Django version
 Django >= 1.5.5
 
-django-fluent-utils
 
 # Deps of fluent-pages
-django-polymorphic-tree >= 1.0
-django-polymorphic >= 0.5.5
+django-fluent-utils >= 1.2.1
 django-mptt >= 0.6.0
+django-parler >= 1.5
+django-polymorphic-tree >= 1.1.1
+django-polymorphic >= 0.5.5
 django-tag-parser >= 2.1
-django-parler >= 1.0
 
 # For the `fluent_pages.plugins.fluentpage` plugin:
-django-fluent-contents >= 1.0b2
-django-template-analyzer >= 1.3
+django-fluent-contents >= 1.0.2
+django-template-analyzer >= 1.5
 
 # For the `fluent_contents.plugins.*` apps:
-django-wysiwyg >= 0.7.0
-django-tinymce >= 1.5.2
-Markdown>=2.4
-docutils>=0.11
-textile>=2.1.5
-Pygments>=1.5
+django-wysiwyg >= 0.7.1
+django-tinymce >= 2.0.4
+Markdown >= 2.6.2
+docutils >= 0.12
+textile >= 2.2.2
+Pygments >= 2.0.2
 
 # For DB upgrading support
-South >= 1.0
+South >= 1.0.2
