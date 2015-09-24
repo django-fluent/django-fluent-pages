@@ -217,23 +217,26 @@ class ModelDataTests(AppTestCase):
         self.assertEqual(sorted(root.get_available_languages()), ['af', 'en-us'])
         self.assertEqual(sorted(level1.get_available_languages()), ['af', 'en-us'])
 
-        # When there is no fallback, it can't create the URL
+        # When there is no fallback, it can't create the URL,
+        # however, with a fallback in place, it will adjust the sublevels too.
+        self.assertUrls(level1, {u'af': u'/level1-af/', u'en-us': u'/level1/'})
+
         level1.parent = root2
         self.assertRaises(TranslationDoesNotExist, lambda: level1.save())
-        level1 = SimpleTextPage.objects.get(pk=level1.pk)
 
-        # However, with a fallback in place, it will adjust the sublevels too.
-        self.assertUrls(level1, {u'af': u'/level1-af/', u'en-us': u'/level1/'})
+        level1.parent = None
+        level1.save()
+
         root2.create_translation('en', slug='home2')
         root2.save()   # TODO: make this call redundant.
 
         level1.parent = root2
         level1.save()
+
         self.assertUrls(root2, {u'en': u'/home2/', u'en-us': u'/root2/'})
         self.assertUrls(level1, {u'af': u'/home2/level1-af/', u'en-us': u'/root2/level1/'})
 
         cache.clear()
-
 
     def test_duplicate_slug(self):
         """
