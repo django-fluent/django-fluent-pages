@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import fluent_pages.models.db
+from fluent_pages import appsettings
 from django.conf import settings
 import fluent_pages.models.fields
 
@@ -76,7 +77,7 @@ class Migration(migrations.Migration):
                 ('publication_end_date', models.DateTimeField(db_index=True, null=True, verbose_name='publication end date', blank=True)),
                 ('in_navigation', models.BooleanField(default=True, db_index=True, verbose_name='show in navigation')),
                 ('in_sitemaps', models.BooleanField(default=True, db_index=True, verbose_name='include in search engine sitemaps')),
-                ('key', models.SlugField(blank=True, help_text='A unique identifier that is used for linking to this page.', null=True, verbose_name='page identifier')),
+                ('key', models.SlugField(blank=True, help_text='A unique identifier that is used for linking to this page.', null=True, verbose_name='page identifier', choices=appsettings.FLUENT_PAGES_KEY_CHOICES)),
                 ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='creation date')),
                 ('modification_date', models.DateTimeField(auto_now=True, verbose_name='last modification')),
                 ('author', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, verbose_name='author')),
