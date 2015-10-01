@@ -58,9 +58,6 @@
   "pk": 1,
   "model": "fluentpage.fluentpage",
   "fields": {
-    "meta_description": "",
-    "meta_title": null,
-    "meta_keywords": "",
     "layout": 1
   }
 },
