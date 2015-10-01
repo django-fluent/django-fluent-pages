@@ -13,11 +13,13 @@ Changes in git
 * Temporary fix: Block moving pages to untranslated sub nodes, until a design decision can be made how to handle this.
 * Temporary fix: Hide subpages when searching in the admin, to avoid errors with partial MPTT trees.
 * Fixed Django 1.8 issues in the "Change Page" view.
+* Fixed migrations to prevent Django from creating additional ones when settings change.
 * Fixed silent behavior of using ``.parent_site()`` too late in an already filtered queryset.
 * Fixed unicode handling in ``rebuild_page_tree``.
 * Fixed importing ``mixed_reverse_lazy()`` from django settings.
 * Fixed showing pages when there is no translation is created yet.
 * Fixed JavaScript event binding for dynamic related-lookup fields.
+* Fixed ``welcome.json`` fixture
 
 
 Changes in version 0.9
