@@ -10,12 +10,12 @@ import fluent_pages.models.fields
 
 def make_site(apps, schema_editor):
     Site = apps.get_model("sites", "Site")
-    if Site.objects.count() == 0:
-        site = Site()
-        site.pk = settings.SITE_ID
-        site.name = 'example'
-        site.domain = 'example.com'
-        site.save()
+    Site.objects.get_or_create(
+        pk=settings.SITE_ID,
+        defaults=dict(
+            name='example',
+            domain='example.com',
+        ))
 
 
 def remove_site(apps, schema_editor):
