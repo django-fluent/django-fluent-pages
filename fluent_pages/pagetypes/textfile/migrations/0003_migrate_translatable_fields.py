@@ -25,7 +25,6 @@ def forwards_func(apps, schema_editor):
             master_id=textfile.pk,
             language_code=lang,
             content=textfile.content,
-            content_type=textfile.content_type,
         )
 
 
@@ -47,14 +46,13 @@ def backwards_func(apps, schema_editor):
                 translation = translations.get()
 
         textfile.content = translation.content
-        textfile.content_type = translation.content_type
         textfile.save()   # As intended: doesn't call UrlNode.save() but Model.save() only.
 
         
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('textfile', '0002_auto_20150924_0743'),
+        ('textfile', '0002_add_translation_model'),
     ]
 
     operations = [

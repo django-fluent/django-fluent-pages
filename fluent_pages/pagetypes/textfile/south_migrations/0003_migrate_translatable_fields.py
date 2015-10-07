@@ -24,7 +24,6 @@ class Migration(DataMigration):
                 master_id=textfile.pk,
                 language_code=lang,
                 content=textfile.content,
-                content_type=textfile.content_type,
             )
 
     def backwards(self, orm):
@@ -44,7 +43,6 @@ class Migration(DataMigration):
                     translation = translations.get()
 
             textfile.content = translation.content
-            textfile.content_type = translation.content_type
             textfile.save()   # As intended: doesn't call UrlNode.save() but Model.save() only.
 
     models = {
@@ -132,7 +130,6 @@ class Migration(DataMigration):
         u'textfile.textfiletranslation': {
             'Meta': {'unique_together': "[(u'language_code', u'master')]", 'object_name': 'TextFileTranslation', 'db_table': "u'textfile_textfile_translation'"},
             'content': ('django.db.models.fields.TextField', [], {}),
-            'content_type': ('django.db.models.fields.CharField', [], {'default': "'text/plain'", 'max_length': '100'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             u'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'text_translations'", 'null': 'True', 'to': u"orm['textfile.TextFile']"})
