@@ -11,19 +11,11 @@ class Migration(SchemaMigration):
         # Deleting field 'TextFile.content'
         db.delete_column('pagetype_textfile_textfile', 'content')
 
-        # Deleting field 'TextFile.content_type'
-        db.delete_column('pagetype_textfile_textfile', 'content_type')
-
 
     def backwards(self, orm):
         # Adding field 'TextFile.content'
         db.add_column('pagetype_textfile_textfile', 'content',
                       self.gf('django.db.models.fields.TextField')(default=''),
-                      keep_default=False)
-
-        # Adding field 'TextFile.content_type'
-        db.add_column('pagetype_textfile_textfile', 'content_type',
-                      self.gf('django.db.models.fields.CharField')(default='text/plain', max_length=100),
                       keep_default=False)
 
 
@@ -95,12 +87,12 @@ class Migration(SchemaMigration):
         },
         u'textfile.textfile': {
             'Meta': {'ordering': "('tree_id', 'lft')", 'object_name': 'TextFile', 'db_table': "'pagetype_textfile_textfile'", '_ormbases': ['fluent_pages.Page']},
+            'content_type': ('django.db.models.fields.CharField', [], {'default': "'text/plain'", 'max_length': '100'}),
             u'urlnode_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['fluent_pages.UrlNode']", 'unique': 'True', 'primary_key': 'True'})
         },
         u'textfile.textfiletranslation': {
             'Meta': {'unique_together': "[(u'language_code', u'master')]", 'object_name': 'TextFileTranslation', 'db_table': "u'textfile_textfile_translation'"},
             'content': ('django.db.models.fields.TextField', [], {}),
-            'content_type': ('django.db.models.fields.CharField', [], {'default': "'text/plain'", 'max_length': '100'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             u'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'text_translations'", 'null': 'True', 'to': u"orm['textfile.TextFile']"})

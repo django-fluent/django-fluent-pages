@@ -17,9 +17,10 @@ class TextFile(Page):
         'text/html', 'text/xml',
     )
 
+    content_type = models.CharField(_("File type"), max_length=100, default='text/plain', choices=CONTENT_TYPE_CHOICES)
+
     text_translations = TranslatedFields(
         content = models.TextField(_("File contents")),
-        content_type = models.CharField(_("File type"), max_length=100, default='text/plain', choices=CONTENT_TYPE_CHOICES),
     )
 
     class Meta:

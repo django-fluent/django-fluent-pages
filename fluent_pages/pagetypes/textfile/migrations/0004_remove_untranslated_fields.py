@@ -7,16 +7,12 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('textfile', '0003_auto_20150924_0744'),
+        ('textfile', '0003_migrate_translatable_fields'),
     ]
 
     operations = [
         migrations.RemoveField(
             model_name='textfile',
             name='content',
-        ),
-        migrations.RemoveField(
-            model_name='textfile',
-            name='content_type',
         ),
     ]

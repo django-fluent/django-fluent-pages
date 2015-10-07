@@ -13,7 +13,6 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
             ('content', self.gf('django.db.models.fields.TextField')()),
-            ('content_type', self.gf('django.db.models.fields.CharField')(default='text/plain', max_length=100)),
             (u'master', self.gf('django.db.models.fields.related.ForeignKey')(related_name='text_translations', null=True, to=orm['textfile.TextFile'])),
         ))
         db.send_create_signal(u'textfile', ['TextFileTranslation'])
@@ -105,7 +104,6 @@ class Migration(SchemaMigration):
         u'textfile.textfiletranslation': {
             'Meta': {'unique_together': "[(u'language_code', u'master')]", 'object_name': 'TextFileTranslation', 'db_table': "u'textfile_textfile_translation'"},
             'content': ('django.db.models.fields.TextField', [], {}),
-            'content_type': ('django.db.models.fields.CharField', [], {'default': "'text/plain'", 'max_length': '100'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
             u'master': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'text_translations'", 'null': 'True', 'to': u"orm['textfile.TextFile']"})

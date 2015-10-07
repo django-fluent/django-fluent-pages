@@ -17,7 +17,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('language_code', models.CharField(max_length=15, verbose_name='Language', db_index=True)),
                 ('content', models.TextField(verbose_name='File contents')),
-                ('content_type', models.CharField(default=b'text/plain', max_length=100, verbose_name='File type', choices=[(b'text/plain', 'Plain text'), (b'text/xml', 'XML'), (b'text/html', 'HTML')])),
                 ('master', models.ForeignKey(related_name='text_translations', editable=False, to='textfile.TextFile', null=True)),
             ],
             options={
