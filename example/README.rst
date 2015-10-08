@@ -2,22 +2,28 @@ Using the example
 =================
 
 To run the example application, make sure you have the required packages installed.
-You can do this using::
+You can do this using:
+
+.. code-block:: shell
 
     mkvirtualenv fpdemo
     pip install -r requirements.txt
 
 (This assumes you already have *virtualenv* and *virtualenvwrapper* installed).
 
-Next, you can setup the Django instance using::
+Next, you can setup the Django instance using:
 
-    ./manage.py syncdb --migrate      # use "admin" as prompted username!
+.. code-block:: shell
+
+    ./manage.py syncdb --migrate --noinput
+    ./manage.py createsuperuser --username=admin --email=admin@example.com
     ./manage.py loaddata welcome shop_example
 
-And run it off course::
+And run it off course:
+
+.. code-block:: shell
 
     ./manage.py runserver
-
 
 Good luck!
 
