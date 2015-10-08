@@ -75,6 +75,10 @@ TEMPLATE_DIRS = (
     join(dirname(__file__), "templates"),
 )
 
+FIXTURE_DIRS = (
+    join(dirname(__file__), "fixtures"),
+)
+
 FLUENT_PAGES_TEMPLATE_DIR = join(dirname(__file__), "theme1", "templates")
 
 INSTALLED_APPS = (
