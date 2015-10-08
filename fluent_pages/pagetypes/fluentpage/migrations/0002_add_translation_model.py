@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('language_code', models.CharField(max_length=15, verbose_name='Language', db_index=True)),
-                ('layout_translated', models.ForeignKey(verbose_name='Layout', to='fluent_pages.PageLayout', null=True)),
+                ('layout', models.ForeignKey(verbose_name='Layout', to='fluent_pages.PageLayout', null=True)),
             ],
             options={
                 'abstract': False,
