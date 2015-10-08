@@ -4,13 +4,13 @@ from fluent_pages.models import PageLayout
 from fluent_pages.integration.fluent_contents.models import FluentContentsPage
 
 from parler.fields import TranslatedField
-from parler.models import TranslatableModel, TranslatedFieldsModel
+from parler.models import TranslatedFieldsModel
 
 
 # This all exists for backwards compatibility
 # The new v0.9 method is using fluent_pages.integration.fluent_contents, instead of directly inheriting this app.
 # In that way, the pagetypes are stand-alone apps again.
-class AbstractFluentPage(FluentContentsPage, TranslatableModel):
+class AbstractFluentPage(FluentContentsPage):
     """
     A ```FluentPage``` represents one HTML page of the site.
 

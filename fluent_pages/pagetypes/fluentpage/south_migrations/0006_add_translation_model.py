@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table(u'fluentpage_fluentpagetranslation', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('language_code', self.gf('django.db.models.fields.CharField')(max_length=15, db_index=True)),
-            ('layout_translated', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['fluent_pages.PageLayout'], null=True)),
+            ('layout', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['fluent_pages.PageLayout'], null=True)),
             ('master', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['fluentpage.FluentPage'])),
         ))
         db.send_create_signal(u'fluentpage', ['FluentPageTranslation'])
@@ -96,7 +96,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'FluentPageTranslation'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
-            'layout_translated': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['fluent_pages.PageLayout']", 'null': 'True'}),
+            'layout': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['fluent_pages.PageLayout']", 'null': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['fluentpage.FluentPage']"})
         },
         u'sites.site': {

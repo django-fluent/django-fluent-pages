@@ -10,6 +10,9 @@ from fluent_pages import appsettings
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        if db.dry_run:
+            return
+
         UrlNode_Translation = orm['fluent_pages.UrlNode_Translation']
         FluentPageTranslation = orm['fluentpage.FluentPageTranslation']
 
@@ -21,11 +24,15 @@ class Migration(SchemaMigration):
                 FluentPageTranslation.objects.create(
                     master_id=fluentpage.pk,
                     language_code=lang,
-                    layout_translated=fluentpage.layout,
+                    layout=fluentpage.layout,
                 )
 
     def backwards(self, orm):
+        if db.dry_run:
+            return
+
         FluentPageTranslation = orm['fluentpage.FluentPageTranslation']
+
         # Convert all fields back to the single-language table.
         for fluentpage in orm['fluentpage.FluentPage'].objects.all():
             translations = FluentPageTranslation.objects.filter(master_id=fluentpage.pk)
@@ -40,7 +47,7 @@ class Migration(SchemaMigration):
                     # Hope there is a single translation
                     translation = translations.get()
 
-            fluentpage.layout = translation.layout_translated
+            fluentpage.layout = translation.layout
             fluentpage.save()   # As intended: doesn't call UrlNode.save() but Model.save() only.
 
     models = {
@@ -126,7 +133,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'FluentPageTranslation'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language_code': ('django.db.models.fields.CharField', [], {'max_length': '15', 'db_index': 'True'}),
-            'layout_translated': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['fluent_pages.PageLayout']", 'null': 'True'}),
+            'layout': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['fluent_pages.PageLayout']", 'null': 'True'}),
             'master': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['fluentpage.FluentPage']"})
         },
         u'sites.site': {

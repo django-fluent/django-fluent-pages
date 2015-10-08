@@ -19,7 +19,7 @@ def forwards_func(apps, schema_editor):
             FluentPageTranslation.objects.create(
                 master_id=fluentpage.pk,
                 language_code=lang,
-                layout_translated=fluentpage.layout,
+                layout=fluentpage.layout,
             )
 
 
@@ -40,7 +40,7 @@ def backwards_func(apps, schema_editor):
                 # Hope there is a single translation
                 translation = translations.get()
 
-        fluentpage.layout = translation.layout_translated
+        fluentpage.layout = translation.layout
         fluentpage.save()   # As intended: doesn't call UrlNode.save() but Model.save() only.
 
 
