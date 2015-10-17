@@ -4,6 +4,8 @@ Changelog
 Changes in git
 --------------
 
+* Added support to change the layout per language.
+* Added translation support to the ``fluent_pages.pagetypes.textfile`` type, to translate the content (but not the type).
 * Added ``draft`` CSS class to unpublished menu items that are only visible for staff members.
 * Added ``FluentPagesConfig`` to use Django 1.7 appconfigs.
 * Added multiple fallback language support for django-parler_ 1.5.
@@ -20,6 +22,7 @@ Changes in git
 * Fixed showing pages when there is no translation is created yet.
 * Fixed JavaScript event binding for dynamic related-lookup fields.
 * Fixed ``welcome.json`` fixture
+* **Backwards incompatible:** The ``FluentPageBase`` class is now removed, use ``AbstractFluentPage`` instead.
 
 
 Changes in version 0.9
@@ -32,7 +35,7 @@ Changes in version 0.9
 * Fix behavior of ``Page.objects.language(..).get_for_path()`` and ``best_match_for_path()``, use the currently selected language.
   This is similar to django-parler_'s ``TranslatableModel.objects.language(..).create(..)`` support.
 * Fix skipping mount-points in ``app_reverse()`` when the root is not translated.
-* *Backwards incompatible* with previous beta releases: split the ``fluent_pages.integration.fluent_contents`` package.
+* **Backwards incompatible** with previous beta releases: split the ``fluent_pages.integration.fluent_contents`` package.
   You'll need to import from the ``.models.``, ``.admin`` and ``.page_type_plugins`` explicitly.
   This removes many cases where projects suffered from circular import errors.
 
