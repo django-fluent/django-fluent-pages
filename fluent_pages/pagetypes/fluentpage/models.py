@@ -31,9 +31,6 @@ class AbstractFluentPage(FluentContentsPage):
             ('change_page_layout', _("Can change Page layout")),
         )
 
-# For even more backwards compatibility
-FluentPageBase = AbstractFluentPage
-
 
 class FluentPage(AbstractFluentPage):
     """
