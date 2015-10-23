@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -32,6 +32,7 @@ class Migration(SchemaMigration):
             return
 
         FluentPageTranslation = orm['fluentpage.FluentPageTranslation']
+        PageLayout = orm['fluent_pages.PageLayout']
 
         # Convert all fields back to the single-language table.
         for fluentpage in orm['fluentpage.FluentPage'].objects.all():
@@ -39,15 +40,20 @@ class Migration(SchemaMigration):
             try:
                 # Try default translation
                 translation = translations.get(language_code=appsettings.FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
+                layout = translation.layout
             except ObjectDoesNotExist:
                 try:
                     # Try internal fallback
                     translation = translations.get(language_code__in=('en-us', 'en'))
+                    layout = translation.layout
                 except ObjectDoesNotExist:
                     # Hope there is a single translation
-                    translation = translations.get()
+                    layout_choices = translations.order_by().distinct().values_list('layout', flat=True)
+                    if len(layout_choices) > 1:
+                        raise MultipleObjectsReturned("There are multiple layout choices for {0}, and no canonical one.".format(fluentpage))
+                    layout = PageLayout.objects.get(pk=layout_choices[0])
 
-            fluentpage.layout = translation.layout
+            fluentpage.layout = layout
             fluentpage.save()   # As intended: doesn't call UrlNode.save() but Model.save() only.
 
     models = {
