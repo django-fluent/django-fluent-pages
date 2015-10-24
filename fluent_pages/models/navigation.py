@@ -34,6 +34,7 @@ class NavigationNode(object):
     title = property(_not_implemented, doc='The title of the node.')
     url = property(_not_implemented, doc='The URL of the node.')
     is_active = property(_not_implemented, doc='True if the node is the currently active page.')
+    is_child_active = property(_not_implemented, doc='True if a child of this node is the currently active page.')
     is_published = property(_not_implemented, doc='True if the node is a normal published item.')
     is_draft = property(_not_implemented, doc='True if the node is a draft item.')
     level = property(_not_implemented, doc='The depth of the menu level.')
@@ -105,6 +106,10 @@ class PageNavigationNode(NavigationNode):
     @property
     def is_active(self):
         return self._page.pk and self._current_page is not None and self._page.pk == self._current_page.pk
+
+    @property
+    def is_child_active(self):
+        return self._page.pk and self._current_page is not None and self._page.tree_id == self._current_page.tree_id
 
     @property
     def is_published(self):

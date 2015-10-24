@@ -9,6 +9,7 @@ Changes in git
 * Added ``FluentPagesConfig`` to use Django 1.7 appconfigs.
 * Added multiple fallback language support for django-parler_ 1.5.
 * Added ``make_language_redirects`` management command for redirecting an unmaintained language to another.
+* Added ``is_child_active`` variable in ``PageNavigationNode`` for menu templates.
 * Improve error messages when URLs can't be created.
 * Improve performance of ``PageSitemap`` for sites with a lot of pages.
 * Temporary fix: Block moving pages to untranslated sub nodes, until a design decision can be made how to handle this.
