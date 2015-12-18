@@ -63,9 +63,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     class Media:
         js = ('fluent_pages/fluentpage/fluent_layouts.js',)
 
-
     # ---- fluent-contents integration ----
-
 
     def get_placeholder_data(self, request, obj=None):
         """
@@ -77,7 +75,6 @@ class FluentPageAdmin(FluentContentsPageAdmin):
             return []
         else:
             return get_template_placeholder_data(template)
-
 
     def get_page_template(self, page):
         """
@@ -93,15 +90,12 @@ class FluentPageAdmin(FluentContentsPageAdmin):
             # Change page, honor template of object.
             return page.layout.get_template()
 
-
     # ---- Layout selector code ----
-
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == 'layout':
             kwargs['widget'] = LayoutSelector
         return super(FluentPageAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
 
     def get_urls(self):
         """
@@ -112,7 +106,6 @@ class FluentPageAdmin(FluentContentsPageAdmin):
             url(r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view))
         )
         return my_urls + urls
-
 
     def get_layout_view(self, request, id):
         """
@@ -137,7 +130,6 @@ class FluentPageAdmin(FluentContentsPageAdmin):
 
         return JsonResponse(json, status=status)
 
-
     # ---- Layout permission hooks ----
 
     def get_readonly_fields(self, request, obj=None):
@@ -150,7 +142,6 @@ class FluentPageAdmin(FluentContentsPageAdmin):
             # Add page is allowed, need to be able to choose initial layout
             fields = fields + ('layout',)
         return fields
-
 
     def has_change_page_layout_permission(self, request, obj=None):
         """

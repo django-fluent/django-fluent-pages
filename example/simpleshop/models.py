@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from fluent_pages.models import Page
 
+
 @python_2_unicode_compatible
 class ProductCategory(models.Model):
     title = models.CharField('Title', max_length=200)
@@ -17,6 +18,7 @@ class ProductCategory(models.Model):
 
     def __str__(self):
         return self.title
+
 
 @python_2_unicode_compatible
 class Product(models.Model):

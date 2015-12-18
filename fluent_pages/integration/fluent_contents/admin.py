@@ -35,7 +35,6 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
     #: This is read by :func:`get_all_allowed_plugins`
     all_allowed_plugins = None
 
-
     def get_placeholder_data(self, request, obj=None):
         """
         Read the placeholder data to display in the template.
@@ -102,7 +101,6 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
         else:
             # Accepts all plugins by default
             return super(FluentContentsPageAdmin, self).get_all_allowed_plugins()
-
 
     def get_translation_objects(self, request, language_code, obj=None, inlines=True):
         """

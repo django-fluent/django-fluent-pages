@@ -26,4 +26,3 @@ class TextFile(Page):
     class Meta:
         verbose_name = _("Plain text file")
         verbose_name_plural = _("Plain text files")
-

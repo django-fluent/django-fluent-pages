@@ -54,7 +54,6 @@ class CurrentPageMixin(ViewUrlMixin):
             return super(CurrentPageMixin, self).get_view_url()
 
 
-
 class CurrentPageTemplateMixin(CurrentPageMixin):
     """
     Automaticaly reuse the template of the current page for the URL pattern view.

@@ -11,7 +11,6 @@ class MenuTests(AppTestCase):
     root_url = '/'
     subpage1_url = '/test_subpage1/'
 
-
     @classmethod
     def setUpTree(cls):
         root = SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
@@ -19,7 +18,6 @@ class MenuTests(AppTestCase):
 
         level1a = SimpleTextPage.objects.create(title="Level1a", slug="level1a", parent=root, status=SimpleTextPage.PUBLISHED, author=cls.user)
         level1b = SimpleTextPage.objects.create(title="Level1b", slug="level1b", parent=root, status=SimpleTextPage.PUBLISHED, author=cls.user)
-
 
     def test_navigation(self):
         """
@@ -29,7 +27,6 @@ class MenuTests(AppTestCase):
         self.assertEqual(len(menu), 2)
         self.assertEqual(menu[0].slug, 'home')
         self.assertEqual(menu[1].slug, 'root2')
-
 
     def test_current_item(self):
         """
@@ -44,7 +41,6 @@ class MenuTests(AppTestCase):
         self.assertEqual(menu[1].is_current, True)
 
         # NOTE: does not support sub pages.
-
 
     def test_menu_items(self):
         """
@@ -66,7 +62,6 @@ class MenuTests(AppTestCase):
         # Test active state
         self.assertEqual(menu[0].is_active, False)
         self.assertEqual(menu[1].is_active, True)
-
 
     def test_sub_menu_items(self):
         """

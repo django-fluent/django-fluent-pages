@@ -16,6 +16,7 @@ class TemplateFilePathField(forms.FilePathField):
     """
     The associated formfield to select a template path.
     """
+
     def __init__(self, *args, **kwargs):
         super(TemplateFilePathField, self).__init__(*args, **kwargs)
 
@@ -44,6 +45,7 @@ class RelativeRootPathField(forms.CharField):
     """
     A ``CharField`` which returns stored URL values relative to the fluent-page root.
     """
+
     def __init__(self, *args, **kwargs):
         super(RelativeRootPathField, self).__init__(*args, **kwargs)
         self.language_code = get_language()

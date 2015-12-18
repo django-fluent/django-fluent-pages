@@ -104,7 +104,6 @@ class UrlNodeAdminForm(MPTTAdminForm, TranslatableModelForm):
         return cleaned_data
 
 
-
 class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     """
     The internal machinery
@@ -113,7 +112,6 @@ class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, Tra
     filter_site = appsettings.FLUENT_PAGES_FILTER_SITE_ID
     base_model = UrlNode
     base_form = UrlNodeAdminForm
-
 
     # Expose fieldsets for subclasses to reuse
     #: The general fieldset to display
@@ -164,7 +162,6 @@ class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, Tra
     # as that class is used for the real admin screen.
     # This class is only a base class for the custom pagetype plugins.
 
-
     def get_readonly_fields(self, request, obj=None):
         """
         Determine which fields are readonly.
@@ -186,7 +183,6 @@ class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, Tra
 
         return fields
 
-
     def has_change_shared_fields_permission(self, request, obj=None):
         """
         Whether the user can change the page layout.
@@ -195,7 +191,6 @@ class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, Tra
         codename = '{0}.change_shared_fields_urlnode'.format(opts.app_label)
         return request.user.has_perm(codename, obj=obj)
 
-
     def has_change_override_url_permission(self, request, obj=None):
         """
         Whether the user can change the page layout.
@@ -203,7 +198,6 @@ class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, Tra
         opts = self.opts
         codename = '{0}.change_override_url_urlnode'.format(opts.app_label)
         return request.user.has_perm(codename, obj=obj)
-
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         """
@@ -214,7 +208,6 @@ class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, Tra
             kwargs.update(overrides)
 
         return super(UrlNodeChildAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-
 
     def save_model(self, request, obj, form, change):
         # Automatically store the user in the author field.

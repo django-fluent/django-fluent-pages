@@ -142,6 +142,7 @@ class GetVarsNode(BaseNode):
 
         {% get_fluent_page_vars %}
     """
+
     def render_tag(self, context, *args, **kwargs):
         # If the current URL does not overlay a page,
         # create a dummy item to handle the standard rendering.

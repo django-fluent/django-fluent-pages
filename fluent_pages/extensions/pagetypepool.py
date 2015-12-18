@@ -16,7 +16,6 @@ __all__ = (
 )
 
 
-
 class PageTypeAlreadyRegistered(Exception):
     """
     Raised when attempting to register a plugin twice.
@@ -45,7 +44,6 @@ class PageTypePool(object):
         self._file_types = None
         self._folder_types = None
         self._url_types = None
-
 
     def register(self, plugin):
         """
@@ -81,14 +79,12 @@ class PageTypePool(object):
 
         return plugin  # Allow class decorator syntax
 
-
     def get_plugins(self):
         """
         Return the :class:`PageTypePlugin` instances which are loaded.
         """
         self._import_plugins()
         return list(self.plugins.values())
-
 
     def get_model_classes(self):
         """
@@ -97,7 +93,6 @@ class PageTypePool(object):
         """
         self._import_plugins()
         return [plugin.model for plugin in itervalues(self.plugins)]
-
 
     def get_plugin_by_model(self, model_class):
         """
@@ -111,7 +106,6 @@ class PageTypePool(object):
         except KeyError:
             raise PageTypeNotFound("No plugin found for model '{0}'.".format(model_class.__name__))
         return self.plugins[name]
-
 
     def _get_plugin_by_content_type(self, contenttype):
         self._import_plugins()
@@ -133,13 +127,11 @@ class PageTypePool(object):
 
         return self.plugins[name]
 
-
     def _setup_lazy_indexes(self):
         if self._name_for_ctype_id is None:
             self._name_for_ctype_id = {}
             for name, plugin_instance in iteritems(self.plugins):
                 self._name_for_ctype_id[plugin_instance.type_id] = name
-
 
     def get_file_types(self):
         """
@@ -155,7 +147,6 @@ class PageTypePool(object):
 
         return self._file_types
 
-
     def get_folder_types(self):
         """
         Return the :class:`~django.contrib.contenttypes.models.ContentType` id's
@@ -170,7 +161,6 @@ class PageTypePool(object):
 
         return self._folder_types
 
-
     def get_url_pattern_types(self):
         """
         Return the :class:`~django.contrib.contenttypes.models.ContentType` id's
@@ -181,7 +171,6 @@ class PageTypePool(object):
 
         return self._url_types
 
-
     def get_url_pattern_plugins(self):
         """
         Return the :class:`PageTypePlugin` instances that provide URL patterns.
@@ -191,7 +180,6 @@ class PageTypePool(object):
             if plugin.urls is not None:
                 plugins.append(plugin)
         return plugins
-
 
     def _import_plugins(self):
         """

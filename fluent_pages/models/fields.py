@@ -9,6 +9,7 @@ class TemplateFilePathField(models.FilePathField):
     """
     A field to select a template path.
     """
+
     def __init__(self, verbose_name=None, path='', **kwargs):
         defaults = dict(match=r'.*\.html$', recursive=True)
         defaults.update(kwargs)
@@ -38,8 +39,8 @@ class TemplateFilePathField(models.FilePathField):
         return name, path, args, kwargs
 
 
-
 class TranslatedForeignKeyDescriptor(ReverseSingleRelatedObjectDescriptor):
+
     def __get__(self, instance, instance_type=None):
         # let the .parent return an object in the same language as our selves.
         # note: when the object is switched to a different language, this updates the shared/cached parent.

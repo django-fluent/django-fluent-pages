@@ -21,6 +21,7 @@ __all__ = (
     'clear_app_reverse_cache',
 )
 
+
 class MultipleReverseMatch(NoReverseMatch):
     """
     Raised when an :func:`app_reverse` call returns multiple possible matches.

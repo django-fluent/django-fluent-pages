@@ -18,13 +18,13 @@ from fluent_pages.models import UrlNode
 from fluent_pages.models.utils import prefill_parent_site
 
 
-
 # NOTE:
 # Since the URLconf of this module acts like a catch-all to serve files (e.g. paths without /),
 # the CommonMiddleware will not detect that the path could need an extra slash.
 # That logic also has to be implemented here.
 
 class GetPathMixin(View):
+
     def get_path(self):
         """
         Return the path argument of the view.
@@ -53,7 +53,6 @@ class CmsPageDispatcher(GetPathMixin, View):
     model = UrlNode
     prefetch_translations = appsettings.FLUENT_PAGES_PREFETCH_TRANSLATIONS
 
-
     def get(self, request, **kwargs):
         """
         Display the page in a GET request.
@@ -74,13 +73,11 @@ class CmsPageDispatcher(GetPathMixin, View):
 
         return self._page_not_found()
 
-
     def post(self, request, **kwargs):
         """
         Allow POST requests (for forms) to the page.
         """
         return self.get(request, **kwargs)
-
 
     def _page_not_found(self):
         # Since this view acts as a catch-all, give better error messages
@@ -108,13 +105,11 @@ class CmsPageDispatcher(GetPathMixin, View):
             else:
                 raise Http404(u"No published '{0}' found for the path '{1}'{2}.".format(self.model.__name__, self.path, tried_msg))
 
-
     def _intro_page(self):
         return TemplateResponse(self.request, "fluent_pages/intro_page.html", {
             'request': self.request,
             'site': Site.objects.get_current(),
         })
-
 
     def get_queryset(self):
         """
@@ -126,7 +121,6 @@ class CmsPageDispatcher(GetPathMixin, View):
             qs = qs.prefetch_related('translations')
         return qs
 
-
     def get_object(self, path=None):
         """
         Return the UrlNode subclass object of the current page.
@@ -137,7 +131,6 @@ class CmsPageDispatcher(GetPathMixin, View):
         return _try_languages(self.language_code, UrlNode.DoesNotExist,
             lambda lang: qs.get_for_path(path, language_code=lang)
         )
-
 
     def get_best_match_object(self, path=None):
         """
@@ -151,13 +144,11 @@ class CmsPageDispatcher(GetPathMixin, View):
             lambda lang: qs.best_match_for_path(path, language_code=lang)
         )
 
-
     def get_plugin(self):
         """
         Return the rendering plugin for the current page object.
         """
         return self.object.plugin
-
 
     # -- Various resolver functions
 
@@ -180,7 +171,6 @@ class CmsPageDispatcher(GetPathMixin, View):
                 return self._call_url_view(plugin, '/', match)
 
         return self._call_node_view(plugin)
-
 
     def _call_node_view(self, plugin):
         """
@@ -206,7 +196,6 @@ class CmsPageDispatcher(GetPathMixin, View):
 
         return response
 
-
     def _try_node_redirect(self):
         # Check if the URLnode would be returned if the path did end with a slash.
         if self.path.endswith('/') or not settings.APPEND_SLASH:
@@ -218,7 +207,6 @@ class CmsPageDispatcher(GetPathMixin, View):
             return None
         else:
             return HttpResponseRedirect(self.request.path + '/')
-
 
     def _try_appnode(self):
         try:
@@ -255,7 +243,6 @@ class CmsPageDispatcher(GetPathMixin, View):
             # Call application view.
             return self._call_url_view(plugin, sub_path, match)
 
-
     def _call_url_view(self, plugin, sub_path, match):
         """
         Call the extra URLpattern view.
@@ -276,7 +263,6 @@ class CmsPageDispatcher(GetPathMixin, View):
             raise RuntimeError("The view '{0}' didn't return an HttpResponse object.".format(match.url_name))
 
         return response
-
 
     def _try_append_slash_redirect(self):
         if self.path.endswith('/') or not settings.APPEND_SLASH:
@@ -299,7 +285,6 @@ class CmsPageDispatcher(GetPathMixin, View):
                     "settings.") % (self.request.path, '/'))
             return HttpResponseRedirect(self.request.path + '/')
         return None
-
 
     def _is_own_view(self, match):
         return match.app_name == 'fluent_pages' \

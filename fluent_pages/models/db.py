@@ -50,7 +50,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
             meta = new_class._meta
             # Make sure only values are updated if there is no manual edit, or a proxy model for UrlNode (e.g. HtmlPage)
             if meta.db_table.startswith(meta.app_label + '_') and meta.db_table != 'fluent_pages_urlnode':
-                model_name = meta.db_table[len(meta.app_label)+1:]
+                model_name = meta.db_table[len(meta.app_label) + 1:]
                 meta.db_table = "pagetype_{0}_{1}".format(meta.app_label, model_name)
 
                 if hasattr(meta, 'original_attrs'):
@@ -60,6 +60,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
                     meta.original_attrs['db_table'] = meta.db_table
 
         return new_class
+
 
 @python_2_unicode_compatible
 class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, TranslatableModel)):
@@ -125,9 +126,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         # All other models derive from Page, so they get good titles in the breadcrumb.
         return u", ".join(itervalues(self.get_absolute_urls()))
 
-
     # ---- Extra properties ----
-
 
     def __init__(self, *args, **kwargs):
         super(UrlNode, self).__init__(*args, **kwargs)
@@ -143,7 +142,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         self.is_current = None    # Can be defined by mark_current()
         self.is_onpath = None     # is an ancestor of the current node (part of the "menu trail").
 
-
     def get_absolute_url(self):
         """
         Return the URL to this page.
@@ -152,7 +150,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         # when the application is mounted at a subfolder, or the 'cms.urls' config
         # is included at a sublevel, it needs to be prepended.
         return self.default_url
-
 
     @property
     def default_url(self):
@@ -178,7 +175,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
             return root + cached_url
 
-
     def get_absolute_urls(self):
         """
         Return all available URLs to this page.
@@ -191,7 +187,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
         return result
 
-
     @property
     def url(self):
         """
@@ -202,7 +197,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         # so get_absolute_url() can be overwritten.
         return self.get_absolute_url()
 
-
     @property
     def last_modified(self):
         """
@@ -212,7 +206,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         to be extended to page content in the future.
         """
         return self.modification_date
-
 
     @property
     def breadcrumb(self):
@@ -227,14 +220,12 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         nodes.append(self)
         return nodes
 
-
     @property
     def is_published(self):
         """
         Return whether the node is published.
         """
         return self.status == self.PUBLISHED
-
 
     @property
     def is_draft(self):
@@ -243,14 +234,12 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         """
         return self.status == self.DRAFT
 
-
     @property
     def is_first_child(self):
         """
         Return ``True`` when the node is the first sibling.
         """
         return self.is_root_node() or (self.parent and (self.lft == self.parent.lft + 1))
-
 
     @property
     def is_last_child(self):
@@ -259,14 +248,12 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         """
         return self.is_root_node() or (self.parent and (self.rght + 1 == self.parent.rght))
 
-
     @property
     def is_file(self):
         """
         Return ``True`` when the node represents a file (can't have children, doesn't have a layout).
         """
         return self.plugin.is_file
-
 
     @property
     def can_have_children(self):
@@ -277,7 +264,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         # that access the plugin registration system,
         plugin = self.plugin
         return plugin.can_have_children and not plugin.is_file
-
 
     @property
     def plugin(self):
@@ -292,7 +278,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             return page_type_pool._get_plugin_by_content_type(self.polymorphic_ctype_id)
         else:
             return page_type_pool.get_plugin_by_model(self.__class__)
-
 
     # ---- Custom behavior ----
 
@@ -314,7 +299,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         self._original_pub_end_date = self.publication_end_date
         self._original_status = self.status
 
-
     def _mark_all_translations_dirty(self):
         # Update the cached_url of all translations.
         # This triggers _update_cached_url() in save_translation() later.
@@ -332,7 +316,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
             translation = self._get_translated_model(language_code)
             translation._fetched_parent_url = parent_url
-
 
     def save_translation(self, translation, *args, **kwargs):
         """
@@ -365,11 +348,9 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 # Performance optimisation: only traversing and updating many records when something changed in the URL.
                 self._update_decendant_urls(translation)
 
-
     def delete(self, *args, **kwargs):
         super(UrlNode, self).delete(*args, **kwargs)
         self._expire_url_caches()
-
 
     # Following of the principles for "clean code"
     # the save() method is split in the 3 methods below,
@@ -400,7 +381,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             dupnr += 1
             translation.slug = "%s-%d" % (origslug, dupnr)
 
-
     def _update_cached_url(self, translation):
         """
         Update the URLs
@@ -427,7 +407,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 translation._cached_url = u'{0}{1}'.format(parent_url, translation.slug)
             else:
                 translation._cached_url = u'{0}{1}/'.format(parent_url, translation.slug)
-
 
     def _update_decendant_urls(self, translation):
         """
@@ -531,7 +510,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             super(UrlNode, subobject).save_translation(sub_translation)
             subobject._expire_url_caches()
 
-
     def _expire_url_caches(self):
         """
         Reset all cache keys related to this model.
@@ -629,9 +607,8 @@ class UrlNode_Translation(TranslatedFieldsModel):
             "The current object has translations for: {3}".format(
                 self.master_id, self.language_code, ','.join(fallback_languages),
                 ",".join(master.get_available_languages()),
-                ", ".join("{0}:{1}".format(k,v) for k,v in iteritems(parent_urls)),
+                ", ".join("{0}:{1}".format(k, v) for k, v in iteritems(parent_urls)),
             ))
-
 
 
 @python_2_unicode_compatible
@@ -710,8 +687,6 @@ class HtmlPage(Page):
         super(HtmlPage, self).delete(*args, **kwargs)
 
 
-
-
 @python_2_unicode_compatible
 class PageLayout(models.Model):
     """
@@ -726,14 +701,12 @@ class PageLayout(models.Model):
     #unique
     #allowed_children
 
-
     def get_template(self):
         """
         Return the template to render this layout.
         """
         from django.template.loader import get_template
         return get_template(self.template_path)
-
 
     # Django stuff
     def __str__(self):

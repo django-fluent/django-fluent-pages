@@ -13,6 +13,7 @@ from future.builtins import object
 from django.utils.encoding import python_2_unicode_compatible
 from parler.models import TranslationDoesNotExist
 
+
 @python_2_unicode_compatible
 class NavigationNode(object):
     """
@@ -97,7 +98,6 @@ class PageNavigationNode(NavigationNode):
         if not parent_node:
             self._max_depth += page.get_level()
 
-
     slug = property(lambda self: self._page.slug)
     title = property(lambda self: self._page.title)
     url = property(lambda self: self._page.url)
@@ -157,7 +157,6 @@ class PageNavigationNode(NavigationNode):
                     self._children = self._children.non_polymorphic()
 
                 self._children = list(self._children)
-
 
     @property
     def _mptt_meta(self):

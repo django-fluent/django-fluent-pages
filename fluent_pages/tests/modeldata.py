@@ -19,12 +19,10 @@ class ModelDataTests(AppTestCase):
     root_url = '/'
     subpage1_url = '/test_subpage1/'
 
-
     def setUp(self):
         # Need to make sure that django-parler's cache isn't reused,
         # because the transaction is rolled back on each test method.
         cache.clear()
-
 
     @classmethod
     def setUpTree(cls):
@@ -35,14 +33,12 @@ class ModelDataTests(AppTestCase):
         cls.root2 = SimpleTextPage.objects.create(title="Root2", slug="root2", status=SimpleTextPage.PUBLISHED, author=cls.user)
         cls.shop = WebShopPage.objects.create(title="Shop1", slug="shop", status=WebShopPage.PUBLISHED, author=cls.user)
 
-
     def assertUrls(self, node, expected, msg=None):
         """
         Check whether the given URLs are set as expected.
         """
         urls = dict(node.translations.values_list('language_code', '_cached_url'))
         self.assertEqual(urls, expected, msg=msg)
-
 
     def test_get_for_path(self):
         """
@@ -56,7 +52,6 @@ class ModelDataTests(AppTestCase):
         self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path('/level1/level2'))
         self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path('level1/level2/'))
         self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path('level1/level2'))
-
 
     def test_best_match_for_path(self):
         """
@@ -77,7 +72,6 @@ class ModelDataTests(AppTestCase):
         self.assertRaises(Page.DoesNotExist, lambda: Page.objects.best_match_for_path('level1/level2/'))
         self.assertRaises(Page.DoesNotExist, lambda: Page.objects.best_match_for_path('level1/level2'))
 
-
     def test_split_path_levels(self):
         """
         Test the splitting of URL paths, which is the core of best_match_for_path()
@@ -91,7 +85,6 @@ class ModelDataTests(AppTestCase):
 
         # Garbage in, garbage out
         self.assertEqual(Page.objects._split_path_levels('level1/level2'), ['level1/', 'level1/level2'])
-
 
     def test_polymorphic(self):
         """
@@ -108,7 +101,6 @@ class ModelDataTests(AppTestCase):
         self.assertIsInstance(pages[0], SimpleTextPage)
         self.assertIsInstance(pages[1], WebShopPage)
 
-
     def test_related_tree_manager(self):
         """
         The tree manager should get the same abilities as the original manager.
@@ -116,7 +108,6 @@ class ModelDataTests(AppTestCase):
         """
         self.assertIs(type(Page.objects.get_for_path('/').children.all()), UrlNodeQuerySet)  # This broke with some django-mptt 0.5.x versions
         self.assertEqual(Page.objects.get_for_path('/').children.in_navigation()[0].slug, 'level1')
-
 
     def test_get_pages_of_type_qs(self):
         """
@@ -134,7 +125,6 @@ class ModelDataTests(AppTestCase):
 
         self.assertEqual(len(pages1), 1)
         self.assertEqual(len(pages2), 1)
-
 
     def test_move_root(self):
         """
@@ -159,7 +149,6 @@ class ModelDataTests(AppTestCase):
 
         # TODO: note that things like .filter().update() won't work on override_url and slug properties.
 
-
     def test_rename_slug(self):
         """
         Renaming a slug should affect the nodes below.
@@ -172,7 +161,6 @@ class ModelDataTests(AppTestCase):
         level2 = SimpleTextPage.objects.get(translations__slug='level2')
         self.assertEqual(level1.get_absolute_url(), '/level1_b/')
         self.assertEqual(level2.get_absolute_url(), '/level1_b/level2/')
-
 
     def test_change_parent(self):
         """
@@ -188,14 +176,12 @@ class ModelDataTests(AppTestCase):
         self.assertEqual(level1.get_absolute_url(), '/root2/level1/')
         self.assertEqual(level2.get_absolute_url(), '/root2/level1/level2/')
 
-
     def test_impossible_translation(self):
         """
         Placing a translated node under a non-translated node should use the fallback translation.
         """
         level1 = SimpleTextPage.objects.get(translations__slug='level1')
         self.assertRaises(TranslationDoesNotExist, lambda: level1.create_translation('af', slug='level1-af'))
-
 
     def test_move_translation(self):
         cache.clear()
@@ -234,7 +220,6 @@ class ModelDataTests(AppTestCase):
 
         cache.clear()
 
-
     def test_duplicate_slug(self):
         """
         At the model level, a duplicate slug is automatically renamed.
@@ -264,7 +249,6 @@ class ModelDataTests(AppTestCase):
         page5.save()
         self.assertEqual(page5.slug, 'dup-slug-5')
 
-
     def test_file_model_urls(self):
         """
         When a plugin type is marked as "file" behave accordingly.
@@ -274,7 +258,6 @@ class ModelDataTests(AppTestCase):
 
         text_file2 = PlainTextFile.objects.create(slug='README', parent=self.level1, status=PlainTextFile.PUBLISHED, author=self.user, content="This is the README")
         self.assertEqual(text_file2.get_absolute_url(), '/level1/README')  # No slash!
-
 
     def test_file_model_parent(self):
         """
@@ -288,7 +271,6 @@ class ModelDataTests(AppTestCase):
             self.assertRaisesMessage(ValidationError, force_text(PageTreeForeignKey.default_error_messages['no_children_allowed']), lambda: text_file2.full_clean())
         else:
             self.assertRaises(ValidationError, lambda: text_file2.full_clean())
-
 
     def test_empty_translation_check(self):
         """

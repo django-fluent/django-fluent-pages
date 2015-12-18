@@ -4,6 +4,7 @@ from django.contrib.admin.widgets import AdminRadioSelect
 from fluent_pages.admin import PageAdmin
 from django.utils.translation import ugettext_lazy as _
 
+
 class RedirectNodeAdmin(PageAdmin):
     FIELDSET_REDIRECT = (_('Redirect settings'), {
         'fields': ('new_url', 'redirect_type'),

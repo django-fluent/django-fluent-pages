@@ -12,9 +12,9 @@ def improve_model_docstring(app, what, name, obj, options, lines):
     from django.db import models  # must be inside the function, to allow settings initialization first.
 
     if inspect.isclass(obj) and issubclass(obj, models.Model):
-        if django.VERSION >= (1,8):
+        if django.VERSION >= (1, 8):
             model_fields = obj._meta.get_fields()
-        elif django.VERSION >= (1,6):
+        elif django.VERSION >= (1, 6):
             model_fields = obj._meta.fields
         else:
             model_fields = obj._meta._fields()
@@ -40,8 +40,9 @@ def improve_model_docstring(app, what, name, obj, options, lines):
     return lines
 
 # Allow this module to be used as sphinx extension:
+
+
 def setup(app):
     # Generate docstrings for Django model fields
     # Register the docstring processor with sphinx
     app.connect('autodoc-process-docstring', improve_model_docstring)
-

@@ -19,22 +19,20 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
     """
     Queryset methods for UrlNode objects.
     """
+
     def __init__(self, *args, **kwargs):
         super(UrlNodeQuerySet, self).__init__(*args, **kwargs)
         self._parent_site = None
-
 
     def _clone(self, klass=None, setup=False, **kw):
         c = super(UrlNodeQuerySet, self)._clone(klass, setup, **kw)
         c._parent_site = self._parent_site
         return c
 
-
     def active_translations(self, language_code=None, **translated_fields):
         # overwritten to honor our settings instead of the django-parler defaults
         language_codes = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
         return self.translated(*language_codes, **translated_fields)
-
 
     def get_for_path(self, path, language_code=None):
         """
@@ -55,7 +53,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             return obj
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
-
 
     def best_match_for_path(self, path, language_code=None):
         """
@@ -82,7 +79,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         except IndexError:
             raise self.model.DoesNotExist(u"No published {0} found for the path '{1}'".format(self.model.__name__, path))
 
-
     def _split_path_levels(self, path):
         """
         Split the URL path, used by best_match_for_path()
@@ -100,7 +96,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
 
         return paths
 
-
     def get_for_key(self, key):
         """
         Return the UrlNode for the given key.
@@ -116,7 +111,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             else:
                 raise self.model.DoesNotExist("{0} with key='{1}' does not exist.".format(self.model.__name__, key))
 
-
     def parent_site(self, site):
         """
         .. versionadded:: 0.9 Filter to the given site.
@@ -129,7 +123,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         self._parent_site = site
         return self.filter(parent_site=site)
 
-
     def _single_site(self):
         """
         Make sure the queryset is filtered on a parent site, if that didn't happen already.
@@ -138,7 +131,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             return self.parent_site(settings.SITE_ID)
         else:
             return self
-
 
     def published(self, for_user=None):
         """
@@ -162,13 +154,11 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
                 Q(publication_end_date__gte=now())
             )
 
-
     def in_navigation(self, for_user=None):
         """
         Return only pages in the navigation.
         """
         return self.published(for_user=for_user).filter(in_navigation=True)
-
 
     def in_sitemaps(self):
         """
@@ -177,7 +167,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         """
         return self.published().filter(in_sitemaps=True)
 
-
     def url_pattern_types(self):
         """
         Return only page types which have a custom URLpattern attached.
@@ -185,13 +174,11 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         from fluent_pages.extensions import page_type_pool
         return self.filter(polymorphic_ctype_id__in=(page_type_pool.get_url_pattern_types()))
 
-
     def toplevel(self):
         """
         Return all pages which have no parent.
         """
         return self.filter(parent__isnull=True, level=0)
-
 
     def _mark_current(self, current_page):
         """
@@ -208,7 +195,6 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             return self
 
 
-
 class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
     """
     Extra methods attached to ``UrlNode.objects`` and ``Page.objects``.
@@ -218,7 +204,6 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
     # NOTE: Fetching the queryset is done by calling self.all() here on purpose.
     # By using .all(), the proper get_query_set()/get_queryset() will be used for each Django version.
     # Django 1.4/1.5 need to use get_query_set(), because the RelatedManager overrides that.
-
 
     def get_for_path(self, path, language_code=None):
         """
@@ -231,7 +216,6 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         return self.all().get_for_path(path, language_code=language_code)
 
-
     def best_match_for_path(self, path, language_code=None):
         """
         Return the UrlNode that is the closest parent to the given path.
@@ -242,7 +226,6 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         return self.all().best_match_for_path(path, language_code=language_code)
 
-
     def get_for_key(self, key):
         """
         .. versionadded:: 0.9 Return the UrlNode for the given key.
@@ -251,13 +234,11 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         return self.all().get_for_key(key)
 
-
     def parent_site(self, site):
         """
         .. versionadded:: 0.9 Filter to the given site.
         """
         return self.all().parent_site(site)
-
 
     def published(self, for_user=None):
         """
@@ -267,13 +248,11 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         return self.all().published(for_user=for_user)
 
-
     def in_navigation(self, for_user=None):
         """
         Return only pages in the navigation.
         """
         return self.all().in_navigation(for_user=for_user)
-
 
     def in_sitemaps(self):
         """
@@ -282,13 +261,11 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         return self.all().in_sitemaps()
 
-
     def toplevel(self):
         """
         Return all pages which have no parent.
         """
         return self.all().toplevel()
-
 
     def toplevel_navigation(self, current_page=None, for_user=None):
         """
@@ -308,7 +285,6 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
                 qs = qs.active_translations(language_code)
 
         return qs
-
 
     def url_pattern_types(self):
         """

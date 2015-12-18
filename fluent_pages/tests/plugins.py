@@ -12,7 +12,6 @@ class PluginTests(AppTestCase):
     def setUpTree(cls):
         WebShopPage.objects.create(title="Shop1", slug="shop", status=WebShopPage.PUBLISHED, author=cls.user)
 
-
     def test_app_page_urlconf(self):
         """
         App pages should have an URL resolver, that returns the custom views.
@@ -33,7 +32,6 @@ class PluginTests(AppTestCase):
     # TODO: test more stuff.
     # e.g. registration API, supported fields, expected available API functions
 
-
     def test_app_reverse(self):
         """
         The app_reverse function should find the proper CMS page where the app is mounted.
@@ -45,7 +43,6 @@ class PluginTests(AppTestCase):
 
         self.assertEqual(mixed_reverse('webshop_index'), '/shop/')
         self.assertEqual(mixed_reverse('webshop_article', kwargs={'slug': 'foobar'}), '/shop/foobar/')
-
 
     def test_app_reverse_multiple(self):
         """
@@ -66,7 +63,6 @@ class PluginTests(AppTestCase):
         self.assertEqual(mixed_reverse('webshop_index', current_page=shop2), '/shop2/')
         self.assertEqual(mixed_reverse('webshop_article', current_page=shop2, kwargs={'slug': 'foobar'}), '/shop2/foobar/')
 
-
     def test_app_reverse_multiple_language(self):
         """
         The app_reverse functions should skip pages that are not translated in the current language.
@@ -84,7 +80,6 @@ class PluginTests(AppTestCase):
         self.assertEqual(app_reverse('webshop_index', language_code='en'), '/shop3-en/')
         self.assertRaises(MultipleReverseMatch, lambda: app_reverse('webshop_index', language_code='fr'))
 
-
     def test_app_reverse_unmounted(self):
         """
         The app_reverse functions should raise an exception when the pagetype is not added in the page tree.
@@ -94,7 +89,6 @@ class PluginTests(AppTestCase):
         self.assertEqual(WebShopPage.objects.published().count(), 0)
         self.assertRaises(PageTypeNotMounted, lambda: app_reverse('webshop_index'))
         self.assertRaises(PageTypeNotMounted, lambda: mixed_reverse('webshop_index'))
-
 
 
 class PluginUrlTests(AppTestCase):

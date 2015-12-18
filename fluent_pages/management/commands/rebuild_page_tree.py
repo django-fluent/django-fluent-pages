@@ -80,7 +80,6 @@ class Command(NoArgsCommand):
                     translation.master.parent_site_id, translation.master_id, translation.language_code, translation._cached_url
                 )))
 
-
     def _construct_url(self, language_code, child_id, parents, slugs, overrides):
         fallback = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(language_code)
 

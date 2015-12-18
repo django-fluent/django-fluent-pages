@@ -11,7 +11,6 @@ from fluent_pages.models import UrlNode
 from fluent_utils.dry.admin import MultiSiteAdminMixin
 
 
-
 class PageTypeChoiceForm(NodeTypeChoiceForm):
     type_label = _("Page type")
 
@@ -60,7 +59,6 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
             'screen': ('fluent_pages/admin/pagetree.css',)
         }
 
-
     # ---- Polymorphic tree overrides ----
 
     def get_child_models(self):
@@ -73,7 +71,6 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         for plugin in page_type_pool.get_plugins():
             child_models.append((plugin.model, plugin.model_admin))
         return child_models
-
 
     def get_child_type_choices(self, request=None, action=None):
         """
@@ -92,11 +89,9 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         choices.sort(key=lambda choice: (priorities[choice[0]], choice[1]))
         return choices
 
-
     # Provide some migration assistance for the users of the 0.8.1 alpha release:
     def get_child_model_classes(self):
         raise DeprecationWarning("Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages.")
-
 
     # ---- parler overrides ----
 
@@ -105,7 +100,6 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         # This also enables FluentContentsPageAdmin.get_translation_objects() to be called.
         real_admin = self._get_real_admin(object_id)
         return real_admin.delete_translation(request, object_id, language_code)
-
 
     # ---- List code ----
 
@@ -131,7 +125,6 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
     status_column.allow_tags = True
     status_column.short_description = _('Status')
 
-
     def can_preview_object(self, urlnode):
         """ Override whether the node can be previewed. """
         if not hasattr(urlnode, 'get_absolute_url') or not urlnode.is_published:
@@ -145,13 +138,11 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         else:
             return True
 
-
     def get_language_short_title(self, language_code):
         """
         Turn the language code to uppercase.
         """
         return language_code.upper()
-
 
     def get_search_results(self, request, queryset, search_term):
         # HACK: make sure MPTT doesn't cause errors when finding sub-level results.
@@ -159,7 +150,6 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         if search_term:
             queryset = queryset.filter(level=0)
         return super(UrlNodeParentAdmin, self).get_search_results(request, queryset, search_term)
-
 
     # ---- Bulk actions ----
 
@@ -171,6 +161,5 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         else:
             message = "{0} pages were marked as published.".format(rows_updated)
         self.message_user(request, message)
-
 
     make_published.short_description = _("Mark selected objects as published")

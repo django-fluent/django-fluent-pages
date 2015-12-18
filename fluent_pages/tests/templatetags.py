@@ -10,7 +10,6 @@ class TemplateTagTests(AppTestCase):
     root_url = '/'
     subpage1_url = '/test_subpage1/'
 
-
     @classmethod
     def setUpTree(cls):
         root = SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
@@ -18,7 +17,6 @@ class TemplateTagTests(AppTestCase):
 
         level1a = SimpleTextPage.objects.create(title="Level1a", slug="level1a", parent=root, status=SimpleTextPage.PUBLISHED, author=cls.user)
         level1b = SimpleTextPage.objects.create(title="Level1b", slug="level1b", parent=root, status=SimpleTextPage.PUBLISHED, author=cls.user)
-
 
     def test_menu_404(self):
         response = self.client.get('/404/')

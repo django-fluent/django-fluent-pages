@@ -41,7 +41,6 @@ class DecoratingQuerySet(QuerySet):
         c._decorate_funcs = self._decorate_funcs
         return c
 
-
     def decorate(self, fn):
         """
         Register a function which will decorate a retrieved object before it's returned.
@@ -49,7 +48,6 @@ class DecoratingQuerySet(QuerySet):
         if fn not in self._decorate_funcs:
             self._decorate_funcs.append(fn)
         return self
-
 
     def iterator(self):
         """
@@ -68,8 +66,9 @@ class DecoratorManager(models.Manager):
     """
     The manager class which ensures the enhanced DecoratorQuerySet object is used.
     """
+
     def get_queryset(self):
         return DecoratingQuerySet(self.model, using=self._db)
 
-    if django.VERSION < (1,8):
+    if django.VERSION < (1, 8):
         get_query_set = get_queryset

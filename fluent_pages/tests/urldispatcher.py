@@ -20,7 +20,6 @@ class UrlDispatcherTests(AppTestCase):
         WebShopPage.objects.create(id=4, title="Shop1", slug="shop", status=SimpleTextPage.PUBLISHED, author=cls.user)
         PlainTextFile.objects.create(id=5, slug='README', status=PlainTextFile.PUBLISHED, author=cls.user, content="This is the README")
 
-
     def test_get_for_path(self):
         """
         The testdata should be found under the expected URLs.
@@ -33,7 +32,6 @@ class UrlDispatcherTests(AppTestCase):
 
         # Test exceptions
         self.assertRaises(SimpleTextPage.DoesNotExist, lambda: SimpleTextPage.objects.get_for_path('/not-found/'))
-
 
     def test_get_append_slash_redirect(self):
         """
@@ -49,7 +47,6 @@ class UrlDispatcherTests(AppTestCase):
         # However, non existing pages should not get an APPEND_SLASH redirect
         self.assert404('/not-found')
 
-
     def test_hide_unpublished(self):
         """
         Unpublished pages should not appear
@@ -57,7 +54,6 @@ class UrlDispatcherTests(AppTestCase):
         self.assertTrue(SimpleTextPage.objects.filter(translations__slug='unpublished').exists(), "page /unpublished/ should exist in the database.")
         self.assert404('/unpublished/')
         self.assert404('/unpublished')   # With default APPEND_SLASH=True
-
 
     def test_get_for_path_script_name(self):
         """
@@ -69,7 +65,6 @@ class UrlDispatcherTests(AppTestCase):
             # Note the test client always operates relative to the Django script_name root.
             self.assert200('/')
             self.assert200('/sibling1/')
-
 
     def test_page_output(self):
         """
@@ -84,7 +79,6 @@ class UrlDispatcherTests(AppTestCase):
         self.assertTemplateUsed(response, 'testapp/simpletextpage.html')
         self.assertContains(response, '<div id="test_contents">TEST_CONTENTS</div>')
 
-
     def test_app_page_output(self):
         """
         The resolver should detect that the plugin has an URLconf that overlays the CMS page index url.
@@ -96,7 +90,6 @@ class UrlDispatcherTests(AppTestCase):
         response = self.client.get('/shop/')
         self.assertContains(response, 'test_webshop: index_page')  # The URLconf is an overlay over the standard get_response()
 
-
     def test_app_page_url(self):
         """
         The URL that is a mix of DB page + URLconf should match and return.
@@ -104,14 +97,12 @@ class UrlDispatcherTests(AppTestCase):
         response = self.client.get('/shop/foobar/')
         self.assertContains(response, 'test_webshop: article: foobar')
 
-
     def test_app_page_unicode_url(self):
         """
         The URL that is a mix
         """
         response = self.client.get(u'/shop/\u20ac/')
         self.assertContains(response, u'test_webshop: article: \u20ac')
-
 
     def test_app_page_append_slash(self):
         """
@@ -128,7 +119,6 @@ class UrlDispatcherTests(AppTestCase):
         # However, non resolvable app pages should not get an APPEND_SLASH redirect
         self.assert404('/shop/article1/foo')
 
-
     def test_plain_text_file(self):
         """
         URLs that point to files should return properly.
@@ -136,7 +126,6 @@ class UrlDispatcherTests(AppTestCase):
         response = self.client.get('/README')
         self.assertEqual(response.content.decode('utf-8'), str('This is the README'))
         self.assertEqual(response['Content-Type'], 'text/plain')
-
 
     def test_unicode_404_internal(self):
         """
@@ -152,7 +141,6 @@ class UrlDispatcherTests(AppTestCase):
             lambda lang: qs.get_for_path(u'/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/', language_code=lang)
         ))
 
-
     def test_unicode_404(self):
         """
         Urls with unicode characters should return proper 404 pages, not crash on it.
@@ -160,12 +148,11 @@ class UrlDispatcherTests(AppTestCase):
         # Non existing page
         self.assert404(u'/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/')
 
-
     def test_admin_redirect(self):
         """
         Urls can end with @admin to be redirected to the admin.
         """
-        if django.VERSION >= (1,7):
+        if django.VERSION >= (1, 7):
             # Redirects again to fixed login URL.
             target_status_code = 302
         else:
@@ -184,7 +171,6 @@ class UrlDispatcherTests(AppTestCase):
         # app page, or the actual object. Currently this is not supported.
         self.assertRedirects(self.client.get('/shop/foobar/@admin'), 'http://testserver/shop/foobar/', status_code=302)
 
-
     def test_resolve_reverse(self):
         """
         Test that the resolve/reverse works on the URL conf.
@@ -202,7 +188,6 @@ class UrlDispatcherTests(AppTestCase):
         self.assertEqual(reverse3, '/')
 
 
-
 class UrlDispatcherNonRootTests(AppTestCase):
     """
     Tests for URL resolving with a non-root URL include.
@@ -210,11 +195,9 @@ class UrlDispatcherNonRootTests(AppTestCase):
 
     urls = 'fluent_pages.tests.testapp.urls_nonroot'
 
-
     @classmethod
     def setUpTree(cls):
         SimpleTextPage.objects.create(id=1, title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
-
 
     def test_urlconf_root(self):
         """
@@ -229,12 +212,11 @@ class UrlDispatcherNonRootTests(AppTestCase):
         self.assertEqual(sibling1._cached_url, '/sibling1/', "UrlNode keeps paths relative to the include()")
         # NOTE: admin needs to be tested elsewhere for this too.
 
-
     def test_admin_redirect(self):
         """
         Urls can end with @admin to be redirected to the admin.
         """
-        if django.VERSION >= (1,7):
+        if django.VERSION >= (1, 7):
             # Redirects again to fixed login URL.
             target_status_code = 302
         else:

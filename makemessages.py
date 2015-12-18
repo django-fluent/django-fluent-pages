@@ -5,6 +5,7 @@ from os import path
 from django.conf import settings
 from django.core.management import call_command
 
+
 def main():
     if not settings.configured:
         module_root = path.dirname(path.realpath(__file__))
@@ -17,10 +18,11 @@ def main():
             ),
         )
 
-    if django.VERSION >= (1,7):
+    if django.VERSION >= (1, 7):
         django.setup()
 
     makemessages()
+
 
 def makemessages():
     os.chdir('fluent_pages')
