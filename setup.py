@@ -43,7 +43,7 @@ setup(
         'django-mptt>=0.5.5',              # Still supporting Django 1.5, use mptt 0.6 for Python 3 support.
         'django-parler>=1.4',              # Needed for Django 1.8 compatibility
         'django-polymorphic>=0.7',         # Needed for Django 1.8 compatibility
-        'django-polymorphic-tree>=1.1',    # Enforce Python 3 compatible versions
+        'django-polymorphic-tree>=1.1.2',  # Enforce Python 3 compatible versions
         'django-tag-parser>=2.1',
         'future>=0.12.2',
         'six>=1.5.2',
