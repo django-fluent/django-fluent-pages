@@ -267,7 +267,7 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
         """
         return self.all().toplevel()
 
-    def toplevel_navigation(self, current_page=None, for_user=None):
+    def toplevel_navigation(self, current_page=None, for_user=None, language_code=None):
         """
         Return all toplevel items, ordered by menu ordering.
 
@@ -277,7 +277,15 @@ class UrlNodeManager(PolymorphicMPTTModelManager, TranslatableManager):
 
         # Make sure only translated menu items are visible.
         if is_multilingual_project():
-            language_code = current_page.get_current_language() if current_page is not None else get_language()
+            if language_code is None:
+                if current_page is None or getattr(current_page, '_fetched_in_fallback_language', False):
+                    # Show the menu in the current site language.
+                    # When a page is fetched in a fallback, the menu shouldn't change.
+                    language_code = get_language()
+                else:
+                    # This exists to preserve old behavior. Maybe it can be removed:
+                    language_code = current_page.get_current_language()
+
             lang_dict = appsettings.FLUENT_PAGES_LANGUAGES.get_language(language_code)
             if lang_dict['hide_untranslated_menu_items']:
                 qs = qs.translated(language_code)
