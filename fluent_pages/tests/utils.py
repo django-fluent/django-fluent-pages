@@ -1,3 +1,4 @@
+import django
 from future.builtins import str
 from six import iteritems
 from functools import wraps
@@ -5,12 +6,15 @@ from django.conf import settings, UserSettingsHolder
 from django.core.management import call_command
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.contrib.sites.models import Site
-from django.db.models import loading
 from django.test import TestCase
-from django.utils.importlib import import_module
 from fluent_pages.models.db import UrlNode
 from fluent_utils.django_compat import get_user_model
 import os
+
+try:
+    from importlib import import_module
+except ImportError:
+    from django.utils.importlib import import_module  # Python 2.6
 
 
 class AppTestCase(TestCase):
@@ -27,7 +31,6 @@ class AppTestCase(TestCase):
         super(AppTestCase, cls).setUpClass()
 
         # Avoid early import, triggers AppCache
-        from django.template.loaders import app_directories
         User = get_user_model()
 
         if cls.install_apps:
@@ -39,15 +42,26 @@ class AppTestCase(TestCase):
                     settings.INSTALLED_APPS = (appname,) + tuple(settings.INSTALLED_APPS)
                     run_syncdb = True
 
-                    # Flush caches
                     testapp = import_module(appname)
-                    loading.cache.loaded = False
-                    app_directories.app_template_dirs += (
-                        os.path.join(os.path.dirname(testapp.__file__), 'templates'),
-                    )
+
+                    # Flush caches
+                    if django.VERSION < (1, 9):
+                        from django.template.loaders import app_directories
+                        from django.db.models import loading
+                        loading.cache.loaded = False
+
+                        app_directories.app_template_dirs += (
+                            os.path.join(os.path.dirname(testapp.__file__), 'templates'),
+                        )
+                    else:
+                        from django.template.utils import get_app_template_dirs
+                        get_app_template_dirs.cache_clear()
 
             if run_syncdb:
-                call_command('syncdb', verbosity=0)  # may run south's overlaid version
+                if django.VERSION < (1, 7):
+                    call_command('syncdb', verbosity=0)  # may run south's overlaid version
+                else:
+                    call_command('migrate', verbosity=0)
 
         # Create basic objects
         # 1.4 does not create site automatically with the defined SITE_ID, 1.3 does.

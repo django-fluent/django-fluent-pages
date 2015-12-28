@@ -12,12 +12,17 @@ from django.core.urlresolvers import RegexURLResolver
 from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
-from django.utils.importlib import import_module
 
 from fluent_pages import appsettings
 from fluent_pages.adminui import PageAdmin
 
 from six import string_types
+
+try:
+    from importlib import import_module
+except ImportError:
+    from django.utils.importlib import import_module  # Python 2.6
+
 
 __all__ = (
     'PageTypePlugin',

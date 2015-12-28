@@ -36,8 +36,8 @@ class DecoratingQuerySet(QuerySet):
         super(DecoratingQuerySet, self).__init__(*args, **kwargs)
         self._decorate_funcs = []
 
-    def _clone(self, klass=None, setup=False, **kw):
-        c = super(DecoratingQuerySet, self)._clone(klass, setup, **kw)
+    def _clone(self, *args, **kwargs):
+        c = super(DecoratingQuerySet, self)._clone(*args, **kwargs)
         c._decorate_funcs = self._decorate_funcs
         return c
 

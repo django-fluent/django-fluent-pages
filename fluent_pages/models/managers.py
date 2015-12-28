@@ -24,8 +24,8 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         super(UrlNodeQuerySet, self).__init__(*args, **kwargs)
         self._parent_site = None
 
-    def _clone(self, klass=None, setup=False, **kw):
-        c = super(UrlNodeQuerySet, self)._clone(klass, setup, **kw)
+    def _clone(self, *args, **kwargs):
+        c = super(UrlNodeQuerySet, self)._clone(*args, **kwargs)
         c._parent_site = self._parent_site
         return c
 

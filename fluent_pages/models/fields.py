@@ -1,7 +1,8 @@
+import django
 from django.db import models
-from django.db.models.fields.related import ReverseSingleRelatedObjectDescriptor
 from django.utils.translation import ugettext_lazy as _
 from polymorphic_tree.models import PolymorphicTreeForeignKey
+from fluent_utils.django_compat import ForwardManyToOneDescriptor
 from fluent_pages import forms
 
 
@@ -39,7 +40,7 @@ class TemplateFilePathField(models.FilePathField):
         return name, path, args, kwargs
 
 
-class TranslatedForeignKeyDescriptor(ReverseSingleRelatedObjectDescriptor):
+class TranslatedForeignKeyDescriptor(ForwardManyToOneDescriptor):
 
     def __get__(self, instance, instance_type=None):
         # let the .parent return an object in the same language as our selves.
@@ -58,8 +59,12 @@ class PageTreeForeignKey(PolymorphicTreeForeignKey):
         'no_children_allowed': _("The selected page cannot have sub pages."),
     }
 
-    def contribute_to_class(self, cls, name):
-        super(PageTreeForeignKey, self).contribute_to_class(cls, name)
+    def contribute_to_class(self, cls, name, virtual_only=False):
+        if django.VERSION >= (1, 8):
+            super(PageTreeForeignKey, self).contribute_to_class(cls, name, virtual_only=virtual_only)
+        else:
+            super(PageTreeForeignKey, self).contribute_to_class(cls, name)
+
         setattr(cls, self.name, TranslatedForeignKeyDescriptor(self))  # override what ForeignKey does.
 
 
