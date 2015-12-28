@@ -6,7 +6,7 @@ import re
 from future.builtins import str
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch
+from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch, get_script_prefix
 from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.template.response import TemplateResponse
 from django.utils import translation
@@ -83,7 +83,8 @@ class CmsPageDispatcher(GetPathMixin, View):
         # Since this view acts as a catch-all, give better error messages
         # when mistyping an admin URL. Don't mention anything about CMS pages in /admin.
         try:
-            if self.path.startswith(reverse('admin:index', prefix='/')):
+            full_path = get_script_prefix() + self.path.lstrip('/')
+            if full_path.startswith(reverse('admin:index')):
                 raise Http404(u"No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(self.path))
         except NoReverseMatch:
             # Admin might not be loaded.
