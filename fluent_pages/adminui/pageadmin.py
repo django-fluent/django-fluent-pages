@@ -1,3 +1,5 @@
+import django
+
 native_str = str  # no future.builtins.str, breaks default_change_form_template in Django 1.5, Python 2.7.5
 from future.builtins import int
 import copy
@@ -79,7 +81,10 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
         # It also partially fixes Django 1.3, which would wrongly point the url to ../../../fluent_pages/urlnode/ otherwise.
         if db_field.name == 'parent' and isinstance(field.widget, ForeignKeyRawIdWidget):
             field.widget.rel = copy.copy(field.widget.rel)
-            field.widget.rel.to = Page
+            if django.VERSION >= (1, 9):
+                field.widget.rel.model = Page
+            else:
+                field.widget.rel.to = Page
 
         return field
 
