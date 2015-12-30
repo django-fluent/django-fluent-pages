@@ -1,9 +1,10 @@
 Changelog
 =========
 
-Changes in git
---------------
+Changes in version 1.0b1 (2015-12-30)
+-------------------------------------
 
+* Added Django 1.9 support
 * Added translation support to the ``fluent_pages.pagetypes.textfile`` type, to translate the content (but not the type).
 * Added ``draft`` CSS class to unpublished menu items that are only visible for staff members.
 * Added ``FluentPagesConfig`` to use Django 1.7 appconfigs.
