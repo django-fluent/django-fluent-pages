@@ -24,6 +24,7 @@ Changes in version 1.0b1 (2015-12-30)
 * Fixed showing pages when there is no translation is created yet.
 * Fixed JavaScript event binding for dynamic related-lookup fields.
 * Fixed ``welcome.json`` fixture
+* Dropped Django 1.4 and Python 3.2 support.
 * **Backwards incompatible:** The ``FluentPageBase`` class is now removed, use ``AbstractFluentPage`` instead.
 
 
