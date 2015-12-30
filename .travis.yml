@@ -4,8 +4,8 @@ python:
   - "2.7"
   - "2.6"
 env:
-  - PACKAGES="django==1.5.8"
-  - PACKAGES="django==1.6.5"
+  - PACKAGES="django==1.5.8 django-mptt<0.7.0"
+  - PACKAGES="django==1.6.5 django-mptt<0.8.0"
   - PACKAGES="django==1.7.1"
   - PACKAGES="django==1.8"
 matrix:
@@ -14,7 +14,9 @@ matrix:
     env: PACKAGES="django==1.7.1"
   - python: "2.6"
     env: PACKAGES="django==1.8"
+cache: pip
 install:
+  - pip install -U pip wheel
   - pip install -q $PACKAGES
   - pip install -q -e .
 script:
