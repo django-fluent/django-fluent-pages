@@ -10,9 +10,9 @@ This can be done using:
         'pages': PageSitemap,
     }
 
-    urlpatterns += patterns('',
+    urlpatterns += [
         url(r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
-    )
+    ]
 """
 from django.contrib.sitemaps import Sitemap
 from fluent_pages.models import UrlNode

@@ -1,9 +1,15 @@
 import fluent_pages.admin  # Register model
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.contrib import admin
+from django.http import Http404
 
-urlpatterns = patterns('',
+
+def simulate_404(request):
+    raise Http404("Test")
+
+
+urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^404/$', 'django.views.defaults.page_not_found'),
+    url(r'^404/$', simulate_404),
     url(r'', include('fluent_pages.urls')),
-)
+]

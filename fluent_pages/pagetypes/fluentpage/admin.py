@@ -102,9 +102,9 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         Introduce more urls
         """
         urls = super(FluentPageAdmin, self).get_urls()
-        my_urls = patterns('',
+        my_urls = [
             url(r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view))
-        )
+        ]
         return my_urls + urls
 
     def get_layout_view(self, request, id):
