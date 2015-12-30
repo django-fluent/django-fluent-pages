@@ -66,7 +66,7 @@ class AppTestCase(TestCase):
         # Create basic objects
         # 1.4 does not create site automatically with the defined SITE_ID, 1.3 does.
         Site.objects.get_or_create(id=settings.SITE_ID, defaults=dict(domain='django.localhost', name='django at localhost'))
-        cls.user, _ = User.objects.get_or_create(is_superuser=True, is_staff=True, username="admin")
+        cls.user, _ = User.objects.get_or_create(is_superuser=True, is_staff=True, username="fluent-pages-admin")
 
         # Create tree.
         # Reset data first because the testcase class setup runs outside the transaction
