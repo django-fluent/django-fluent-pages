@@ -77,14 +77,14 @@ class ModelDataTests(AppTestCase):
         Test the splitting of URL paths, which is the core of best_match_for_path()
         """
         # Test standard path levels
-        self.assertEqual(Page.objects._split_path_levels('/level1/level2/'), ['/', '/level1/', '/level1/level2/'])
+        self.assertEqual(Page.objects.all()._split_path_levels('/level1/level2/'), ['/', '/level1/', '/level1/level2/'])
 
         # Not adding a slash is reflected in the results
-        self.assertEqual(Page.objects._split_path_levels('/level1/level2/noslash.txt'), ['/', '/level1/', '/level1/level2/', '/level1/level2/noslash.txt'])
-        self.assertEqual(Page.objects._split_path_levels('/level1/level2'), ['/', '/level1/', '/level1/level2'])
+        self.assertEqual(Page.objects.all()._split_path_levels('/level1/level2/noslash.txt'), ['/', '/level1/', '/level1/level2/', '/level1/level2/noslash.txt'])
+        self.assertEqual(Page.objects.all()._split_path_levels('/level1/level2'), ['/', '/level1/', '/level1/level2'])
 
         # Garbage in, garbage out
-        self.assertEqual(Page.objects._split_path_levels('level1/level2'), ['level1/', 'level1/level2'])
+        self.assertEqual(Page.objects.all()._split_path_levels('level1/level2'), ['level1/', 'level1/level2'])
 
     def test_polymorphic(self):
         """
