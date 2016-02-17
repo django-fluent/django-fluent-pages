@@ -15,7 +15,8 @@ from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
-from django.db import models
+from django.db import connection, models
+from django.db.backends.utils import truncate_name
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFieldsModel, TranslatedFields
 from parler.fields import TranslatedField
@@ -52,7 +53,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
             # Make sure only values are updated if there is no manual edit, or a proxy model for UrlNode (e.g. HtmlPage)
             if meta.db_table.startswith(meta.app_label + '_') and meta.db_table != 'fluent_pages_urlnode':
                 model_name = meta.db_table[len(meta.app_label) + 1:]
-                meta.db_table = "pagetype_{0}_{1}".format(meta.app_label, model_name)
+                meta.db_table = truncate_name("pagetype_{0}_{1}".format(meta.app_label, model_name), connection.ops.max_name_length())
 
                 if hasattr(meta, 'original_attrs'):
                     # Make sure that the Django 1.7 migrations also pick up this change!
