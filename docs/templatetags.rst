@@ -12,7 +12,7 @@ Load the tags using:
 
 
 The breadcrumb
----------------
+--------------
 
 The breadcrumb of the current page can be rendered using:
 
@@ -40,7 +40,7 @@ The breadcrumb template could look like:
 
 
 The menu
----------
+--------
 
 The menu of the site can be rendered using:
 
@@ -48,7 +48,16 @@ The menu of the site can be rendered using:
 
     {% render_menu %}
 
-The menu depth and template are configurable:
+The number of levels can be limited using the ``depth`` parameter:
+
+.. code-block:: html+django
+
+    {% render_menu depth=1 %}
+
+Custom menu template
+~~~~~~~~~~~~~~~~~~~~
+
+The template parameter offers a way to define your own menu layout. For example:
 
 .. code-block:: html+django
 
@@ -62,7 +71,7 @@ The menu template could look like:
     {% if menu_items %}
       <ul>
         {% recursetree menu_items %}
-        <li class="{% if node.is_active %}active{% endif %}{% if node.is_last_child %} last{% endif %}">
+        <li class="{% if node.is_active or node.is_child_active %}active{% endif %}{% if node.is_draft %} draft{% endif %}">
           <a href="{{ node.url }}">{{ node.title }}</a>
           {% if children %}<ul>{{ children }}</ul>{% endif %}
         </li>{% endrecursetree %}
@@ -71,12 +80,42 @@ The menu template could look like:
       <!-- Menu is empty -->
     {% endif %}
 
-You can render just a portion of the menu using use the ``parent`` keyword argument.
-It expects a page object, URL path or page ID of the page you want to start at:
+The ``node`` variable is exposed by the ``{% recursetree %}`` tag.
+It's a :class:`~fluent_pages.models.navigation.PageNavigationNode` object.
+
+To use a different template, either override the ``fluent_pages/parts/menu.html`` template in your project,
+or use the ``template`` variable (recommended). For example, for a Bootstrap 3 project, you can use the following template:
 
 .. code-block:: html+django
 
-    {% render_menu parent=page max_depth=1 %}
+    {% load mptt_tags %}
+    {% if menu_items %}
+    <ul class="nav navbar-nav">
+      {% recursetree menu_items %}
+      <li class="{% if node.is_active or node.is_child_active %}active{% endif %}">
+        {% if children %}
+          <a href="{{ node.url }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ node.title }} <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">{{ children }}</ul>
+        {% else %}
+          <a href="{{ node.url }}">{{ node.title }}</a>
+        {% endif %}
+      </li>{% endrecursetree %}
+    </ul>
+    {% else %}
+      <!-- Menu is empty -->
+    {% endif %}
+
+
+Rendering side menu's
+~~~~~~~~~~~~~~~~~~~~~
+
+You can render a subsection of the menu using use the ``parent`` keyword argument.
+It expects a page object, URL path or page ID of the page you want to start at.
+Combined with the ``template`` argument, this gives
+
+.. code-block:: html+django
+
+    {% render_menu parent=page max_depth=1 template="partials/side_menu.html" %}
     {% render_menu parent='/documentation/' max_depth=1 %}
     {% render_menu parent=8 max_depth=1 %}
 
