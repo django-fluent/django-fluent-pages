@@ -1,13 +1,13 @@
 Changelog
 =========
 
-Changes in git
---------------
+Changes in 1.0b2 (2016-02-23)
+-----------------------------
 
-* Added automatic configuration for django-staff-toolbar_.
-* Add ``class="active"`` in the default menu template when a child menu is active.
-* Fixed truncating long ``db_table`` names.
 * Fixed published admin icon for Django 1.9
+* Fixed truncating long ``db_table`` names.
+* Added ``class="active"`` in the default menu template for menu's where a child item is active.
+* Added automatic configuration for django-staff-toolbar_.
 
 
 Changes in version 1.0b1 (2015-12-30)
