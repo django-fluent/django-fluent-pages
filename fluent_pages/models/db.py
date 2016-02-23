@@ -16,7 +16,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
 from django.db import connection, models
-from django.db.backends.utils import truncate_name
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFieldsModel, TranslatedFields
 from parler.fields import TranslatedField
@@ -25,7 +24,7 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBa
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from fluent_utils.django_compat import transaction_atomic, AUTH_USER_MODEL
+from fluent_utils.django_compat import transaction_atomic, truncate_name, AUTH_USER_MODEL
 from parler.utils.context import switch_language
 from slug_preview.models import SlugPreviewField
 from future.utils import with_metaclass, itervalues, iteritems
