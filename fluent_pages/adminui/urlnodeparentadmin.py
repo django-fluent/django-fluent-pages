@@ -107,20 +107,24 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
     # When making changes to the list, test both the JavaScript and non-JavaScript variant.
     # The jqTree variant still uses the server-side rendering for the colums.
 
-    STATUS_ICONS = (
-        (UrlNode.PUBLISHED, 'icon-yes.gif'),
-        (UrlNode.DRAFT,     'icon-unknown.gif'),
-    )
+    if django.VERSION >= (1, 9):
+        STATUS_ICONS = (
+            (UrlNode.PUBLISHED, 'admin/img/icon-yes.gif'),
+            (UrlNode.DRAFT,     'admin/img/icon-unknown.gif'),
+        )
+    else:
+        STATUS_ICONS = (
+            (UrlNode.PUBLISHED, 'admin/img/icon-yes.svg'),
+            (UrlNode.DRAFT,     'admin/img/icon-unknown.svg'),
+        )
 
     def status_column(self, urlnode):
         status = urlnode.status
         title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
         icon  = [rec[1] for rec in self.STATUS_ICONS if rec[0] == status].pop()
-        if django.VERSION >= (1, 4):
-            admin = settings.STATIC_URL + 'admin/img/'
-        else:
-            admin = settings.ADMIN_MEDIA_PREFIX + 'img/admin/'
-        return u'<img src="{admin}{icon}" width="10" height="10" alt="{title}" title="{title}" />'.format(admin=admin, icon=icon, title=title)
+        return u'<img src="{static_url}{icon}" width="10" height="10" alt="{title}" title="{title}" />'.format(
+            static_url=settings.STATIC_URL, icon=icon, title=title
+        )
 
     status_column.allow_tags = True
     status_column.short_description = _('Status')
