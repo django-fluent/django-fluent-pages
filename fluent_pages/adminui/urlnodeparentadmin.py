@@ -109,20 +109,20 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
 
     if django.VERSION >= (1, 9):
         STATUS_ICONS = (
-            (UrlNode.PUBLISHED, 'admin/img/icon-yes.gif'),
-            (UrlNode.DRAFT,     'admin/img/icon-unknown.gif'),
+            (UrlNode.PUBLISHED, 'admin/img/icon-yes.svg'),
+            (UrlNode.DRAFT,     'admin/img/icon-unknown.svg'),
         )
     else:
         STATUS_ICONS = (
-            (UrlNode.PUBLISHED, 'admin/img/icon-yes.svg'),
-            (UrlNode.DRAFT,     'admin/img/icon-unknown.svg'),
+            (UrlNode.PUBLISHED, 'admin/img/icon-yes.gif'),
+            (UrlNode.DRAFT,     'admin/img/icon-unknown.gif'),
         )
 
     def status_column(self, urlnode):
         status = urlnode.status
         title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
         icon  = [rec[1] for rec in self.STATUS_ICONS if rec[0] == status].pop()
-        return u'<img src="{static_url}{icon}" width="10" height="10" alt="{title}" title="{title}" />'.format(
+        return u'<img src="{static_url}{icon}" alt="{title}" title="{title}" />'.format(
             static_url=settings.STATIC_URL, icon=icon, title=title
         )
 
