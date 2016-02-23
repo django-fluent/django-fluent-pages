@@ -41,10 +41,10 @@ setup(
     install_requires=[
         'django-fluent-utils>=1.2.3',      # DRY utility code
         'django-mptt>=0.5.5',              # Still supporting Django 1.5, use mptt 0.6 for Python 3 support.
-        'django-parler>=1.6',              # Needed for Django 1.9 compatibility
+        'django-parler>=1.6.1',            # Needed for Django 1.9 compatibility
         'django-polymorphic>=0.9.1',       # Needed for Django 1.8 compatibility
         'django-polymorphic-tree>=1.2.3',  # Needed for Django 1.9 compatibility
-        'django-slug-preview>=1.0',
+        'django-slug-preview>=1.0.1',
         'django-tag-parser>=2.1',
         'future>=0.12.2',
         'six>=1.5.2',
