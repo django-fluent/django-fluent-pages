@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Changes in git
+--------------
+
+* Added automatic configuration for django-staff-toolbar_.
+* Add ``class="active"`` in the default menu template when a child menu is active.
+* Fixed truncating long ``db_table`` names.
+* Fixed published admin icon for Django 1.9
+
+
 Changes in version 1.0b1 (2015-12-30)
 -------------------------------------
 
@@ -260,4 +269,5 @@ First public release
 .. _django-parler: https://github.com/edoburu/django-parler
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 .. _django-slug-preview: https://github.com/edoburu/django-slug-preview
+.. _django-staff-toolbar: https://github.com/edoburu/django-staff-toolbar
 .. _django-tag-parser: https://github.com/edoburu/django-tag-parser
