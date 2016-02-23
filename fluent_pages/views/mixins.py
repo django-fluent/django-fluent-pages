@@ -1,6 +1,7 @@
 """
 Mixins to simplify creating URLpattern views in custom page pages.
 """
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from fluent_pages.urlresolvers import mixed_reverse
 from parler.views import ViewUrlMixin
@@ -37,6 +38,15 @@ class CurrentPageMixin(ViewUrlMixin):
         # Delay the 'site' query until the variable is read, and cache it afterwards.
         if page is not None:
             context.update(page.plugin.get_context(self.request, page))
+
+            # Improve the integration of django-staff-toolbar, if used.
+            # However, avoid being too disruptive, in case the view exposes an object themselves.
+            if 'staff_toolbar' in settings.INSTALLED_APPS:
+                if getattr(self, 'object', None) is None \
+                        and 'object' not in context \
+                        and not hasattr(self, 'get_staff_object') \
+                        and not hasattr(self.request, 'staff_object'):
+                    self.request.staff_object = page
 
         return context
 
