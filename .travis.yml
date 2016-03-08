@@ -24,7 +24,7 @@ install:
   - pip install -q $PACKAGES
   - pip install -q -e .
 script:
-  - converage run --source=fluent_pages runtests.py
+  - coverage run --source=fluent_pages runtests.py
 after_success:
   - codecov
 
