@@ -105,11 +105,16 @@ class PageNavigationNode(NavigationNode):
 
     @property
     def is_active(self):
-        return self._page.pk and self._current_page is not None and self._page.pk == self._current_page.pk
+        return self._page.pk \
+               and self._current_page is not None \
+               and self._page.pk == self._current_page.pk
 
     @property
     def is_child_active(self):
-        return self._page.pk and self._current_page is not None and self._page.tree_id == self._current_page.tree_id
+        return self._page.pk \
+               and self._current_page is not None \
+               and self._page.tree_id == self._current_page.tree_id \
+               and self._page.level < self._current_page.level
 
     @property
     def is_published(self):

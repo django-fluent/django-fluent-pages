@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Changes in git
+--------------
+
+* Fixed ``node.is_child_active`` for selected parent menu's.
+
 Changes in 1.0b2 (2016-02-23)
 -----------------------------
 
