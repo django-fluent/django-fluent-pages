@@ -41,7 +41,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
     """
-    filter_sites = appsettings.FLUENT_PAGES_FILTER_SITE_ID
+    filter_site = appsettings.FLUENT_PAGES_FILTER_SITE_ID
     base_model = UrlNode
     add_type_form = PageTypeChoiceForm
 
