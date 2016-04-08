@@ -6,6 +6,7 @@ import fluent_pages.models.db
 from fluent_pages import appsettings
 from django.conf import settings
 import fluent_pages.models.fields
+import slug_preview.models
 
 
 def make_site(apps, schema_editor):
@@ -43,7 +44,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'db_table': 'fluent_pages_htmlpage_translation',
-                'verbose_name': 'html page Translation',
+                'verbose_name': 'SEO Translation',
+                'verbose_name_plural': 'SEO Translations',
                 'default_permissions': (),
                 'managed': True,
             },
@@ -99,7 +101,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('language_code', models.CharField(db_index=True, max_length=15, verbose_name='Language')),
                 ('title', models.CharField(max_length=255, verbose_name='title')),
-                ('slug', models.SlugField(max_length=100, help_text='The slug is used in the URL of the page', verbose_name='slug')),
+                ('slug', slug_preview.models.SlugPreviewField(help_text='The slug is used in the URL of the page', max_length=100, verbose_name='slug')),
                 ('override_url', models.CharField(help_text="Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages' URLs.", max_length=255, verbose_name='Override URL', blank=True)),
                 ('_cached_url', models.CharField(db_index=True, max_length=255, null=True, editable=False, blank=True)),
                 ('master', models.ForeignKey(related_name='translations', to='fluent_pages.UrlNode', null=True)),
