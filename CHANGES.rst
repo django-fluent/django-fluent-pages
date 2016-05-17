@@ -1,8 +1,8 @@
 Changelog
 =========
 
-Changes in git
---------------
+Changes in 1.0b3 (2016-05-17)
+-----------------------------
 
 * Fixed showing "View on site" link for draft pages, since staff has access to it.
 * Fixed ``node.is_child_active`` for selected parent menu's.

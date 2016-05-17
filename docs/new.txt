@@ -6,3 +6,5 @@ FLUENT_PAGES_PARENT_ADMIN_MIXIN
 FLUENT_PAGES_CHILD_ADMIN_MIXIN
 
 make_language_redirects
+
+Document API to create pages
