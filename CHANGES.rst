@@ -5,6 +5,7 @@ Changes in git
 --------------
 
 * Fixed ``node.is_child_active`` for selected parent menu's.
+* Fixed applying ``FLUENT_PAGES_FILTER_SITE_ID`` setting in the admin.
 * Improved ``RobotsTxtView`` to handle ``i18n_patterns()`` automatically.
 
 
