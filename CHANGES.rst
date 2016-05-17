@@ -4,6 +4,7 @@ Changelog
 Changes in git
 --------------
 
+* Fixed showing "View on site" link for draft pages, since staff has access to it.
 * Fixed ``node.is_child_active`` for selected parent menu's.
 * Fixed applying ``FLUENT_PAGES_FILTER_SITE_ID`` setting in the admin.
 * Improved ``RobotsTxtView`` to handle ``i18n_patterns()`` automatically.
