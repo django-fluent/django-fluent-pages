@@ -278,3 +278,15 @@ class ModelDataTests(AppTestCase):
         """
         from fluent_pages.models import UrlNode_Translation
         self.assertRaises(RuntimeError, lambda: UrlNode_Translation.objects.create())
+
+    def test_empty_translation_url(self):
+        """
+        Make sure that the ``default_url`` won't crash while creating translations,
+        as the admin uses this to display an URL for the active object, unless None is returned.
+        """
+        page = SimpleTextPage.objects.language('en').create(title="Admin EN", slug="admin-en", status=SimpleTextPage.PUBLISHED, author=self.user)
+
+        page.set_current_language('nl')
+        self.assertEqual(page.default_url, '/admin-en/')
+        page.set_current_language('nl', initialize=True)
+        self.assertIsNone(page.default_url)

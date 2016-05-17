@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Changes in git
+--------------
+
+* Fixed displaying new empty translation page.
+
+
 Changes in 1.0b3 (2016-05-17)
 -----------------------------
 

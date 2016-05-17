@@ -192,8 +192,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
             cached_url = self._cached_url  # May raise TranslationDoesNotExist
             if cached_url is None:
-                # This happened with Django 1.3 projects, when .only() didn't have the 'id' field included.
-                raise ImproperlyConfigured("UrlNode._cached_url is None for UrlNode!\nUrlNode = {0}".format(self.__dict__))
+                return None  # translation is just created, but not yet filled in.
 
             return root + cached_url
 
