@@ -5,6 +5,8 @@ Changes in git
 --------------
 
 * Fixed ``node.is_child_active`` for selected parent menu's.
+* Improved ``RobotsTxtView`` to handle ``i18n_patterns()`` automatically.
+
 
 Changes in 1.0b2 (2016-02-23)
 -----------------------------

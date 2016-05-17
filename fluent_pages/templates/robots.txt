@@ -1,8 +1,8 @@
 # http://www.robotstxt.org/
 # https://www.google.com/support/webmasters/bin/answer.py?hl=en&answer=156449
 
-Sitemap: {{ ROOT_URL }}sitemap.xml
-{% if ROBOTS_TXT_DISALLOW_ALL %}
+{% for sitemap_url in sitemap_urls %}Sitemap: {{ sitemap_url }}
+{% endfor %}{% if ROBOTS_TXT_DISALLOW_ALL %}
 User-agent: *
 Disallow: /
 {% endif %}
