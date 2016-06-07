@@ -2,6 +2,7 @@ from django.core.management.base import NoArgsCommand
 from django.utils.encoding import smart_text
 from optparse import make_option
 from fluent_pages import appsettings
+from fluent_pages.extensions import page_type_pool
 from fluent_pages.models.db import UrlNode_Translation, UrlNode
 
 
@@ -43,8 +44,9 @@ class Command(NoArgsCommand):
             self.stdout.write("Updating cached URLs")
             self.stdout.write("Page tree nodes:\n\n")
 
-        col_style = u"| {0:6} | {1:6} | {2:6} | {3}"
-        header = col_style.format("Site", "Page", "Locale", "URL")
+        type_len = str(max(len(plugin.type_name) for plugin in page_type_pool.get_plugins()))
+        col_style = u"| {0:6} | {1:6} | {2:" + type_len + "} | {3:6} | {4}"
+        header = col_style.format("Site", "Page", "Type", "Locale", "URL")
         sep = '-' * (len(header) + 40)
         self.stdout.write(sep)
         self.stdout.write(header)
@@ -69,15 +71,20 @@ class Command(NoArgsCommand):
                 if not is_dry_run:
                     translation.save()
 
+            page = translation.master
             if old_url != new_url:
                 self.stdout.write(smart_text(u"{0}  {1} {2}\n".format(
-                    col_style.format(translation.master.parent_site_id, translation.master_id, translation.language_code, translation._cached_url),
+                    col_style.format(
+                        page.parent_site_id, page.pk, page.plugin.type_name,
+                        translation.language_code, translation._cached_url
+                    ),
                     "WILL CHANGE from" if is_dry_run else "UPDATED from",
                     old_url
                 )))
             else:
                 self.stdout.write(smart_text(col_style.format(
-                    translation.master.parent_site_id, translation.master_id, translation.language_code, translation._cached_url
+                    page.parent_site_id, page.pk, page.plugin.type_name,
+                    translation.language_code, translation._cached_url
                 )))
 
     def _construct_url(self, language_code, child_id, parents, slugs, overrides):
