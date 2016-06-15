@@ -236,7 +236,7 @@ please let us know as well because we will look into it.
 Pull requests are welcome too. :-)
 
 
-.. _documentation: http://django-fluent-pages.readthedocs.org/
+.. _documentation: https://django-fluent-pages.readthedocs.io/
 .. _django.contrib.sites: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
 .. _django.contrib.sitemaps: https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/
 

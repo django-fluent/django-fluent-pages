@@ -112,4 +112,4 @@ which can be used as base classes for :ref:`custom page types <newpagetypes>`
 that also use the same layout mechanisms.
 
 
-.. _django-fluent-contents: http://django-fluent-contents.readthedocs.org/en/latest/
+.. _django-fluent-contents: https://django-fluent-contents.readthedocs.io/en/latest/

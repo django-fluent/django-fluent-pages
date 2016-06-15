@@ -308,6 +308,6 @@ Testing your new shiny project
 Congrats! At this point you should have a working installation.
 Now you can just login to your admin site and see what changed.
 
-.. _django-fluent-contents: http://django-fluent-contents.readthedocs.org/en/latest/
+.. _django-fluent-contents: https://django-fluent-contents.readthedocs.io/en/latest/
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 .. _django-wysiwyg: https://github.com/pydanny/django-wysiwyg/

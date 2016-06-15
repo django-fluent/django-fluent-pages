@@ -36,7 +36,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         In fact, the code in this class concerns with the layout mechanism that is specific for this implementation.
 
     To build a variation of this page, see the API documentation
-    of `Creating a CMS system <http://django-fluent-contents.readthedocs.org/en/latest/cms.html>`_
+    of `Creating a CMS system <https://django-fluent-contents.readthedocs.io/en/latest/cms.html>`_
     in the *django-fluent-contents* documentation to implement the required API's.
     """
     base_form = FluentPageAdminForm
