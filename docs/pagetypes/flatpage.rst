@@ -147,7 +147,7 @@ Additional editors can be easily added, as the setting refers to a set of templa
 * django_wysiwyg/**flavor**/editor_instance.html
 
 For more information, see the documentation of django-wysiwyg_
-about `extending django-wysiwyg <http://django-wysiwyg.readthedocs.org/en/latest/extending.html>`_.
+about `extending django-wysiwyg <https://django-wysiwyg.readthedocs.io/en/latest/extending.html>`_.
 
 
 FLUENT_TEXT_CLEAN_HTML

@@ -258,7 +258,7 @@ texinfo_documents = [
 intersphinx_mapping = {
     'http://docs.python.org/': None,
     'https://docs.djangoproject.com/en/dev': 'https://docs.djangoproject.com/en/dev/_objects',
-    'anyurlfield': ('http://django-any-urlfield.readthedocs.org/en/latest/', None),
-    'fluentcontents': ('http://django-fluent-contents.readthedocs.org/en/latest/', None),
-    'parler': ('http://django-parler.readthedocs.org/en/latest/', None),
+    'anyurlfield': ('https://django-any-urlfield.readthedocs.io/en/latest/', None),
+    'fluentcontents': ('https://django-fluent-contents.readthedocs.io/en/latest/', None),
+    'parler': ('https://django-parler.readthedocs.io/en/latest/', None),
 }

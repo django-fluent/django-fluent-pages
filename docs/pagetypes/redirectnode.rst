@@ -47,4 +47,4 @@ See the :mod:`anyurlfield:any_urlfield.models` documentation for details.
 
 
 
-.. _django-any-urlfield: http://django-any-urlfield.readthedocs.org/en/latest/
+.. _django-any-urlfield: https://django-any-urlfield.readthedocs.io/en/latest/
