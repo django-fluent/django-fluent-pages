@@ -244,6 +244,6 @@ Pull requests are welcome too. :-)
 .. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
 .. _django-mptt: https://github.com/django-mptt/django-mptt
 .. _django-parler: https://github.com/edoburu/django-parler
-.. _django-polymorphic: https://github.com/chrisglass/django_polymorphic
+.. _django-polymorphic: https://github.com/django-polymorphic/django-polymorphic
 .. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
 
