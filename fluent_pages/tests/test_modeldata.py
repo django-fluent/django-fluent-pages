@@ -37,6 +37,7 @@ class ModelDataTests(AppTestCase):
         """
         Check whether the given URLs are set as expected.
         """
+        # This is the body of `UrlNode.get_absolute_urls()`.
         urls = dict(node.translations.values_list('language_code', '_cached_url'))
         self.assertEqual(urls, expected, msg=msg)
 
@@ -191,9 +192,14 @@ class ModelDataTests(AppTestCase):
         root = SimpleTextPage.objects.get(translations__override_url='/')
         root2 = SimpleTextPage.objects.get(translations__slug='root2')
 
+        # Confirm we have a healthy starting point
+        self.assertUrls(level1, {'en-us': u'/level1/'})
         self.assertUrls(draft1, {'en-us': u'/draft1/'})
+        self.assertUrls(root, {'en-us': u'/'})
+        self.assertUrls(root2, {'en-us': u'/root2/'})
 
-        # Create translation for Root, then for sublevel
+        # When the root gets another translation,
+        # the sublevel may also get a translation.
         root.create_translation('af', slug='home', override_url='/')
         self.assertUrls(root, {u'en-us': u'/', u'af': u'/'})
         self.assertUrls(draft1, {u'en-us': u'/draft1/'})
@@ -203,7 +209,8 @@ class ModelDataTests(AppTestCase):
         self.assertEqual(sorted(root.get_available_languages()), ['af', 'en-us'])
         self.assertEqual(sorted(level1.get_available_languages()), ['af', 'en-us'])
 
-        # When there is no fallback, it can't create the URL
+        # However, now that `level1` is moved to another root
+        # (that doesn't have that translation), it should break out.
         level1.parent = root2
         self.assertRaises(TranslationDoesNotExist, lambda: level1.save())
         level1 = SimpleTextPage.objects.get(pk=level1.pk)

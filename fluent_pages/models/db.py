@@ -18,6 +18,7 @@ from django.contrib.sites.models import Site
 from django.db import connection, models
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFieldsModel, TranslatedFields
+from parler.cache import get_object_cache_keys
 from parler.fields import TranslatedField
 from parler.utils import get_language_title
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
@@ -312,7 +313,16 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         if parent_changed:
             self._mark_all_translations_dirty()
 
-        super(UrlNode, self).save(*args, **kwargs)  # Already saves translated model.
+        try:
+            super(UrlNode, self).save(*args, **kwargs)  # Already saves translated model.
+        except UrlNode_Translation.DoesNotExist:
+            # Raised by get_parent_cached_url()
+            # Some translations might already be updated, avoid bad cached data.
+            # This is solvable in django-parler as of Django 1.9 with the on_commit() hook.
+            cache.delete_many(get_object_cache_keys(self))
+            if parent_changed:
+                self._unmark_all_translations_dirty()
+            raise
 
         # Update state for next save (if object is persistent somewhere)
         self._original_parent = self.parent_id
@@ -337,6 +347,13 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
             translation = self._get_translated_model(language_code)
             translation._fetched_parent_url = parent_url
+
+    def _unmark_all_translations_dirty(self):
+        # Reset the caches that are invalidated by an exception during saving.
+        all_languages = self.get_available_languages(include_unsaved=True)
+        for language_code in all_languages:
+            translation = self._get_translated_model(language_code)
+            translation._fetched_parent_url = None
 
     def save_translation(self, translation, *args, **kwargs):
         """

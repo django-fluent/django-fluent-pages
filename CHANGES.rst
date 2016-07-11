@@ -5,6 +5,7 @@ Changes in git
 --------------
 
 * Fixed displaying new empty translation page.
+* Fixed page moving bug due to old caches on previous errors.
 
 
 Changes in 1.0b3 (2016-05-17)
