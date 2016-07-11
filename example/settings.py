@@ -23,7 +23,7 @@ DATABASES = {
 }
 
 TIME_ZONE = 'Europe/Amsterdam'
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 SITE_ID = 1
 
 USE_I18N = True
