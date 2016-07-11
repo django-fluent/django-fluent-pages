@@ -1,5 +1,7 @@
+import django
+
 from fluent_pages.tests.testapp.models import WebShopPage
-from fluent_pages.tests.utils import AppTestCase
+from fluent_pages.tests.utils import AppTestCase, override_settings
 from fluent_pages.urlresolvers import app_reverse, mixed_reverse, PageTypeNotMounted, MultipleReverseMatch
 
 
@@ -96,8 +98,10 @@ class PluginUrlTests(AppTestCase):
     Test for running a pagetype app standalone.
     (some apps will support that, e.g. django-fluent-blogs)
     """
-    urls = 'fluent_pages.tests.testapp.urls_webshop'
+    if django.VERSION < (1, 8):
+        urls = 'fluent_pages.tests.testapp.urls_webshop'
 
+    @override_settings(ROOT_URLCONF='fluent_pages.tests.testapp.urls_webshop')
     def test_mixed_reverse_standalone(self):
         """
         When a custom app is not hooked via the CMS page tree, mixed_reverse() should still work.

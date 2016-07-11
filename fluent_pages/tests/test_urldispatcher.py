@@ -192,13 +192,14 @@ class UrlDispatcherNonRootTests(AppTestCase):
     """
     Tests for URL resolving with a non-root URL include.
     """
-
-    urls = 'fluent_pages.tests.testapp.urls_nonroot'
+    if django.VERSION < (1, 8):
+        urls = 'fluent_pages.tests.testapp.urls_nonroot'
 
     @classmethod
     def setUpTree(cls):
         SimpleTextPage.objects.create(id=1, title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
 
+    @override_settings(ROOT_URLCONF='fluent_pages.tests.testapp.urls_nonroot')
     def test_urlconf_root(self):
         """
         The dispatcher should support an URLConf where fluent_pages.url is not at the root.
@@ -212,6 +213,7 @@ class UrlDispatcherNonRootTests(AppTestCase):
         self.assertEqual(sibling1._cached_url, '/sibling1/', "UrlNode keeps paths relative to the include()")
         # NOTE: admin needs to be tested elsewhere for this too.
 
+    @override_settings(ROOT_URLCONF='fluent_pages.tests.testapp.urls_nonroot')
     def test_admin_redirect(self):
         """
         Urls can end with @admin to be redirected to the admin.
