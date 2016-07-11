@@ -16,21 +16,47 @@ sys.stderr.write('Using Django version {0} from {1}\n'.format(
 if not settings.configured:
     module_root = path.dirname(path.realpath(__file__))
 
+    if django.VERSION >= (1, 8):
+        template_settings = dict(
+            TEMPLATES = [
+                {
+                    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                    'DIRS': (),
+                    'OPTIONS': {
+                        'loaders': (
+                            'django.template.loaders.filesystem.Loader',
+                            'django.template.loaders.app_directories.Loader',
+                        ),
+                        'context_processors': (
+                            'django.template.context_processors.debug',
+                            'django.template.context_processors.i18n',
+                            'django.template.context_processors.media',
+                            'django.template.context_processors.request',
+                            'django.template.context_processors.static',
+                            'django.contrib.auth.context_processors.auth',
+                        ),
+                    },
+                },
+            ]
+        )
+    else:
+        template_settings = dict(
+            TEMPLATE_LOADERS = (
+                'django.template.loaders.app_directories.Loader',
+                'django.template.loaders.filesystem.Loader',
+            ),
+            TEMPLATE_CONTEXT_PROCESSORS = list(default_settings.TEMPLATE_CONTEXT_PROCESSORS) + [
+                'django.core.context_processors.request',
+            ],
+        )
+
     settings.configure(
-        DEBUG = False,  # will be False anyway by DjangoTestRunner.
-        TEMPLATE_DEBUG = True,
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': ':memory:'
             }
         },
-        TEMPLATE_LOADERS = (
-            'django.template.loaders.app_directories.Loader',
-        ),
-        TEMPLATE_CONTEXT_PROCESSORS = tuple(default_settings.TEMPLATE_CONTEXT_PROCESSORS) + (
-            'django.core.context_processors.request',
-        ),
         INSTALLED_APPS = (
             'django.contrib.auth',
             'django.contrib.contenttypes',
@@ -40,6 +66,7 @@ if not settings.configured:
             'fluent_pages',
             'fluent_pages.tests.testapp',
             'mptt',
+            'parler',
             'polymorphic',
             'polymorphic_tree',
         ),
@@ -60,6 +87,7 @@ if not settings.configured:
         PARLER_DEFAULT_LANGUAGE_CODE = 'en',  # Having a good fallback causes more code to run, more error checking.
         ROOT_URLCONF = 'fluent_pages.tests.testapp.urls',
         FLUENT_PAGES_TEMPLATE_DIR = path.join(module_root, 'fluent_pages', 'tests', 'testapp', 'templates'),
+        **template_settings
     )
 
 DEFAULT_TEST_APPS = [
