@@ -159,9 +159,18 @@ class UrlDispatcherTests(AppTestCase):
             # Admin login appears at the page itself
             target_status_code = 200
 
-        self.assertRedirects(self.client.get('/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302, target_status_code=target_status_code)
-        self.assertRedirects(self.client.get('/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/2/', status_code=302, target_status_code=target_status_code)
-        self.assertRedirects(self.client.get('/shop/@admin'), 'http://testserver/admin/fluent_pages/page/4/', status_code=302, target_status_code=target_status_code)
+        if django.VERSION >= (1, 9):
+            admin_url1 = 'http://testserver/admin/fluent_pages/page/1/change/'
+            admin_url2 = 'http://testserver/admin/fluent_pages/page/2/change/'
+            admin_url3 = 'http://testserver/admin/fluent_pages/page/4/change/'
+        else:
+            admin_url1 = 'http://testserver/admin/fluent_pages/page/1/'
+            admin_url2 = 'http://testserver/admin/fluent_pages/page/2/'
+            admin_url3 = 'http://testserver/admin/fluent_pages/page/4/'
+
+        self.assertRedirects(self.client.get('/@admin'), admin_url1, status_code=302, target_status_code=target_status_code)
+        self.assertRedirects(self.client.get('/sibling1/@admin'), admin_url2, status_code=302, target_status_code=target_status_code)
+        self.assertRedirects(self.client.get('/shop/@admin'), admin_url3, status_code=302, target_status_code=target_status_code)
 
         # Anything that doesn't match, is redirected to the URL without @admin suffix
         self.assertRedirects(self.client.get('/unpublished/@admin'), 'http://testserver/unpublished/', status_code=302, target_status_code=404)
@@ -225,5 +234,10 @@ class UrlDispatcherNonRootTests(AppTestCase):
             # Admin login appears at the page itself
             target_status_code = 200
 
-        self.assertRedirects(self.client.get('/pages/sibling1/@admin'), 'http://testserver/admin/fluent_pages/page/1/', status_code=302, target_status_code=target_status_code)
+        if django.VERSION >= (1, 9):
+            admin_url = 'http://testserver/admin/fluent_pages/page/1/change/'
+        else:
+            admin_url = 'http://testserver/admin/fluent_pages/page/1/'
+
+        self.assertRedirects(self.client.get('/pages/sibling1/@admin'), admin_url, status_code=302, target_status_code=target_status_code)
         self.assertRedirects(self.client.get('/pages/non-existent/@admin'), 'http://testserver/pages/non-existent/', status_code=302, target_status_code=404)
