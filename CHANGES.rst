@@ -4,6 +4,7 @@ Changelog
 Changes in git
 --------------
 
+* Dropped Django 1.5 support.
 * Fixed displaying new empty translation page.
 * Fixed page moving bug due to old caches on previous errors.
 
