@@ -9,12 +9,15 @@ env:
 - PACKAGES="django==1.6.5 django-mptt<0.8.0"
 - PACKAGES="django==1.7.1 django-mptt<0.8.0"
 - PACKAGES="django==1.8"
+- PACKAGES="django==1.9"
 matrix:
   exclude:
   - python: '2.6'
     env: PACKAGES="django==1.7.1 django-mptt<0.8.0"
   - python: '2.6'
     env: PACKAGES="django==1.8"
+  - python: '2.6'
+    env: PACKAGES="django==1.9"
 before_install:
 - pip install codecov
 install:
