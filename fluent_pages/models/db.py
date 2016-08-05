@@ -9,6 +9,7 @@ It defines the following classes:
 * PageLayout
   The layout of a page, which has regions and a template.
 """
+import django
 from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.cache import cache
@@ -105,7 +106,10 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
     # Django settings
     objects = UrlNodeManager()
-    _default_manager = UrlNodeManager()
+
+    if django.VERSION < (1, 10):
+        # Help older Django versions with model inheritance.
+        _default_manager = UrlNodeManager()
 
     class Meta:
         app_label = 'fluent_pages'
@@ -119,6 +123,9 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             ('change_shared_fields_urlnode', _("Can change Shared fields")),     # The fields shared between languages.
             ('change_override_url_urlnode', _("Can change Override URL field")), # Fpr overriding URLs (e.g. '/' for homepage).
         )
+        if django.VERSION >= (1, 10):
+            # Although likely not needed, this helps making things explicit.
+            default_manager_name = 'objects'
 
 #    class MPTTMeta:
 #        order_insertion_by = 'title'
@@ -133,12 +140,30 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     def __init__(self, *args, **kwargs):
         super(UrlNode, self).__init__(*args, **kwargs)
 
-        # Cache a copy of the loaded _cached_url value so we can reliably
-        # determine whether it has been changed in the save handler:
-        self._original_pub_date = self.publication_date if not self._deferred else None
-        self._original_pub_end_date = self.publication_end_date if not self._deferred else None
-        self._original_status = self.status if not self._deferred else None
-        self._original_parent = self.parent_id if not self._deferred else None
+        # Cache status changes so we can determine changed values in the save handler.
+        # This needs to take .only() and .defer() usage of querysets into account.
+        self._original_pub_date = None
+        self._original_pub_end_date = None
+        self._original_status = None
+        self._original_parent = None
+
+        if django.VERSION >= (1, 10):
+            args_deferred = models.DEFERRED in args
+            if not args_deferred:
+                if kwargs.get('publication_date') is not models.DEFERRED:
+                    self._original_pub_date = self.publication_date
+                if kwargs.get('publication_end_date') is not models.DEFERRED:
+                    self._original_pub_end_date = self.publication_end_date
+                if kwargs.get('status') is not models.DEFERRED:
+                    self._original_status = self.status
+                if kwargs.get('parent') is not models.DEFERRED:
+                    self._original_parent = self.parent_id
+        else:
+            if not self._deferred:
+                self._original_pub_date = self.publication_date
+                self._original_pub_end_date = self.publication_end_date
+                self._original_status = self.status
+                self._original_parent = self.parent_id
 
         self._cached_ancestors = None
         self.is_current = None    # Can be defined by mark_current()
@@ -594,6 +619,9 @@ class UrlNode_Translation(TranslatedFieldsModel):
 
     def __init__(self, *args, **kwargs):
         super(UrlNode_Translation, self).__init__(*args, **kwargs)
+
+        # Cache a copy of the loaded _cached_url value so we can reliably
+        # determine whether it has been changed in the save handler:
         self._original_cached_url = self._cached_url
         self._fetched_parent_url = None  # Allow passing data in UrlNode.save()
 

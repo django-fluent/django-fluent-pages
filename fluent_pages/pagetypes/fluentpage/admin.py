@@ -1,4 +1,4 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from fluent_pages.admin import HtmlPageAdmin, PageAdminForm
 from fluent_pages.integration.fluent_contents.admin import FluentContentsPageAdmin
 from fluent_pages.models import PageLayout

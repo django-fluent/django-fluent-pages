@@ -17,6 +17,7 @@ Usage:
     {% appurl "my_viewname" kwarg1=value kwargs2=value %}
 
 """
+import django
 from django.template import Library
 from django.utils.encoding import smart_str
 from six import iteritems
@@ -51,8 +52,16 @@ class AppUrlNode(BaseNode):
             if not isinstance(page, UrlNode):
                 page = None
 
+        if django.VERSION >= (1, 8):
+            # request.current_app is passed everywhere if available, otherwise it does not exist.
+            # Somehow it needs to be assigned explicitly in the app
+            # via: request.current_app = request.resolver_match.namespace
+            current_app = getattr(request, 'current_app', None)
+        else:
+            current_app = context.current_app
+
         # Try a normal URLConf URL, then an app URL
-        return mixed_reverse(view_name, args=url_args, kwargs=url_kwargs, current_app=context.current_app, current_page=page)
+        return mixed_reverse(view_name, args=url_args, kwargs=url_kwargs, current_app=current_app, current_page=page)
 
 
 @register.tag

@@ -7,11 +7,20 @@ from django.core.exceptions import ImproperlyConfigured
 from django.template.defaultfilters import slugify  # Django 1.4 location
 from parler import appsettings as parler_appsettings
 from parler.utils import normalize_language_code, is_supported_django_language
+import django
 import os
+
+if getattr(settings, 'TEMPLATE_DIRS', None):
+    # Django 1.7- or 1.8/1.9 with compatibility.
+    default_template_dir = settings.TEMPLATE_DIRS[0]
+elif django.VERSION >= (1, 8):
+    default_template_dir = next((t['DIRS'][0] for t in settings.TEMPLATES if t.get('DIRS')), None)
+else:
+    default_template_dir = None
 
 # Templates
 FLUENT_PAGES_BASE_TEMPLATE = getattr(settings, "FLUENT_PAGES_BASE_TEMPLATE", 'fluent_pages/base.html')
-FLUENT_PAGES_TEMPLATE_DIR = getattr(settings, 'FLUENT_PAGES_TEMPLATE_DIR', settings.TEMPLATE_DIRS[0] if settings.TEMPLATE_DIRS else None)
+FLUENT_PAGES_TEMPLATE_DIR = getattr(settings, 'FLUENT_PAGES_TEMPLATE_DIR', default_template_dir)
 FLUENT_PAGES_RELATIVE_TEMPLATE_DIR = getattr(settings, 'FLUENT_PAGES_RELATIVE_TEMPLATE_DIR', True)
 
 # User-visible settings
