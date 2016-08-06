@@ -147,23 +147,16 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         self._original_status = None
         self._original_parent = None
 
-        if django.VERSION >= (1, 10):
-            args_deferred = models.DEFERRED in args
-            if not args_deferred:
-                if kwargs.get('publication_date') is not models.DEFERRED:
-                    self._original_pub_date = self.publication_date
-                if kwargs.get('publication_end_date') is not models.DEFERRED:
-                    self._original_pub_end_date = self.publication_end_date
-                if kwargs.get('status') is not models.DEFERRED:
-                    self._original_status = self.status
-                if kwargs.get('parent') is not models.DEFERRED:
-                    self._original_parent = self.parent_id
-        else:
-            if not self._deferred:
-                self._original_pub_date = self.publication_date
-                self._original_pub_end_date = self.publication_end_date
-                self._original_status = self.status
-                self._original_parent = self.parent_id
+        deferred = self.get_deferred_fields()
+
+        if 'publication_date' not in deferred:
+            self._original_pub_date = self.publication_date
+        if 'publication_end_date' not in deferred:
+            self._original_pub_end_date = self.publication_end_date
+        if 'status' not in deferred:
+            self._original_status = self.status
+        if 'parent' not in deferred:
+            self._original_parent = self.parent_id
 
         self._cached_ancestors = None
         self.is_current = None    # Can be defined by mark_current()
