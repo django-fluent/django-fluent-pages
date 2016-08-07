@@ -1,6 +1,15 @@
-.. image::  https://travis-ci.org/edoburu/django-fluent-pages.png?branch=master
-  :target: http://travis-ci.org/edoburu/django-fluent-pages
-  :alt: build-status
+.. image:: https://img.shields.io/travis/django-fluent/django-fluent-pages/master.svg?branch=master
+    :target: http://travis-ci.org/django-fluent/django-fluent-pages
+.. image:: https://img.shields.io/pypi/v/django-fluent-pages.svg
+    :target: https://pypi.python.org/pypi/django-fluent-pages/
+.. image:: https://img.shields.io/pypi/dm/django-fluent-pages.svg
+    :target: https://pypi.python.org/pypi/django-fluent-pages/
+.. image:: https://img.shields.io/badge/wheel-yes-green.svg
+    :target: https://pypi.python.org/pypi/django-fluent-pages/
+.. image:: https://img.shields.io/pypi/l/django-fluent-pages.svg
+    :target: https://pypi.python.org/pypi/django-fluent-pages/
+.. image:: https://img.shields.io/codecov/c/github/django-fluent/django-fluent-pages/master.svg
+    :target: https://codecov.io/github/django-fluent/django-fluent-pages?branch=master
 
 django-fluent-pages
 ===================
