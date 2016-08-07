@@ -69,4 +69,4 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-.. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
+.. _django-fluent-contents: https://github.com/django-fluent/django-fluent-contents

@@ -51,5 +51,5 @@ Other page types can also be written, for example:
 See the next chapter, :ref:`newpagetypes` to create such plugins.
 
 
-.. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
-.. _django-fluent-faq: https://github.com/edoburu/django-fluent-faq
+.. _django-fluent-blogs: https://github.com/django-fluent/django-fluent-blogs
+.. _django-fluent-faq: https://github.com/django-fluent/django-fluent-faq

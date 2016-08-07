@@ -104,5 +104,5 @@ A ``mixedurl`` template tag has to be included in the application itself. Use th
     The django-fluent-blogs_ application uses this feature to optionally integrate the blog articles to the page tree.
 
 
-.. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
-.. _example: https://github.com/edoburu/django-fluent-pages/tree/master/example
+.. _django-fluent-blogs: https://github.com/django-fluent/django-fluent-blogs
+.. _example: https://github.com/django-fluent/django-fluent-pages/tree/master/example

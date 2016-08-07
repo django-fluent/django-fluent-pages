@@ -189,4 +189,4 @@ the allowed plugin types can be limited per step. For example:
     })
 
 
-.. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
+.. _django-fluent-contents: https://github.com/django-fluent/django-fluent-contents

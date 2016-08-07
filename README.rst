@@ -54,7 +54,7 @@ Installation
 
 First install the module, preferably in a virtual environment::
 
-    git clone https://github.com/edoburu/django-fluent-pages.git
+    git clone https://github.com/django-fluent/django-fluent-pages.git
     cd django-fluent-pages
     pip install .
 
@@ -249,10 +249,10 @@ Pull requests are welcome too. :-)
 .. _django.contrib.sites: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
 .. _django.contrib.sitemaps: https://docs.djangoproject.com/en/dev/ref/contrib/sitemaps/
 
-.. _django-fluent-blogs: https://github.com/edoburu/django-fluent-blogs
-.. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
+.. _django-fluent-blogs: https://github.com/django-fluent/django-fluent-blogs
+.. _django-fluent-contents: https://github.com/django-fluent/django-fluent-contents
 .. _django-mptt: https://github.com/django-mptt/django-mptt
 .. _django-parler: https://github.com/edoburu/django-parler
 .. _django-polymorphic: https://github.com/django-polymorphic/django-polymorphic
-.. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
+.. _django-polymorphic-tree: https://github.com/django-polymorphic/django-polymorphic-tree
 

@@ -138,10 +138,10 @@ The used packages are:
 
 
 .. _django-any-urlfield: https://github.com/edoburu/django-any-urlfield
-.. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
-.. _django-fluent-utils: https://github.com/edoburu/django-fluent-utils
+.. _django-fluent-contents: https://github.com/django-fluent/django-fluent-contents
+.. _django-fluent-utils: https://github.com/django-fluent/django-fluent-utils
 .. _django-mptt: https://github.com/django-mptt/django-mptt
-.. _django-parler: https://github.com/edoburu/django-parler
+.. _django-parler: https://github.com/django-parler/django-parler
 .. _django-polymorphic: https://github.com/django-polymorphic/django-polymorphic
-.. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
+.. _django-polymorphic-tree: https://github.com/django-polymorphic/django-polymorphic-tree
 .. _django-wysiwyg: https://github.com/pydanny/django-wysiwyg
