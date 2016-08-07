@@ -1,10 +1,11 @@
 Changelog
 =========
 
-Version 1.0.1 (git)
--------------------
+Version 1.0.1 (2016-08-07)
+--------------------------
 
 * Fixed bug that broke Django 1.7 support.
+* Avoid installing django-mptt_ 0.8.5, which breaks pickling deferred querysets.
 
 
 Version 1.0 (2016-08-07)
@@ -30,7 +31,13 @@ Major features:
 * Dropped Django 1.4, 1.5 and Python 3.2 support.
 * **Backwards incompatible:** The ``FluentPageBase`` class is now removed, use ``AbstractFluentPage`` instead.
 
-**Upgrade notice:** make sure to add the ``slug_preview`` package to your ``INSTALLED_APPS``.
+.. note::
+
+    Make sure to add the ``slug_preview`` package to your ``INSTALLED_APPS``.
+
+    django-mptt 0.8.5 has a bug that prevents pickling deferred querysets,
+    hence this version is explicitly excluded as requirement.
+    Use version 0.8.4 instead.
 
 
 Changes in 1.0b3 (2016-05-17)
