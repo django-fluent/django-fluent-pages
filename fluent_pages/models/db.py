@@ -147,7 +147,13 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         self._original_status = None
         self._original_parent = None
 
-        deferred = self.get_deferred_fields()
+        deferred = ()
+        if django.VERSION >= (1, 8):
+            deferred = self.get_deferred_fields()
+        else:
+            if self._deferred:
+                # Assume all deferred
+                deferred = ('publication_date', 'publication_end_date', 'status', 'parent')
 
         if 'publication_date' not in deferred:
             self._original_pub_date = self.publication_date
