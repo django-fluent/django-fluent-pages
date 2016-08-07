@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 1.0.1 (git)
+-------------------
+
+* Fixed bug that broke Django 1.7 support.
+
+
 Version 1.0 (2016-08-07)
 ------------------------
 
