@@ -48,24 +48,35 @@ The actual page contents is defined via page type plugins.
 Installation
 ============
 
-First install the module, preferably in a virtual environment::
+First install the module, preferably in a virtual environment:
 
-    git clone https://github.com/django-fluent/django-fluent-pages.git
-    cd django-fluent-pages
-    pip install .
+.. code-block:: bash
 
-The main dependency is django-polymorphic-tree_, which is based on django-mptt_ and django-polymorphic_.
-These dependencies will be automatically installed.
+    pip install django-fluent-pages
+
+All dependencies will be automatically installed.
 
 Configuration
 -------------
 
-Next, create a project which uses the CMS::
+You can also use the ready-made template:
+
+.. code-block:: bash
+
+    mkdir my-website.com
+    cd my-website.com
+    django-admin.py startproject mywebsite . -e py,rst,example,gitignore --template=https://github.com/edoburu/django-project-template/archive/django-fluent.zip
+
+Or create a new project:
+
+.. code-block:: bash
 
     cd ..
     django-admin.py startproject fluentdemo
 
-To have a standard setup with django-fluent-contents_ integrated, use::
+To have a standard setup with django-fluent-contents_ integrated, use:
+
+.. code-block:: python
 
     INSTALLED_APPS += (
         # The CMS apps
@@ -96,15 +107,19 @@ To have a standard setup with django-fluent-contents_ integrated, use::
 Note each CMS application is optional. Only ``fluent_pages`` and ``mptt`` are required.
 The remaining apps add additional functionality to the system.
 
-In ``urls.py``::
+In ``urls.py``:
+
+.. code-block:: python
 
     urlpatterns += patterns('',
         url(r'', include('fluent_pages.urls'))
     )
 
-The database can be created afterwards::
+The database can be created afterwards:
 
-    ./manage.py syncdb
+.. code-block:: bash
+
+    ./manage.py migrate
     ./manage.py runserver
 
 
@@ -116,7 +131,9 @@ Take a look in the existing types at ``fluent_pages.pagetypes`` to see how it's 
 
 It boils down to creating a package with 2 files:
 
-The ``models.py`` file should define the custom node type, and any fields it has::
+The ``models.py`` file should define the custom node type, and any fields it has:
+
+.. code-block:: python
 
     from django.db import models
     from django.utils.translation import ugettext_lazy as _
@@ -135,7 +152,9 @@ The ``models.py`` file should define the custom node type, and any fields it has
             verbose_name = _("RST page")
             verbose_name_plural = _("RST pages")
 
-A ``page_type_plugins.py`` file that defines the metadata, and rendering::
+A ``page_type_plugins.py`` file that defines the metadata, and rendering:
+
+.. code-block:: python
 
     from fluent_pages.extensions import PageTypePlugin, page_type_pool
     from .models import RstPage
@@ -149,7 +168,9 @@ A ``page_type_plugins.py`` file that defines the metadata, and rendering::
         def get_render_template(self, request, rstpage, **kwargs):
             return rstpage.template
 
-A template could look like::
+A template could look like:
+
+.. code-block:: html+django
 
     {% extends "base.html" %}
     {% load markup %}
@@ -217,7 +238,9 @@ Adding pages to the sitemap
 ---------------------------
 
 Optionally, the pages can be included in the sitemap.
-Add the following in ``urls.py``::
+Add the following in ``urls.py``:
+
+.. code-block:: python
 
     from fluent_pages.sitemaps import PageSitemap
 
