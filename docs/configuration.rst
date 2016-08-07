@@ -22,6 +22,7 @@ A quick overview of the available settings:
     FLUENT_PAGES_FILTER_SITE_ID = True
     FLUENT_PAGES_PARENT_ADMIN_MIXIN = None
     FLUENT_PAGES_CHILD_ADMIN_MIXIN = None
+    ROBOTS_TXT_DISALLOW_ALL = DEBUG
 
 
 Template locations

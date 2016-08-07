@@ -37,6 +37,7 @@ Getting started
    templatetags
    sitemaps
    multilingual
+   management
 
 
 Using the page type plugins
@@ -55,6 +56,7 @@ API documentation
 .. toctree::
    :maxdepth: 2
 
+   lowlevel
    api/index
    dependencies
    changelog

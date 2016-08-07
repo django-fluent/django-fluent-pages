@@ -11,8 +11,8 @@ from parler.utils.context import switch_language
 
 class Command(NoArgsCommand):
     """
-    Add a prefix to the name of content items.
-    This makes content items easier to spot in the permissions list.
+    Generate rewrite/redirect rules for the web server to redirect a single unmaintained
+    language to another one.
     """
     help = "Find all pages of a given language, and redirect to the canonical version."
     args = "language"

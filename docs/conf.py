@@ -262,3 +262,6 @@ intersphinx_mapping = {
     'fluentcontents': ('https://django-fluent-contents.readthedocs.io/en/latest/', None),
     'parler': ('https://django-parler.readthedocs.io/en/latest/', None),
 }
+
+# autodoc settings
+autodoc_member_order = 'groupwise'

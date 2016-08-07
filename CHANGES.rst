@@ -1,8 +1,34 @@
 Changelog
 =========
 
-Changes in git
---------------
+Version 1.0 (2016-08-07)
+------------------------
+
+This release provides compatibility with newer package versions.
+Many fixes add to the stability of this release,
+especially when extending it with custom page types.
+
+Major features:
+
+* Django 1.9 support.
+* Django 1.10 support is underway (it awaits fixes in our dependencies)
+* Support for multiple fallback languages.
+* Nicer slug previews in the admin.
+* Menu template improvements:
+
+ * Added ``is_child_active`` variable to fix menu highlights.
+ * Added ``draft`` and ``active`` CSS classses.
+
+* The ``fluent_pages.pagetypes.textfile`` content can be translated.
+* Old unmaintained languages can be redirected with the ``make_language_redirects`` command.
+* Dropped Django 1.4, 1.5 and Python 3.2 support.
+* **Backwards incompatible:** The ``FluentPageBase`` class is now removed, use ``AbstractFluentPage`` instead.
+
+**Upgrade notice:** make sure to add the ``slug_preview`` package to your ``INSTALLED_APPS``.
+
+
+Changes in 1.0b3 (2016-05-17)
+-----------------------------
 
 * Dropped Django 1.5 support.
 * Fixed displaying new empty translation page.
@@ -10,7 +36,7 @@ Changes in git
 
 
 Changes in 1.0b3 (2016-05-17)
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Fixed showing "View on site" link for draft pages, since staff has access to it.
 * Fixed ``node.is_child_active`` for selected parent menu's.
@@ -18,8 +44,8 @@ Changes in 1.0b3 (2016-05-17)
 * Improved ``RobotsTxtView`` to handle ``i18n_patterns()`` automatically.
 
 
-Changes in 1.0b2 (2016-02-23)
------------------------------
+Changes as of 1.0b2 (2016-02-23)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Fixed published admin icon for Django 1.9
 * Fixed truncating long ``db_table`` names.
@@ -27,8 +53,8 @@ Changes in 1.0b2 (2016-02-23)
 * Added automatic configuration for django-staff-toolbar_.
 
 
-Changes in version 1.0b1 (2015-12-30)
--------------------------------------
+Changes as of version 1.0b1 (2015-12-30)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Added Django 1.9 support
 * Added translation support to the ``fluent_pages.pagetypes.textfile`` type, to translate the content (but not the type).
@@ -54,8 +80,8 @@ Changes in version 1.0b1 (2015-12-30)
 * **Backwards incompatible:** The ``FluentPageBase`` class is now removed, use ``AbstractFluentPage`` instead.
 
 
-Changes in version 0.9
-----------------------
+Version 0.9 (2015-04-13)
+------------------------
 
 * Added Django 1.8 support
 * Non-published pages can now be seen by staff members
@@ -69,8 +95,8 @@ Changes in version 0.9
   This removes many cases where projects suffered from circular import errors.
 
 
-Released in 0.9c1:
-~~~~~~~~~~~~~~~~~~
+Released in 0.9c1 (2015-01-19)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Fix deleting pages which have SEO fields filled in (the ``HtmlPageTranslation`` model).
 * Fix ``UrlNode.DoesNotExist`` exception when using ``{% render_breadcrumb %}`` on 404 pages.
@@ -81,14 +107,14 @@ Released in 0.9c1:
 * Added lazy-resolver functions: ``app_reverse_lazy()`` / ``mixed_reverse_lazy()``.
 
 
-Released in 0.9b4:
-~~~~~~~~~~~~~~~~~~
+Released in 0.9b4 (2014-11-06)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Fix South migrations for flexible ``AUTH_USER_MODEL``
 
 
-Released in 0.9b3:
-~~~~~~~~~~~~~~~~~~
+Released in 0.9b3 (2014-11-06)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Added preliminary Django 1.7 support, migrations are not fully working yet.
 * Added translation support for the SEO fields (meta keywords/description/title) and redirect URL.
@@ -106,7 +132,7 @@ Released in 0.9b3:
 
 
 Upgrade notices:
-~~~~~~~~~~~~~~~~
+................
 
 Due to Django 1.7 support, the following changes had to be made:
 
@@ -131,8 +157,8 @@ as both the base object and derived object translations are passed through this 
 The ``SeoPageMixin`` from 0.9b1 was removed too, instead inherit directly from ``HtmlPage``.
 
 
-Released in 0.9b2:
-~~~~~~~~~~~~~~~~~~
+Released in 0.9b2 (2014-06-28)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Added Python 3 support!
 * Added ``key`` field to allow linking to specific user-created pages (e.g. a Terms and Conditions page).
@@ -153,8 +179,8 @@ Released in 0.9b2:
  * avoid polymorphic behavior for child menu nodes (unless the parent node was polymorphic).
 
 
-Released in 0.9b1:
-~~~~~~~~~~~~~~~~~~
+Released in 0.9b1 (2014-04-14)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Added multisite support.
 * Added multilingual support, using django-parler_.
@@ -172,7 +198,7 @@ Released in 0.9b1:
 
 
 Upgrade notices:
-~~~~~~~~~~~~~~~~
+................
 
 * When using custom page types that inherit from inherited from ``HtmlPage``, ``FluentPageBase`` or ``FluentContentsPage``,
   please add a South migration to your application to handle the updated fields.
@@ -189,15 +215,15 @@ Upgrade notices:
   The old name is still available.
 
 
-Changes in version 0.8.7
+Version 0.8.7 (2014-12-30)
 ------------------------
 
 * Add support of django-polymorphic 0.6.
 * Add ``page`` variable for menu items in ``PageNavigationNode``.
 
 
-Changes in version 0.8.6
-------------------------
+Version 0.8.6 (2014-01-21)
+--------------------------
 
 * Add ``FLUENT_PAGES_DEFAULT_IN_NAVIGATION`` setting to change the "in navigation" default value.
 * Fix django-mptt_ 0.6 support.
@@ -205,8 +231,8 @@ Changes in version 0.8.6
 * Widen "modification date" column, to support other languages.
 
 
-Changes in version 0.8.5
-------------------------
+Version 0.8.5 (2013-08-15)
+--------------------------
 
 * Added intro page for empty sites.
 * Support Django 1.6 transaction management.
@@ -216,24 +242,24 @@ Changes in version 0.8.5
 * Fix Django 1.5 custom user model support in migrations
 
 
-Changes in version 0.8.4
-------------------------
+Version 0.8.4 (2013-05-28)
+--------------------------
 
 * Fix running at Django 1.6 alpha 1
 * Remove filtering pages by SITE_ID in ``PageChoiceField`` as there is no proper multi-site support yet.
 * Remove ``X-Object-Type`` and ``X-Object-Id`` headers as Django 1.6 removed it due to caching issues.
 
 
-Changes in version 0.8.3
-------------------------
+Version 0.8.3 (2013-05-15)
+--------------------------
 
 * Fix circular imports for some setups that import ``fluent_pages.urlresolvers`` early.
 * Fix initial south migrations, added missing dependencies.
 * Fix using ``{% render_menu %}`` at 404 pages.
 
 
-Changes in version 0.8.2
-------------------------
+Version 0.8.2 (2013-04-25)
+--------------------------
 
 * Add ``parent`` argument to ``{% render_menu %}``, to render sub menu's.
 * Add ``page``, ``site`` variable in template of ``{% render_breadcrumb %}``.
@@ -244,8 +270,8 @@ Changes in version 0.8.2
 * Fix unit test suite in Django 1.3
 
 
-Changes in version 0.8.1
-------------------------
+Version in 0.8.1 (2013-03-07)
+-----------------------------
 
 * Add "Flat page" page type.
 * Add support for django-any-urlfield_.
@@ -268,8 +294,8 @@ Changes in version 0.8.1
 * Bump version of django-polymorphic-tree_ to 0.8.6 because it fixes issues with moving pages in the admin.
 
 
-Version 0.8.0
--------------
+Version 0.8.0 (2012-11-21)
+--------------------------
 
 First public release
 
@@ -280,11 +306,11 @@ First public release
 
 .. _django-any-urlfield: https://github.com/edoburu/django-any-urlfield
 .. _django.contrib.flatpages: https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/
-.. _django-fluent-contents: https://github.com/edoburu/django-fluent-contents
+.. _django-fluent-contents: https://github.com/django-fluent/django-fluent-contents
 .. _django-haystack: http://haystacksearch.org/
 .. _django-mptt: https://github.com/django-mptt/django-mptt
-.. _django-parler: https://github.com/edoburu/django-parler
-.. _django-polymorphic-tree: https://github.com/edoburu/django-polymorphic-tree
+.. _django-parler: https://github.com/django-parler/django-parler
+.. _django-polymorphic-tree: https://github.com/django-polymorphic/django-polymorphic-tree
 .. _django-slug-preview: https://github.com/edoburu/django-slug-preview
 .. _django-staff-toolbar: https://github.com/edoburu/django-staff-toolbar
 .. _django-tag-parser: https://github.com/edoburu/django-tag-parser
