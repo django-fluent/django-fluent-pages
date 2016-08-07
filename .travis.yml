@@ -10,8 +10,8 @@ env:
 - PACKAGES="django>=1.5,<1.6 django-mptt<0.7.0"
 - PACKAGES="django>=1.6,<1.7 django-mptt<0.8.0"
 - PACKAGES="django>=1.7,<1.8 django-mptt<0.8.0"
-- PACKAGES="django>=1.8,<1.9"
-- PACKAGES="django>=1.9,<1.10"
+- PACKAGES="django>=1.8,<1.9 django-mptt<0.8.5"
+- PACKAGES="django>=1.9,<1.10 django-mptt<0.8.5"
 - PACKAGES="django>=1.10,<1.11"
 matrix:
   exclude:
@@ -22,11 +22,11 @@ matrix:
   - python: '2.6'
     env: PACKAGES="django>=1.8,<1.9"
   - python: '2.6'
-    env: PACKAGES="django>=1.9,<1.10"
+    env: PACKAGES="django>=1.9,<1.10 django-mptt<0.8.5"
   - python: '3.3'
     env: PACKAGES="django>=1.4,<1.5"
   - python: '3.3'
-    env: PACKAGES="django>=1.9,<1.10"
+    env: PACKAGES="django>=1.9,<1.10 django-mptt<0.8.5"
   allow_failures:
   - env: PACKAGES="django>=1.10,<1.11"
   - env: PACKAGES="django>=1.5,<1.6 django-mptt<0.7.0"
