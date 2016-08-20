@@ -14,7 +14,7 @@ Usage:
 
     {% appurl "my_viewname" arg1 arg2 %}
 
-    {% appurl "my_viewname" kwarg1=value kwargs2=value %}
+    {% appurl "my_viewname" kwarg1=value kwargs2=value as varname %}
 
 """
 import django
@@ -23,7 +23,7 @@ from django.utils.encoding import smart_str
 from six import iteritems
 from fluent_pages.models.db import UrlNode
 from fluent_pages.urlresolvers import mixed_reverse
-from tag_parser.basetags import BaseNode
+from tag_parser.basetags import BaseAssignmentOrOutputNode
 
 register = Library()
 
@@ -32,11 +32,12 @@ __all__ = (
 )
 
 
-class AppUrlNode(BaseNode):
+class AppUrlNode(BaseAssignmentOrOutputNode):
     min_args = 1
     max_args = None
+    allowed_kwargs = None  # Allow kwargs!
 
-    def render_tag(self, context, *tag_args, **tag_kwargs):
+    def get_value(self, context, *tag_args, **tag_kwargs):
         view_name = tag_args[0]
         url_args = tag_args[1::]
         url_kwargs = dict([(smart_str(name, 'ascii'), value) for name, value in iteritems(tag_kwargs)])

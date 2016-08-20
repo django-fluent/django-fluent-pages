@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Changes in git
+--------------
+
+* Support ``{% appurl .. as varname %}`` too.
+
+
 Version 1.0.1 (2016-08-07)
 --------------------------
 
