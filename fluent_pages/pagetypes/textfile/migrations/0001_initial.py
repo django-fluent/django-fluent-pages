@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('urlnode_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='fluent_pages.UrlNode')),
                 ('content', models.TextField(verbose_name='File contents')),
-                ('content_type', models.CharField(default=b'text/plain', max_length=100, verbose_name='File type', choices=[(b'text/plain', 'Plain text'), (b'text/xml', 'XML'), (b'text/html', 'HTML')])),
+                ('content_type', models.CharField(default='text/plain', max_length=100, verbose_name='File type', choices=[('text/plain', 'Plain text'), ('text/xml', 'XML'), ('text/html', 'HTML')])),
             ],
             options={
                 'db_table': 'pagetype_textfile_textfile',
