@@ -11,7 +11,7 @@ class RedirectNodeAdmin(PageAdmin):
     })
 
     # Exclude in_sitemap
-    fieldsets = (
+    base_fieldsets = (
         PageAdmin.FIELDSET_GENERAL,
         FIELDSET_REDIRECT,
         PageAdmin.FIELDSET_MENU,
