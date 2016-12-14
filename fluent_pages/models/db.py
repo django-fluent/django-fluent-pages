@@ -10,6 +10,7 @@ It defines the following classes:
   The layout of a page, which has regions and a template.
 """
 import django
+import logging
 from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.cache import cache
@@ -32,8 +33,15 @@ from slug_preview.models import SlugPreviewField
 from future.utils import with_metaclass, itervalues, iteritems
 
 
+logger = logging.getLogger(__name__)
+
+
 def _get_current_site():
     return Site.objects.get_current().pk
+
+
+class TreeInconsistencyError(RuntimeError):
+    pass
 
 
 class URLNodeMetaClass(PolymorphicMPTTModelBase):
@@ -408,7 +416,14 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
             if url_changed:
                 # Performance optimisation: only traversing and updating many records when something changed in the URL.
-                self._update_decendant_urls(translation)
+                try:
+                    self._update_decendant_urls(translation)
+                except KeyError as e:
+                    # While this really shouldn't happen at all, maybe manual manipulations caused this?
+                    # Another option is moving complete trees, although that should be fixed by now.
+                    msg = "The page tree seems to have inconsistencies, consider running 'manage.py rebuild_page_tree'"
+                    logger.exception(msg)
+                    raise TreeInconsistencyError(msg)
 
     def delete(self, *args, **kwargs):
         super(UrlNode, self).delete(*args, **kwargs)
