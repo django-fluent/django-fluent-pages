@@ -63,6 +63,13 @@ class Command(NoArgsCommand):
             slugs.setdefault(translation.language_code, {})[translation.master_id] = translation.slug
             overrides.setdefault(translation.language_code, {})[translation.master_id] = translation.override_url
 
+            page = translation.master
+            if page.parent_id:
+                if page.parent_id not in slugs[translation.language_code]:
+                    self.stderr.write("WARNING: Parent #{0} is not translated in '{1}', while the child #{2} is.".format(
+                        page.parent_id, translation.language_code, translation.master_id
+                    ))
+
             old_url = translation._cached_url
             try:
                 new_url = self._construct_url(translation.language_code, translation.master_id, parents, slugs, overrides)
@@ -78,7 +85,6 @@ class Command(NoArgsCommand):
                 if not is_dry_run:
                     translation.save()
 
-            page = translation.master
             if old_url != new_url:
                 self.stdout.write(smart_text(u"{0}  {1} {2}\n".format(
                     col_style.format(
