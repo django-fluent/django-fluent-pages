@@ -15,7 +15,7 @@ There are several sub packages:
 from django.conf import settings
 from fluent_pages.forms.fields import PageChoiceField
 import fluent_pages.models.db
-from .db import UrlNode, UrlNode_Translation, Page, HtmlPage, HtmlPageTranslation, PageLayout
+from .db import UrlNode, UrlNode_Translation, Page, HtmlPage, HtmlPageTranslation, PageLayout, ParentTranslationDoesNotExist
 from .managers import UrlNodeManager, UrlNodeQuerySet
 
 __all__ = [
@@ -23,6 +23,7 @@ __all__ = [
     'UrlNode_Translation',
     'UrlNodeManager',
     'UrlNodeQuerySet',
+    'ParentTranslationDoesNotExist',
     'Page',
     'HtmlPage',
     'HtmlPageTranslation',

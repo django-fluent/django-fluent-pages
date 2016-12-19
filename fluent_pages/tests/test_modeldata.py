@@ -1,10 +1,8 @@
 import django
-from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.utils import translation
 from django.utils.encoding import force_text
-from fluent_pages.models import Page
+from fluent_pages.models import Page, ParentTranslationDoesNotExist
 from fluent_pages.models.fields import PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeQuerySet
 from fluent_pages.tests.utils import AppTestCase
@@ -182,7 +180,7 @@ class ModelDataTests(AppTestCase):
         Can't introduce a new language under a parent that can't support it.
         """
         level1 = SimpleTextPage.objects.get(translations__slug='level1')
-        self.assertRaises(TranslationDoesNotExist, lambda: level1.create_translation('af', slug='level1-af'))
+        self.assertRaises(ParentTranslationDoesNotExist, lambda: level1.create_translation('af', slug='level1-af'))
 
     def test_impossible_subpage_translation(self):
         """
@@ -202,7 +200,7 @@ class ModelDataTests(AppTestCase):
         })
 
         level3 = SimpleTextPage.objects.language('en').create(slug='en3', parent=level2, status=SimpleTextPage.PUBLISHED, author=self.user)
-        self.assertRaises(TranslationDoesNotExist, lambda: level3.create_translation('nl', slug='nl3'))
+        self.assertRaises(ParentTranslationDoesNotExist, lambda: level3.create_translation('nl', slug='nl3'))
 
     def test_move_translation(self):
         cache.clear()
@@ -232,7 +230,7 @@ class ModelDataTests(AppTestCase):
         # However, now that `level1` is moved to another root
         # (that doesn't have that translation), it should break out.
         level1.parent = root2
-        self.assertRaises(TranslationDoesNotExist, lambda: level1.save())
+        self.assertRaises(ParentTranslationDoesNotExist, lambda: level1.save())
         level1 = SimpleTextPage.objects.get(pk=level1.pk)
 
         # However, with a fallback in place, it will adjust the sublevels too.

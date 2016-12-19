@@ -566,13 +566,11 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 if base is None:
                     # The site doesn't have fallback languages.
                     # TODO: deside whether such objects should have NO url, or block moving/reparenting objects.
-                    raise UrlNode_Translation.DoesNotExist(
-                        "Tree node #{0} has no active ({1}) or fallback ({2}) language.\n"
-                        "Can't generate URL to connect to parent {4}.\n"
-                        "Available languages are: {3}".format(
-                            subobject.id, current_language, ','.join(fallback_languages),
+                    raise ParentTranslationDoesNotExist(
+                        "Can't generate URL for child #{0} in '{1}' to connect to parent #{2}.\n"
+                        "The child languages are: {3}".format(
+                            subobject.id, current_language, subobject.parent_id,
                             ','.join(subobject.get_available_languages()),
-                            subobject.parent_id
                         ))
 
                     # Alternative:
@@ -691,13 +689,19 @@ class UrlNode_Translation(TranslatedFieldsModel):
                 except KeyError:
                     pass
 
-        raise UrlNode_Translation.DoesNotExist(
+        raise ParentTranslationDoesNotExist(
             "Can't determine URL for active language ({1}) or fallback language ({2}) when parent node #{0} only has URLs in {4}.\n"
             "The current object has translations for: {3}".format(
                 self.master_id, self.language_code, ','.join(fallback_languages),
                 ",".join(master.get_available_languages()),
                 ", ".join("{0}:{1}".format(k, v) for k, v in iteritems(parent_urls)),
             ))
+
+
+class ParentTranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
+    """
+    A parent translation does not exist.
+    """
 
 
 @python_2_unicode_compatible
