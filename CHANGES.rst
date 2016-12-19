@@ -4,7 +4,17 @@ Changelog
 Changes in git
 --------------
 
-* Support ``{% appurl .. as varname %}`` too.
+* Added support for ``{% appurl .. as varname %}``.
+* Fix multiple fallback languages support in ``rebuild_page_tree``.
+* Fixed migration string types for Python 3.
+* Added ``ParentTranslationDoesNotExist`` exception to improve error handling
+
+.. note::
+    Creating child nodes in a language that doesn't yet exist for the parent node is no longer supported.
+
+    While past versions tried to resolve such situation with fallback URLs,
+    it turns out to be very prone to bugs when moving page brances or
+    changing the translated parent slug slugs.
 
 
 Version 1.0.1 (2016-08-07)
