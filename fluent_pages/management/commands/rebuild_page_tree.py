@@ -52,7 +52,14 @@ class Command(NoArgsCommand):
         self.stdout.write(header)
         self.stdout.write(sep)
 
-        for translation in UrlNode_Translation.objects.select_related('master').order_by('master__parent_site__id', 'master__tree_id', 'master__lft', 'language_code'):
+        # In a single query, walk through all objects in a logical order,
+        # which traverses through the tree from parent to children.
+        translations = (UrlNode_Translation.objects
+                        .select_related('master')
+                        .order_by('master__parent_site__id', 'master__tree_id', 'master__lft', 'language_code')
+                        )
+
+        for translation in translations:
             slugs.setdefault(translation.language_code, {})[translation.master_id] = translation.slug
             overrides.setdefault(translation.language_code, {})[translation.master_id] = translation.override_url
 
