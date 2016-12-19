@@ -101,7 +101,7 @@ class Command(NoArgsCommand):
                 )))
 
     def _construct_url(self, language_code, child_id, parents, slugs, overrides):
-        fallback = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(language_code)
+        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
 
         breadcrumb = []
         cur = child_id
@@ -119,9 +119,13 @@ class Command(NoArgsCommand):
                     continue
             except KeyError:
                 pass
-            try:
-                url_parts.append(slugs[language_code][id])
-            except KeyError:
-                url_parts.append(slugs[fallback][id])
+
+            # Add first one found, preferably the normal language, fallback otherwise.
+            for lang in active_choices:
+                try:
+                    url_parts.append(slugs[lang][id])
+                    break
+                except KeyError:
+                    continue
 
         return (u'/'.join(url_parts) + u'/').replace('//', '/')
