@@ -525,11 +525,12 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 # Subobject has the current translation. Use that
                 # If the level in between does not have that translation, will use the fallback instead.
                 subobject.set_current_language(current_language)
-                use_fallback_base = (subobject.parent_id not in cached_page_urls[current_language])
+                use_fallback_base = cached_page_urls[current_language].get(subobject.parent_id) is None
             else:
                 # The subobject is not yet translated in the parent's language.
-                # There is nothing to update here.
-                continue
+                # Mark explicitly as not available, so we can spot mptt inconsistencies later.
+                cached_page_urls[current_language][subobject.id] = None
+                continue  # TODO: would this cause tree parts nodes to be missed on moving?
 
             # Set URL, using cache for parent URL.
             if subobject.override_url:
@@ -541,11 +542,12 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                 fallback_base = None
                 fallback_lang = None
                 for lang in active_choices:
-                    parent_url = cached_page_urls[lang][subobject.parent_id]
+                    parent_url = cached_page_urls[lang].get(subobject.parent_id)
                     if parent_url is None:
                         # The parent didn't have a fallback for this language, hence the subobjects can't have it either.
                         # There is no base nor URL for the sub object in this language. (be explicit here, to detect KeyError)
                         cached_page_urls[lang][subobject.id] = None
+                        use_fallback_base = True
                     else:
                         # There is a translation in this language, construct the fallback URL
                         cached_page_urls[lang][subobject.id] = u'{0}{1}/'.format(parent_url, subobject.slug)
@@ -647,9 +649,13 @@ class UrlNode_Translation(TranslatedFieldsModel):
         if not self.title and not self.slug:
             # If this empty object gets marked as dirty somehow, avoid corruption of the page tree.
             # The real checks for slug happen in save_translation(), this is only to catch internal state errors.
-            raise RuntimeError("An UrlNode_Translation object was created without slug or title, blocking save.")
+            raise RuntimeError("An UrlNode_Translation object was created for '{}' without slug or title, blocking save.".format(
+                self.language_code
+            ))
         if not self._cached_url:
-            raise RuntimeError("An UrlNode_Translation object was created without _cached_url, blocking save.")
+            raise RuntimeError("An UrlNode_Translation object was created for '{}' without _cached_url, blocking save.".format(
+                self.language_code
+            ))
 
         super(UrlNode_Translation, self).save(*args, **kwargs)
         self._original_cached_url = self._cached_url
