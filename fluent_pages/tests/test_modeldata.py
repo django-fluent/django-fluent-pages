@@ -179,10 +179,30 @@ class ModelDataTests(AppTestCase):
 
     def test_impossible_translation(self):
         """
-        Placing a translated node under a non-translated node should use the fallback translation.
+        Can't introduce a new language under a parent that can't support it.
         """
         level1 = SimpleTextPage.objects.get(translations__slug='level1')
         self.assertRaises(TranslationDoesNotExist, lambda: level1.create_translation('af', slug='level1-af'))
+
+    def test_impossible_subpage_translation(self):
+        """
+        When a node in between doesn't have a translation,
+        this should not cause issues when changing the top-level translation.
+        """
+        level1 = SimpleTextPage.objects.language('en').create(slug='en1', status=SimpleTextPage.PUBLISHED, author=self.user)
+        level1.create_translation('nl', slug='nl1')
+        self.assertUrls(level1, {
+            'en': u'/en1/',
+            'nl': u'/nl1/'
+        })
+
+        level2 = SimpleTextPage.objects.language('en').create(slug='en2', parent=level1, status=SimpleTextPage.PUBLISHED, author=self.user)
+        self.assertUrls(level2, {
+            'en': u'/en1/en2/',
+        })
+
+        level3 = SimpleTextPage.objects.language('en').create(slug='en3', parent=level2, status=SimpleTextPage.PUBLISHED, author=self.user)
+        self.assertRaises(TranslationDoesNotExist, lambda: level3.create_translation('nl', slug='nl3'))
 
     def test_move_translation(self):
         cache.clear()

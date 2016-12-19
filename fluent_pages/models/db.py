@@ -472,7 +472,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             if self.is_root_node():
                 parent_url = '/'
             else:
-                parent_url = translation.get_parent_cached_url(self)
+                parent_url = translation.get_parent_cached_url(self, use_fallback=False)
 
             # The following shouldn't occur, it means a direct call to Page.objects.create()
             # attempts to add a child node to a file object instead of calling model.full_clean().
@@ -658,7 +658,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
         # For the delete page, mptt_breadcrumb filter in the django-polymorphic-tree templates.
         return self.master.get_ancestors(ascending=ascending, include_self=include_self)
 
-    def get_parent_cached_url(self, master):
+    def get_parent_cached_url(self, master, use_fallback=False):
         if self._fetched_parent_url:
             return self._fetched_parent_url
 
@@ -672,15 +672,18 @@ class UrlNode_Translation(TranslatedFieldsModel):
             pass
 
         # Need to use fallback
-        # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
-        # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
-        fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(self.language_code)[1:]
-        for lang in fallback_languages:
-            try:
-                self._fetched_parent_url = parent_urls[lang]
-                return self._fetched_parent_url
-            except KeyError:
-                pass
+        if not use_fallback:
+            fallback_languages = []
+        else:
+            # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
+            # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
+            fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(self.language_code)[1:]
+            for lang in fallback_languages:
+                try:
+                    self._fetched_parent_url = parent_urls[lang]
+                    return self._fetched_parent_url
+                except KeyError:
+                    pass
 
         raise UrlNode_Translation.DoesNotExist(
             "Can't determine URL for active language ({1}) or fallback language ({2}) when parent node #{0} only has URLs in {4}.\n"
