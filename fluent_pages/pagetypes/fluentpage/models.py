@@ -3,6 +3,9 @@ from django.utils.translation import ugettext_lazy as _
 from fluent_pages.models import PageLayout
 from fluent_pages.integration.fluent_contents.models import FluentContentsPage
 
+from parler.fields import TranslatedField
+from parler.models import TranslatedFieldsModel
+
 
 # This all exists for backwards compatibility
 # The new v0.9 method is using fluent_pages.integration.fluent_contents, instead of directly inheriting this app.
@@ -20,13 +23,24 @@ class AbstractFluentPage(FluentContentsPage):
     without introducing another table/join indirection in the database. Naturally, the same layout mechanism is used.
     In case the ``layout`` should be handled differently, please consider building a variation of this page type application.
     """
-    # Allow NULL in the layout, so this system can still be made optional in the future in favor of a configuration setting.
-    layout = models.ForeignKey(PageLayout, verbose_name=_('Layout'), null=True)
+    layout = TranslatedField(any_language=True)
 
     class Meta:
         abstract = True
         verbose_name = _("Page")
         verbose_name_plural = _("Pages")
+
+
+class AbstractFluentPageTranslation(TranslatedFieldsModel):
+
+    # Allow NULL in the layout, so this system can still be made
+    # optional in the future in favor of a configuration setting.
+    layout = models.ForeignKey(PageLayout, verbose_name=_('Layout'), null=True)
+
+    master = None
+
+    class Meta:
+        abstract = True
         permissions = (
             ('change_page_layout', _("Can change Page layout")),
         )
@@ -37,3 +51,8 @@ class FluentPage(AbstractFluentPage):
     A ```FluentPage``` represents one HTML page of the site.
     """
     pass
+
+
+class FluentPageTranslation(AbstractFluentPageTranslation):
+
+    master = models.ForeignKey(FluentPage, related_name='page_translations')
