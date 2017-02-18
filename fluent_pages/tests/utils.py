@@ -28,11 +28,6 @@ class AppTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        super(AppTestCase, cls).setUpClass()
-
-        # Avoid early import, triggers AppCache
-        User = get_user_model()
-
         if cls.install_apps:
             # When running this app via `./manage.py test fluent_pages`, auto install the test app + models.
             run_syncdb = False
@@ -62,6 +57,19 @@ class AppTestCase(TestCase):
                     call_command('syncdb', verbosity=0)  # may run south's overlaid version
                 else:
                     call_command('migrate', verbosity=0)
+
+        # This also runs setUpTestData
+        super(AppTestCase, cls).setUpClass()
+
+        if django.VERSION < (1, 8):
+            # Newer Django versions wrap this in a reversable translation,
+            # for older Django versions emulate the method call only.
+            cls.setUpTestData()
+
+    @classmethod
+    def setUpTestData(cls):
+        # Avoid early import, triggers AppCache
+        User = get_user_model()
 
         # Create basic objects
         # 1.4 does not create site automatically with the defined SITE_ID, 1.3 does.
