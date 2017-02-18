@@ -56,7 +56,9 @@ class PageTreeForeignKey(PolymorphicTreeForeignKey):
     A customized version of the :class:`~polymorphic_tree.models.PolymorphicTreeForeignKey`.
     """
     default_error_messages = {
+        'required': _("This page type should have a parent."),
         'no_children_allowed': _("The selected page cannot have sub pages."),
+        'child_not_allowed': _("The selected page cannot have this page type as a child!"),
     }
 
     def contribute_to_class(self, cls, name, virtual_only=False):
