@@ -130,8 +130,8 @@ class CmsPageDispatcher(GetPathMixin, View):
         qs = self.get_queryset()
 
         return _try_languages(self.language_code, UrlNode.DoesNotExist,
-            lambda lang: qs.get_for_path(path, language_code=lang)
-        )
+                              lambda lang: qs.get_for_path(path, language_code=lang)
+                              )
 
     def get_best_match_object(self, path=None):
         """
@@ -142,8 +142,8 @@ class CmsPageDispatcher(GetPathMixin, View):
         qs = self.get_queryset().url_pattern_types()
 
         return _try_languages(self.language_code, UrlNode.DoesNotExist,
-            lambda lang: qs.best_match_for_path(path, language_code=lang)
-        )
+                              lambda lang: qs.best_match_for_path(path, language_code=lang)
+                              )
 
     def get_plugin(self):
         """
@@ -277,13 +277,12 @@ class CmsPageDispatcher(GetPathMixin, View):
 
         if not self._is_own_view(match):
             if settings.DEBUG and self.request.method == 'POST':
-                raise RuntimeError((""
-                    "You called this URL via POST, but the URL doesn't end "
-                    "in a slash and you have APPEND_SLASH set. Django can't "
-                    "redirect to the slash URL while maintaining POST data. "
-                    "Change your form to point to %s%s (note the trailing "
-                    "slash), or set APPEND_SLASH=False in your Django "
-                    "settings.") % (self.request.path, '/'))
+                raise RuntimeError(("You called this URL via POST, but the URL doesn't end "
+                                    "in a slash and you have APPEND_SLASH set. Django can't "
+                                    "redirect to the slash URL while maintaining POST data. "
+                                    "Change your form to point to %s%s (note the trailing "
+                                    "slash), or set APPEND_SLASH=False in your Django "
+                                    "settings.") % (self.request.path, '/'))
             return HttpResponseRedirect(self.request.path + '/')
         return None
 
@@ -309,8 +308,7 @@ class CmsPageAdminRedirect(GetPathMixin, RedirectView):
 
         try:
             page = _try_languages(language_code, UrlNode.DoesNotExist,
-                lambda lang: qs.get_for_path(path, language_code=lang)
-            )
+                                  lambda lang: qs.get_for_path(path, language_code=lang))
             url = get_page_admin_url(page)
         except UrlNode.DoesNotExist:
             # Back to page without @admin, display the error there.
@@ -347,7 +345,7 @@ def _is_accidental_fallback(obj, requested_language):
     # The object was resolved via the fallback language, but it has an official URL in the translated language.
     # Either _try_languages() can raise an exception, or we could perform a redirect on the users behalf.
     return getattr(obj, '_fetched_in_fallback_language', False) \
-       and obj.has_translation(requested_language)
+        and obj.has_translation(requested_language)
 
 
 def _get_fallback_language(language_code):

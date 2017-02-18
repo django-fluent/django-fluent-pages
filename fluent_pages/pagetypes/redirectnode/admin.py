@@ -20,7 +20,7 @@ class RedirectNodeAdmin(PageAdmin):
 
     # Sadly, can't use radio_fields for translatable fields
     #radio_fields = {'redirect_type': admin.VERTICAL}
-    #radio_fields.update(PageAdmin.radio_fields)
+    # radio_fields.update(PageAdmin.radio_fields)
 
     def formfield_for_choice_field(self, db_field, request=None, **kwargs):
         """

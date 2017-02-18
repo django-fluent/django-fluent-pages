@@ -91,6 +91,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
 
         priorities = {}
         choices = []
+
         def fill_choices(filter=lambda x: True):
             for plugin in base_plugins:
                 ct_id = ContentType.objects.get_for_model(plugin.model).id
@@ -106,7 +107,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
                 else:
                     # filter the choices
                     fill_choices(lambda ct_id: ct_id in child_types)
-        else: # all choices
+        else:  # all choices
             fill_choices()
 
         choices.sort(key=lambda choice: (priorities[choice[0]], choice[1]))
@@ -144,7 +145,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
     def status_column(self, urlnode):
         status = urlnode.status
         title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
-        icon  = [rec[1] for rec in self.STATUS_ICONS if rec[0] == status].pop()
+        icon = [rec[1] for rec in self.STATUS_ICONS if rec[0] == status].pop()
         return u'<img src="{static_url}{icon}" alt="{title}" title="{title}" />'.format(
             static_url=settings.STATIC_URL, icon=icon, title=title
         )

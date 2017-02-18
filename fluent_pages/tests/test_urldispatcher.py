@@ -138,7 +138,8 @@ class UrlDispatcherTests(AppTestCase):
         # that is 'PARLER_DEFAULT_LANGUAGE_CODE', which is set to 'LANGUAGE_CODE' (en-us) by default.
         self.assertTrue(_get_fallback_language('nl'))
 
-        self.assertRaises(UrlNode.DoesNotExist, lambda: _try_languages('nl', UrlNode.DoesNotExist,
+        self.assertRaises(UrlNode.DoesNotExist, lambda: _try_languages(
+            'nl', UrlNode.DoesNotExist,
             lambda lang: qs.get_for_path(u'/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/', language_code=lang)
         ))
 

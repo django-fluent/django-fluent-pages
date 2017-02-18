@@ -18,8 +18,8 @@ class RedirectNode(Page):
 
     # Note that the UrlField can support internal links too when django-any-urlfield is installed.
     redirect_translations = TranslatedFields(
-        new_url = AnyUrlField(_("New URL"), max_length=255),
-        redirect_type = models.IntegerField(_("Redirect type"), choices=REDIRECT_TYPE_CHOICES, default=302, help_text=_("Use 'normal redirect' unless you want to transfer SEO ranking to the new page.")),
+        new_url=AnyUrlField(_("New URL"), max_length=255),
+        redirect_type=models.IntegerField(_("Redirect type"), choices=REDIRECT_TYPE_CHOICES, default=302, help_text=_("Use 'normal redirect' unless you want to transfer SEO ranking to the new page.")),
     )
 
     class Meta:

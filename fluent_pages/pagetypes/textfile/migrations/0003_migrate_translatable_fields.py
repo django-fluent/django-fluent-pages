@@ -48,7 +48,7 @@ def backwards_func(apps, schema_editor):
         textfile.content = translation.content
         textfile.save()   # As intended: doesn't call UrlNode.save() but Model.save() only.
 
-        
+
 class Migration(migrations.Migration):
 
     dependencies = [

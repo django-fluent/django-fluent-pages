@@ -6,6 +6,7 @@ from fluent_pages.tests.utils import AppTestCase
 from fluent_pages.tests.testapp.models import (
     SimpleTextPage, PlainTextFile, WebShopPage, ChildTypesPage)
 
+
 class AdminTests(AppTestCase):
 
     def setUp(self):
@@ -69,4 +70,3 @@ class AdminTests(AppTestCase):
         self.root2 = Page.objects.get(pk=self.root2.pk)
 
         self.assertFalse(self.root.url.startswith(self.root2.url))
-

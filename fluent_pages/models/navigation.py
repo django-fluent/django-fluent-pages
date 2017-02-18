@@ -106,15 +106,15 @@ class PageNavigationNode(NavigationNode):
     @property
     def is_active(self):
         return self._page.pk \
-               and self._current_page is not None \
-               and self._page.pk == self._current_page.pk
+            and self._current_page is not None \
+            and self._page.pk == self._current_page.pk
 
     @property
     def is_child_active(self):
         return self._page.pk \
-               and self._current_page is not None \
-               and self._page.tree_id == self._current_page.tree_id \
-               and self._page.level < self._current_page.level
+            and self._current_page is not None \
+            and self._page.tree_id == self._current_page.tree_id \
+            and self._page.level < self._current_page.level
 
     @property
     def is_published(self):
@@ -154,7 +154,7 @@ class PageNavigationNode(NavigationNode):
     def _read_children(self):
         if self._children is None and not self._page.is_leaf_node():
             if (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
-                #children = self._page.get_children()  # Via MPTT
+                # children = self._page.get_children()  # Via MPTT
                 self._children = self._page.children.in_navigation(for_user=self._user)._mark_current(self._current_page)  # Via RelatedManager
 
                 # If the parent wasn't polymorphic, neither will it's children be.

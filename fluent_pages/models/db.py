@@ -93,7 +93,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     slug = TranslatedField()  # Explicitly added, but not needed
     parent = PageTreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
     parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
-    #children = a RelatedManager by 'parent'
+    # children = a RelatedManager by 'parent'
 
     # Publication information
     status = models.CharField(_('status'), max_length=1, choices=STATUSES, default=DRAFT, db_index=True)
@@ -132,7 +132,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         )
         permissions = (
             ('change_shared_fields_urlnode', _("Can change Shared fields")),     # The fields shared between languages.
-            ('change_override_url_urlnode', _("Can change Override URL field")), # Fpr overriding URLs (e.g. '/' for homepage).
+            ('change_override_url_urlnode', _("Can change Override URL field")),  # Fpr overriding URLs (e.g. '/' for homepage).
         )
         if django.VERSION >= (1, 10):
             # Although likely not needed, this helps making things explicit.
@@ -340,7 +340,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         plugin = self.plugin
         return plugin.child_types
 
-
     @property
     def plugin(self):
         """
@@ -355,14 +354,12 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         else:
             return page_type_pool.get_plugin_by_model(self.__class__)
 
-
     @property
     def page_key(self):
         """
         Ensure get_child_types is run once per plugin model.
         """
         return repr(self.plugin.model)
-
 
     # ---- Custom behavior ----
 
@@ -439,8 +436,8 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
 
         # Detect changes
         published_changed = self._original_pub_date != self.publication_date \
-                         or self._original_pub_end_date != self.publication_end_date \
-                         or self._original_status != self.status
+            or self._original_pub_end_date != self.publication_end_date \
+            or self._original_status != self.status
 
         if url_changed or published_changed or translation._fetched_parent_url:
             self._expire_url_caches()
@@ -605,7 +602,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
                         ))
 
                     # Alternative:
-                    ## no base == no URL for sub object. (be explicit here)
+                    # no base == no URL for sub object. (be explicit here)
                     #subobject._cached_url = None
                 else:
                     subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
@@ -753,7 +750,7 @@ class Page(UrlNode):
         # Even through self.title is configured with any_language=True to always return a value,
         # this will still fail for situations where a Page() is created without having a language at all.
         return self.safe_translation_getter('title', any_language=True) \
-               or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
+            or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
 
     # Make PyCharm happy
     # Not reusing UrlNode.objects, as contribute_to_class will change the QuerySet.model value.
@@ -774,12 +771,12 @@ class HtmlPage(Page):
 
     # SEO fields, the underlying HtmlPageTranslation model can be created dynamically.
     seo_translations = TranslatedFields(
-        meta_keywords = models.CharField(_('keywords'), max_length=255, blank=True, null=True),
-        meta_description = models.CharField(_('description'), max_length=255, blank=True, null=True),
-        meta_title = models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used.")),
-        meta = dict(
-            verbose_name = _("SEO Translation"),
-            verbose_name_plural = _("SEO Translations"),
+        meta_keywords=models.CharField(_('keywords'), max_length=255, blank=True, null=True),
+        meta_description=models.CharField(_('description'), max_length=255, blank=True, null=True),
+        meta_title=models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used.")),
+        meta=dict(
+            verbose_name=_("SEO Translation"),
+            verbose_name_plural=_("SEO Translations"),
         )
     )
 
@@ -821,9 +818,9 @@ class PageLayout(models.Model):
     key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
     title = models.CharField(_('title'), max_length=255)
     template_path = TemplateFilePathField('template file', path=appsettings.FLUENT_PAGES_TEMPLATE_DIR)
-    #no children
-    #unique
-    #allowed_children
+    # no children
+    # unique
+    # allowed_children
 
     def get_template(self):
         """

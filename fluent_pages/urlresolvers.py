@@ -100,7 +100,7 @@ def _find_plugin_reverse(viewname, args, kwargs):
             "Reverse for application URL '{0}' with arguments '{1}' and keyword arguments '{2}' not found.\n"
             "Searched in URLconf and installed page type plugins ({3}) for URLs.".format(
                 viewname, args, kwargs, ', '.join(x.__class__.__name__ for x in page_type_pool.get_plugins()) or "none"
-        ))
+            ))
 
 
 def _get_pages_of_type(model, language_code=None):

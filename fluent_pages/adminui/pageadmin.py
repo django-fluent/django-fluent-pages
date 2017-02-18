@@ -98,7 +98,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
         context.update({
             'base_change_form_template': self.base_change_form_template,
             'default_change_form_template': _lazy_get_default_change_form_template(self),
-            'ct_id': int(ContentType.objects.get_for_model(obj).pk if change else request.GET['ct_id']) # HACK for polymorphic admin
+            'ct_id': int(ContentType.objects.get_for_model(obj).pk if change else request.GET['ct_id'])  # HACK for polymorphic admin
         })
         # django-parler does this, so we have to do it too, affects django>=1.6
         form_url = add_preserved_filters({'preserved_filters': urlencode({'ct_id': context['ct_id']}), 'opts': self.model._meta}, form_url)

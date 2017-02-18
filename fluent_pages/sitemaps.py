@@ -35,7 +35,7 @@ class PageSitemap(Sitemap):
                 .active_translations()
                 .prefetch_related('translations')
                 .order_by('level', 'translations__language_code', 'translations___cached_url')
-            )
+                )
 
     def lastmod(self, urlnode):
         """Return the last modification of the page."""

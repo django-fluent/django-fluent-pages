@@ -42,7 +42,7 @@ class BreadcrumbNode(BaseInclusionNode):
     def get_context_data(self, parent_context, *tag_args, **tag_kwargs):
         request = _get_request(parent_context)
         try:
-            page  = _get_current_page(parent_context)  # UrlNode
+            page = _get_current_page(parent_context)  # UrlNode
         except UrlNode.DoesNotExist:
             # Typically happens when {% render_breadcrumb %} is used on 404 pages,
             # there is no breadcrumb possible there.
@@ -51,7 +51,7 @@ class BreadcrumbNode(BaseInclusionNode):
             page = None
             site = None
         else:
-            items = page.breadcrumb # list(UrlNode)
+            items = page.breadcrumb  # list(UrlNode)
             site = SimpleLazyObject(lambda: page.parent_site),  # Only read if really used, then cache.
 
         return {

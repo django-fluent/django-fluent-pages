@@ -27,8 +27,8 @@ class TemplateTagTests(AppTestCase):
         menu = re.sub('\s+', '', menu)
 
         self.assertEqual(menu,
-            """[{'title':"Home','url':"/",'active':false,'children':["""
-                """{'title':"Level1a','url':"/level1a/",'active':false},"""
-                """{'title':"Level1b','url':"/level1b/",'active':false},"""
-            """]},"""
-            """{'title':"Root2','url':"/root2/",'active':false},]""")
+                         """[{'title':"Home','url':"/",'active':false,'children':["""
+                         """{'title':"Level1a','url':"/level1a/",'active':false},"""
+                         """{'title':"Level1b','url':"/level1b/",'active':false},"""
+                         """]},"""
+                         """{'title':"Root2','url':"/root2/",'active':false},]""")

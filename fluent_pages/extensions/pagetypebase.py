@@ -165,9 +165,9 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
 
         context = self.get_context(request, page, **kwargs)
         return self.response_class(
-            request = request,
-            template = render_template,
-            context = context,
+            request=request,
+            template=render_template,
+            context=context,
         )
 
     def get_render_template(self, request, page, **kwargs):
