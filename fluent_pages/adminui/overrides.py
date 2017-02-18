@@ -1,7 +1,7 @@
 from fluent_pages import appsettings
-from .pageadmin import DefaultPageParentAdmin, DefaultPageChildAdmin
 from fluent_utils.load import import_settings_class
 
+from .pageadmin import DefaultPageChildAdmin, DefaultPageParentAdmin
 
 # Allow to extend the admin. Note this is pretty invasive,
 # and custom changes always need to be tested.

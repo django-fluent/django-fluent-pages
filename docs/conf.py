@@ -13,6 +13,7 @@
 
 import os
 import sys
+
 import django
 
 # If extensions (or modules to document with autodoc) are in another directory,

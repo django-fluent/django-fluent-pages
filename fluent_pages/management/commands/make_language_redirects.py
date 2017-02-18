@@ -1,10 +1,11 @@
+import sys
 from optparse import make_option
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError, NoArgsCommand
 from django.utils import translation
 from django.utils.translation import get_language_info
-import sys
 from fluent_pages.models import UrlNode
 from parler.utils.context import switch_language
 

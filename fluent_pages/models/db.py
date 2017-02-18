@@ -9,32 +9,30 @@ It defines the following classes:
 * PageLayout
   The layout of a page, which has regions and a template.
 """
-import django
 import logging
 
+import django
 from django.conf import settings
-from django.db import transaction
-from django.template.defaultfilters import slugify
-from django.utils.encoding import python_2_unicode_compatible
+from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import reverse, NoReverseMatch
-from django.contrib.sites.models import Site
-from django.db import connection, models
+from django.core.urlresolvers import NoReverseMatch, reverse
+from django.db import connection, models, transaction
 from django.db.backends.utils import truncate_name
+from django.template.defaultfilters import slugify
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from parler.models import TranslatableModel, TranslatedFieldsModel, TranslatedFields
+from fluent_pages import appsettings
+from fluent_pages.models.fields import PageTreeForeignKey, TemplateFilePathField
+from fluent_pages.models.managers import UrlNodeManager
+from future.utils import iteritems, itervalues, with_metaclass
 from parler.cache import get_object_cache_keys
 from parler.fields import TranslatedField
+from parler.models import TranslatableModel, TranslatedFields, TranslatedFieldsModel
 from parler.utils import get_language_title
-from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
-from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
-from fluent_pages.models.managers import UrlNodeManager
-from fluent_pages import appsettings
 from parler.utils.context import switch_language
+from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from slug_preview.models import SlugPreviewField
-from future.utils import with_metaclass, itervalues, iteritems
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,16 +1,16 @@
+import mptt
 from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from mptt.forms import MPTTAdminForm
-from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
 from fluent_pages import appsettings
+from fluent_pages.forms.fields import RelativeRootPathField
+from fluent_pages.models import UrlNode, UrlNode_Translation
+from fluent_utils.dry.admin import MultiSiteAdminMixin
+from mptt.forms import MPTTAdminForm
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm, TranslatedField
+from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
 from slug_preview.forms import SlugPreviewFormMixin
-from fluent_pages.models import UrlNode, UrlNode_Translation
-from fluent_pages.forms.fields import RelativeRootPathField
-from fluent_utils.dry.admin import MultiSiteAdminMixin
-import mptt
 
 
 class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelForm):

@@ -2,9 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from fluent_pages.models import Page
+from fluent_pages.tests.testapp.models import ChildTypesPage, PlainTextFile, SimpleTextPage, WebShopPage
 from fluent_pages.tests.utils import AppTestCase
-from fluent_pages.tests.testapp.models import (
-    SimpleTextPage, PlainTextFile, WebShopPage, ChildTypesPage)
 
 
 class AdminTests(AppTestCase):

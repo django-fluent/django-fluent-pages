@@ -6,19 +6,16 @@ Load this module using:
 
     {% load fluent_pages_tags %}
 """
-from future.builtins import str
-from six import integer_types, string_types
-from six import iteritems
 from django.contrib.sites.models import Site
-from django.utils.functional import SimpleLazyObject
 from django.template import Library, TemplateSyntaxError
-from tag_parser import template_tag
-from tag_parser.basetags import BaseInclusionNode, BaseNode
-
+from django.utils.functional import SimpleLazyObject
 from fluent_pages.models import UrlNode
 from fluent_pages.models.navigation import PageNavigationNode
 from fluent_pages.models.utils import prefill_parent_site
-
+from future.builtins import str
+from six import integer_types, iteritems, string_types
+from tag_parser import template_tag
+from tag_parser.basetags import BaseInclusionNode, BaseNode
 
 register = Library()
 

@@ -3,9 +3,10 @@ The model integration.
 Everything can be imported from ``__init__.py``.
 """
 from __future__ import absolute_import
+
 from django.utils.translation import ugettext_lazy as _
 from fluent_contents.models import Placeholder
-from fluent_contents.models.fields import PlaceholderRelation, ContentItemRelation
+from fluent_contents.models.fields import ContentItemRelation, PlaceholderRelation
 from fluent_pages.models import HtmlPage
 
 

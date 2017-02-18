@@ -1,7 +1,7 @@
 from fluent_pages.models import Page
 from fluent_pages.models.navigation import PageNavigationNode
-from fluent_pages.tests.utils import AppTestCase
 from fluent_pages.tests.testapp.models import SimpleTextPage
+from fluent_pages.tests.utils import AppTestCase
 
 
 class MenuTests(AppTestCase):

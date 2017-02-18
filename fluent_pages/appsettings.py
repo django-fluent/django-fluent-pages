@@ -1,14 +1,15 @@
 """
 Overview of all settings which can be customized.
 """
-from django.utils.text import slugify
+import os
+
+import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.text import slugify
 from future.builtins import str
 from parler import appsettings as parler_appsettings
-from parler.utils import normalize_language_code, is_supported_django_language
-import django
-import os
+from parler.utils import is_supported_django_language, normalize_language_code
 
 if getattr(settings, 'TEMPLATE_DIRS', None):
     # Django 1.7- or 1.8/1.9 with compatibility.

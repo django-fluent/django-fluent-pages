@@ -1,9 +1,9 @@
 import django
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from polymorphic_tree.models import PolymorphicTreeForeignKey
-from fluent_utils.django_compat import ForwardManyToOneDescriptor
 from fluent_pages import forms
+from fluent_utils.django_compat import ForwardManyToOneDescriptor
+from polymorphic_tree.models import PolymorphicTreeForeignKey
 
 
 class TemplateFilePathField(models.FilePathField):

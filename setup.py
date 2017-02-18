@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-from setuptools import setup, find_packages
-from os import path
 import codecs
 import os
 import re
 import sys
+from os import path
 
+from setuptools import find_packages, setup
 
 # When creating the sdist, make sure the django.mo file also exists:
 if 'sdist' in sys.argv or 'develop' in sys.argv:

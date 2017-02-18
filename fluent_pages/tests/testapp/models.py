@@ -1,5 +1,5 @@
 from django.db import models
-from fluent_pages.models import Page, HtmlPage
+from fluent_pages.models import HtmlPage, Page
 
 
 class SimpleTextPage(HtmlPage):

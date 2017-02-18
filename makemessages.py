@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 import os
-import django
 from os import path
+
+import django
 from django.conf import settings
 from django.core.management import call_command
 

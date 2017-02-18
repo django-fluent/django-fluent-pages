@@ -2,14 +2,15 @@
 Internal module for the plugin system,
 the API is exposed via __init__.py
 """
-from future.builtins import object, int
 from threading import Lock
+
 from django.contrib.contenttypes.models import ContentType
 from fluent_pages.models import UrlNode
 from fluent_utils.load import import_apps_submodule
-from .pagetypebase import PageTypePlugin
-from six import itervalues, iteritems
+from future.builtins import int, object
+from six import iteritems, itervalues
 
+from .pagetypebase import PageTypePlugin
 
 __all__ = (
     'PageTypeAlreadyRegistered', 'PageTypeNotFound', 'PageTypePool', 'page_type_pool'

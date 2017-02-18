@@ -1,11 +1,11 @@
-from django.test import override_settings
-from future.builtins import str
-from django.core.urlresolvers import reverse, resolve
-from fluent_pages.models import Page, UrlNode
-from fluent_pages.tests.utils import AppTestCase, script_name
-from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
-from fluent_pages.views.dispatcher import _try_languages, _get_fallback_language
 import django
+from django.core.urlresolvers import resolve, reverse
+from django.test import override_settings
+from fluent_pages.models import Page, UrlNode
+from fluent_pages.tests.testapp.models import PlainTextFile, SimpleTextPage, WebShopPage
+from fluent_pages.tests.utils import AppTestCase, script_name
+from fluent_pages.views.dispatcher import _get_fallback_language, _try_languages
+from future.builtins import str
 
 
 class UrlDispatcherTests(AppTestCase):

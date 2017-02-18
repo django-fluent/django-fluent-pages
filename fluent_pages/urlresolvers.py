@@ -1,10 +1,10 @@
 """
 URL Resolving for dynamically added pages.
 """
-from django.utils.functional import lazy
-from future.builtins import str
 from django.core.urlresolvers import NoReverseMatch, reverse
+from django.utils.functional import lazy
 from django.utils.translation import get_language
+from future.builtins import str
 
 # Several imports in this file are placed inline, to avoid loading the models too early.
 # Because fluent_pages.models creates a QuerySet, all all apps will be imported.

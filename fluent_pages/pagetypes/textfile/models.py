@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from parler.models import TranslatedFields
 from fluent_pages.models import Page
+from parler.models import TranslatedFields
 
 
 class TextFile(Page):

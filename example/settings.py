@@ -1,9 +1,10 @@
-import django
-from os.path import join, dirname, realpath
-
 # Add parent path,
 # Allow starting the app without installing the module.
 import sys
+from os.path import dirname, join, realpath
+
+import django
+
 sys.path.insert(0, dirname(dirname(realpath(__file__))))
 
 DEBUG = True

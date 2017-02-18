@@ -2,12 +2,11 @@ import django
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_text
-
-from fluent_pages.models import UrlNode, Page, HtmlPage, ParentTranslationDoesNotExist
+from fluent_pages.models import HtmlPage, Page, ParentTranslationDoesNotExist, UrlNode
 from fluent_pages.models.fields import PageTreeForeignKey
-from fluent_pages.models.managers import UrlNodeQuerySet, UrlNodeManager
+from fluent_pages.models.managers import UrlNodeManager, UrlNodeQuerySet
+from fluent_pages.tests.testapp.models import PlainTextFile, SimpleTextPage, WebShopPage
 from fluent_pages.tests.utils import AppTestCase
-from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
 
 
 class ModelDataTests(AppTestCase):

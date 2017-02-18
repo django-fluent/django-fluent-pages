@@ -1,7 +1,9 @@
 from django.conf.urls import url
 from fluent_pages.extensions import PageTypePlugin, page_type_pool
+
 from simpleshop.models import ProductCategoryPage
 from simpleshop.views import product_details
+
 
 @page_type_pool.register
 class ProductCategoryPagePlugin(PageTypePlugin):

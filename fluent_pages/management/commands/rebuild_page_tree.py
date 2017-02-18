@@ -1,9 +1,10 @@
+from optparse import make_option
+
 from django.core.management.base import NoArgsCommand
 from django.utils.encoding import smart_text
-from optparse import make_option
 from fluent_pages import appsettings
 from fluent_pages.extensions import page_type_pool
-from fluent_pages.models.db import UrlNode_Translation, UrlNode
+from fluent_pages.models.db import UrlNode, UrlNode_Translation
 
 
 class Command(NoArgsCommand):

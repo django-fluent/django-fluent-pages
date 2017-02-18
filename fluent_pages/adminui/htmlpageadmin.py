@@ -1,5 +1,6 @@
 from django.contrib.admin.widgets import AdminTextareaWidget, AdminTextInputWidget
 from django.utils.translation import ugettext_lazy as _
+
 from .overrides import PageAdmin
 
 

@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import sys
-import django
-from django.conf import settings, global_settings as default_settings
-from django.core.management import execute_from_command_line
 from os import path
 
+import django
+from django.conf import global_settings as default_settings
+from django.conf import settings
+from django.core.management import execute_from_command_line
 
 # Give feedback on used versions
 sys.stderr.write('Using Python version {0} from {1}\n'.format(sys.version[:5], sys.executable))

@@ -1,15 +1,15 @@
 import django
 from django.conf import settings
 from django.contrib.admin import SimpleListFilter
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import ugettext_lazy as _
 from fluent_pages import appsettings
+from fluent_pages.models import UrlNode
+from fluent_utils.dry.admin import MultiSiteAdminMixin
 from parler.admin import TranslatableAdmin
 from parler.models import TranslationDoesNotExist
 from parler.utils import is_multilingual_project
-from polymorphic_tree.admin import PolymorphicMPTTParentModelAdmin, NodeTypeChoiceForm
-from fluent_pages.models import UrlNode
-from fluent_utils.dry.admin import MultiSiteAdminMixin
+from polymorphic_tree.admin import NodeTypeChoiceForm, PolymorphicMPTTParentModelAdmin
 
 
 class PageTypeChoiceForm(NodeTypeChoiceForm):

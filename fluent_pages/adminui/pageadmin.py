@@ -1,15 +1,17 @@
+import copy
+
 import django
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
-from future.builtins import int
-import copy
-from django.utils.http import urlencode
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.contrib.contenttypes.models import ContentType
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.utils.functional import lazy
+from django.utils.http import urlencode
 from fluent_pages.models import Page
-from .urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
+from future.builtins import int
+
+from .urlnodechildadmin import UrlNodeAdminForm, UrlNodeChildAdmin
 from .urlnodeparentadmin import UrlNodeParentAdmin
 
 

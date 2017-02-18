@@ -2,9 +2,6 @@
 Internal module for the plugin system,
 the API is exposed via __init__.py
 """
-from future.builtins import str
-from future.utils import with_metaclass
-
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
@@ -12,10 +9,10 @@ from django.core.urlresolvers import RegexURLResolver
 from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
-
 from fluent_pages import appsettings
 from fluent_pages.adminui import PageAdmin
-
+from future.builtins import str
+from future.utils import with_metaclass
 from six import string_types
 
 try:

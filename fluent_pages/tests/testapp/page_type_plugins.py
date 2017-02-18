@@ -1,7 +1,6 @@
 from django.http import HttpResponse
-from fluent_pages.extensions import page_type_pool, PageTypePlugin
-from fluent_pages.tests.testapp.models import (
-    SimpleTextPage, PlainTextFile, WebShopPage, ChildTypesPage)
+from fluent_pages.extensions import PageTypePlugin, page_type_pool
+from fluent_pages.tests.testapp.models import ChildTypesPage, PlainTextFile, SimpleTextPage, WebShopPage
 
 
 @page_type_pool.register

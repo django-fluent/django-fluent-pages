@@ -1,5 +1,5 @@
 import fluent_pages.admin  # Register model
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.http import Http404
 

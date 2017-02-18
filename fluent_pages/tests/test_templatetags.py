@@ -1,6 +1,7 @@
-from fluent_pages.tests.utils import AppTestCase
-from fluent_pages.tests.testapp.models import SimpleTextPage
 import re
+
+from fluent_pages.tests.testapp.models import SimpleTextPage
+from fluent_pages.tests.utils import AppTestCase
 
 
 class TemplateTagTests(AppTestCase):

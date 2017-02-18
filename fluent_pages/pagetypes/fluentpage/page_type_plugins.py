@@ -1,7 +1,8 @@
 from fluent_pages.extensions import page_type_pool
 from fluent_pages.integration.fluent_contents.page_type_plugins import FluentContentsPagePlugin
-from .models import FluentPage
+
 from .admin import FluentPageAdmin
+from .models import FluentPage
 
 
 @page_type_pool.register

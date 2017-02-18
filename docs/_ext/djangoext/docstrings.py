@@ -2,10 +2,11 @@
 Automatically mention all model fields as parameters in the model construction.
 Based on http://djangosnippets.org/snippets/2533/
 """
-import django
-from django.utils.html import strip_tags
-from django.utils.encoding import force_unicode
 import inspect
+
+import django
+from django.utils.encoding import force_unicode
+from django.utils.html import strip_tags
 
 
 def improve_model_docstring(app, what, name, obj, options, lines):

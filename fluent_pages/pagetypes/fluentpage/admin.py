@@ -1,9 +1,10 @@
 from django.conf.urls import url
+from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_pages.admin import HtmlPageAdmin, PageAdminForm
 from fluent_pages.integration.fluent_contents.admin import FluentContentsPageAdmin
 from fluent_pages.models import PageLayout
-from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_utils.ajax import JsonResponse
+
 from .widgets import LayoutSelector
 
 

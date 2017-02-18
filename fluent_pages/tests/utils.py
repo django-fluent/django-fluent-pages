@@ -7,9 +7,8 @@ from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.test import TestCase, override_settings
-from future.builtins import str
-
 from fluent_pages.models.db import UrlNode
+from future.builtins import str
 
 try:
     from importlib import import_module

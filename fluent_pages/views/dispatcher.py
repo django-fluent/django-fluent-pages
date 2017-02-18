@@ -3,19 +3,18 @@ The view to display CMS content.
 """
 import re
 
-from future.builtins import str
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import Resolver404, reverse, resolve, NoReverseMatch, get_script_prefix
-from django.http import Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.core.urlresolvers import NoReverseMatch, Resolver404, get_script_prefix, resolve, reverse
+from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils import translation
-from django.views.generic.base import View
 from django.views.generic import RedirectView
-
+from django.views.generic.base import View
 from fluent_pages import appsettings
 from fluent_pages.models import UrlNode
 from fluent_pages.models.utils import prefill_parent_site
+from future.builtins import str
 
 
 # NOTE:
