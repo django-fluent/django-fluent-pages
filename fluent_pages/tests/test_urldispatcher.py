@@ -14,11 +14,11 @@ class UrlDispatcherTests(AppTestCase):
 
     @classmethod
     def setUpTree(cls):
-        SimpleTextPage.objects.create(id=1, title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
-        SimpleTextPage.objects.create(id=2, title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
-        SimpleTextPage.objects.create(id=3, title="Text1", slug="unpublished", status=SimpleTextPage.DRAFT, author=cls.user)
-        WebShopPage.objects.create(id=4, title="Shop1", slug="shop", status=SimpleTextPage.PUBLISHED, author=cls.user)
-        PlainTextFile.objects.create(id=5, slug='README', status=PlainTextFile.PUBLISHED, author=cls.user, content="This is the README")
+        cls.home = SimpleTextPage.objects.create(title="Home", slug="home", status=SimpleTextPage.PUBLISHED, author=cls.user, override_url='/')
+        cls.sibling1 = SimpleTextPage.objects.create(title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
+        cls.unpublished = SimpleTextPage.objects.create(title="Text1", slug="unpublished", status=SimpleTextPage.DRAFT, author=cls.user)
+        cls.shop = WebShopPage.objects.create(title="Shop1", slug="shop", status=SimpleTextPage.PUBLISHED, author=cls.user)
+        cls.readme = PlainTextFile.objects.create(slug='README', status=PlainTextFile.PUBLISHED, author=cls.user, content="This is the README")
 
     def test_get_for_path(self):
         """
@@ -160,13 +160,13 @@ class UrlDispatcherTests(AppTestCase):
             target_status_code = 200
 
         if django.VERSION >= (1, 9):
-            admin_url1 = 'http://testserver/admin/fluent_pages/page/1/change/'
-            admin_url2 = 'http://testserver/admin/fluent_pages/page/2/change/'
-            admin_url3 = 'http://testserver/admin/fluent_pages/page/4/change/'
+            admin_url1 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.home.pk)
+            admin_url2 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.sibling1.pk)
+            admin_url3 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.shop.pk)
         else:
-            admin_url1 = 'http://testserver/admin/fluent_pages/page/1/'
-            admin_url2 = 'http://testserver/admin/fluent_pages/page/2/'
-            admin_url3 = 'http://testserver/admin/fluent_pages/page/4/'
+            admin_url1 = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.home.pk)
+            admin_url2 = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.sibling1.pk)
+            admin_url3 = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.shop.pk)
 
         self.assertRedirects(self.client.get('/@admin'), admin_url1, status_code=302, target_status_code=target_status_code)
         self.assertRedirects(self.client.get('/sibling1/@admin'), admin_url2, status_code=302, target_status_code=target_status_code)
@@ -206,7 +206,7 @@ class UrlDispatcherNonRootTests(AppTestCase):
 
     @classmethod
     def setUpTree(cls):
-        SimpleTextPage.objects.create(id=1, title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
+        cls.root = SimpleTextPage.objects.create(title="Text1", slug="sibling1", status=SimpleTextPage.PUBLISHED, author=cls.user, contents="TEST_CONTENTS")
 
     @override_settings(ROOT_URLCONF='fluent_pages.tests.testapp.urls_nonroot')
     def test_urlconf_root(self):
@@ -235,9 +235,9 @@ class UrlDispatcherNonRootTests(AppTestCase):
             target_status_code = 200
 
         if django.VERSION >= (1, 9):
-            admin_url = 'http://testserver/admin/fluent_pages/page/1/change/'
+            admin_url = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.root.pk)
         else:
-            admin_url = 'http://testserver/admin/fluent_pages/page/1/'
+            admin_url = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.root.pk)
 
         self.assertRedirects(self.client.get('/pages/sibling1/@admin'), admin_url, status_code=302, target_status_code=target_status_code)
         self.assertRedirects(self.client.get('/pages/non-existent/@admin'), 'http://testserver/pages/non-existent/', status_code=302, target_status_code=404)
