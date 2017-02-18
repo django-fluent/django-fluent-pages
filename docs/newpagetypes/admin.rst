@@ -41,7 +41,7 @@ The "list" page is never used, as this is rendered by the main :class:`~fluent_p
 Customizing fieldsets
 ---------------------
 
-To deal with model inheritence, the fieldsets are not set in stone in the :attr:`~django.contrib.admin.ModelAdmin.fieldsets` attribute.
+To deal with model inheritance, the fieldsets are not set in stone in the :attr:`~django.contrib.admin.ModelAdmin.fieldsets` attribute.
 Instead, the fieldsets are created dynamically using the the :attr:`~fluent_pages.admin.PageAdmin.base_fieldsets` value as starting point.
 Any unknown fields (e.g. added by derived models) will be added to a separate "Contents" fieldset.
 
