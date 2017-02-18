@@ -90,6 +90,7 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
     #: Defines whether users are allowed to place sub pages below this node. When :attr:`is_file` is ``True``, this is never possible.
     can_have_children = True
 
+    #: .. versionadded:: 1.1
     #: Defines which pages can be children of this node.
     #: List of values similar to those values accepted in a model ForeignKey.
     child_types = []

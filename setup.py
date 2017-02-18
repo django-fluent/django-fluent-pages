@@ -50,7 +50,7 @@ setup(
         'six>=1.5.2',
     ],
     requires=[
-        'Django (>=1.5)',
+        'Django (>=1.7)',
     ],
     extras_require={
         'tests': [

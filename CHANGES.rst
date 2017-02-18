@@ -1,14 +1,18 @@
 Changelog
 =========
 
-Changes in git
---------------
+Version 1.1 (2017-02-18)
+------------------------
 
+* Added ``child_types`` and ``can_be_root`` options to limit the allowed model types in the plugin.
+  This allows limiting which child types can be used by plugins!
 * Added support for ``{% appurl .. as varname %}``.
+* Added ``ParentTranslationDoesNotExist`` exception to improve error handling
+* Fixed Django 1.10 issue for the ``FluentPage`` type with an invalid default manager in the admin.
 * Fix multiple fallback languages support in ``rebuild_page_tree``.
 * Fixed migration string types for Python 3.
 * Fixed using ``os.path.sep`` in ``FLUENT_PAGES_TEMPLATE_DIR``
-* Added ``ParentTranslationDoesNotExist`` exception to improve error handling
+* Fixed recursion bug in ``RedirectNodeAdmin``.
 * Dropped Python 2.6 and Django 1.6 support
 
 .. note::
