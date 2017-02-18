@@ -94,6 +94,10 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
     #: List of values similar to those values accepted in a model ForeignKey.
     child_types = []
 
+    #: .. versionadded:: 1.1
+    #: Define whether this page type can be a root node.
+    can_be_root = True
+
     #: .. versionadded:: 0.9
     #: Tell whether the page type should be displayed in the sitemaps by default.
     #: This value can be changed for most pages in the admin interface.

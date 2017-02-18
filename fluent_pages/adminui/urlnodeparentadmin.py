@@ -80,11 +80,15 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         from fluent_pages.extensions import page_type_pool
         can_have_children = None
         child_types = None
+        base_plugins = page_type_pool.get_plugins()
 
         if request is not None:
             parent = request.GET.get(self.model._mptt_meta.parent_attr, None)
-            # if we have a parent check to see if it exists and get can_have_children
-            if parent is not None:
+            if parent is None:
+                # Already exclude plugins that can't be root.
+                base_plugins = [p for p in base_plugins if p.can_be_root]
+            else:
+                # if we have a parent check to see if it exists and get can_have_children
                 try:
                     parent_instance = self.base_model.objects.get(pk=parent)
                     can_have_children = parent_instance.can_have_children
@@ -95,7 +99,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         priorities = {}
         choices = []
         def fill_choices(filter=lambda x: True):
-            for plugin in page_type_pool.get_plugins():
+            for plugin in base_plugins:
                 ct_id = ContentType.objects.get_for_model(plugin.model).id
                 if not filter(ct_id):
                     continue

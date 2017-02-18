@@ -320,6 +320,13 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         return plugin.can_have_children and not plugin.is_file
 
     @property
+    def can_be_root(self):
+        """
+        Return ``True`` when the page type can be used as root page.
+        """
+        return self.plugin.can_be_root
+
+    @property
     def child_types(self):
         """
         Return a list of content type ids of nodes that can be children of
