@@ -53,6 +53,11 @@ setup(
         'Django (>=1.5)',
     ],
     extras_require={
+        'tests': [
+            'django-any-urlfield>=2.2',
+            'django-wysiwyg>=0.7.1',
+            'django-fluent-contents>=1.1',
+        ],
         'flatpage': ['django-wysiwyg>=0.7.1'],
         'fluentpage': ['django-fluent-contents>=1.1'],
         'redirectnode': ['django-any-urlfield>=2.2'],  # Needs Pickle support for translated new_url field.

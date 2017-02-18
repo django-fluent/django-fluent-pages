@@ -20,7 +20,7 @@ before_install:
 - pip install codecov
 install:
 - pip install -U pip wheel
-- pip install $PACKAGES django-wysiwyg -e .
+- pip install $PACKAGES -e .[tests]
 script:
 - coverage run --source=fluent_pages runtests.py
 after_success:

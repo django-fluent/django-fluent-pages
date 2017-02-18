@@ -2,12 +2,12 @@ import django
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.utils.encoding import force_text
-from fluent_pages.models import Page, ParentTranslationDoesNotExist
+
+from fluent_pages.models import UrlNode, Page, HtmlPage, ParentTranslationDoesNotExist
 from fluent_pages.models.fields import PageTreeForeignKey
-from fluent_pages.models.managers import UrlNodeQuerySet
+from fluent_pages.models.managers import UrlNodeQuerySet, UrlNodeManager
 from fluent_pages.tests.utils import AppTestCase
 from fluent_pages.tests.testapp.models import SimpleTextPage, PlainTextFile, WebShopPage
-from parler.models import TranslationDoesNotExist
 
 
 class ModelDataTests(AppTestCase):
@@ -107,6 +107,14 @@ class ModelDataTests(AppTestCase):
         """
         self.assertIs(type(Page.objects.get_for_path('/').children.all()), UrlNodeQuerySet)  # This broke with some django-mptt 0.5.x versions
         self.assertEqual(Page.objects.get_for_path('/').children.in_navigation()[0].slug, 'level1')
+
+    def test_default_manager(self):
+        """
+        Test that the default manager is correct.
+        """
+        self.assertIsInstance(UrlNode._default_manager, UrlNodeManager)
+        self.assertIsInstance(Page._default_manager, UrlNodeManager)
+        self.assertIsInstance(HtmlPage._default_manager, UrlNodeManager)
 
     def test_get_pages_of_type_qs(self):
         """
