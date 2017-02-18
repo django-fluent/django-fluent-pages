@@ -12,16 +12,13 @@ class AdminTests(AppTestCase):
         # Need to make sure that django-parler's cache isn't reused,
         # because the transaction is rolled back on each test method.
         cache.clear()
-        # Need to make a staff member and login
+
+        # Adding a superuser, to circumvent any permission checks on moving nodes.
         User = get_user_model()
-        self.username = 'a'
-        self.email = 'ab@example.com'
-        self.password = 'b'
-        self.test_user = User.objects.create_user(self.username, self.email, self.password)
-        self.test_user.is_staff = True
+        self.test_user = User.objects.create_superuser('a', 'ab@example.com', 'b')
         self.test_user.save()
-        login = self.client.login(username=self.username, password=self.password)
-        self.assertEqual(login, True)
+        login_ok = self.client.login(username='a', password='b')  # self.client.force_login() exists as of Django 1.9
+        self.assertTrue(login_ok)
 
     @classmethod
     def setUpTree(cls):
@@ -39,14 +36,15 @@ class AdminTests(AppTestCase):
         childtypes = set(self.root2.get_child_types())
         self.assertEqual(len(ids), len(ids | childtypes))
 
-    def move_mode(self):
+    def move_mode(self, expect_status=200):
         """Make root a child of root2"""
-        resp = self.client.post('/admin/fluent_pages/page/api/node-moved/', {
+        response = self.client.post('/admin/fluent_pages/page/api/node-moved/', {
             'moved_id': self.root.id,
             'target_id': self.root2.id,
             'position': 'inside',
-            'previous_parent_id': 0
+            'previous_parent_id': None
         })
+        self.assertEqual(response.status_code, expect_status)
 
     def test_allowed(self):
         """"test the move with no modifications to child types"""
@@ -65,7 +63,7 @@ class AdminTests(AppTestCase):
         self.root2._PolymorphicMPTTModel__child_types[page_key].remove(
             self.root.polymorphic_ctype_id)
         # try the move
-        self.move_mode()
+        self.move_mode(expect_status=409)
         # refresh objects
         self.root = Page.objects.get(pk=self.root.pk)
         self.root2 = Page.objects.get(pk=self.root2.pk)
