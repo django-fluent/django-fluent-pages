@@ -7,6 +7,7 @@ Changes in git
 * Added support for ``{% appurl .. as varname %}``.
 * Fix multiple fallback languages support in ``rebuild_page_tree``.
 * Fixed migration string types for Python 3.
+* Fixed using ``os.path.sep`` in ``FLUENT_PAGES_TEMPLATE_DIR``
 * Added ``ParentTranslationDoesNotExist`` exception to improve error handling
 
 .. note::
