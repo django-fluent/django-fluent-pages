@@ -40,10 +40,10 @@ setup(
 
     install_requires=[
         'django-fluent-utils>=1.2.3',      # DRY utility code
-        'django-mptt>=0.5.5, != 0.8.5',    # Still supporting Django 1.5, use mptt 0.6 for Python 3 support. Workaround https://github.com/django-mptt/django-mptt/issues/494
+        'django-mptt>=0.7.0, != 0.8.5',    # Still allow 0.7 to have Django 1.7 support Workaround https://github.com/django-mptt/django-mptt/issues/494
         'django-parler>=1.6.1',            # Needed for Django 1.9 compatibility
-        'django-polymorphic>=0.9.1',       # Needed for Django 1.8 compatibility
-        'django-polymorphic-tree>=1.2.3',  # Needed for Django 1.9 compatibility
+        'django-polymorphic>=1.0.1',
+        'django-polymorphic-tree>=1.4',
         'django-slug-preview>=1.0.1',
         'django-tag-parser>=3.0',
         'future>=0.12.2',
