@@ -1,15 +1,15 @@
+import os
+
 import django
-from future.builtins import str
-from six import iteritems
-from functools import wraps
-from django.conf import settings, UserSettingsHolder
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.core.urlresolvers import get_script_prefix, set_script_prefix
-from django.contrib.sites.models import Site
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from future.builtins import str
+
 from fluent_pages.models.db import UrlNode
-from fluent_utils.django_compat import get_user_model
-import os
 
 try:
     from importlib import import_module
@@ -30,12 +30,12 @@ class AppTestCase(TestCase):
     def setUpClass(cls):
         if cls.install_apps:
             # When running this app via `./manage.py test fluent_pages`, auto install the test app + models.
-            run_syncdb = False
+            run_migrate = False
             for appname in cls.install_apps:
                 if appname not in settings.INSTALLED_APPS:
                     print('Adding {0} to INSTALLED_APPS'.format(appname))
                     settings.INSTALLED_APPS = (appname,) + tuple(settings.INSTALLED_APPS)
-                    run_syncdb = True
+                    run_migrate = True
 
                     testapp = import_module(appname)
 
@@ -52,11 +52,8 @@ class AppTestCase(TestCase):
                         from django.template.utils import get_app_template_dirs
                         get_app_template_dirs.cache_clear()
 
-            if run_syncdb:
-                if django.VERSION < (1, 7):
-                    call_command('syncdb', verbosity=0)  # may run south's overlaid version
-                else:
-                    call_command('migrate', verbosity=0)
+            if run_migrate:
+                call_command('migrate', verbosity=0)
 
         # This also runs setUpTestData
         super(AppTestCase, cls).setUpClass()
@@ -104,60 +101,6 @@ class AppTestCase(TestCase):
             msg_prefix += ": "
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404, str(msg_prefix) + u"Page at {0} should return 404, got {1}.".format(url, response.status_code))
-
-
-try:
-    from django.test.utils import override_settings  # Django 1.4
-except ImportError:
-    class override_settings(object):
-        """
-        Acts as either a decorator, or a context manager. If it's a decorator it
-        takes a function and returns a wrapped function. If it's a contextmanager
-        it's used with the ``with`` statement. In either event entering/exiting
-        are called before and after, respectively, the function/block is executed.
-        """
-
-        def __init__(self, **kwargs):
-            self.options = kwargs
-            self.wrapped = settings._wrapped
-
-        def __enter__(self):
-            self.enable()
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            self.disable()
-
-        def __call__(self, test_func):
-            from django.test import TransactionTestCase
-            if isinstance(test_func, type) and issubclass(test_func, TransactionTestCase):
-                original_pre_setup = test_func._pre_setup
-                original_post_teardown = test_func._post_teardown
-
-                def _pre_setup(innerself):
-                    self.enable()
-                    original_pre_setup(innerself)
-
-                def _post_teardown(innerself):
-                    original_post_teardown(innerself)
-                    self.disable()
-                test_func._pre_setup = _pre_setup
-                test_func._post_teardown = _post_teardown
-                return test_func
-            else:
-                @wraps(test_func)
-                def inner(*args, **kwargs):
-                    with self:
-                        return test_func(*args, **kwargs)
-            return inner
-
-        def enable(self):
-            override = UserSettingsHolder(settings._wrapped)
-            for key, new_value in iteritems(self.options):
-                setattr(override, key, new_value)
-            settings._wrapped = override
-
-        def disable(self):
-            settings._wrapped = self.wrapped
 
 
 class script_name(override_settings):

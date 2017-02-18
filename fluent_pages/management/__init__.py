@@ -17,7 +17,7 @@ else:
     def _on_post_syncdb(app, verbosity=2, db=DEFAULT_DB_ALIAS, **kwargs):
         """
         Prefix the ContentType objects of pagetypes, to make them recognizable.
-        Runs automatically at syncdb, and initial south model creation.
+        Runs automatically at syncdb, and initial model creation.
         """
         app_models = [m for m in get_models(app) if issubclass(m, UrlNode)]
         for model in app_models:
@@ -33,8 +33,8 @@ else:
         new_name = u"{0} {1}".format(prefix, model._meta.verbose_name_raw).strip()
 
         if ct.name != new_name:
-            # Django 1.4/1.5 compatible .save(update_fields=('name',)) look-a-like
-            ContentType.objects.using(db).filter(pk=ct.id).update(name=new_name)
+            ct.name = new_name
+            ct.save(update_fields=('name',))
 
             if verbosity >= 1:
                 print(" - Updated ContentType title for {0}.{1}".format(model._meta.app_label, model._meta.object_name))

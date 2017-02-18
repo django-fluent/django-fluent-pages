@@ -1,10 +1,10 @@
 """
 Overview of all settings which can be customized.
 """
-from future.builtins import str
+from django.utils.text import slugify
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.template.defaultfilters import slugify  # Django 1.4 location
+from future.builtins import str
 from parler import appsettings as parler_appsettings
 from parler.utils import normalize_language_code, is_supported_django_language
 import django

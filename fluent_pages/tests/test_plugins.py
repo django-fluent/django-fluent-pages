@@ -1,7 +1,8 @@
 import django
+from django.test import override_settings
 
 from fluent_pages.tests.testapp.models import WebShopPage
-from fluent_pages.tests.utils import AppTestCase, override_settings
+from fluent_pages.tests.utils import AppTestCase
 from fluent_pages.urlresolvers import app_reverse, mixed_reverse, PageTypeNotMounted, MultipleReverseMatch
 
 

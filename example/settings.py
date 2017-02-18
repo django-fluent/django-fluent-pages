@@ -122,13 +122,7 @@ INSTALLED_APPS = (
     'tinymce',
 )
 
-if django.VERSION < (1, 7):
-    INSTALLED_APPS += (
-        # For DB upgrades
-        'south',
-    )
-else:
-    TEST_RUNNER = 'django.test.runner.DiscoverRunner'  # silence system checks
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'  # silence system checks
 
 #DJANGO_WYSIWYG_FLAVOR = 'yui_advanced'
 DJANGO_WYSIWYG_FLAVOR = 'tinymce_advanced'

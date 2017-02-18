@@ -1,5 +1,6 @@
 import django
 from django.conf import settings
+from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from fluent_pages import appsettings
@@ -15,25 +16,17 @@ class PageTypeChoiceForm(NodeTypeChoiceForm):
     type_label = _("Page type")
 
 
-try:
-    from django.contrib.admin import SimpleListFilter
-except ImportError:
-    extra_list_filters = ()
-else:
-    # Django 1.4:
-    class PageTypeListFilter(SimpleListFilter):
-        parameter_name = 'ct_id'
-        title = _('page type')
+class PageTypeListFilter(SimpleListFilter):
+    parameter_name = 'ct_id'
+    title = _('page type')
 
-        def lookups(self, request, model_admin):
-            return model_admin.get_child_type_choices()
+    def lookups(self, request, model_admin):
+        return model_admin.get_child_type_choices()
 
-        def queryset(self, request, queryset):
-            if self.value():
-                queryset = queryset.filter(polymorphic_ctype_id=self.value())
-            return queryset
-
-    extra_list_filters = (PageTypeListFilter,)
+    def queryset(self, request, queryset):
+        if self.value():
+            queryset = queryset.filter(polymorphic_ctype_id=self.value())
+        return queryset
 
 
 class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
@@ -50,7 +43,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         list_display = ('title', 'language_column', 'status_column', 'modification_date', 'actions_column')
     else:
         list_display = ('title', 'status_column', 'modification_date', 'actions_column')
-    list_filter = ('status',) + extra_list_filters
+    list_filter = ('status',) + (PageTypeListFilter,)
     search_fields = ('translations__slug', 'translations__title')
     actions = ['make_published']
 

@@ -22,16 +22,6 @@ class TemplateFilePathField(models.FilePathField):
         defaults.update(kwargs)
         return super(TemplateFilePathField, self).formfield(**defaults)
 
-    def south_field_triple(self):
-        """
-        Returns a suitable description of this field for South.
-        """
-        from south.modelsinspector import introspector
-        field_class = "{0}.{1}".format(self.__class__.__module__, self.__class__.__name__)
-        args, kwargs = introspector(self)
-        del kwargs['path']
-        return (field_class, args, kwargs)
-
     def deconstruct(self):
         # For Django 1.7 migrations
         name, path, args, kwargs = super(TemplateFilePathField, self).deconstruct()
@@ -68,15 +58,3 @@ class PageTreeForeignKey(PolymorphicTreeForeignKey):
             super(PageTreeForeignKey, self).contribute_to_class(cls, name)
 
         setattr(cls, self.name, TranslatedForeignKeyDescriptor(self))  # override what ForeignKey does.
-
-
-try:
-    from south.modelsinspector import add_introspection_rules
-except ImportError:
-    pass
-else:
-    _name_re = "^" + __name__.replace(".", "\.")
-    add_introspection_rules([], [
-        _name_re + "\.TemplateFilePathField",
-        _name_re + "\.PageTreeForeignKey",
-    ])

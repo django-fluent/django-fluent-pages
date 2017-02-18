@@ -48,7 +48,6 @@ class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelFor
         Extend valiation of the form, checking whether the URL is unique.
         Returns all fields which are valid.
         """
-        # As of Django 1.3, only valid fields are passed in cleaned_data.
         cleaned_data = super(UrlNodeAdminForm, self).clean()
 
         # See if the current URLs don't overlap.

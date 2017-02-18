@@ -1,5 +1,5 @@
 {% extends "admin/polymorphic_tree/change_form.html" %}
-{% load i18n admin_urls admin_modify fluent_pages_admin_tags %}
+{% load i18n admin_urls admin_modify %}
 
 {% comment %}
     Override the content block, so all templates will have the same set of blocks.
@@ -74,7 +74,7 @@
                     showRelatedObjectLookupPopup(this);
                 });
             {% if adminform and add %}
-                $('form#{{ opts|get_meta_model_name }}_form :input:visible:enabled:first').focus()
+                $('form#{{ opts.model_name }}_form :input:visible:enabled:first').focus()
             {% endif %}
             });
         })(django.jQuery);

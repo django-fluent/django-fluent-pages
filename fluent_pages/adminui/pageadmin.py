@@ -1,6 +1,5 @@
 import django
-
-native_str = str  # no future.builtins.str, breaks default_change_form_template in Django 1.5, Python 2.7.5
+from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from future.builtins import int
 import copy
 from django.utils.http import urlencode
@@ -9,7 +8,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.utils.functional import lazy
-from fluent_utils.django_compat import add_preserved_filters
 from fluent_pages.models import Page
 from .urlnodechildadmin import UrlNodeChildAdmin, UrlNodeAdminForm
 from .urlnodeparentadmin import UrlNodeParentAdmin
@@ -67,18 +65,14 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
     #: Use ``{% extend base_change_form_template %}`` in templates to inherit from it.
     base_change_form_template = "admin/fluent_pages/page/base_change_form.html"
 
-    class Media:
-        js = ('fluent_pages/admin/django13_fk_raw_id_fix.js',)
-
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         field = super(DefaultPageChildAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
         if field is None:
             return None
 
-        # Hack the ForeignKeyRawIdWidget in Django 1.4 to display a selector for the base model too.
+        # Hack the ForeignKeyRawIdWidget to display a selector for the base model too.
         # It correctly detects that the parent field actually points to an UrlNode, instead of Page.
         # Since UrlNode is not registered in the admin, it won't display the selector. Overriding that here.
-        # It also partially fixes Django 1.3, which would wrongly point the url to ../../../fluent_pages/urlnode/ otherwise.
         if db_field.name == 'parent' and isinstance(field.widget, ForeignKeyRawIdWidget):
             field.widget.rel = copy.copy(field.widget.rel)
             if django.VERSION >= (1, 9):
@@ -114,7 +108,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
 def _get_default_change_form_template(self):
     return _select_template_name(DefaultPageChildAdmin.change_form_template.__get__(self))
 
-_lazy_get_default_change_form_template = lazy(_get_default_change_form_template, native_str)
+_lazy_get_default_change_form_template = lazy(_get_default_change_form_template, str)
 
 
 _cached_name_lookups = {}

@@ -11,6 +11,9 @@ It defines the following classes:
 """
 import django
 import logging
+
+from django.conf import settings
+from django.db import transaction
 from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.core.cache import cache
@@ -18,6 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.contrib.sites.models import Site
 from django.db import connection, models
+from django.db.backends.utils import truncate_name
 from django.utils.translation import ugettext_lazy as _
 from parler.models import TranslatableModel, TranslatedFieldsModel, TranslatedFields
 from parler.cache import get_object_cache_keys
@@ -27,7 +31,6 @@ from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBa
 from fluent_pages.models.fields import TemplateFilePathField, PageTreeForeignKey
 from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages import appsettings
-from fluent_utils.django_compat import transaction_atomic, truncate_name, AUTH_USER_MODEL
 from parler.utils.context import switch_language
 from slug_preview.models import SlugPreviewField
 from future.utils import with_metaclass, itervalues, iteritems
@@ -105,7 +108,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     key = models.SlugField(_("page identifier"), choices=appsettings.FLUENT_PAGES_KEY_CHOICES, blank=True, null=True, help_text=_("A unique identifier that is used for linking to this page."))
 
     # Metadata
-    author = models.ForeignKey(AUTH_USER_MODEL, verbose_name=_('author'), editable=False)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('author'), editable=False)
     creation_date = models.DateTimeField(_('creation date'), editable=False, auto_now_add=True)
     modification_date = models.DateTimeField(_('last modification'), editable=False, auto_now=True)
 
@@ -364,7 +367,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     # ---- Custom behavior ----
 
     # This code runs in a transaction since it's potentially editing a lot of records (all descendant urls).
-    @transaction_atomic
+    @transaction.atomic
     def save(self, *args, **kwargs):
         """
         Save the model, and update caches.
