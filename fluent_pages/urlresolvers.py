@@ -26,7 +26,6 @@ class MultipleReverseMatch(NoReverseMatch):
     """
     Raised when an :func:`app_reverse` call returns multiple possible matches.
     """
-    pass
 
 
 class PageTypeNotMounted(NoReverseMatch):
@@ -34,7 +33,6 @@ class PageTypeNotMounted(NoReverseMatch):
     Raised when the :func:`app_reverse` function can't find the required plugin
     in the page tree.
     """
-    pass
 
 
 def mixed_reverse(viewname, args=None, kwargs=None, current_app=None, current_page=None, language_code=None, multiple=False, ignore_multiple=False):

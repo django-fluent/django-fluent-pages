@@ -83,7 +83,6 @@ class AppTestCase(TestCase):
         """
         Create all the pages.
         """
-        pass
 
     def assert200(self, url, msg_prefix=''):
         """

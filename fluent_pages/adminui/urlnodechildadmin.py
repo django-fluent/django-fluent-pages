@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _, ugettext
+from django.utils.translation import gettext_lazy as _
 from mptt.forms import MPTTAdminForm
-from parler import is_multilingual_project
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
 from fluent_pages import appsettings
 from parler.admin import TranslatableAdmin

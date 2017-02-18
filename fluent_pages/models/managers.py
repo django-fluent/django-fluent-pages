@@ -1,7 +1,6 @@
 """
 The manager class for the CMS models
 """
-import django
 from future.builtins import range
 from django.conf import settings
 from django.db.models.query_utils import Q

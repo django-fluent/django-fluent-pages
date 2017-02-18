@@ -14,7 +14,6 @@ There are several sub packages:
 # have everything split into several packages
 from django.conf import settings
 from fluent_pages.forms.fields import PageChoiceField
-import fluent_pages.models.db
 from .db import UrlNode, UrlNode_Translation, Page, HtmlPage, HtmlPageTranslation, PageLayout, ParentTranslationDoesNotExist
 from .managers import UrlNodeManager, UrlNodeQuerySet
 
@@ -38,7 +37,6 @@ def _register_cmsfield_url_type():
         pass
     else:
         import any_urlfield
-        from django import forms
         from distutils.version import StrictVersion
         from any_urlfield.forms.widgets import SimpleRawIdWidget
 

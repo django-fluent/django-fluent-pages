@@ -1,4 +1,3 @@
-import django
 from django.forms.widgets import Select
 
 

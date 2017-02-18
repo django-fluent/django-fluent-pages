@@ -20,14 +20,12 @@ class PageTypeAlreadyRegistered(Exception):
     """
     Raised when attempting to register a plugin twice.
     """
-    pass
 
 
 class PageTypeNotFound(Exception):
     """
     Raised when the plugin could not be found in the rendering process.
     """
-    pass
 
 
 class PageTypePool(object):

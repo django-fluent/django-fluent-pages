@@ -19,7 +19,6 @@ class PageAdminForm(UrlNodeAdminForm):
 
     This form validates the "Slug" and "Override URL" fields.
     """
-    pass
 
 
 class DefaultPageParentAdmin(UrlNodeParentAdmin):
@@ -31,7 +30,6 @@ class DefaultPageParentAdmin(UrlNodeParentAdmin):
 
     The admin class can be extended with mixins by defining :ref:`FLUENT_PAGES_PARENT_ADMIN_MIXIN`.
     """
-    pass
 
 
 class DefaultPageChildAdmin(UrlNodeChildAdmin):

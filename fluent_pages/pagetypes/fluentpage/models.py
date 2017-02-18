@@ -39,4 +39,3 @@ class FluentPage(AbstractFluentPage):
     """
     A ```FluentPage``` represents one HTML page of the site.
     """
-    pass
