@@ -69,6 +69,7 @@ if not settings.configured:
             'parler',
             'polymorphic',
             'polymorphic_tree',
+            'django_wysiwyg',
         ),
         MIDDLEWARE_CLASSES = (
             'django.middleware.common.CommonMiddleware',
