@@ -11,14 +11,16 @@ and prevent any further model initialization.
 # so the classes imported by .overrides can actually import those from this module already.
 from .pageadmin import DefaultPageParentAdmin, DefaultPageChildAdmin, PageAdminForm
 from .pagelayoutadmin import PageLayoutAdmin
-from .overrides import PageParentAdmin, PageChildAdmin, PageAdmin
+from .overrides import PageChildAdmin, PageParentAdmin
 from .htmlpageadmin import HtmlPageAdmin
 
 
 __all__ = (
     'PageParentAdmin', 'DefaultPageParentAdmin',
-    'PageAdmin', 'DefaultPageChildAdmin',
+    'PageChildAdmin', 'DefaultPageChildAdmin',
     'HtmlPageAdmin',
     'PageLayoutAdmin',
     'PageAdminForm'
 )
+
+PageAdmin = PageChildAdmin  # noqa, older name for backwards compatibility

@@ -21,4 +21,4 @@ These classes can be imported from their respective subpackages::
 # There used to be more imports here, but that turned out to be a really bad idea.
 # Exposing the model, plugin and admin in one __init__ package means importing the admin,
 # and potentially triggering circular imports because of that (e.g. get_user_model(), load all apps)
-from .models import FluentContentsPage
+from .models import FluentContentsPage  # noqa
