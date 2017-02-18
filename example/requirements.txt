@@ -2,11 +2,11 @@
 Django >= 1.8
 
 # Deps of fluent-pages
-django-fluent-utils >= 1.2.1
+django-fluent-utils >= 1.2.3
 django-mptt >= 0.7.0
-django-parler >= 1.5
-django-polymorphic-tree >= 1.1.1
-django-polymorphic >= 0.7.0
+django-parler >= 1.6.1
+django-polymorphic-tree >= 1.4
+django-polymorphic >= 1.1
 django-slug-preview >= 1.0.2
 django-tag-parser >= 3.0
 
