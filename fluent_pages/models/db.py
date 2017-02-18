@@ -320,6 +320,18 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         return plugin.can_have_children and not plugin.is_file
 
     @property
+    def child_types(self):
+        """
+        Return a list of content type ids of nodes that can be children of
+        this node.
+        """
+        # Redefine the model constant 'child_types' as property
+        # that access the plugin registration system,
+        plugin = self.plugin
+        return plugin.child_types
+
+
+    @property
     def plugin(self):
         """
         Access the parent plugin which renders this model.
@@ -332,6 +344,15 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             return page_type_pool._get_plugin_by_content_type(self.polymorphic_ctype_id)
         else:
             return page_type_pool.get_plugin_by_model(self.__class__)
+
+
+    @property
+    def page_key(self):
+        """
+        Ensure get_child_types is run once per plugin model.
+        """
+        return repr(self.plugin.model)
+
 
     # ---- Custom behavior ----
 

@@ -11,6 +11,15 @@ class SimpleTextPage(HtmlPage):
         app_label = 'testapp'
 
 
+class ChildTypesPage(HtmlPage):
+    contents = models.TextField("Contents")
+
+    class Meta:
+        verbose_name = "Plain text page"
+        verbose_name_plural = "Plain text pages"
+        app_label = 'testapp'
+
+
 class PlainTextFile(Page):
     content = models.TextField("Contents")
 

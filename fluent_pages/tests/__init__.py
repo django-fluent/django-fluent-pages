@@ -9,3 +9,4 @@ if django.VERSION < (1,6):
     from .test_modeldata import ModelDataTests
     from .test_plugins import PluginTests, PluginUrlTests
     from .test_templatetags import TemplateTagTests
+    from .test_admin import AdminTests

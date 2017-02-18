@@ -38,6 +38,19 @@ class Migration(migrations.Migration):
             bases=('fluent_pages.htmlpage',),
         ),
         migrations.CreateModel(
+            name='ChildTypesPage',
+            fields=[
+                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode')),
+                ('contents', models.TextField(verbose_name='Contents')),
+            ],
+            options={
+                'db_table': 'pagetype_testapp_childtypespage',
+                'verbose_name_plural': 'Plain text pages',
+                'verbose_name': 'Plain text page',
+            },
+            bases=('fluent_pages.htmlpage',),
+        ),
+        migrations.CreateModel(
             name='WebShopPage',
             fields=[
                 ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode')),
