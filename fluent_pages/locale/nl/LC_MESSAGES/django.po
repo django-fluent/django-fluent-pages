@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-08-04 15:01+0200\n"
+"POT-Creation-Date: 2017-02-18 23:12+0100\n"
 "PO-Revision-Date: 2011-01-10 23:54+0100\n"
 "Last-Translator: Diederik van der Boor <vdboor@edoburu.nl>\n"
 "Language-Team: Dutch <NL@li.org>\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 1.1\n"
 
-#: adminui/htmlpageadmin.py:23
+#: adminui/htmlpageadmin.py:24
 msgid "SEO settings"
 msgstr "Zoekmachine opties"
 
-#: adminui/urlnodechildadmin.py:81
+#: adminui/urlnodechildadmin.py:80
 msgid "This identifier is already used by an other page."
 msgstr "Deze identificatie wordt al gebruikt door een andere pagina."
 
-#: adminui/urlnodechildadmin.py:90
+#: adminui/urlnodechildadmin.py:89
 msgid "This URL is already taken by an other page."
 msgstr "Deze URL wordt al gebruikt door een andere pagina."
 
-#: adminui/urlnodechildadmin.py:101
+#: adminui/urlnodechildadmin.py:100
 msgid "This slug is already used by an other page at the same level."
 msgstr "Deze waarde wordt gebruikt door een andere pagina op hetzelfde niveau."
 
-#: adminui/urlnodechildadmin.py:124
+#: adminui/urlnodechildadmin.py:121
 msgid "Menu structure"
 msgstr "Menustructuur"
 
-#: adminui/urlnodechildadmin.py:129
+#: adminui/urlnodechildadmin.py:126
 msgid "Publication settings"
 msgstr "Publicatievoorkeuren"
 
@@ -45,25 +45,25 @@ msgstr "Publicatievoorkeuren"
 msgid "Page type"
 msgstr "Paginatype"
 
-#: adminui/urlnodeparentadmin.py:27
+#: adminui/urlnodeparentadmin.py:21
 msgid "page type"
 msgstr "paginatype"
 
-#: adminui/urlnodeparentadmin.py:132
+#: adminui/urlnodeparentadmin.py:154
 msgid "Status"
 msgstr "Status"
 
-#: adminui/urlnodeparentadmin.py:176
+#: adminui/urlnodeparentadmin.py:193
 msgid "Mark selected objects as published"
 msgstr "Publiceer geselecteerde CMS pagina's"
 
-#: integration/fluent_contents/models.py:28 models/db.py:648
-#: pagetypes/fluentpage/models.py:28
+#: integration/fluent_contents/models.py:29 models/db.py:744
+#: pagetypes/fluentpage/models.py:31
 msgid "Page"
 msgstr "Pagina"
 
-#: integration/fluent_contents/models.py:29 models/db.py:649 models/db.py:682
-#: pagetypes/fluentpage/models.py:29
+#: integration/fluent_contents/models.py:30 models/db.py:745 models/db.py:784
+#: pagetypes/fluentpage/models.py:32
 msgid "Pages"
 msgstr "Pagina's"
 
@@ -74,101 +74,101 @@ msgid_plural "{count} items updated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: models/db.py:73
+#: models/db.py:86
 msgid "Published"
 msgstr "Gepubliceerd"
 
-#: models/db.py:74
+#: models/db.py:87
 msgid "Draft"
 msgstr "Concept"
 
-#: models/db.py:79
+#: models/db.py:92
 msgid "parent"
 msgstr "ouder"
 
-#: models/db.py:79
+#: models/db.py:92
 msgid "You can also change the parent by dragging the page in the list."
 msgstr ""
 "Je kunt ook de ouder veranderen door de pagina in de lijstweergave te "
 "verslepen."
 
-#: models/db.py:84
+#: models/db.py:97
 msgid "status"
 msgstr "status"
 
-#: models/db.py:85
+#: models/db.py:98
 msgid "publication date"
 msgstr "gepubliceerd op"
 
-#: models/db.py:85
+#: models/db.py:98
 msgid "When the page should go live, status must be \"Published\"."
 msgstr "Zet de status op 'gepubliceerd' zodra de pagina live moet staan."
 
-#: models/db.py:86
+#: models/db.py:99
 msgid "publication end date"
 msgstr "gepubliceerd tot"
 
-#: models/db.py:87
+#: models/db.py:100
 msgid "show in navigation"
 msgstr "toon in menu"
 
-#: models/db.py:88
+#: models/db.py:101
 msgid "include in search engine sitemaps"
 msgstr "opnemen in sitemaps voor zoekmachines"
 
-#: models/db.py:93
+#: models/db.py:106
 msgid "page identifier"
 msgstr "pagina identificatie"
 
-#: models/db.py:93
+#: models/db.py:106
 msgid "A unique identifier that is used for linking to this page."
 msgstr "Een unieke identificatie om te kunnen verwijzen naar deze pagina."
 
-#: models/db.py:96
+#: models/db.py:109
 msgid "author"
 msgstr "auteur"
 
-#: models/db.py:97
+#: models/db.py:110
 msgid "creation date"
 msgstr "aanmaak datum"
 
-#: models/db.py:98
+#: models/db.py:111
 msgid "last modification"
 msgstr "laatste wijziging"
 
-#: models/db.py:110
+#: models/db.py:126
 msgid "URL Node"
 msgstr "URL Pad"
 
-#: models/db.py:111
+#: models/db.py:127
 msgid "URL Nodes"
 msgstr "URL Paden"
 
-#: models/db.py:116
+#: models/db.py:132
 msgid "Can change Shared fields"
 msgstr ""
 
-#: models/db.py:117
+#: models/db.py:133
 msgid "Can change Override URL field"
 msgstr ""
 
-#: models/db.py:554 models/db.py:718
+#: models/db.py:635 models/db.py:817
 msgid "title"
 msgstr "Titel"
 
-#: models/db.py:555
+#: models/db.py:636
 msgid "slug"
 msgstr "Slug"
 
-#: models/db.py:555
+#: models/db.py:636
 msgid "The slug is used in the URL of the page"
 msgstr "Deze waarde wordt gebruikt in het URL adres van de pagina."
 
-#: models/db.py:556
+#: models/db.py:637
 msgid "Override URL"
 msgstr "Overschrijf URL"
 
-#: models/db.py:556
+#: models/db.py:637
 msgid ""
 "Override the target URL. Be sure to include slashes at the beginning and at "
 "the end if it is a local URL. This affects both the navigation and subpages' "
@@ -178,49 +178,71 @@ msgstr ""
 "weerszijden  een / staan. Dit veld heeft betrekking op zowel de navigatie "
 "als de URLs van subpagina's."
 
-#: models/db.py:568
+#: models/db.py:649
 msgid "URL Node translation"
 msgstr "URL Pad vertaling"
 
-#: models/db.py:569
+#: models/db.py:650
 msgid "URL Nodes translations"
 msgstr "URL Pad vertalingen"
 
-#: models/db.py:674
+#: models/db.py:772
 msgid "keywords"
 msgstr "zoekwoorden"
 
-#: models/db.py:675
+#: models/db.py:773
 msgid "description"
 msgstr "beschrijving"
 
-#: models/db.py:676
+#: models/db.py:774
 msgid "page title"
 msgstr "pagina titel"
 
-#: models/db.py:676
+#: models/db.py:774
 msgid "When this field is not filled in, the menu title text will be used."
 msgstr "Indien dit veld niet ingevuld is, wordt de menu titel tekst gebruikt."
 
-#: models/db.py:717
+#: models/db.py:776
+#, fuzzy
+#| msgid "URL Node translation"
+msgid "SEO Translation"
+msgstr "URL Pad vertaling"
+
+#: models/db.py:777
+#, fuzzy
+#| msgid "SEO settings"
+msgid "SEO Translations"
+msgstr "Zoekmachine opties"
+
+#: models/db.py:816
 msgid "key"
 msgstr "code"
 
-#: models/db.py:717
+#: models/db.py:816
 msgid "A short name to identify the layout programmatically"
 msgstr "Een korte naam om de layout te identificeren in de code"
 
-#: models/db.py:740 pagetypes/flatpage/models.py:13
+#: models/db.py:837 pagetypes/flatpage/models.py:13
 #: pagetypes/fluentpage/models.py:24
 msgid "Layout"
 msgstr "Layout"
 
-#: models/db.py:741
+#: models/db.py:838
 msgid "Layouts"
 msgstr "Layouts"
 
-#: models/fields.py:57
+#: models/fields.py:49
+msgid "This page type should have a parent."
+msgstr ""
+
+#: models/fields.py:50
 msgid "The selected page cannot have sub pages."
+msgstr "De gekozen pagina kan geen subpagina's bevatten."
+
+#: models/fields.py:51
+#, fuzzy
+#| msgid "The selected page cannot have sub pages."
+msgid "The selected page cannot have this page type as a child!"
 msgstr "De gekozen pagina kan geen subpagina's bevatten."
 
 #: pagetypes/flatpage/models.py:14
@@ -235,11 +257,11 @@ msgstr "Platte pagina"
 msgid "Flat Pages"
 msgstr "Platte pagina's"
 
-#: pagetypes/fluentpage/models.py:31
+#: pagetypes/fluentpage/models.py:34
 msgid "Can change Page layout"
 msgstr ""
 
-#: pagetypes/redirectnode/admin.py:8
+#: pagetypes/redirectnode/admin.py:9
 msgid "Redirect settings"
 msgstr "Doorverwijsopties"
 
@@ -275,31 +297,31 @@ msgstr "Doorverwijzing"
 msgid "Redirects"
 msgstr "Doorverwijzingen"
 
-#: pagetypes/textfile/models.py:11
+#: pagetypes/textfile/models.py:12
 msgid "Plain text"
 msgstr "Platte tekst"
 
-#: pagetypes/textfile/models.py:12
+#: pagetypes/textfile/models.py:13
 msgid "XML"
 msgstr "XML"
 
-#: pagetypes/textfile/models.py:13
+#: pagetypes/textfile/models.py:14
 msgid "HTML"
 msgstr "HTML"
-
-#: pagetypes/textfile/models.py:19
-msgid "File contents"
-msgstr "Bestandsinhoud"
 
 #: pagetypes/textfile/models.py:20
 msgid "File type"
 msgstr "Bestandstype"
 
 #: pagetypes/textfile/models.py:23
+msgid "File contents"
+msgstr "Bestandsinhoud"
+
+#: pagetypes/textfile/models.py:27
 msgid "Plain text file"
 msgstr "Plat tekstbestand"
 
-#: pagetypes/textfile/models.py:24
+#: pagetypes/textfile/models.py:28
 msgid "Plain text files"
 msgstr "Plat tekstbestanden"
 
