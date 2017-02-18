@@ -7,8 +7,6 @@ python:
 - '3.3'
 - '3.4'
 env:
-
-- PACKAGES="django>=1.6,<1.7 django-mptt<0.8.0"
 - PACKAGES="django>=1.7,<1.8 django-mptt<0.8.0"
 - PACKAGES="django>=1.8,<1.9"
 - PACKAGES="django>=1.9,<1.10"
