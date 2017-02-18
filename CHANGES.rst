@@ -9,6 +9,7 @@ Changes in git
 * Fixed migration string types for Python 3.
 * Fixed using ``os.path.sep`` in ``FLUENT_PAGES_TEMPLATE_DIR``
 * Added ``ParentTranslationDoesNotExist`` exception to improve error handling
+* Dropped Python 2.6 and Django 1.6 support
 
 .. note::
     Creating child nodes in a language that doesn't yet exist for the parent node is no longer supported.
