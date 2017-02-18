@@ -146,11 +146,11 @@ msgstr "URL Paden"
 
 #: models/db.py:132
 msgid "Can change Shared fields"
-msgstr ""
+msgstr "Kan gedeelte velden aanpassen"
 
 #: models/db.py:133
 msgid "Can change Override URL field"
-msgstr ""
+msgstr "Kan Overschrijf URL aanpassen"
 
 #: models/db.py:635 models/db.py:817
 msgid "title"
@@ -203,16 +203,12 @@ msgid "When this field is not filled in, the menu title text will be used."
 msgstr "Indien dit veld niet ingevuld is, wordt de menu titel tekst gebruikt."
 
 #: models/db.py:776
-#, fuzzy
-#| msgid "URL Node translation"
 msgid "SEO Translation"
-msgstr "URL Pad vertaling"
+msgstr "SEO Vertaling"
 
 #: models/db.py:777
-#, fuzzy
-#| msgid "SEO settings"
 msgid "SEO Translations"
-msgstr "Zoekmachine opties"
+msgstr "SEO vertalingen"
 
 #: models/db.py:816
 msgid "key"
@@ -233,17 +229,15 @@ msgstr "Layouts"
 
 #: models/fields.py:49
 msgid "This page type should have a parent."
-msgstr ""
+msgstr "Dit paginatype moet een bovenliggende pagina hebben."
 
 #: models/fields.py:50
 msgid "The selected page cannot have sub pages."
 msgstr "De gekozen pagina kan geen subpagina's bevatten."
 
 #: models/fields.py:51
-#, fuzzy
-#| msgid "The selected page cannot have sub pages."
 msgid "The selected page cannot have this page type as a child!"
-msgstr "De gekozen pagina kan geen subpagina's bevatten."
+msgstr "De gekozen pagina kan geen subpagina van dit type bevatten!"
 
 #: pagetypes/flatpage/models.py:14
 msgid "Content"
@@ -259,7 +253,7 @@ msgstr "Platte pagina's"
 
 #: pagetypes/fluentpage/models.py:34
 msgid "Can change Page layout"
-msgstr ""
+msgstr "Kan pagina layout aanpassen"
 
 #: pagetypes/redirectnode/admin.py:9
 msgid "Redirect settings"
@@ -332,17 +326,3 @@ msgstr ""
 #: templates/admin/fluent_pages/page/base_change_form.html:20
 msgid "View on site"
 msgstr "Bekijk op website"
-
-#: templates/admin/fluent_pages/page/base_change_form.html:33
-#, fuzzy
-#| msgid "Please correct the error below."
-#| msgid_plural "Please correct the errors below."
-msgid "Please correct the error below."
-msgstr "Corrigeer a.u.b. de volgende fout:"
-
-#: templates/admin/fluent_pages/page/base_change_form.html:33
-#, fuzzy
-#| msgid "Please correct the error below."
-#| msgid_plural "Please correct the errors below."
-msgid "Please correct the errors below."
-msgstr "Corrigeer a.u.b. de volgende fout:"
