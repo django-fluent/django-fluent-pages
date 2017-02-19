@@ -1,29 +1,47 @@
 from optparse import make_option
 
-from django.core.management.base import NoArgsCommand
+import django
+from django.core.management import BaseCommand
+from django.core.management import CommandError
 from django.utils.encoding import smart_text
 from fluent_pages import appsettings
 from fluent_pages.extensions import page_type_pool
 from fluent_pages.models.db import UrlNode, UrlNode_Translation
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """
     Update the tree, rebuild the translated URL nodes.
     """
     help = "Update the cached_url for the translated URL node tree"
-    option_list = (
-        make_option(
-            '-p', '--dry-run', action='store_true', dest='dry-run', default=False,
-            help="Only list what will change, don't make the actual changes."
-        ),
-        make_option(
-            '-m', '--mptt-only', action='store_true', dest='mptt-only', default=False,
-            help="Only fix the MPTT fields, leave URLs unchanged."
-        ),
-    ) + NoArgsCommand.option_list
 
-    def handle_noargs(self, **options):
+    if django.VERSION >= (1, 8):
+        def add_arguments(self, parser):
+            super(Command, self).add_arguments(parser)
+            parser.add_argument(
+                '-p', '--dry-run', action='store_true', dest='dry-run', default=False,
+                help="Only list what will change, don't make the actual changes."
+            ),
+            parser.add_argument(
+                '-m', '--mptt-only', action='store_true', dest='mptt-only', default=False,
+                help="Only fix the MPTT fields, leave URLs unchanged."
+            ),
+    else:
+        option_list = BaseCommand.option_list + (
+            make_option(
+                '-p', '--dry-run', action='store_true', dest='dry-run', default=False,
+                help="Only list what will change, don't make the actual changes."
+            ),
+            make_option(
+                '-m', '--mptt-only', action='store_true', dest='mptt-only', default=False,
+                help="Only fix the MPTT fields, leave URLs unchanged."
+            ),
+        )
+
+    def handle(self, *args, **options):
+        if args:
+            raise CommandError("Command doesn't accept any arguments")
+
         is_dry_run = options.get('dry-run', False)
         mptt_only = options.get('mptt-only', False)
         slugs = {}

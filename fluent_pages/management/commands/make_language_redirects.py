@@ -1,13 +1,19 @@
 import sys
 from optparse import make_option
 
+import django
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.management.base import BaseCommand, CommandError, NoArgsCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils import translation
 from django.utils.translation import get_language_info
 from fluent_pages.models import UrlNode
 from parler.utils.context import switch_language
+
+try:
+    from django.core.management.base import NoArgsCommand  # Django 1.9-
+except ImportError:
+    from django.core.management.base import BaseCommand as NoArgsCommand
 
 
 class Command(NoArgsCommand):
@@ -17,15 +23,29 @@ class Command(NoArgsCommand):
     """
     help = "Find all pages of a given language, and redirect to the canonical version."
     args = "language"
-    option_list = BaseCommand.option_list + (
-        make_option('--format', default='nginx', help='Choose the output format, defaults to "nginx"'),
-        make_option('--site', default=int(settings.SITE_ID), help="Choose the site ID to "),
-        make_option('--from'),
-        make_option('--host'),
-        make_option('--to', default=settings.LANGUAGE_CODE),
-    )
+
+    if django.VERSION >= (1, 8):
+        def add_arguments(self, parser):
+            super(Command, self).add_arguments(parser)
+            parser.add_argument('--format', default='nginx', help='Choose the output format, defaults to "nginx"'),
+            parser.add_argument('--site', default=int(settings.SITE_ID), help="Choose the site ID to "),
+            parser.add_argument('--from'),
+            parser.add_argument('--host'),
+            parser.add_argument('--to', default=settings.LANGUAGE_CODE),
+
+    else:
+        option_list = BaseCommand.option_list + (
+            make_option('--format', default='nginx', help='Choose the output format, defaults to "nginx"'),
+            make_option('--site', default=int(settings.SITE_ID), help="Choose the site ID to "),
+            make_option('--from'),
+            make_option('--host'),
+            make_option('--to', default=settings.LANGUAGE_CODE),
+        )
 
     def handle(self, *args, **options):
+        if args:
+            raise CommandError("Command doesn't accept any arguments")
+
         site = options['site']
         host = options['host']
         from_lang = options['from']
