@@ -10,6 +10,7 @@ from django.utils.functional import lazy
 from django.utils.http import urlencode
 from fluent_pages.models import Page
 from future.builtins import int
+from future.utils import native_str
 
 from .urlnodechildadmin import UrlNodeAdminForm, UrlNodeChildAdmin
 from .urlnodeparentadmin import UrlNodeParentAdmin
