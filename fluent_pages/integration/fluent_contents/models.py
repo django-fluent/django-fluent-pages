@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from fluent_contents.models import Placeholder
 from fluent_contents.models.fields import ContentItemRelation, PlaceholderRelation
 from fluent_pages.models import HtmlPage
+from fluent_pages.models import UrlNodeManager
 
 
 class FluentContentsPage(HtmlPage):
@@ -23,6 +24,9 @@ class FluentContentsPage(HtmlPage):
 
     #: Related manager to access all content items
     contentitem_set = ContentItemRelation()
+
+    # As this is an abstract model, the default manager is reset in Django 1.10.
+    objects = UrlNodeManager()
 
     class Meta:
         abstract = True

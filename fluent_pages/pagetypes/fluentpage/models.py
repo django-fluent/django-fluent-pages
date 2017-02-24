@@ -23,8 +23,8 @@ class AbstractFluentPage(FluentContentsPage):
     # Allow NULL in the layout, so this system can still be made optional in the future in favor of a configuration setting.
     layout = models.ForeignKey(PageLayout, verbose_name=_('Layout'), null=True)
 
-    # As this is an object model, the default manager is reset.
-    object = UrlNodeManager()
+    # As this is an abstract model, the default manager is reset in Django 1.10.
+    objects = UrlNodeManager()
 
     class Meta:
         abstract = True
