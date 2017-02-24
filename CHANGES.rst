@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.1.1 (2017-02-24)
+--------------------------
+
+* Fixed ``native_str`` usage in the admin template resolving.
+* Fixed more Django 1.10 issues with reverted default managers in abstract models.
+  This also fixes the django-fluent-blogs_ admin page for the ``BlogPage`` model on Django 1.10.
+
+
 Version 1.1 (2017-02-18)
 ------------------------
 
@@ -341,6 +349,7 @@ First public release
 
 .. _django-any-urlfield: https://github.com/edoburu/django-any-urlfield
 .. _django.contrib.flatpages: https://docs.djangoproject.com/en/dev/ref/contrib/flatpages/
+.. _django-fluent-blogs: https://github.com/django-fluent/django-fluent-blogs
 .. _django-fluent-contents: https://github.com/django-fluent/django-fluent-contents
 .. _django-haystack: http://haystacksearch.org/
 .. _django-mptt: https://github.com/django-mptt/django-mptt
