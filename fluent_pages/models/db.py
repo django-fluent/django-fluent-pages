@@ -367,6 +367,10 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
         """
         Save the model, and update caches.
         """
+        # None is valid here so use 0 which is not valid
+        previous_parent_id = kwargs.get('previous_parent_id', 0)
+        if previous_parent_id is None or previous_parent_id > 0:
+            self._original_parent = previous_parent_id
         parent_changed = self.parent_id != self._original_parent
         if parent_changed:
             self._mark_all_translations_dirty()
