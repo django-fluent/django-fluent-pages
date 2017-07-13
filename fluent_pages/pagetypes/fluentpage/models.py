@@ -1,7 +1,10 @@
+import django
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages.integration.fluent_contents.models import FluentContentsPage
-from fluent_pages.models import PageLayout, UrlNodeManager
+from fluent_pages.models import PageLayout
 
 
 # This all exists for backwards compatibility
@@ -23,8 +26,9 @@ class AbstractFluentPage(FluentContentsPage):
     # Allow NULL in the layout, so this system can still be made optional in the future in favor of a configuration setting.
     layout = models.ForeignKey(PageLayout, verbose_name=_('Layout'), null=True)
 
-    # As this is an abstract model, the default manager is reset in Django 1.10.
-    objects = UrlNodeManager()
+    # The default manager is reset in Django 1.10.
+    if django.VERSION >= (1, 10):
+        objects = UrlNodeManager()
 
     class Meta:
         abstract = True

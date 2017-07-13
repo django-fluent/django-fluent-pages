@@ -4,7 +4,9 @@ Everything can be imported from ``__init__.py``.
 """
 from __future__ import absolute_import
 
+import django
 from django.utils.translation import ugettext_lazy as _
+
 from fluent_contents.models import Placeholder
 from fluent_contents.models.fields import ContentItemRelation, PlaceholderRelation
 from fluent_pages.models import HtmlPage
@@ -25,8 +27,9 @@ class FluentContentsPage(HtmlPage):
     #: Related manager to access all content items
     contentitem_set = ContentItemRelation()
 
-    # As this is an abstract model, the default manager is reset in Django 1.10.
-    objects = UrlNodeManager()
+    # The default manager is reset in Django 1.10.
+    if django.VERSION >= (1, 10):
+        objects = UrlNodeManager()
 
     class Meta:
         abstract = True

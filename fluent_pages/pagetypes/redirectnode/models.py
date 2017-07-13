@@ -1,5 +1,8 @@
+import django
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
+from fluent_pages.models.managers import UrlNodeManager
 from fluent_pages.models import Page
 from fluent_utils.softdeps.any_urlfield import AnyUrlField
 from parler.models import TranslatedFields
@@ -21,6 +24,10 @@ class RedirectNode(Page):
         new_url=AnyUrlField(_("New URL"), max_length=255),
         redirect_type=models.IntegerField(_("Redirect type"), choices=REDIRECT_TYPE_CHOICES, default=302, help_text=_("Use 'normal redirect' unless you want to transfer SEO ranking to the new page.")),
     )
+
+    # The default manager is reset in Django 1.10.
+    if django.VERSION >= (1, 10):
+        objects = UrlNodeManager()
 
     class Meta:
         # If this page class didn't exist as real model before,

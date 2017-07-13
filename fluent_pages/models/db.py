@@ -132,9 +132,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             ('change_shared_fields_urlnode', _("Can change Shared fields")),     # The fields shared between languages.
             ('change_override_url_urlnode', _("Can change Override URL field")),  # Fpr overriding URLs (e.g. '/' for homepage).
         )
-        if django.VERSION >= (1, 10):
-            # Although likely not needed, this helps making things explicit.
-            default_manager_name = 'objects'
 
 #    class MPTTMeta:
 #        order_insertion_by = 'title'
