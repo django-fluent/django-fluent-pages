@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 1.1.2 (2017-08-01)
+--------------------------
+
+* Added ``manage.py remove_stale_pages`` command that helps to clear removed page type models from the database.
+* Upgraded minimal *django-polymorphic-tree* version from 1.4 to to 1.4.1, to include a required bugfix.
+* Fixed unwanted migrations created by Django 1.10+
+* Fixed unselected active menu item in Django 1.11
+
+
 Version 1.1.1 (2017-02-24)
 --------------------------
 
