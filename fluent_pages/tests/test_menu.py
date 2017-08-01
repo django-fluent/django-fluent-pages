@@ -34,7 +34,10 @@ class MenuTests(AppTestCase):
         """
         current_page = Page.objects.get(translations__slug='root2')
 
-        menu = list(Page.objects.toplevel_navigation(current_page=current_page))
+        qs = Page.objects.toplevel_navigation(current_page=current_page)
+        self.assertTrue(qs._decorate_funcs)
+
+        menu = list(qs)
         self.assertEqual(menu[0].slug, 'home')
         self.assertEqual(menu[1].slug, 'root2')
         self.assertEqual(menu[0].is_current, False)

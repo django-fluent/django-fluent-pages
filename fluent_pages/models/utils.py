@@ -49,17 +49,16 @@ class DecoratingQuerySet(QuerySet):
             self._decorate_funcs.append(fn)
         return self
 
-    def iterator(self):
-        """
-        Overwritten iterator which will apply the decorate functions before returning it.
-        """
-        base_iterator = super(DecoratingQuerySet, self).iterator()
-        for obj in base_iterator:
-            # Apply the decorators
+    def _fetch_all(self):
+        # Make sure the current language is assigned when Django fetches the data.
+        # This low-level method is overwritten as that works better across Django versions.
+        # Alternatives include:
+        # - overwriting iterator() for Django <= 1.10
+        # - hacking _iterable_class, which breaks django-polymorphic
+        super(DecoratingQuerySet, self)._fetch_all()
+        for obj in self._result_cache:
             for fn in self._decorate_funcs:
                 fn(obj)
-
-            yield obj
 
 
 class DecoratorManager(models.Manager):
