@@ -1,5 +1,3 @@
-import django
-
 from fluent_pages.models import UrlNodeManager, UrlNodeQuerySet
 from fluent_pages.pagetypes.redirectnode.models import RedirectNode
 from fluent_pages.tests.utils import AppTestCase
@@ -11,6 +9,5 @@ class RedirectNodeTests(AppTestCase):
         """
         Test that the default manager is correct.
         """
-        if django.VERSION < (1, 10):
-            self.assertIsInstance(RedirectNode._default_manager, UrlNodeManager)
+        self.assertIsInstance(RedirectNode._default_manager, UrlNodeManager)
         self.assertIsInstance(RedirectNode.objects.all(), UrlNodeQuerySet)

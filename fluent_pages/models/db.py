@@ -58,7 +58,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
 
         # Update the table name.
         # Inspired by from Django-CMS, (c) , BSD licensed.
-        if name not in ['UrlNode', 'Page', 'HtmlPage']:
+        if name not in ['AbstractUrlNode', 'UrlNode', 'Page', 'HtmlPage']:
             meta = new_class._meta
             # Make sure only values are updated if there is no manual edit, or a proxy model for UrlNode (e.g. HtmlPage)
             if meta.db_table.startswith(meta.app_label + '_') and meta.db_table != 'fluent_pages_urlnode':
@@ -74,8 +74,25 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
         return new_class
 
 
+class AbstractUrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, TranslatableModel)):
+    """
+    An internal helper class, to make sure the proper manager is inherited.
+    Django 1.10 only inherits managers when they are part of an abstract model.
+    Without this intermediate class, any subclass would receive the polymorphic model manager.
+    """
+    objects = UrlNodeManager()
+
+    if django.VERSION < (1, 10):
+        # Help older Django versions with model inheritance.
+        _default_manager = UrlNodeManager()
+
+    class Meta:
+        app_label = 'fluent_pages'
+        abstract = True
+
+
 @python_2_unicode_compatible
-class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, TranslatableModel)):
+class UrlNode(AbstractUrlNode):
     """
     The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
     """
@@ -113,12 +130,7 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
     # Caching
     _cached_url = TranslatedField()
 
-    # Django settings
-    objects = UrlNodeManager()
-
-    if django.VERSION < (1, 10):
-        # Help older Django versions with model inheritance.
-        _default_manager = UrlNodeManager()
+    objects = UrlNodeManager()  # Django manager
 
     class Meta:
         app_label = 'fluent_pages'
@@ -132,9 +144,6 @@ class UrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Translatabl
             ('change_shared_fields_urlnode', _("Can change Shared fields")),     # The fields shared between languages.
             ('change_override_url_urlnode', _("Can change Override URL field")),  # Fpr overriding URLs (e.g. '/' for homepage).
         )
-        if django.VERSION >= (1, 10):
-            # Although likely not needed, this helps making things explicit.
-            default_manager_name = 'objects'
 
 #    class MPTTMeta:
 #        order_insertion_by = 'title'
@@ -749,10 +758,6 @@ class Page(UrlNode):
         # this will still fail for situations where a Page() is created without having a language at all.
         return self.safe_translation_getter('title', any_language=True) \
             or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
-
-    # Make PyCharm happy
-    # Not reusing UrlNode.objects, as contribute_to_class will change the QuerySet.model value.
-    objects = UrlNodeManager()
 
 
 class HtmlPage(Page):

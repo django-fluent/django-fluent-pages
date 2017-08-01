@@ -115,6 +115,10 @@ class ModelDataTests(AppTestCase):
         self.assertIsInstance(Page._default_manager, UrlNodeManager)
         self.assertIsInstance(HtmlPage._default_manager, UrlNodeManager)
 
+        self.assertIsInstance(UrlNode.objects.all().all(), UrlNodeQuerySet)
+        self.assertIsInstance(Page.objects.all().all(), UrlNodeQuerySet)
+        self.assertIsInstance(HtmlPage.objects.all().all(), UrlNodeQuerySet)
+
     def test_get_pages_of_type_qs(self):
         """
         Test the core of the app_reverse() code.

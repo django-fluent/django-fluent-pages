@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django_wysiwyg.utils import clean_html, sanitize_html
-from fluent_pages.models import HtmlPage
+from fluent_pages.models import HtmlPage, UrlNodeManager
 from fluent_pages.pagetypes.flatpage import appsettings
 
 
@@ -15,6 +15,8 @@ class FlatPage(HtmlPage):
 
     # Other fields, such as "registration_required" are not reused,
     # because these should be implemented globally in the base page model, or a pluggable authorization layer.
+
+    objects = UrlNodeManager()  # Prevent Django 1.10 migrations
 
     class Meta:
         verbose_name = _("Flat Page")

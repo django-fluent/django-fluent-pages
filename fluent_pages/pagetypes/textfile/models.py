@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from fluent_pages.models import Page
+from fluent_pages.models import Page, UrlNodeManager
 from parler.models import TranslatedFields
 
 
@@ -22,6 +22,8 @@ class TextFile(Page):
     text_translations = TranslatedFields(
         content=models.TextField(_("File contents")),
     )
+
+    objects = UrlNodeManager()  # Prevent Django 1.10 migrations
 
     class Meta:
         verbose_name = _("Plain text file")
