@@ -68,6 +68,7 @@ if not settings.configured:
             'fluent_pages.pagetypes.flatpage',
             'fluent_pages.pagetypes.fluentpage',
             'fluent_pages.pagetypes.redirectnode',
+            'fluent_pages.pagetypes.textfile',
             'fluent_pages.tests.testapp',
             'mptt',
             'parler',
