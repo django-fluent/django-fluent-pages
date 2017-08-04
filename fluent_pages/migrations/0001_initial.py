@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('language_code', models.CharField(db_index=True, max_length=15, verbose_name='Language')),
                 ('meta_keywords', models.CharField(max_length=255, null=True, verbose_name='keywords', blank=True)),
-                ('meta_description', models.CharField(max_length=255, null=True, verbose_name='description', blank=True)),
+                ('meta_description', models.CharField(max_length=255, null=True, verbose_name='description', blank=True, help_text='Typically, about 160 characters will be shown in search engines')),
                 ('meta_title', models.CharField(help_text='When this field is not filled in, the menu title text will be used.', max_length=255, null=True, verbose_name='page title', blank=True)),
             ],
             options={

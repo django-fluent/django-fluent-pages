@@ -22,7 +22,7 @@ class HtmlPageAdmin(PageAdmin):
         )
     """
     FIELDSET_SEO = (_('SEO settings'), {
-        'fields': ('meta_title', 'meta_keywords', 'meta_description', 'in_sitemaps'),
+        'fields': ('meta_title', 'meta_keywords', 'meta_description', 'meta_image', 'in_sitemaps'),
         'classes': ('collapse',),
     })
 

@@ -39,7 +39,7 @@ setup(
     license='Apache 2.0',
 
     install_requires=[
-        'django-fluent-utils>=1.2.3',      # DRY utility code
+        'django-fluent-utils>=1.3.3',      # DRY utility code
         'django-mptt>=0.7.0, != 0.8.5',    # Still allow 0.7 to have Django 1.7 support Workaround https://github.com/django-mptt/django-mptt/issues/494
         'django-parler>=1.6.1',            # Needed for Django 1.9 compatibility
         'django-polymorphic>=1.0.1',
@@ -48,6 +48,7 @@ setup(
         'django-tag-parser>=3.0',
         'future>=0.12.2',
         'six>=1.5.2',
+        'Pillow',  # needed by ImageField
     ],
     requires=[
         'Django (>=1.7)',

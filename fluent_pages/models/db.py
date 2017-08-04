@@ -22,6 +22,8 @@ from django.db.backends.utils import truncate_name
 from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from fluent_utils.softdeps.any_imagefield import AnyImageField
+
 from fluent_pages import appsettings
 from fluent_pages.models.fields import PageTreeForeignKey, TemplateFilePathField
 from fluent_pages.models.managers import UrlNodeManager
@@ -771,12 +773,14 @@ class HtmlPage(Page):
     meta_keywords = TranslatedField()
     meta_description = TranslatedField()
     meta_title = TranslatedField()
+    meta_image = TranslatedField(any_language=True)
 
     # SEO fields, the underlying HtmlPageTranslation model can be created dynamically.
     seo_translations = TranslatedFields(
         meta_keywords=models.CharField(_('keywords'), max_length=255, blank=True, null=True),
-        meta_description=models.CharField(_('description'), max_length=255, blank=True, null=True),
+        meta_description=models.CharField(_('description'), max_length=255, blank=True, null=True, help_text=_("Typically, about 160 characters will be shown in search engines")),
         meta_title=models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used.")),
+        meta_image=AnyImageField(_('example image'), blank=True, null=True, help_text=_("This allows social media sites to pick a default image.")),
         meta=dict(
             verbose_name=_("SEO Translation"),
             verbose_name_plural=_("SEO Translations"),
