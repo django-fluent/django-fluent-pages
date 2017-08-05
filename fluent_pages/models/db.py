@@ -777,10 +777,10 @@ class HtmlPage(Page):
 
     # SEO fields, the underlying HtmlPageTranslation model can be created dynamically.
     seo_translations = TranslatedFields(
-        meta_keywords=models.CharField(_('keywords'), max_length=255, blank=True, null=True),
-        meta_description=models.CharField(_('description'), max_length=255, blank=True, null=True, help_text=_("Typically, about 160 characters will be shown in search engines")),
-        meta_title=models.CharField(_('page title'), max_length=255, blank=True, null=True, help_text=_("When this field is not filled in, the menu title text will be used.")),
-        meta_image=AnyImageField(_('example image'), blank=True, null=True, help_text=_("This allows social media sites to pick a default image.")),
+        meta_keywords=models.CharField(_('keywords'), max_length=255, blank=True, default=''),
+        meta_description=models.CharField(_('description'), max_length=255, blank=True, default='', help_text=_("Typically, about 160 characters will be shown in search engines")),
+        meta_title=models.CharField(_('page title'), max_length=255, blank=True, default='', help_text=_("When this field is not filled in, the menu title text will be used.")),
+        meta_image=AnyImageField(_('example image'), blank=True, default='', help_text=_("This allows social media sites to pick a default image.")),
         meta=dict(
             verbose_name=_("SEO Translation"),
             verbose_name_plural=_("SEO Translations"),
