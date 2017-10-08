@@ -1,6 +1,11 @@
+from django.contrib import admin
+
 from fluent_pages.admin import HtmlPageAdmin
 
+from .models import FlatPage
 
+
+@admin.register(FlatPage)
 class FlatPageAdmin(HtmlPageAdmin):
     readonly_shared_fields = HtmlPageAdmin.readonly_shared_fields + ('template_name', 'content')
 

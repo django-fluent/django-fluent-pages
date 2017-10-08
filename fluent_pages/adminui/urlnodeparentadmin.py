@@ -1,6 +1,9 @@
+import warnings
+
 import django
 from django.conf import settings
 from django.contrib.admin import SimpleListFilter
+from django.contrib.admin.sites import AlreadyRegistered
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from fluent_pages import appsettings
@@ -52,18 +55,39 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
             'screen': ('fluent_pages/admin/pagetree.css',)
         }
 
+    def _lazy_setup(self):
+        if self._is_setup:
+            return
+
+        # Compatibility with old plugin code, so reverse() works without changing your code.
+        # django-polymorphic no longer automatically registers the admin class.
+        self._child_admin_site = self.admin_site
+        from fluent_pages.extensions import page_type_pool
+        for plugin in page_type_pool.get_plugins():
+            try:
+                self.register_child(plugin.model, plugin.model_admin)
+            except AlreadyRegistered:
+                pass
+            else:
+                from fluent_pages.admin import PageAdmin
+                if plugin.model_admin is not PageAdmin:
+                    warnings.warn(
+                        "Please register the plugin admin {} model in the standard Django admin.\n"
+                        "django-polymorphic 1.4+ no longer performs this for you.".format(
+                            plugin.model_admin
+                        ),
+                        DeprecationWarning)
+
+        super(UrlNodeParentAdmin, self)._lazy_setup()
+
     # ---- Polymorphic tree overrides ----
 
     def get_child_models(self):
         """
-        Provide the available models of the page type registration system to *django-polymorphic-tree*.
+        Provide the available models of the page type registration system to *django-polymorphic*.
         """
         from fluent_pages.extensions import page_type_pool
-        child_models = []
-
-        for plugin in page_type_pool.get_plugins():
-            child_models.append((plugin.model, plugin.model_admin))
-        return child_models
+        return page_type_pool.get_model_classes()
 
     def get_child_type_choices(self, request=None, action=None):
         """

@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from fluent_pages.extensions import PageTypePlugin, page_type_pool
-from fluent_pages.pagetypes.textfile.models import TextFile
+from .models import TextFile
 
 
 @page_type_pool.register

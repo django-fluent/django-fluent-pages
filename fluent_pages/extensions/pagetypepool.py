@@ -4,6 +4,7 @@ the API is exposed via __init__.py
 """
 from threading import Lock
 
+from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
 from fluent_pages.models import UrlNode
 from fluent_utils.load import import_apps_submodule

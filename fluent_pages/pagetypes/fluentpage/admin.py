@@ -1,10 +1,12 @@
 from django.conf.urls import url
+from django.contrib import admin
 from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_pages.admin import HtmlPageAdmin, PageAdminForm
 from fluent_pages.integration.fluent_contents.admin import FluentContentsPageAdmin
 from fluent_pages.models import PageLayout
 from fluent_utils.ajax import JsonResponse
 
+from .models import FluentPage
 from .widgets import LayoutSelector
 
 
@@ -25,6 +27,7 @@ class FluentPageAdminForm(PageAdminForm):
         return base_qs
 
 
+@admin.register(FluentPage)
 class FluentPageAdmin(FluentContentsPageAdmin):
     """
     This admin is a small binding between the pagetypes of *django-fluent-pages*
