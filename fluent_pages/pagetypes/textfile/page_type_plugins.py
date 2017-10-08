@@ -1,11 +1,13 @@
 from django.http import HttpResponse
 from fluent_pages.extensions import PageTypePlugin, page_type_pool
+from .admin import TextFileAdmin
 from .models import TextFile
 
 
 @page_type_pool.register
 class TextFilePlugin(PageTypePlugin):
     model = TextFile
+    model_admin = TextFileAdmin
     is_file = True
 
     def get_response(self, request, textfile, **kwargs):

@@ -2,12 +2,15 @@
 Internal module for the plugin system,
 the API is exposed via __init__.py
 """
+from distutils.version import LooseVersion
 from threading import Lock
 
 from django.contrib import admin
 from django.contrib.contenttypes.models import ContentType
+
 from fluent_pages.models import UrlNode
 from fluent_utils.load import import_apps_submodule
+import polymorphic
 from future.builtins import int, object
 from six import iteritems, itervalues
 
@@ -58,6 +61,15 @@ class PageTypePool(object):
         assert issubclass(plugin, PageTypePlugin), "The plugin must inherit from `PageTypePlugin`"
         assert plugin.model, "The plugin has no model defined"
         assert issubclass(plugin.model, UrlNode), "The plugin model must inherit from `UrlNode` or `Page`."
+
+        # django-polymorphic 1.4+ no longer automatically registers the admin class.
+        # Make sure developers are assisted in porting the code.
+        if LooseVersion(polymorphic.__version__) > LooseVersion('1.3.999'):
+            assert plugin.model in admin.site._registry, (
+                "Please register the plugin model `{}` and it's admin class `{}` in the standard Django admin. "
+                "django-polymorphic 1.4+ no longer performs this for you.".format(
+                    plugin.model.__name__, plugin.model_admin.__name__
+                ))
 
         name = plugin.__name__
         if name in self.plugins:
