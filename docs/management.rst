@@ -43,15 +43,3 @@ Example:
 .. code-block:: bash
 
     python manage.py rebuild_page_tree
-
-
-prefix_pagetypes
-----------------
-
-This adds prefixes to the ``ContentType`` names in the database,
-to easily recognize the custom page types.
-This happens by default during migrations.
-
-.. code-block:: bash
-
-    python manage.py prefix_pagetypes
