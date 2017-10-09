@@ -57,3 +57,9 @@ content types that no longer exist.
 Options:
 
 * ``-p`` / ``--dry-run``: tell what would happen, but don't make any changes.
+
+Example:
+
+.. code-block:: bash
+
+    python manage.py remove_stale_pages --dry-run
