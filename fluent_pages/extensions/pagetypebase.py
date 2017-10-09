@@ -2,6 +2,7 @@
 Internal module for the plugin system,
 the API is exposed via __init__.py
 """
+from importlib import import_module
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
@@ -15,10 +16,6 @@ from future.builtins import str
 from future.utils import with_metaclass
 from six import string_types
 
-try:
-    from importlib import import_module
-except ImportError:
-    from django.utils.importlib import import_module  # Python 2.6
 
 
 __all__ = (

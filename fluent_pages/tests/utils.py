@@ -1,4 +1,5 @@
 import os
+from importlib import import_module
 
 import django
 from django.conf import settings
@@ -9,11 +10,6 @@ from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.test import TestCase, override_settings
 from fluent_pages.models.db import UrlNode
 from future.builtins import str
-
-try:
-    from importlib import import_module
-except ImportError:
-    from django.utils.importlib import import_module  # Python 2.6
 
 
 class AppTestCase(TestCase):
