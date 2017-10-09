@@ -71,7 +71,8 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
     #: It must derive from :class:`~fluent_pages.models.Page`.
     model = None
 
-    #: Defines the :class:`~django.contrib.admin.ModelAdmin` class to customize the screen.
+    #: Defines the :class:`~django.contrib.admin.ModelAdmin` class that will be used
+    #: by default unless a different admin class is registered in the admin.
     #: It should inherit from :class:`~fluent_pages.admin.PageAdmin`.
     model_admin = PageAdmin
 

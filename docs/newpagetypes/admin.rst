@@ -5,6 +5,12 @@ Customizing the admin interface
 
 The admin rendering of a page type is fully customizable.
 
+.. versionchanged:: 1.2
+
+    It's no longer necessary to define the ``model_admin`` attribute.
+    Registering the custom admin class instead using ``admin.site.register()``
+    or the ``@admin.register()`` decorator.
+
 .. code-block:: python
 
     @page_type_pool.register
@@ -15,7 +21,7 @@ The admin rendering of a page type is fully customizable.
         model = ProductCategoryPage
         render_template = "products/productcategorypage.html"
 
-        model_admin = ProductCategoryPageAdmin
+        model_admin = ProductCategoryPageAdmin  # only required for fluent-pages 1.1 and below.
 
 
 The admin class needs to inherit from one of the following classes:
@@ -30,12 +36,17 @@ The admin can be used to customize the "add" and "edit" fields for example:
 
     from django.contrib import admin
     from fluent_pages.admin import PageAdmin
+    from .models import ProductCategoryPage
 
+
+    @admin.register(ProductCategoryPage)
     class ProductCategoryPageAdmin(PageAdmin):
         raw_id_fields = PageAdmin.raw_id_fields + ('product_category',)
 
 
+Despire being registered in the admin, the model won't show up in the index page.
 The "list" page is never used, as this is rendered by the main :class:`~fluent_pages.admin.PageAdmin` class.
+Only the "add" and "edit" page are exposed by the :class:`~fluent_pages.admin.PageAdmin` class too.
 
 
 Customizing fieldsets
