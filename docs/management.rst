@@ -43,3 +43,17 @@ Example:
 .. code-block:: bash
 
     python manage.py rebuild_page_tree
+
+
+remove_stale_pages
+------------------
+
+.. versionadded:: 1.1.2
+
+In the unlikely event that a page type was removed, but it's page nodes still exist,
+this command can be used to repair the tree. It removes the old pages that point to
+content types that no longer exist.
+
+Options:
+
+* ``-p`` / ``--dry-run``: tell what would happen, but don't make any changes.
