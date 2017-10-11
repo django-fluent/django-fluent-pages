@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Version 1.1.3 (unreleased)
+--------------------------
+
+* Added ``HtmlPage.meta_image`` field to specify an Facebook ``og:image`` for the current page
+* Fixed meta keywords/description showing ``None`` when some fields were left empty.
+* Fixed compatibility with upcoming django-polymorphic 1.4.
+* Allow to register the model admin classes of page types directly in the admin.
+* Removed ``prefix_pagetypes`` management command as it no never worked beyond Django 1.7.
+
+
 Version 1.1.2 (2017-08-01)
 --------------------------
 
