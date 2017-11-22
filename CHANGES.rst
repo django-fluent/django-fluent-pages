@@ -1,12 +1,12 @@
 Changelog
 =========
 
-Version 1.1.3 (unreleased)
+Version 1.1.3 (2017-11-22)
 --------------------------
 
 * Added ``HtmlPage.meta_image`` field to specify an Facebook ``og:image`` for the current page
 * Fixed meta keywords/description showing ``None`` when some fields were left empty.
-* Fixed compatibility with upcoming django-polymorphic 1.4.
+* Fixed compatibility with upcoming django-polymorphic_ 1.4.
 * Allow to register the model admin classes of page types directly in the admin.
 * Removed ``prefix_pagetypes`` management command as it no never worked beyond Django 1.7.
 
@@ -373,6 +373,7 @@ First public release
 .. _django-haystack: http://haystacksearch.org/
 .. _django-mptt: https://github.com/django-mptt/django-mptt
 .. _django-parler: https://github.com/django-parler/django-parler
+.. _django-polymorphic: https://github.com/django-polymorphic/django-polymorphic
 .. _django-polymorphic-tree: https://github.com/django-polymorphic/django-polymorphic-tree
 .. _django-slug-preview: https://github.com/edoburu/django-slug-preview
 .. _django-staff-toolbar: https://github.com/edoburu/django-staff-toolbar
