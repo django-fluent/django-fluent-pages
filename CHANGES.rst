@@ -1,7 +1,14 @@
 Changelog
 =========
 
-Changes 2.0.1 (2018-01-22)
+Version 2.0.2 (2018-01-22)
+--------------------------
+
+* Fixed adding pages when visiting the direct child admin URL
+  (e.g. /admin/redirectnode/redirectnode/add/`` instead of ``/admin/fluent_pages/page/add/?ct_id=``)
+
+
+Version 2.0.1 (2018-01-22)
 --------------------------
 
 * Fix admin list crash.
