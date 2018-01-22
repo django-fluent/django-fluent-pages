@@ -107,7 +107,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         """
         urls = super(FluentPageAdmin, self).get_urls()
         my_urls = [
-            url(r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view))
+            url(r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view), name='fluentpage_get_layout')
         ]
         return my_urls + urls
 
