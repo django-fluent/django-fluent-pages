@@ -1,8 +1,8 @@
 from django.conf import settings
+from django.urls import reverse
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
 from fluent_pages import appsettings
-from fluent_utils.django_compat import reverse  # Django 1.9-
 from parler.utils import is_multilingual_project
 
 

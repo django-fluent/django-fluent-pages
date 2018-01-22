@@ -6,7 +6,7 @@ Changes 1.2 (2018-01-22)
 
 * Added Django 2.0 support.
 * Fixed fetching page layouts on django-polymorphic_ 1.3 / 2.0.
-* Dropped Django 1.7 support.
+* Dropped Django 1.7, 1.8 and 1.9 support.
 
 
 Version 1.1.3 (2017-11-22)

@@ -1,6 +1,5 @@
 import copy
 
-import django
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.contrib.admin.widgets import ForeignKeyRawIdWidget
 from django.contrib.contenttypes.models import ContentType
@@ -76,10 +75,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
         # Since UrlNode is not registered in the admin, it won't display the selector. Overriding that here.
         if db_field.name == 'parent' and isinstance(field.widget, ForeignKeyRawIdWidget):
             field.widget.rel = copy.copy(field.widget.rel)
-            if django.VERSION >= (1, 9):
-                field.widget.rel.model = Page
-            else:
-                field.widget.rel.to = Page
+            field.widget.rel.model = Page
 
         return field
 
@@ -101,7 +97,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
             'default_change_form_template': _lazy_get_default_change_form_template(self),
             'ct_id': int(ContentType.objects.get_for_model(obj).pk if change else request.GET['ct_id'])  # HACK for polymorphic admin
         })
-        # django-parler does this, so we have to do it too, affects django>=1.6
+        # django-parler does this, so we have to do it too
         form_url = add_preserved_filters({'preserved_filters': urlencode({'ct_id': context['ct_id']}), 'opts': self.model._meta}, form_url)
         return super(DefaultPageChildAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
 

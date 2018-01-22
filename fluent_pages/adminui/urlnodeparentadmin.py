@@ -1,4 +1,3 @@
-import django
 from django.conf import settings
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
@@ -128,21 +127,15 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
     # When making changes to the list, test both the JavaScript and non-JavaScript variant.
     # The jqTree variant still uses the server-side rendering for the colums.
 
-    if django.VERSION >= (1, 9):
-        STATUS_ICONS = (
-            (UrlNode.PUBLISHED, 'admin/img/icon-yes.svg'),
-            (UrlNode.DRAFT,     'admin/img/icon-unknown.svg'),
-        )
-    else:
-        STATUS_ICONS = (
-            (UrlNode.PUBLISHED, 'admin/img/icon-yes.gif'),
-            (UrlNode.DRAFT,     'admin/img/icon-unknown.gif'),
-        )
+    STATUS_ICONS = {
+        UrlNode.PUBLISHED: 'admin/img/icon-yes.svg',
+        UrlNode.DRAFT: 'admin/img/icon-unknown.svg',
+    }
 
     def status_column(self, urlnode):
         status = urlnode.status
         title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
-        icon = [rec[1] for rec in self.STATUS_ICONS if rec[0] == status].pop()
+        icon = self.STATUS_ICONS.get(rec[0], 'admin/img/icon-unknown.svg')
         return u'<img src="{static_url}{icon}" alt="{title}" title="{title}" />'.format(
             static_url=settings.STATIC_URL, icon=icon, title=title
         )

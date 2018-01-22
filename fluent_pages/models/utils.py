@@ -1,7 +1,6 @@
 """
 Custom generic managers
 """
-import django
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.query import QuerySet
@@ -68,6 +67,3 @@ class DecoratorManager(models.Manager):
 
     def get_queryset(self):
         return DecoratingQuerySet(self.model, using=self._db)
-
-    if django.VERSION < (1, 8):
-        get_query_set = get_queryset

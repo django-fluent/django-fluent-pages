@@ -4,12 +4,12 @@ Extra form fields.
 import os
 
 from django import forms
+from django.urls import reverse
 from django.utils import translation
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from fluent_pages import appsettings
-from fluent_utils.django_compat import reverse  # Django 1.9-
 from mptt.forms import TreeNodeChoiceField
 
 

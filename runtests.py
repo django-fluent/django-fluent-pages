@@ -17,40 +17,6 @@ sys.stderr.write('Using Django version {0} from {1}\n'.format(
 if not settings.configured:
     module_root = path.dirname(path.realpath(__file__))
 
-    if django.VERSION >= (1, 8):
-        template_settings = dict(
-            TEMPLATES = [
-                {
-                    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-                    'DIRS': (),
-                    'OPTIONS': {
-                        'loaders': (
-                            'django.template.loaders.filesystem.Loader',
-                            'django.template.loaders.app_directories.Loader',
-                        ),
-                        'context_processors': (
-                            'django.template.context_processors.debug',
-                            'django.template.context_processors.i18n',
-                            'django.template.context_processors.media',
-                            'django.template.context_processors.request',
-                            'django.template.context_processors.static',
-                            'django.contrib.auth.context_processors.auth',
-                        ),
-                    },
-                },
-            ]
-        )
-    else:
-        template_settings = dict(
-            TEMPLATE_LOADERS = (
-                'django.template.loaders.app_directories.Loader',
-                'django.template.loaders.filesystem.Loader',
-            ),
-            TEMPLATE_CONTEXT_PROCESSORS = list(default_settings.TEMPLATE_CONTEXT_PROCESSORS) + [
-                'django.core.context_processors.request',
-            ],
-        )
-
     settings.configure(
         DATABASES = {
             'default': {
@@ -77,19 +43,33 @@ if not settings.configured:
             'fluent_contents',
             'django_wysiwyg',
         ),
-        MIDDLEWARE_CLASSES = (
+        MIDDLEWARE = (
             'django.middleware.common.CommonMiddleware',
             'django.contrib.sessions.middleware.SessionMiddleware',
             'django.middleware.csrf.CsrfViewMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',
         ),
-        MIDDLEWARE = (  # Django 2.0
-            'django.middleware.common.CommonMiddleware',
-            'django.contrib.sessions.middleware.SessionMiddleware',
-            'django.middleware.csrf.CsrfViewMiddleware',
-            'django.contrib.auth.middleware.AuthenticationMiddleware',
-        ),
-        TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner' if django.VERSION < (1, 6) else 'django.test.runner.DiscoverRunner',
+        TEMPLATES = [
+            {
+                'BACKEND': 'django.template.backends.django.DjangoTemplates',
+                'DIRS': (),
+                'OPTIONS': {
+                    'loaders': (
+                        'django.template.loaders.filesystem.Loader',
+                        'django.template.loaders.app_directories.Loader',
+                    ),
+                    'context_processors': (
+                        'django.template.context_processors.debug',
+                        'django.template.context_processors.i18n',
+                        'django.template.context_processors.media',
+                        'django.template.context_processors.request',
+                        'django.template.context_processors.static',
+                        'django.contrib.auth.context_processors.auth',
+                    ),
+                },
+            },
+        ],
+        TEST_RUNNER = 'django.test.runner.DiscoverRunner',
         SITE_ID = 4,
         PARLER_LANGUAGES = {
             4: (
@@ -100,7 +80,6 @@ if not settings.configured:
         PARLER_DEFAULT_LANGUAGE_CODE = 'en',  # Having a good fallback causes more code to run, more error checking.
         ROOT_URLCONF = 'fluent_pages.tests.testapp.urls',
         FLUENT_PAGES_TEMPLATE_DIR = path.join(module_root, 'fluent_pages', 'tests', 'testapp', 'templates'),
-        **template_settings
     )
 
 DEFAULT_TEST_APPS = [

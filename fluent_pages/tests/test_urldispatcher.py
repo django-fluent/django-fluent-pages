@@ -1,6 +1,6 @@
 import django
-from fluent_utils.django_compat import resolve, reverse  # Django 1.9-
 from django.test import override_settings
+from django.urls import resolve, reverse
 from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.testapp.models import PlainTextFile, SimpleTextPage, WebShopPage
 from fluent_pages.tests.utils import AppTestCase, script_name
@@ -154,25 +154,13 @@ class UrlDispatcherTests(AppTestCase):
         """
         Urls can end with @admin to be redirected to the admin.
         """
-        if django.VERSION >= (1, 7):
-            # Redirects again to fixed login URL.
-            target_status_code = 302
-        else:
-            # Admin login appears at the page itself
-            target_status_code = 200
+        admin_url1 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.home.pk)
+        admin_url2 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.sibling1.pk)
+        admin_url3 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.shop.pk)
 
-        if django.VERSION >= (1, 9):
-            admin_url1 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.home.pk)
-            admin_url2 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.sibling1.pk)
-            admin_url3 = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.shop.pk)
-        else:
-            admin_url1 = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.home.pk)
-            admin_url2 = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.sibling1.pk)
-            admin_url3 = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.shop.pk)
-
-        self.assertRedirects(self.client.get('/@admin'), admin_url1, status_code=302, target_status_code=target_status_code)
-        self.assertRedirects(self.client.get('/sibling1/@admin'), admin_url2, status_code=302, target_status_code=target_status_code)
-        self.assertRedirects(self.client.get('/shop/@admin'), admin_url3, status_code=302, target_status_code=target_status_code)
+        self.assertRedirects(self.client.get('/@admin'), admin_url1, status_code=302, target_status_code=302)
+        self.assertRedirects(self.client.get('/sibling1/@admin'), admin_url2, status_code=302, target_status_code=302)
+        self.assertRedirects(self.client.get('/shop/@admin'), admin_url3, status_code=302, target_status_code=302)
 
         # Anything that doesn't match, is redirected to the URL without @admin suffix
         self.assertRedirects(self.client.get('/unpublished/@admin'), 'http://testserver/unpublished/', status_code=302, target_status_code=404)
@@ -203,8 +191,6 @@ class UrlDispatcherNonRootTests(AppTestCase):
     """
     Tests for URL resolving with a non-root URL include.
     """
-    if django.VERSION < (1, 8):
-        urls = 'fluent_pages.tests.testapp.urls_nonroot'
 
     @classmethod
     def setUpTree(cls):
@@ -229,17 +215,6 @@ class UrlDispatcherNonRootTests(AppTestCase):
         """
         Urls can end with @admin to be redirected to the admin.
         """
-        if django.VERSION >= (1, 7):
-            # Redirects again to fixed login URL.
-            target_status_code = 302
-        else:
-            # Admin login appears at the page itself
-            target_status_code = 200
-
-        if django.VERSION >= (1, 9):
-            admin_url = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.root.pk)
-        else:
-            admin_url = 'http://testserver/admin/fluent_pages/page/{pk}/'.format(pk=self.root.pk)
-
-        self.assertRedirects(self.client.get('/pages/sibling1/@admin'), admin_url, status_code=302, target_status_code=target_status_code)
+        admin_url = 'http://testserver/admin/fluent_pages/page/{pk}/change/'.format(pk=self.root.pk)
+        self.assertRedirects(self.client.get('/pages/sibling1/@admin'), admin_url, status_code=302, target_status_code=302)
         self.assertRedirects(self.client.get('/pages/non-existent/@admin'), 'http://testserver/pages/non-existent/', status_code=302, target_status_code=404)

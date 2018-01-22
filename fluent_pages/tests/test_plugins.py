@@ -1,4 +1,3 @@
-import django
 from django.test import override_settings
 from fluent_pages.tests.testapp.models import WebShopPage
 from fluent_pages.tests.utils import AppTestCase
@@ -98,8 +97,6 @@ class PluginUrlTests(AppTestCase):
     Test for running a pagetype app standalone.
     (some apps will support that, e.g. django-fluent-blogs)
     """
-    if django.VERSION < (1, 8):
-        urls = 'fluent_pages.tests.testapp.urls_webshop'
 
     @override_settings(ROOT_URLCONF='fluent_pages.tests.testapp.urls_webshop')
     def test_mixed_reverse_standalone(self):

@@ -1,6 +1,5 @@
 from optparse import make_option
 
-import django
 from django.core.management import BaseCommand
 from django.core.management import CommandError
 from django.utils.encoding import smart_text
@@ -15,27 +14,15 @@ class Command(BaseCommand):
     """
     help = "Update the cached_url for the translated URL node tree"
 
-    if django.VERSION >= (1, 8):
-        def add_arguments(self, parser):
-            super(Command, self).add_arguments(parser)
-            parser.add_argument(
-                '-p', '--dry-run', action='store_true', dest='dry-run', default=False,
-                help="Only list what will change, don't make the actual changes."
-            ),
-            parser.add_argument(
-                '-m', '--mptt-only', action='store_true', dest='mptt-only', default=False,
-                help="Only fix the MPTT fields, leave URLs unchanged."
-            ),
-    else:
-        option_list = BaseCommand.option_list + (
-            make_option(
-                '-p', '--dry-run', action='store_true', dest='dry-run', default=False,
-                help="Only list what will change, don't make the actual changes."
-            ),
-            make_option(
-                '-m', '--mptt-only', action='store_true', dest='mptt-only', default=False,
-                help="Only fix the MPTT fields, leave URLs unchanged."
-            ),
+    def add_arguments(self, parser):
+        super(Command, self).add_arguments(parser)
+        parser.add_argument(
+            '-p', '--dry-run', action='store_true', dest='dry-run', default=False,
+            help="Only list what will change, don't make the actual changes."
+        )
+        parser.add_argument(
+            '-m', '--mptt-only', action='store_true', dest='mptt-only', default=False,
+            help="Only fix the MPTT fields, leave URLs unchanged."
         )
 
     def handle(self, *args, **options):

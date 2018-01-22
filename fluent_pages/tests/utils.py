@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.test import TestCase, override_settings
+from django.urls import get_script_prefix, set_script_prefix
 from fluent_pages.models.db import UrlNode
-from fluent_utils.django_compat import get_script_prefix, set_script_prefix
 from future.builtins import str
 
 
@@ -35,17 +35,8 @@ class AppTestCase(TestCase):
                     testapp = import_module(appname)
 
                     # Flush caches
-                    if django.VERSION < (1, 9):
-                        from django.template.loaders import app_directories
-                        from django.db.models import loading
-                        loading.cache.loaded = False
-
-                        app_directories.app_template_dirs += (
-                            os.path.join(os.path.dirname(testapp.__file__), 'templates'),
-                        )
-                    else:
-                        from django.template.utils import get_app_template_dirs
-                        get_app_template_dirs.cache_clear()
+                    from django.template.utils import get_app_template_dirs
+                    get_app_template_dirs.cache_clear()
 
             if run_migrate:
                 call_command('migrate', verbosity=0)
@@ -53,18 +44,12 @@ class AppTestCase(TestCase):
         # This also runs setUpTestData
         super(AppTestCase, cls).setUpClass()
 
-        if django.VERSION < (1, 8):
-            # Newer Django versions wrap this in a reversable translation,
-            # for older Django versions emulate the method call only.
-            cls.setUpTestData()
-
     @classmethod
     def setUpTestData(cls):
         # Avoid early import, triggers AppCache
         User = get_user_model()
 
         # Create basic objects
-        # 1.4 does not create site automatically with the defined SITE_ID, 1.3 does.
         Site.objects.get_or_create(id=settings.SITE_ID, defaults=dict(domain='django.localhost', name='django at localhost'))
         cls.user, _ = User.objects.get_or_create(is_superuser=True, is_staff=True, username="fluent-pages-admin")
 

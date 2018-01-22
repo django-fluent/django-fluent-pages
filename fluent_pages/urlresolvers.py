@@ -1,9 +1,9 @@
 """
 URL Resolving for dynamically added pages.
 """
+from django.urls import NoReverseMatch, reverse
 from django.utils.functional import lazy
 from django.utils.translation import get_language
-from fluent_utils.django_compat import NoReverseMatch, reverse  # Django 1.9-
 from future.builtins import str
 
 # Several imports in this file are placed inline, to avoid loading the models too early.

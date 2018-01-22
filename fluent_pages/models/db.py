@@ -11,7 +11,6 @@ It defines the following classes:
 """
 import logging
 
-import django
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.cache import cache
@@ -19,9 +18,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import connection, models, transaction
 from django.db.backends.utils import truncate_name
 from django.template.defaultfilters import slugify
+from django.urls import NoReverseMatch, reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from fluent_utils.django_compat import NoReverseMatch, reverse  # Django 1.9-
 from fluent_utils.softdeps.any_imagefield import AnyImageField
 
 from fluent_pages import appsettings
@@ -85,13 +84,10 @@ class AbstractUrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, Tra
     """
     objects = UrlNodeManager()
 
-    if django.VERSION < (1, 10):
-        # Help older Django versions with model inheritance.
-        _default_manager = UrlNodeManager()
-
     class Meta:
         app_label = 'fluent_pages'
         abstract = True
+        base_manager_name = 'objects'
 
 
 @python_2_unicode_compatible
@@ -168,14 +164,7 @@ class UrlNode(AbstractUrlNode):
         self._original_status = None
         self._original_parent = None
 
-        deferred = ()
-        if django.VERSION >= (1, 8):
-            deferred = self.get_deferred_fields()
-        else:
-            if self._deferred:
-                # Assume all deferred
-                deferred = ('publication_date', 'publication_end_date', 'status', 'parent')
-
+        deferred = self.get_deferred_fields()
         if 'publication_date' not in deferred:
             self._original_pub_date = self.publication_date
         if 'publication_end_date' not in deferred:

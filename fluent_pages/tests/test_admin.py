@@ -17,8 +17,7 @@ class AdminTests(AppTestCase):
         User = get_user_model()
         self.test_user = User.objects.create_superuser('a', 'ab@example.com', 'b')
         self.test_user.save()
-        login_ok = self.client.login(username='a', password='b')  # self.client.force_login() exists as of Django 1.9
-        self.assertTrue(login_ok)
+        self.client.force_login(self.test_user)
 
     @classmethod
     def setUpTree(cls):

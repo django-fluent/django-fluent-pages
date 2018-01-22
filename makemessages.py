@@ -19,9 +19,7 @@ def main():
             ),
         )
 
-    if django.VERSION >= (1, 7):
-        django.setup()
-
+    django.setup()
     makemessages()
 
 

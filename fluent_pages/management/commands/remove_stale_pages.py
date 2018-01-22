@@ -8,20 +8,11 @@ from fluent_pages.models import UrlNode
 class Command(BaseCommand):
     help = "Remove UrlNodes which are stale, because their model is removed."
 
-    if getattr(BaseCommand, 'add_arguments', None):  # Django 1.8+
-        def add_arguments(self, parser):
-            super(Command, self).add_arguments(parser)
-            parser.add_argument(
-                '-p', '--dry-run', action='store_true', dest='dry_run',
-                help="Only list what will change, don't make the actual changes."
-            )
-    else:
-        from optparse import make_option
-        option_list = BaseCommand.option_list + (
-            make_option(
-                '-p', '--dry-run', action='store_true', dest='dry_run', default=False,
-                help="Only list what will change, don't make the actual changes."
-            ),
+    def add_arguments(self, parser):
+        super(Command, self).add_arguments(parser)
+        parser.add_argument(
+            '-p', '--dry-run', action='store_true', dest='dry_run',
+            help="Only list what will change, don't make the actual changes."
         )
 
     def handle(self, *args, **options):
