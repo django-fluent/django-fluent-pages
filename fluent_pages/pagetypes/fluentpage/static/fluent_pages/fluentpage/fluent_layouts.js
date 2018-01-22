@@ -3,13 +3,13 @@
  * When a new layout is fetched, it is passed to the fluent_contents module to rebuild the tabs.
  */
 var fluent_layouts = {
-    'ct_id': null
+    'ct_id': null,  // for older django-polymorphic support
+    'api_url': null
 };
 
 (function($)
 {
   var app_root = location.href.indexOf('/fluent_pages/') + 14;
-  var ajax_root = location.href.substring(0, location.href.indexOf('/', app_root) + 1);
   var initial_layout_id = null;
 
   $.fn.ready( onReady );
@@ -38,7 +38,7 @@ var fluent_layouts = {
     // Firefox will restore form values at refresh.
     // In case this happens, fetch the newly selected layout
     var selected_layout_id = layout_selector.val() || 0;
-    var initial_layout_id = layout_selector.attr('data-original-value');
+    initial_layout_id = layout_selector.attr('data-original-value');
     if( selected_layout_id != initial_layout_id )
     {
       fluent_contents.tabs.hide();
@@ -94,6 +94,7 @@ var fluent_layouts = {
   fluent_layouts.fetch_layout = function(layout_id)
   {
     // Get the ct_id from the template.
+    // ?ct_id is for django-polymorphic < 2.0 support
     var ct_id = parseInt(fluent_layouts.ct_id);
     if(isNaN(ct_id)) {
         alert("Internal CMS error: missing `fluent_layouts.ct_id` variable in the template!");
@@ -102,7 +103,7 @@ var fluent_layouts = {
 
     // Get layout info.
     $.ajax({
-      url: ajax_root + "get_layout/" + parseInt(layout_id) + "/?ct_id=" + ct_id,
+      url: fluent_layouts.api_url.replace('99999', parseInt(layout_id)) + "?ct_id=" + ct_id,
       success: function(layout, textStatus, xhr)
       {
         // Ask to update the tabs!

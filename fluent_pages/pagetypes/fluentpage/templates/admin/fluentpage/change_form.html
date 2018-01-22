@@ -1,5 +1,8 @@
 {% extends base_change_form_template %}
 
 {% block extrahead %}{{ block.super }}
-<script type="text/javascript">fluent_layouts.ct_id = {{ content_type_id }};</script>
+<script type="text/javascript">
+  fluent_layouts.ct_id = {{ content_type_id }};
+  fluent_layouts.api_url = "{% url 'admin:fluentpage_get_layout' 99999 %}";
+</script>
 {% endblock %}
