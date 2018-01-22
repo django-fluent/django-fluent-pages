@@ -89,7 +89,7 @@ Add to ``urls.py``:
     ) + i18n_patterns('',
         # All URLS inside the i18n_patterns() get prefixed with the country code:
         # Django admin
-        url(r'^admin/', include(admin.site.urls)),
+        url(r'^admin/', admin.site.urls),
 
         # SEO API's per language
         url(r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
