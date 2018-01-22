@@ -6,6 +6,7 @@ Version 2.0.2 (2018-01-22)
 
 * Fixed adding pages when visiting the direct child admin URL
   (e.g. /admin/redirectnode/redirectnode/add/`` instead of ``/admin/fluent_pages/page/add/?ct_id=``)
+  [backported to 1.1.4].
 
 
 Version 2.0.1 (2018-01-22)
@@ -19,8 +20,18 @@ Version 2.0 (2018-01-22)
 ------------------------
 
 * Added Django 2.0 support.
-* Fixed fetching page layouts on django-polymorphic_ 1.3 / 2.0.
+* Fixed fetching page layouts on django-polymorphic_ 1.3 / 2.0 [backported to 1.1.4].
 * Dropped Django 1.7, 1.8 and 1.9 support, since django-polymorphic-tree_ also dropped this.
+
+
+Version 1.1.4 (2018-01-18)
+--------------------------
+
+Backported fixes from 2.0 release in case Django 1.8 support is still needed.
+
+* Fixed fetching page layouts on django-polymorphic_ 1.3 / 2.0.
+* Fixed adding pages when visiting the direct child admin URL
+  (e.g. /admin/redirectnode/redirectnode/add/`` instead of ``/admin/fluent_pages/page/add/?ct_id=``)
 
 
 Version 1.1.3 (2017-11-22)
