@@ -1,7 +1,14 @@
 Changelog
 =========
 
-Changes 2.0 (2018-01-22)
+Changes 2.0.1 (2018-01-22)
+--------------------------
+
+* Fix admin list crash.
+* Fixed setup classifiers.
+
+
+Version 2.0 (2018-01-22)
 ------------------------
 
 * Added Django 2.0 support.
