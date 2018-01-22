@@ -2,11 +2,13 @@
 Internal module for the plugin system,
 the API is exposed via __init__.py
 """
+import re
 from importlib import import_module
+
+import django
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import RegexURLResolver
 from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
@@ -16,7 +18,11 @@ from future.builtins import str
 from future.utils import with_metaclass
 from six import string_types
 
-
+try:
+    from django.urls import URLResolver  # Django 2.0+
+    from django.urls.resolvers import RegexPattern
+except ImportError:
+    from django.core.urlresolvers import RegexURLResolver as URLResolver
 
 __all__ = (
     'PageTypePlugin',
@@ -211,5 +217,8 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
             else:
                 raise ImproperlyConfigured("Invalid value for '{0}.urls', must be string, list or tuple.".format(self.__class__.__name__))
 
-            self._url_resolver = RegexURLResolver(r'^/', patterns)
+            if django.VERSION > (2, 0):
+                self._url_resolver = URLResolver(RegexPattern(r'^/'), patterns)
+            else:
+                self._url_resolver = URLResolver(r'^/', patterns)
         return self._url_resolver

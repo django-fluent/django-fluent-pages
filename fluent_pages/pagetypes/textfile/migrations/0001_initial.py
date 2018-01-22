@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TextFile',
             fields=[
-                ('urlnode_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='fluent_pages.UrlNode')),
+                ('urlnode_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='fluent_pages.UrlNode', on_delete=models.CASCADE)),
                 ('content', models.TextField(verbose_name='File contents')),
                 ('content_type', models.CharField(default='text/plain', max_length=100, verbose_name='File type', choices=[('text/plain', 'Plain text'), ('text/xml', 'XML'), ('text/html', 'HTML')])),
             ],

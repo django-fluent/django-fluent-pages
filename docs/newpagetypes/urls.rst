@@ -50,7 +50,7 @@ Other custom views can be created in the same way.
 Resolving URLs
 --------------
 
-The URLs can't be resolved using the standard :func:`~django.core.urlresolvers.reverse` function unfortunately.
+The URLs can't be resolved using the standard :func:`~django.urls.reverse` function unfortunately.
 The main reason is that it caches results internally for the lifetime of the WSGI container,
 meanwhile pages may be rearranged by the admin.
 

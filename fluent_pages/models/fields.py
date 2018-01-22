@@ -23,7 +23,6 @@ class TemplateFilePathField(models.FilePathField):
         return super(TemplateFilePathField, self).formfield(**defaults)
 
     def deconstruct(self):
-        # For Django 1.7 migrations
         name, path, args, kwargs = super(TemplateFilePathField, self).deconstruct()
         if 'path' in kwargs:
             del kwargs["path"]
@@ -51,10 +50,6 @@ class PageTreeForeignKey(PolymorphicTreeForeignKey):
         'child_not_allowed': _("The selected page cannot have this page type as a child!"),
     }
 
-    def contribute_to_class(self, cls, name, virtual_only=False):
-        if django.VERSION >= (1, 8):
-            super(PageTreeForeignKey, self).contribute_to_class(cls, name, virtual_only=virtual_only)
-        else:
-            super(PageTreeForeignKey, self).contribute_to_class(cls, name)
-
+    def contribute_to_class(self, cls, name, **kwargs):
+        super(PageTreeForeignKey, self).contribute_to_class(cls, name, **kwargs)
         setattr(cls, self.name, TranslatedForeignKeyDescriptor(self))  # override what ForeignKey does.

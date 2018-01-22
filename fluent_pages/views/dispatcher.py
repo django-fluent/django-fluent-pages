@@ -5,7 +5,6 @@ import re
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import NoReverseMatch, Resolver404, get_script_prefix, resolve, reverse
 from django.http import Http404, HttpResponsePermanentRedirect, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.utils import translation
@@ -14,6 +13,7 @@ from django.views.generic.base import View
 from fluent_pages import appsettings
 from fluent_pages.models import UrlNode
 from fluent_pages.models.utils import prefill_parent_site
+from fluent_utils.django_compat import NoReverseMatch, Resolver404, get_script_prefix, resolve, reverse  # Django 1.9-
 from future.builtins import str
 
 

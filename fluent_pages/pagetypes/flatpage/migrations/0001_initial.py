@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FlatPage',
             fields=[
-                ('urlnode_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='fluent_pages.UrlNode')),
+                ('urlnode_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='fluent_pages.UrlNode', on_delete=models.CASCADE)),
                 ('template_name', models.CharField(default='fluent_pages/pagetypes/flatpage/default.html', max_length=200, null=True, editable=False, verbose_name='Layout')),
                 ('content', models.TextField(verbose_name='Content', blank=True)),
             ],

@@ -14,8 +14,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='FluentPage',
             fields=[
-                ('urlnode_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='fluent_pages.UrlNode')),
-                ('layout', models.ForeignKey(verbose_name='Layout', to='fluent_pages.PageLayout', null=True)),
+                ('urlnode_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='fluent_pages.UrlNode', on_delete=models.CASCADE)),
+                ('layout', models.ForeignKey(verbose_name='Layout', to='fluent_pages.PageLayout', on_delete=models.CASCADE, null=True)),
             ],
             options={
                 'abstract': False,

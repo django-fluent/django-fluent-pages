@@ -16,12 +16,12 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
-from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db import connection, models, transaction
 from django.db.backends.utils import truncate_name
 from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from fluent_utils.django_compat import NoReverseMatch, reverse  # Django 1.9-
 from fluent_utils.softdeps.any_imagefield import AnyImageField
 
 from fluent_pages import appsettings
@@ -35,6 +35,7 @@ from parler.utils import get_language_title
 from parler.utils.context import switch_language
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from slug_preview.models import SlugPreviewField
+
 
 logger = logging.getLogger(__name__)
 
@@ -108,8 +109,8 @@ class UrlNode(AbstractUrlNode):
 
     title = TranslatedField(any_language=True)
     slug = TranslatedField()  # Explicitly added, but not needed
-    parent = PageTreeForeignKey('self', blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
-    parent_site = models.ForeignKey(Site, editable=False, default=_get_current_site)
+    parent = PageTreeForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
+    parent_site = models.ForeignKey(Site, on_delete=models.CASCADE, editable=False, default=_get_current_site)
     # children = a RelatedManager by 'parent'
 
     # Publication information
@@ -125,7 +126,7 @@ class UrlNode(AbstractUrlNode):
     key = models.SlugField(_("page identifier"), choices=appsettings.FLUENT_PAGES_KEY_CHOICES, blank=True, null=True, help_text=_("A unique identifier that is used for linking to this page."))
 
     # Metadata
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('author'), editable=False)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name=_('author'), editable=False)
     creation_date = models.DateTimeField(_('creation date'), editable=False, auto_now_add=True)
     modification_date = models.DateTimeField(_('last modification'), editable=False, auto_now=True)
 
@@ -649,7 +650,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
     _cached_url = models.CharField(max_length=255, db_index=True, null=True, blank=True, editable=False)
 
     # Base fields
-    master = models.ForeignKey(UrlNode, related_name='translations', null=True)
+    master = models.ForeignKey(UrlNode, on_delete=models.CASCADE, related_name='translations', null=True)
 
     class Meta:
         app_label = 'fluent_pages'

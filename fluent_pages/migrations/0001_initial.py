@@ -82,10 +82,10 @@ class Migration(migrations.Migration):
                 ('key', models.SlugField(blank=True, help_text='A unique identifier that is used for linking to this page.', null=True, verbose_name='page identifier', choices=appsettings.FLUENT_PAGES_KEY_CHOICES)),
                 ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='creation date')),
                 ('modification_date', models.DateTimeField(auto_now=True, verbose_name='last modification')),
-                ('author', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, verbose_name='author')),
-                ('parent', fluent_pages.models.fields.PageTreeForeignKey(related_name='children', blank=True, to='fluent_pages.UrlNode', help_text='You can also change the parent by dragging the page in the list.', null=True, verbose_name='parent')),
-                ('parent_site', models.ForeignKey(default=fluent_pages.models.db._get_current_site, editable=False, to='sites.Site')),
-                ('polymorphic_ctype', models.ForeignKey(related_name='polymorphic_fluent_pages.urlnode_set+', editable=False, to='contenttypes.ContentType', null=True)),
+                ('author', models.ForeignKey(editable=False, to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='author')),
+                ('parent', fluent_pages.models.fields.PageTreeForeignKey(related_name='children', blank=True, to='fluent_pages.UrlNode', on_delete=models.CASCADE, help_text='You can also change the parent by dragging the page in the list.', null=True, verbose_name='parent')),
+                ('parent_site', models.ForeignKey(default=fluent_pages.models.db._get_current_site, on_delete=models.CASCADE, editable=False, to='sites.Site')),
+                ('polymorphic_ctype', models.ForeignKey(related_name='polymorphic_fluent_pages.urlnode_set+', editable=False, to='contenttypes.ContentType', on_delete=models.CASCADE, null=True)),
             ],
             options={
                 'ordering': ('tree_id', 'lft'),
@@ -104,7 +104,7 @@ class Migration(migrations.Migration):
                 ('slug', slug_preview.models.SlugPreviewField(help_text='The slug is used in the URL of the page', max_length=100, verbose_name='slug')),
                 ('override_url', models.CharField(help_text="Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages' URLs.", max_length=255, verbose_name='Override URL', blank=True)),
                 ('_cached_url', models.CharField(db_index=True, max_length=255, null=True, editable=False, blank=True)),
-                ('master', models.ForeignKey(related_name='translations', to='fluent_pages.UrlNode', null=True)),
+                ('master', models.ForeignKey(related_name='translations', to='fluent_pages.UrlNode', on_delete=models.CASCADE, null=True)),
             ],
             options={
                 'verbose_name': 'URL Node translation',
@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='htmlpagetranslation',
             name='master',
-            field=models.ForeignKey(related_name='seo_translations', editable=False, to='fluent_pages.HtmlPage', null=True),
+            field=models.ForeignKey(related_name='seo_translations', editable=False, to='fluent_pages.HtmlPage', on_delete=models.CASCADE, null=True),
             preserve_default=True,
         ),
         migrations.AlterUniqueTogether(

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PlainTextFile',
             fields=[
-                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode')),
+                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode', on_delete=models.CASCADE)),
                 ('content', models.TextField(verbose_name='Contents')),
             ],
             options={
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SimpleTextPage',
             fields=[
-                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode')),
+                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode', on_delete=models.CASCADE)),
                 ('contents', models.TextField(verbose_name='Contents')),
             ],
             options={
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ChildTypesPage',
             fields=[
-                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode')),
+                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode', on_delete=models.CASCADE)),
                 ('contents', models.TextField(verbose_name='Contents')),
             ],
             options={
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WebShopPage',
             fields=[
-                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode')),
+                ('urlnode_ptr', models.OneToOneField(auto_created=True, parent_link=True, serialize=False, primary_key=True, to='fluent_pages.UrlNode', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'pagetype_testapp_webshoppage',

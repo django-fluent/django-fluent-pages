@@ -1,5 +1,5 @@
 import django
-from django.core.urlresolvers import resolve, reverse
+from fluent_utils.django_compat import resolve, reverse  # Django 1.9-
 from django.test import override_settings
 from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.testapp.models import PlainTextFile, SimpleTextPage, WebShopPage

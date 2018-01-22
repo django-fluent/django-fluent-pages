@@ -6,9 +6,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.management import call_command
-from django.core.urlresolvers import get_script_prefix, set_script_prefix
 from django.test import TestCase, override_settings
 from fluent_pages.models.db import UrlNode
+from fluent_utils.django_compat import get_script_prefix, set_script_prefix
 from future.builtins import str
 
 

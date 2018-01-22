@@ -83,6 +83,12 @@ if not settings.configured:
             'django.middleware.csrf.CsrfViewMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',
         ),
+        MIDDLEWARE = (  # Django 2.0
+            'django.middleware.common.CommonMiddleware',
+            'django.contrib.sessions.middleware.SessionMiddleware',
+            'django.middleware.csrf.CsrfViewMiddleware',
+            'django.contrib.auth.middleware.AuthenticationMiddleware',
+        ),
         TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner' if django.VERSION < (1, 6) else 'django.test.runner.DiscoverRunner',
         SITE_ID = 4,
         PARLER_LANGUAGES = {

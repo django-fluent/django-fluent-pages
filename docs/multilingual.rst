@@ -120,8 +120,8 @@ The custom middleware code:
 .. code-block:: python
 
     from django.conf import settings
-    from django.core.urlresolvers import reverse_lazy
     from django.utils import translation
+    from django.urls import reverse_lazy
 
 
     class FrontendLanguageMiddleware(object):
