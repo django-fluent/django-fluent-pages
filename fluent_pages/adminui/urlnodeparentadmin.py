@@ -133,9 +133,8 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
     }
 
     def status_column(self, urlnode):
-        status = urlnode.status
-        title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == status].pop()
-        icon = self.STATUS_ICONS.get(rec[0], 'admin/img/icon-unknown.svg')
+        title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == urlnode.status].pop()
+        icon = self.STATUS_ICONS[urlnode.status]
         return u'<img src="{static_url}{icon}" alt="{title}" title="{title}" />'.format(
             static_url=settings.STATIC_URL, icon=icon, title=title
         )
