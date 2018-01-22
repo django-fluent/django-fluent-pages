@@ -14,9 +14,9 @@ matrix:
   - python: '2.7'
     env: PACKAGES="django>=2.0,<2.1"
 before_install:
+- pip install -U pip wheel setuptools
 - pip install codecov
 install:
-- pip install -U pip wheel
 - pip install $PACKAGES -e .[tests]
 script:
 - coverage run --source=fluent_pages runtests.py
