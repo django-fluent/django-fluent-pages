@@ -22,7 +22,10 @@ try:
     from django.urls import URLResolver  # Django 2.0+
     from django.urls.resolvers import RegexPattern
 except ImportError:
-    from django.core.urlresolvers import RegexURLResolver as URLResolver
+    try:
+        from django.urls import RegexURLResolver as URLResolver  # Django 1.11
+    except ImportError:
+        from django.core.urlresolvers import RegexURLResolver as URLResolver  # Django 1.10 / 1.11 with deprecation warning
 
 __all__ = (
     'PageTypePlugin',
