@@ -56,10 +56,6 @@ class Migration(migrations.Migration):
                 'db_table': 'pagetype_simpleshop_productcategorypage',
             },
             bases=('fluent_pages.page',),
-            managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('base_objects', django.db.models.manager.Manager()),
-            ],
         ),
         migrations.AddField(
             model_name='product',

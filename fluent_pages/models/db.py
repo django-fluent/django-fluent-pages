@@ -11,6 +11,7 @@ It defines the following classes:
 """
 import logging
 
+import django
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.cache import cache
@@ -55,6 +56,11 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
     """
 
     def __new__(mcs, name, bases, attrs):
+        if django.VERSION < (2, 0):
+            try:
+                attrs['Meta'].manager_inheritance_from_future = True
+            except KeyError:
+                pass
 
         new_class = super(URLNodeMetaClass, mcs).__new__(mcs, name, bases, attrs)
 
@@ -128,8 +134,6 @@ class UrlNode(AbstractUrlNode):
 
     # Caching
     _cached_url = TranslatedField()
-
-    objects = UrlNodeManager()  # Django manager
 
     class Meta:
         app_label = 'fluent_pages'
