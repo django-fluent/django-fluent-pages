@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 2.0.3 (2018-02-05)
+--------------------------
+
+* Added missing migration for the new ``on_delete=SET_NULL`` behavior for the author field.
+* Added ``Meta.manager_inheritance_from_future = True`` to all page subclasses that
+  define a ``Meta`` class. This avoids warnings in the latest django-polymorphic_ 2.0.1 release.
+  It also makes sure all sub-sub classes are correctly fetched when using a ``subclass.objects.all()``.
+
+
 Version 2.0.2 (2018-01-22)
 --------------------------
 
