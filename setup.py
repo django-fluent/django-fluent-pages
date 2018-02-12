@@ -44,7 +44,7 @@ setup(
         'django-parler>=1.9.1',
         'django-polymorphic>=1.3',
         'django-polymorphic-tree>=1.5',
-        'django-slug-preview>=1.0.2',
+        'django-slug-preview>=1.0.4',
         'django-tag-parser>=3.0',
         'future>=0.12.2',
         'six>=1.5.2',
