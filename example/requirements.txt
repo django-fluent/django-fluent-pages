@@ -1,6 +1,9 @@
 # Django version
 Django >= 1.8, <2.0
 
+# Pillow version
+Pillow >= 5.0
+
 # Deps of fluent-pages
 django-fluent-utils >= 2.0
 django-mptt >= 0.9.0
