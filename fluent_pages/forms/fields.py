@@ -4,8 +4,10 @@ Extra form fields.
 import os
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import translation
+from django.utils.translation import ugettext_lazy as _
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
@@ -89,6 +91,9 @@ class PageChoiceField(TreeNodeChoiceField):
     """
     A SelectBox that displays the pages QuerySet, with items indented.
     """
+    default_error_messages = {
+        'not_published': _("The selected page is not published."),
+    }
 
     def __init__(self, *args, **kwargs):
         if not args and 'queryset' not in kwargs:
@@ -110,6 +115,32 @@ class PageChoiceField(TreeNodeChoiceField):
             new_self.queryset = UrlNode.objects.published().non_polymorphic().order_by(mptt_opts.tree_id_attr, mptt_opts.left_attr)
 
         return new_self
+
+    def clean(self, value):
+        """
+        Try to come up with a better error message for unpublished pages.
+        """
+        try:
+            # either to_python() or validate() can check the model
+            return super(PageChoiceField, self).clean(value)
+        except ValidationError as e:
+            if e.code == 'invalid_choice':
+                if self._is_unpublished(value):
+                    raise ValidationError(
+                        self.error_messages['not_published'],
+                        code='invalid_choice,'
+                    )
+
+            raise
+
+    def _is_unpublished(self, value):
+        from fluent_pages.models import UrlNode
+        try:
+            page = UrlNode.objects.non_polymorphic().get_for_id(int(value))
+        except (ValueError, UrlNode.DoesNotExist):
+            return None
+        else:
+            return not page.is_published
 
     def label_from_instance(self, page):
         page_title = page.title or page.slug  # TODO: menu title?

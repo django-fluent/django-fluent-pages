@@ -33,6 +33,13 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
         language_codes = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
         return self.translated(*language_codes, **translated_fields)
 
+    def get_for_id(self, pk):
+        """
+        Make sure only the current site is fetched
+        """
+        single_self = self._single_site()
+        return super(UrlNodeQuerySet, single_self).get(pk=pk)
+
     def get_for_path(self, path, language_code=None):
         """
         Return the UrlNode for the given path.
