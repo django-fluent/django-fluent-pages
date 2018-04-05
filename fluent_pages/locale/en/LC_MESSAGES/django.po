@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-18 23:12+0100\n"
+"POT-Creation-Date: 2018-04-05 13:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,188 +49,197 @@ msgstr ""
 msgid "page type"
 msgstr ""
 
-#: adminui/urlnodeparentadmin.py:154
+#: adminui/urlnodeparentadmin.py:143
 msgid "Status"
 msgstr ""
 
-#: adminui/urlnodeparentadmin.py:193
+#: adminui/urlnodeparentadmin.py:182
 msgid "Mark selected objects as published"
 msgstr ""
 
-#: integration/fluent_contents/models.py:29 models/db.py:744
+#: forms/fields.py:95
+msgid "The selected page is not published."
+msgstr ""
+
+#: integration/fluent_contents/models.py:33 models/db.py:759
 #: pagetypes/fluentpage/models.py:31
 msgid "Page"
 msgstr ""
 
-#: integration/fluent_contents/models.py:30 models/db.py:745 models/db.py:784
+#: integration/fluent_contents/models.py:34 models/db.py:760 models/db.py:797
 #: pagetypes/fluentpage/models.py:32
 msgid "Pages"
 msgstr ""
 
-#: management/commands/prefix_pagetypes.py:25
-#, python-brace-format
-msgid "{count} item updated."
-msgid_plural "{count} items updated."
-msgstr[0] ""
-msgstr[1] ""
-
-#: models/db.py:86
+#: models/db.py:109
 msgid "Published"
 msgstr ""
 
-#: models/db.py:87
+#: models/db.py:110
 msgid "Draft"
 msgstr ""
 
-#: models/db.py:92
+#: models/db.py:115
 msgid "parent"
 msgstr ""
 
-#: models/db.py:92
+#: models/db.py:115
 msgid "You can also change the parent by dragging the page in the list."
 msgstr ""
 
-#: models/db.py:97
+#: models/db.py:120
 msgid "status"
 msgstr ""
 
-#: models/db.py:98
+#: models/db.py:121
 msgid "publication date"
 msgstr ""
 
-#: models/db.py:98
+#: models/db.py:121
 msgid "When the page should go live, status must be \"Published\"."
 msgstr ""
 
-#: models/db.py:99
+#: models/db.py:122
 msgid "publication end date"
 msgstr ""
 
-#: models/db.py:100
+#: models/db.py:123
 msgid "show in navigation"
 msgstr ""
 
-#: models/db.py:101
+#: models/db.py:124
 msgid "include in search engine sitemaps"
 msgstr ""
 
-#: models/db.py:106
+#: models/db.py:129
 msgid "page identifier"
 msgstr ""
 
-#: models/db.py:106
+#: models/db.py:129
 msgid "A unique identifier that is used for linking to this page."
 msgstr ""
 
-#: models/db.py:109
+#: models/db.py:132
 msgid "author"
 msgstr ""
 
-#: models/db.py:110
+#: models/db.py:133
 msgid "creation date"
 msgstr ""
 
-#: models/db.py:111
+#: models/db.py:134
 msgid "last modification"
 msgstr ""
 
-#: models/db.py:126
+#: models/db.py:142
 msgid "URL Node"
 msgstr ""
 
-#: models/db.py:127
+#: models/db.py:143
 msgid "URL Nodes"
 msgstr ""
 
-#: models/db.py:132
+#: models/db.py:148
 msgid "Can change Shared fields"
 msgstr ""
 
-#: models/db.py:133
+#: models/db.py:149
 msgid "Can change Override URL field"
 msgstr ""
 
-#: models/db.py:635 models/db.py:817
+#: models/db.py:650 models/db.py:830
 msgid "title"
 msgstr ""
 
-#: models/db.py:636
+#: models/db.py:651
 msgid "slug"
 msgstr ""
 
-#: models/db.py:636
+#: models/db.py:651
 msgid "The slug is used in the URL of the page"
 msgstr ""
 
-#: models/db.py:637
+#: models/db.py:652
 msgid "Override URL"
 msgstr ""
 
-#: models/db.py:637
+#: models/db.py:652
 msgid ""
 "Override the target URL. Be sure to include slashes at the beginning and at "
 "the end if it is a local URL. This affects both the navigation and subpages' "
 "URLs."
 msgstr ""
 
-#: models/db.py:649
+#: models/db.py:664
 msgid "URL Node translation"
 msgstr ""
 
-#: models/db.py:650
+#: models/db.py:665
 msgid "URL Nodes translations"
 msgstr ""
 
-#: models/db.py:772
+#: models/db.py:784
 msgid "keywords"
 msgstr ""
 
-#: models/db.py:773
+#: models/db.py:785
 msgid "description"
 msgstr ""
 
-#: models/db.py:774
+#: models/db.py:785
+msgid "Typically, about 160 characters will be shown in search engines"
+msgstr ""
+
+#: models/db.py:786
 msgid "page title"
 msgstr ""
 
-#: models/db.py:774
+#: models/db.py:786
 msgid "When this field is not filled in, the menu title text will be used."
 msgstr ""
 
-#: models/db.py:776
+#: models/db.py:787
+msgid "example image"
+msgstr ""
+
+#: models/db.py:787
+msgid "This allows social media sites to pick a default image."
+msgstr ""
+
+#: models/db.py:789
 msgid "SEO Translation"
 msgstr ""
 
-#: models/db.py:777
+#: models/db.py:790
 msgid "SEO Translations"
 msgstr ""
 
-#: models/db.py:816
+#: models/db.py:829
 msgid "key"
 msgstr ""
 
-#: models/db.py:816
+#: models/db.py:829
 msgid "A short name to identify the layout programmatically"
 msgstr ""
 
-#: models/db.py:837 pagetypes/flatpage/models.py:13
+#: models/db.py:850 pagetypes/flatpage/models.py:13
 #: pagetypes/fluentpage/models.py:24
 msgid "Layout"
 msgstr ""
 
-#: models/db.py:838
+#: models/db.py:851
 msgid "Layouts"
 msgstr ""
 
-#: models/fields.py:49
+#: models/fields.py:48
 msgid "This page type should have a parent."
 msgstr ""
 
-#: models/fields.py:50
+#: models/fields.py:49
 msgid "The selected page cannot have sub pages."
 msgstr ""
 
-#: models/fields.py:51
+#: models/fields.py:50
 msgid "The selected page cannot have this page type as a child!"
 msgstr ""
 
@@ -250,7 +259,7 @@ msgstr ""
 msgid "Can change Page layout"
 msgstr ""
 
-#: pagetypes/redirectnode/admin.py:9
+#: pagetypes/redirectnode/admin.py:12
 msgid "Redirect settings"
 msgstr ""
 

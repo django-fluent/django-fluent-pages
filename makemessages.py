@@ -14,9 +14,14 @@ def main():
         settings.configure(
             DEBUG = False,
             INSTALLED_APPS = (
+                'django.contrib.auth',
+                'django.contrib.contenttypes',
+                'django.contrib.sites',
                 'fluent_pages',
                 'mptt',
             ),
+            SITE_ID = 1,
+            FLUENT_PAGES_TEMPLATE_DIR = path.join(module_root, 'fluent_pages', 'tests', 'testapp', 'templates'),
         )
 
     django.setup()
