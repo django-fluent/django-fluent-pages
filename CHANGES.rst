@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Version 2.0.4 (2018-04-05)
+--------------------------
+
+* Added ``page.is_publication_date_active()`` method to check whether a page is published at a given date.
+* Fixed ``page.is_draft`` and ``page.is_published`` properties to take ``publication_date`` / ``publication_end_date`` into account.
+* Fixed displayed ``verbose_name`` for ``FluentPage``, which showed "fluent page" in django-staff-toolbar_.
+* Improved page chooser form message when selecting an unpublished page.
+* Bumped minimal django-slug-preview_ version for proper Django 2.0 support.
+
+
 Version 2.0.3 (2018-02-05)
 --------------------------
 
