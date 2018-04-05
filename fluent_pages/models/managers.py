@@ -36,6 +36,8 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
     def get_for_id(self, pk):
         """
         Make sure only the current site is fetched
+
+        .. versionadded:: 2.0.4
         """
         single_self = self._single_site()
         return super(UrlNodeQuerySet, single_self).get(pk=pk)

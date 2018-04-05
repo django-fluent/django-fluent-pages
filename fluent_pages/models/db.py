@@ -291,6 +291,8 @@ class UrlNode(AbstractUrlNode):
     def is_publication_date_active(self, date=None):
         """
         Return whether a configured publication date is within range.
+
+        .. versionadded:: 2.0.4
         """
         if date is None:
             date = now()
