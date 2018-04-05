@@ -21,6 +21,7 @@ from django.db.backends.utils import truncate_name
 from django.template.defaultfilters import slugify
 from django.urls import NoReverseMatch, reverse
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from fluent_utils.softdeps.any_imagefield import AnyImageField
 
@@ -285,14 +286,23 @@ class UrlNode(AbstractUrlNode):
         """
         Return whether the node is published.
         """
-        return self.status == self.PUBLISHED
+        return self.status == self.PUBLISHED and self.is_publication_date_active()
+
+    def is_publication_date_active(self, date=None):
+        """
+        Return whether a configured publication date is within range.
+        """
+        if date is None:
+            date = now()
+        return (self.publication_date is None or self.publication_date < date) and \
+               (self.publication_end_date is None or self.publication_end_date >= date)
 
     @property
     def is_draft(self):
         """
         Return whether the node is still a draft.
         """
-        return self.status == self.DRAFT
+        return self.status == self.DRAFT or not self.is_publication_date_active()
 
     @property
     def is_first_child(self):
