@@ -169,8 +169,8 @@ class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, Tra
         fields = super(UrlNodeChildAdmin, self).get_readonly_fields(request, obj)
         if obj is not None:
             # Edit screen
-            if len(obj.get_available_languages()) >= 2 \
-                    and not self.has_change_shared_fields_permission(request, obj):
+            if not self.has_change_shared_fields_permission(request, obj) and \
+                    len(obj.get_available_languages()) >= 2:
                 # This page is translated in multiple languages,
                 # language team is only allowed to update their own language.
                 fields += self.readonly_shared_fields
