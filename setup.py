@@ -42,7 +42,7 @@ setup(
         'django-fluent-utils>=2.0',        # DRY utility code
         'django-mptt>=0.9.0',
         'django-parler>=1.9.1',
-        'django-polymorphic>=1.3',
+        'django-polymorphic>=1.3.1',
         'django-polymorphic-tree>=1.5',
         'django-slug-preview>=1.0.4',
         'django-tag-parser>=3.0',
@@ -57,10 +57,10 @@ setup(
         'tests': [
             'django-any-urlfield>=2.6.1',
             'django-wysiwyg>=0.7.1',
-            'django-fluent-contents>=2.0',
+            'django-fluent-contents>=2.0.4',
         ],
         'flatpage': ['django-wysiwyg>=0.7.1'],
-        'fluentpage': ['django-fluent-contents>=2.0'],
+        'fluentpage': ['django-fluent-contents>=2.0.1'],
         'redirectnode': ['django-any-urlfield>=2.6.1'],  # Needs Pickle support for translated new_url field.
     },
     description='A flexible, scalable CMS with custom node types, and flexible block content.',
@@ -79,7 +79,7 @@ setup(
 
     zip_safe=False,
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
