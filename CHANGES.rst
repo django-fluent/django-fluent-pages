@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 2.0.5 (2018-08-28)
+--------------------------
+
+* Confirmed Django 2.1 support.
+* Fixed ``RedirectNode`` in combination with django-any-urlfield_ on Python 3.
+* Bumped dependency versions to their latest bugfix releases.
+* Optimized the query logic to see whether untranslated fields should be shown.
+
+
 Version 2.0.4 (2018-04-05)
 --------------------------
 
