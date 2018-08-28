@@ -55,13 +55,13 @@ setup(
     ],
     extras_require={
         'tests': [
-            'django-any-urlfield>=2.4.2',
+            'django-any-urlfield>=2.6.1',
             'django-wysiwyg>=0.7.1',
             'django-fluent-contents>=2.0',
         ],
         'flatpage': ['django-wysiwyg>=0.7.1'],
         'fluentpage': ['django-fluent-contents>=2.0'],
-        'redirectnode': ['django-any-urlfield>=2.4.2'],  # Needs Pickle support for translated new_url field.
+        'redirectnode': ['django-any-urlfield>=2.6.1'],  # Needs Pickle support for translated new_url field.
     },
     description='A flexible, scalable CMS with custom node types, and flexible block content.',
     long_description=read('README.rst'),

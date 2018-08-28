@@ -47,6 +47,7 @@ if not settings.configured:
             'polymorphic_tree',
             'fluent_contents',
             'django_wysiwyg',
+            'any_urlfield',
         ),
         MIDDLEWARE = (
             'django.middleware.common.CommonMiddleware',
