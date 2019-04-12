@@ -41,7 +41,7 @@ class AdminTests(AppTestCase):
             'moved_id': self.root.id,
             'target_id': self.root2.id,
             'position': 'inside',
-            'previous_parent_id': None
+            'previous_parent_id': ''
         })
         self.assertEqual(response.status_code, expect_status)
 

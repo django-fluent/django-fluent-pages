@@ -32,9 +32,10 @@ if not settings.configured:
         INSTALLED_APPS = (
             'django.contrib.auth',
             'django.contrib.contenttypes',
+            'django.contrib.messages',
+            'django.contrib.sessions',
             'django.contrib.sites',
             'django.contrib.admin',
-            'django.contrib.sessions',
             'fluent_pages',
             'fluent_pages.pagetypes.flatpage',
             'fluent_pages.pagetypes.fluentpage',
@@ -54,6 +55,7 @@ if not settings.configured:
             'django.contrib.sessions.middleware.SessionMiddleware',
             'django.middleware.csrf.CsrfViewMiddleware',
             'django.contrib.auth.middleware.AuthenticationMiddleware',
+            'django.contrib.messages.middleware.MessageMiddleware',
         ),
         TEMPLATES = [
             {
@@ -70,6 +72,7 @@ if not settings.configured:
                         'django.template.context_processors.media',
                         'django.template.context_processors.request',
                         'django.template.context_processors.static',
+                        'django.contrib.messages.context_processors.messages',
                         'django.contrib.auth.context_processors.auth',
                     ),
                 },
