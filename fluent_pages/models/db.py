@@ -176,7 +176,7 @@ class UrlNode(AbstractUrlNode):
             self._original_pub_end_date = self.publication_end_date
         if 'status' not in deferred:
             self._original_status = self.status
-        if 'parent' not in deferred:
+        if 'parent' not in deferred and 'parent_id' not in deferred:
             self._original_parent = self.parent_id
 
         self._cached_ancestors = None
