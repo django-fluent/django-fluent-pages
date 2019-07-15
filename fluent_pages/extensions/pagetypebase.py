@@ -1,7 +1,4 @@
-"""
-Internal module for the plugin system,
-the API is exposed via __init__.py
-"""
+"""Internal module for the plugin system, the API is exposed via __init__.py"""
 import re
 from importlib import import_module
 

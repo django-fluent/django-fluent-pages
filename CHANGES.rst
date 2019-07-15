@@ -340,7 +340,7 @@ Upgrade notices:
 
 
 Version 0.8.7 (2014-12-30)
-------------------------
+--------------------------
 
 * Add support of django-polymorphic 0.6.
 * Add ``page`` variable for menu items in ``PageNavigationNode``.

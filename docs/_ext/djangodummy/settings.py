@@ -14,3 +14,34 @@ FLUENT_PAGES_TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'templates/'
 # Required by Django
 SECRET_KEY = 'foo'
 SITE_ID = 1
+
+INSTALLED_APPS = [
+    "fluent_pages",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sites",
+    "mptt",
+    "polymorphic",
+    "polymorphic_tree",
+]
+
+MIDDLEWARE = [
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.locale.LocaleMiddleware",  # / will be redirected to /<locale>/
+]
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": (),
+        "OPTIONS": {
+            "loaders": (
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            )
+        },
+    }
+]
