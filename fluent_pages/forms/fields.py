@@ -7,13 +7,13 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils import translation
-from django.utils.translation import ugettext_lazy as _
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
+from django.utils.translation import ugettext_lazy as _
+
 from fluent_pages import appsettings
 from mptt.forms import TreeNodeChoiceField
-
 
 
 class TemplateFilePathField(forms.FilePathField):
@@ -27,7 +27,10 @@ class TemplateFilePathField(forms.FilePathField):
         # Make choices relative if requested.
         if appsettings.FLUENT_PAGES_RELATIVE_TEMPLATE_DIR:
             self.choices.sort(key=lambda choice: choice[1])
-            self.choices = self.widget.choices = [(filename.replace(self.path, '', 1), title) for filename, title in self.choices]
+            self.choices = self.widget.choices = [
+                (filename.replace(self.path, "", 1), title)
+                for filename, title in self.choices
+            ]
 
     def prepare_value(self, value):
         """
@@ -37,7 +40,7 @@ class TemplateFilePathField(forms.FilePathField):
             if appsettings.FLUENT_PAGES_RELATIVE_TEMPLATE_DIR:
                 # Turn old absolute paths into relative paths.
                 if os.path.isabs(value) and value.startswith(self.path):
-                    value = value[len(self.path):].lstrip('/')
+                    value = value[len(self.path) :].lstrip("/")
             else:
                 # If setting is disabled, turn relative path back to abs.
                 if not os.path.isabs(value):
@@ -66,7 +69,7 @@ class RelativeRootPathField(forms.CharField):
         Convert the database/model value to the displayed value.
         Adds the root of the CMS pages.
         """
-        if value and value.startswith('/'):  # value is None for add page.
+        if value and value.startswith("/"):  # value is None for add page.
             root = self.get_root(value)
             value = root + value
         return value
@@ -79,26 +82,26 @@ class RelativeRootPathField(forms.CharField):
         root = self.get_root(value)
         value = super(RelativeRootPathField, self).to_python(value)
         if root and value.startswith(root):
-            value = value[len(root):]
+            value = value[len(root) :]
         return value
 
     def get_root(self, value):
         with translation.override(self.language_code):
-            return reverse('fluent-page').rstrip('/')
+            return reverse("fluent-page").rstrip("/")
 
 
 class PageChoiceField(TreeNodeChoiceField):
     """
     A SelectBox that displays the pages QuerySet, with items indented.
     """
-    default_error_messages = {
-        'not_published': _("The selected page is not published."),
-    }
+
+    default_error_messages = {"not_published": _("The selected page is not published.")}
 
     def __init__(self, *args, **kwargs):
-        if not args and 'queryset' not in kwargs:
+        if not args and "queryset" not in kwargs:
             from fluent_pages.models import UrlNode
-            kwargs['queryset'] = UrlNode.objects.published().non_polymorphic()
+
+            kwargs["queryset"] = UrlNode.objects.published().non_polymorphic()
             self.custom_qs = False
         else:
             self.custom_qs = True
@@ -111,8 +114,13 @@ class PageChoiceField(TreeNodeChoiceField):
             # Reevaluate the queryset for django-multisite support.
             # This is needed when SITE_ID is a threadlocal, because .published() freezes the SITE_ID.
             from fluent_pages.models import UrlNode
+
             mptt_opts = self.queryset.model._mptt_meta
-            new_self.queryset = UrlNode.objects.published().non_polymorphic().order_by(mptt_opts.tree_id_attr, mptt_opts.left_attr)
+            new_self.queryset = (
+                UrlNode.objects.published()
+                .non_polymorphic()
+                .order_by(mptt_opts.tree_id_attr, mptt_opts.left_attr)
+            )
 
         return new_self
 
@@ -124,17 +132,17 @@ class PageChoiceField(TreeNodeChoiceField):
             # either to_python() or validate() can check the model
             return super(PageChoiceField, self).clean(value)
         except ValidationError as e:
-            if e.code == 'invalid_choice':
+            if e.code == "invalid_choice":
                 if self._is_unpublished(value):
                     raise ValidationError(
-                        self.error_messages['not_published'],
-                        code='invalid_choice,'
+                        self.error_messages["not_published"], code="invalid_choice,"
                     )
 
             raise
 
     def _is_unpublished(self, value):
         from fluent_pages.models import UrlNode
+
         try:
             page = UrlNode.objects.non_polymorphic().get_for_id(int(value))
         except (ValueError, UrlNode.DoesNotExist):

@@ -8,12 +8,16 @@ from .pageadmin import DefaultPageChildAdmin, DefaultPageParentAdmin
 if not appsettings.FLUENT_PAGES_PARENT_ADMIN_MIXIN:
     PageParentAdmin = DefaultPageParentAdmin
 else:
-    PageParentAdmin = type("PageParentAdmin", (import_settings_class('FLUENT_PAGES_PARENT_ADMIN_MIXIN'), DefaultPageParentAdmin), {})
+    _ParentMixin = import_settings_class("FLUENT_PAGES_PARENT_ADMIN_MIXIN")
+    PageParentAdmin = type(
+        "PageParentAdmin", (_ParentMixin, DefaultPageParentAdmin), {}
+    )
 
 if not appsettings.FLUENT_PAGES_CHILD_ADMIN_MIXIN:
     PageChildAdmin = DefaultPageChildAdmin
 else:
-    PageChildAdmin = type("PageAdmin", (import_settings_class('FLUENT_PAGES_CHILD_ADMIN_MIXIN'), DefaultPageChildAdmin), {})
+    _ChildMixin = import_settings_class("FLUENT_PAGES_CHILD_ADMIN_MIXIN")
+    PageChildAdmin = type("PageAdmin", (_ChildMixin, DefaultPageChildAdmin), {})
 
 
 # Keep using the older import name everywhere.

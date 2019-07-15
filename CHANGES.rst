@@ -7,6 +7,7 @@ Version 2.0.6 (2019-06-11)
 * Confirmed Django 2.2 support.
 * Fixed recursion in ``.only()`` queries, also happened with django-mptt_ 0.10 on deleting nodes.
 * Fixed pagetype plugin admin import errors, caused by ordering in ``INSTALLED_APPS``.
+* Reformatted all files with black
 
 
 Version 2.0.5 (2018-08-28)

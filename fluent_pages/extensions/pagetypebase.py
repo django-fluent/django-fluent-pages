@@ -9,11 +9,12 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
-from fluent_pages import appsettings
-from fluent_pages.adminui import PageAdmin
 from future.builtins import str
 from future.utils import with_metaclass
 from six import string_types
+
+from fluent_pages import appsettings
+from fluent_pages.adminui import PageAdmin
 
 try:
     from django.urls import URLResolver  # Django 2.0+
@@ -22,11 +23,11 @@ except ImportError:
     try:
         from django.urls import RegexURLResolver as URLResolver  # Django 1.11
     except ImportError:
-        from django.core.urlresolvers import RegexURLResolver as URLResolver  # Django 1.10 / 1.11 with deprecation warning
+        from django.core.urlresolvers import (
+            RegexURLResolver as URLResolver,
+        )  # Django 1.10 / 1.11 with deprecation warning
 
-__all__ = (
-    'PageTypePlugin',
-)
+__all__ = ("PageTypePlugin",)
 
 
 class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
@@ -118,7 +119,9 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
         self._url_resolver = None
 
     def __repr__(self):
-        return '<{0} for {1} model>'.format(self.__class__.__name__, str(self.model.__name__).encode('ascii'))
+        return "<{0} for {1} model>".format(
+            self.__class__.__name__, str(self.model.__name__).encode("ascii")
+        )
 
     @property
     def verbose_name(self):
@@ -143,7 +146,11 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
             try:
                 self._type_id = ContentType.objects.get_for_model(self.model).id
             except DatabaseError as e:
-                raise DatabaseError("Unable to fetch ContentType object, is a plugin being registered before the initial syncdb? (original error: {0})".format(str(e)))
+                raise DatabaseError(
+                    "Unable to fetch ContentType object, is a plugin being registered before the initial syncdb? (original error: {0})".format(
+                        str(e)
+                    )
+                )
         return self._type_id
 
     def get_model_instances(self):
@@ -162,13 +169,15 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
         """
         render_template = self.get_render_template(request, page, **kwargs)
         if not render_template:
-            raise ImproperlyConfigured("{0} should either provide a definition of `render_template`, `urls` or an implementation of `get_response()`".format(self.__class__.__name__))
+            raise ImproperlyConfigured(
+                "{0} should either provide a definition of `render_template`, `urls` or an implementation of `get_response()`".format(
+                    self.__class__.__name__
+                )
+            )
 
         context = self.get_context(request, page, **kwargs)
         return self.response_class(
-            request=request,
-            template=render_template,
-            context=context,
+            request=request, template=render_template, context=context
         )
 
     def get_render_template(self, request, page, **kwargs):
@@ -188,9 +197,11 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
         or :class:`~fluent_pages.views.CurrentPageTemplateMixin`
         """
         return {
-            'FLUENT_PAGES_BASE_TEMPLATE': appsettings.FLUENT_PAGES_BASE_TEMPLATE,
-            'page': page,
-            'site': SimpleLazyObject(lambda: page.parent_site),  # delay query until read
+            "FLUENT_PAGES_BASE_TEMPLATE": appsettings.FLUENT_PAGES_BASE_TEMPLATE,
+            "page": page,
+            "site": SimpleLazyObject(
+                lambda: page.parent_site
+            ),  # delay query until read
         }
 
     def get_view_response(self, request, page, view_func, view_args, view_kwargs):
@@ -209,16 +220,22 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
                 return None
             elif isinstance(self.urls, string_types):
                 mod = import_module(self.urls)
-                if not hasattr(mod, 'urlpatterns'):
-                    raise ImproperlyConfigured("URLConf `{0}` has no urlpatterns attribute".format(self.urls))
-                patterns = getattr(mod, 'urlpatterns')
+                if not hasattr(mod, "urlpatterns"):
+                    raise ImproperlyConfigured(
+                        "URLConf `{0}` has no urlpatterns attribute".format(self.urls)
+                    )
+                patterns = getattr(mod, "urlpatterns")
             elif isinstance(self.urls, (list, tuple)):
                 patterns = self.urls
             else:
-                raise ImproperlyConfigured("Invalid value for '{0}.urls', must be string, list or tuple.".format(self.__class__.__name__))
+                raise ImproperlyConfigured(
+                    "Invalid value for '{0}.urls', must be string, list or tuple.".format(
+                        self.__class__.__name__
+                    )
+                )
 
             if django.VERSION > (2, 0):
-                self._url_resolver = URLResolver(RegexPattern(r'^/'), patterns)
+                self._url_resolver = URLResolver(RegexPattern(r"^/"), patterns)
             else:
-                self._url_resolver = URLResolver(r'^/', patterns)
+                self._url_resolver = URLResolver(r"^/", patterns)
         return self._url_resolver

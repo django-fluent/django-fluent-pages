@@ -3,6 +3,7 @@ Mixins to simplify creating URLpattern views in custom page pages.
 """
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+
 from fluent_pages.urlresolvers import mixed_reverse
 from parler.views import ViewUrlMixin
 
@@ -24,7 +25,7 @@ class CurrentPageMixin(ViewUrlMixin):
         """
         Return the current page.
         """
-        return getattr(self.request, '_current_fluent_page', None)
+        return getattr(self.request, "_current_fluent_page", None)
 
     def get_context_data(self, **kwargs):
         """
@@ -41,11 +42,13 @@ class CurrentPageMixin(ViewUrlMixin):
 
             # Improve the integration of django-staff-toolbar, if used.
             # However, avoid being too disruptive, in case the view exposes an object themselves.
-            if 'staff_toolbar' in settings.INSTALLED_APPS:
-                if getattr(self, 'object', None) is None \
-                        and 'object' not in context \
-                        and not hasattr(self, 'get_staff_object') \
-                        and not hasattr(self.request, 'staff_object'):
+            if "staff_toolbar" in settings.INSTALLED_APPS:
+                if (
+                    getattr(self, "object", None) is None
+                    and "object" not in context
+                    and not hasattr(self, "get_staff_object")
+                    and not hasattr(self.request, "staff_object")
+                ):
                     self.request.staff_object = page
 
         return context
@@ -59,7 +62,12 @@ class CurrentPageMixin(ViewUrlMixin):
         """
         # This method is used by the ``get_translated_url`` template tag of django-parler
         if self.view_url_name:
-            return mixed_reverse(self.view_url_name, args=self.args, kwargs=self.kwargs, current_page=self.get_current_page())
+            return mixed_reverse(
+                self.view_url_name,
+                args=self.args,
+                kwargs=self.kwargs,
+                current_page=self.get_current_page(),
+            )
         else:
             return super(CurrentPageMixin, self).get_view_url()
 

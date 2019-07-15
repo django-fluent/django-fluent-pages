@@ -21,10 +21,20 @@ class HtmlPageAdmin(PageAdmin):
             HtmlPageAdmin.FIELDSET_PUBLICATION,
         )
     """
-    FIELDSET_SEO = (_('SEO settings'), {
-        'fields': ('meta_title', 'meta_keywords', 'meta_description', 'meta_image', 'in_sitemaps'),
-        'classes': ('collapse',),
-    })
+
+    FIELDSET_SEO = (
+        _("SEO settings"),
+        {
+            "fields": (
+                "meta_title",
+                "meta_keywords",
+                "meta_description",
+                "meta_image",
+                "in_sitemaps",
+            ),
+            "classes": ("collapse",),
+        },
+    )
 
     base_fieldsets = (
         PageAdmin.FIELDSET_GENERAL,
@@ -32,12 +42,14 @@ class HtmlPageAdmin(PageAdmin):
         PageAdmin.FIELDSET_MENU,
         PageAdmin.FIELDSET_PUBLICATION,
     )
-    readonly_shared_fields = PageAdmin.readonly_shared_fields + ('in_sitemaps',)
+    readonly_shared_fields = PageAdmin.readonly_shared_fields + ("in_sitemaps",)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name in ('meta_title', 'meta_keywords'):
-            kwargs.setdefault('widget', AdminTextInputWidget(attrs={'class': 'vLargeTextField'}))
-        if db_field.name == 'meta_description':
-            kwargs.setdefault('widget', AdminTextareaWidget(attrs={'rows': 3}))
+        if db_field.name in ("meta_title", "meta_keywords"):
+            kwargs.setdefault(
+                "widget", AdminTextInputWidget(attrs={"class": "vLargeTextField"})
+            )
+        if db_field.name == "meta_description":
+            kwargs.setdefault("widget", AdminTextareaWidget(attrs={"rows": 3}))
 
         return super(HtmlPageAdmin, self).formfield_for_dbfield(db_field, **kwargs)

@@ -1,10 +1,6 @@
 """
 Form fields
 """
-from .fields import TemplateFilePathField, RelativeRootPathField, PageChoiceField
+from .fields import PageChoiceField, RelativeRootPathField, TemplateFilePathField
 
-__all__ = (
-    'TemplateFilePathField',
-    'RelativeRootPathField',
-    'PageChoiceField',
-)
+__all__ = ("TemplateFilePathField", "RelativeRootPathField", "PageChoiceField")

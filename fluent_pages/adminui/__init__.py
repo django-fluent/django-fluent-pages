@@ -7,20 +7,22 @@ If this module could be called :mod:`fluent_pages.admin`, it would invoke the ap
 and prevent any further model initialization.
 """
 
+from .htmlpageadmin import HtmlPageAdmin
+from .overrides import PageChildAdmin, PageParentAdmin
+
 # Import trick: make the DefaultPage*Admin available first,
 # so the classes imported by .overrides can actually import those from this module already.
-from .pageadmin import DefaultPageParentAdmin, DefaultPageChildAdmin, PageAdminForm
+from .pageadmin import DefaultPageChildAdmin, DefaultPageParentAdmin, PageAdminForm
 from .pagelayoutadmin import PageLayoutAdmin
-from .overrides import PageChildAdmin, PageParentAdmin
-from .htmlpageadmin import HtmlPageAdmin
-
 
 __all__ = (
-    'PageParentAdmin', 'DefaultPageParentAdmin',
-    'PageChildAdmin', 'DefaultPageChildAdmin',
-    'HtmlPageAdmin',
-    'PageLayoutAdmin',
-    'PageAdminForm'
+    "PageParentAdmin",
+    "DefaultPageParentAdmin",
+    "PageChildAdmin",
+    "DefaultPageChildAdmin",
+    "HtmlPageAdmin",
+    "PageLayoutAdmin",
+    "PageAdminForm",
 )
 
 PageAdmin = PageChildAdmin  # noqa, older name for backwards compatibility

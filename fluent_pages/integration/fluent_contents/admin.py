@@ -7,6 +7,7 @@ from __future__ import absolute_import
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template
+
 from fluent_contents.admin import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_contents.extensions import PluginNotFound, plugin_pool
@@ -21,8 +22,11 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
 
     Use ``{% extends base_change_form_template %}`` in your page template, and it will all work properly.
     """
+
     # Make sure all templates use our integration template as base.
-    base_change_form_template = "admin/fluent_pages/integration/fluent_contents/base_change_form.html"
+    base_change_form_template = (
+        "admin/fluent_pages/integration/fluent_contents/base_change_form.html"
+    )
 
     #: A fixed defined placeholder layout, which can be defined statically.
     #: This should be a list of :class:`~fluent_contents.models.PlaceholderData` objects.
@@ -78,13 +82,21 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
             try:
                 return plugin_pool.get_plugins_by_name(*self.all_allowed_plugins)
             except PluginNotFound as e:
-                raise PluginNotFound(str(e) + " Update the plugin list of the {0}.all_allowed_plugins setting.".format(self.__class__.__name__))
+                raise PluginNotFound(
+                    str(e)
+                    + " Update the plugin list of the {0}.all_allowed_plugins setting.".format(
+                        self.__class__.__name__
+                    )
+                )
         elif self.placeholder_layout_template:
             # This page is edited with a fixed template.
             # Extract all slot names from the template, and base the list of plugins on that.
             # Note that this actually parses the template, but it will be cached for production environments.
             template = get_template(self.placeholder_layout_template)
-            slots = [placeholder.slot for placeholder in get_template_placeholder_data(template)]
+            slots = [
+                placeholder.slot
+                for placeholder in get_template_placeholder_data(template)
+            ]
 
             # Resolve all plugins.
             plugins = []
@@ -107,8 +119,12 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
         """
         Make sure the translated ContentItem objects are also deleted when a translation is removed.
         """
-        for qs in super(FluentContentsPageAdmin, self).get_translation_objects(request, language_code, obj=obj, inlines=inlines):
+        for qs in super(FluentContentsPageAdmin, self).get_translation_objects(
+            request, language_code, obj=obj, inlines=inlines
+        ):
             yield qs
 
         if obj is not None and inlines:
-            yield ContentItem.objects.parent(obj, limit_parent_language=False).filter(language_code=language_code)
+            yield ContentItem.objects.parent(obj, limit_parent_language=False).filter(
+                language_code=language_code
+            )

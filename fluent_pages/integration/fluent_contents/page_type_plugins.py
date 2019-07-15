@@ -11,6 +11,7 @@ class FluentContentsPagePlugin(PageTypePlugin):
     """
     Base plugin to render a page with content items.
     """
+
     #: Defines the model to use to store the custom fields.
     #: It must derive from :class:`~fluent_pages.integration.fluent_contents.FluentContentsPage`.
     model = None
@@ -36,4 +37,4 @@ class FluentContentsPagePlugin(PageTypePlugin):
 
         # When the model admin isn't a FluentContentsPageAdmin,
         # return None just as if the attribute was not filled in.
-        return getattr(model_admin, 'placeholder_layout_template', None)
+        return getattr(model_admin, "placeholder_layout_template", None)

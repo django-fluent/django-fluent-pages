@@ -7,9 +7,10 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.utils.functional import lazy
 from django.utils.http import urlencode
-from fluent_pages.models import Page
 from future.builtins import int
 from future.utils import native_str
+
+from fluent_pages.models import Page
 
 from .urlnodechildadmin import UrlNodeAdminForm, UrlNodeChildAdmin
 from .urlnodeparentadmin import UrlNodeParentAdmin
@@ -57,6 +58,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
 
     The admin class can be extended with mixins by defining :ref:`FLUENT_PAGES_CHILD_ADMIN_MIXIN`.
     """
+
     base_model = Page
     base_form = PageAdminForm
     readonly_shared_fields = UrlNodeChildAdmin.readonly_shared_fields
@@ -66,14 +68,18 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
     base_change_form_template = "admin/fluent_pages/page/base_change_form.html"
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(DefaultPageChildAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        field = super(DefaultPageChildAdmin, self).formfield_for_foreignkey(
+            db_field, request, **kwargs
+        )
         if field is None:
             return None
 
         # Hack the ForeignKeyRawIdWidget to display a selector for the base model too.
         # It correctly detects that the parent field actually points to an UrlNode, instead of Page.
         # Since UrlNode is not registered in the admin, it won't display the selector. Overriding that here.
-        if db_field.name == 'parent' and isinstance(field.widget, ForeignKeyRawIdWidget):
+        if db_field.name == "parent" and isinstance(
+            field.widget, ForeignKeyRawIdWidget
+        ):
             field.widget.rel = copy.copy(field.widget.rel)
             field.widget.rel.model = Page
 
@@ -86,25 +92,48 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
         app_label = opts.app_label
 
         return [
-            "admin/fluent_pages/pagetypes/{0}/{1}/change_form.html".format(app_label, opts.object_name.lower()),
+            "admin/fluent_pages/pagetypes/{0}/{1}/change_form.html".format(
+                app_label, opts.object_name.lower()
+            ),
             "admin/fluent_pages/pagetypes/{0}/change_form.html".format(app_label),
         ] + templates
 
-    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+    def render_change_form(
+        self, request, context, add=False, change=False, form_url="", obj=None
+    ):
         # Include a 'base_change_form_template' in the context, make it easier to extend
         # the ct_id parameter can be skipped when the direct URL is used (instead of the proxied polymorphic add view)
-        context.update({
-            'base_change_form_template': self.base_change_form_template,
-            'default_change_form_template': _lazy_get_default_change_form_template(self),
-            'ct_id': int(ContentType.objects.get_for_model(obj).pk if change else request.GET.get('ct_id', 0))  # HACK for polymorphic admin
-        })
+        context.update(
+            {
+                "base_change_form_template": self.base_change_form_template,
+                "default_change_form_template": _lazy_get_default_change_form_template(
+                    self
+                ),
+                "ct_id": int(
+                    ContentType.objects.get_for_model(obj).pk
+                    if change
+                    else request.GET.get("ct_id", 0)
+                ),  # HACK for polymorphic admin
+            }
+        )
         # django-parler does this, so we have to do it too
-        form_url = add_preserved_filters({'preserved_filters': urlencode({'ct_id': context['ct_id']}), 'opts': self.model._meta}, form_url)
-        return super(DefaultPageChildAdmin, self).render_change_form(request, context, add=add, change=change, form_url=form_url, obj=obj)
+        form_url = add_preserved_filters(
+            {
+                "preserved_filters": urlencode({"ct_id": context["ct_id"]}),
+                "opts": self.model._meta,
+            },
+            form_url,
+        )
+        return super(DefaultPageChildAdmin, self).render_change_form(
+            request, context, add=add, change=change, form_url=form_url, obj=obj
+        )
 
 
 def _get_default_change_form_template(self):
-    return _select_template_name(DefaultPageChildAdmin.change_form_template.__get__(self))
+    return _select_template_name(
+        DefaultPageChildAdmin.change_form_template.__get__(self)
+    )
+
 
 _lazy_get_default_change_form_template = lazy(_get_default_change_form_template, str)
 
@@ -130,7 +159,9 @@ def _select_template_name(template_name_list):
             except TemplateDoesNotExist:
                 continue
             else:
-                template_name = native_str(template_name)  # consistent value for lazy() function.
+                template_name = native_str(
+                    template_name
+                )  # consistent value for lazy() function.
                 _cached_name_lookups[template_name_list] = template_name
                 return template_name
 

@@ -19,16 +19,15 @@ Usage:
 """
 from django.template import Library
 from django.utils.encoding import smart_str
+from six import iteritems
+
 from fluent_pages.models.db import UrlNode
 from fluent_pages.urlresolvers import mixed_reverse
-from six import iteritems
 from tag_parser.basetags import BaseAssignmentOrOutputNode
 
 register = Library()
 
-__all__ = (
-    'AppUrlNode', 'appurl',
-)
+__all__ = ("AppUrlNode", "appurl")
 
 
 class AppUrlNode(BaseAssignmentOrOutputNode):
@@ -39,26 +38,34 @@ class AppUrlNode(BaseAssignmentOrOutputNode):
     def get_value(self, context, *tag_args, **tag_kwargs):
         view_name = tag_args[0]
         url_args = tag_args[1::]
-        url_kwargs = dict([(smart_str(name, 'ascii'), value) for name, value in iteritems(tag_kwargs)])
+        url_kwargs = dict(
+            [(smart_str(name, "ascii"), value) for name, value in iteritems(tag_kwargs)]
+        )
 
         # The app_reverse() tag can handle multiple results fine if it knows what the current page is.
         # Try to find it.
-        request = context.get('request')
-        page = getattr(request, '_current_fluent_page', None)
+        request = context.get("request")
+        page = getattr(request, "_current_fluent_page", None)
         if not page:
             # There might be a 'page' variable, that was retrieved via `{% get_fluent_page_vars %}`.
             # However, django-haystack also uses this variable name, so check whether it's the correct object.
-            page = context.get('page')
+            page = context.get("page")
             if not isinstance(page, UrlNode):
                 page = None
 
         # request.current_app is passed everywhere if available, otherwise it does not exist.
         # Somehow it needs to be assigned explicitly in the app
         # via: request.current_app = request.resolver_match.namespace
-        current_app = getattr(request, 'current_app', None)
+        current_app = getattr(request, "current_app", None)
 
         # Try a normal URLConf URL, then an app URL
-        return mixed_reverse(view_name, args=url_args, kwargs=url_kwargs, current_app=current_app, current_page=page)
+        return mixed_reverse(
+            view_name,
+            args=url_args,
+            kwargs=url_kwargs,
+            current_app=current_app,
+            current_page=page,
+        )
 
 
 @register.tag

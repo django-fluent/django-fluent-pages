@@ -11,6 +11,7 @@ and methods such as `get_parent()` and `get_children()` through the `MPTTModel` 
 """
 from django.utils.encoding import python_2_unicode_compatible
 from future.builtins import object
+
 from parler.models import TranslationDoesNotExist
 
 
@@ -28,20 +29,37 @@ class NavigationNode(object):
         raise NotImplementedError("Missing property in NavigationNode!")
 
     def __dir__(self):
-        return ['slug', 'title', 'url', 'is_active', 'level', 'parent', 'children', 'has_children', 'page']
+        return [
+            "slug",
+            "title",
+            "url",
+            "is_active",
+            "level",
+            "parent",
+            "children",
+            "has_children",
+            "page",
+        ]
 
     # All properties the template can request:
-    slug = property(_not_implemented, doc='The slug of the node.')
-    title = property(_not_implemented, doc='The title of the node.')
-    url = property(_not_implemented, doc='The URL of the node.')
-    is_active = property(_not_implemented, doc='True if the node is the currently active page.')
-    is_child_active = property(_not_implemented, doc='True if a child of this node is the currently active page.')
-    is_published = property(_not_implemented, doc='True if the node is a normal published item.')
-    is_draft = property(_not_implemented, doc='True if the node is a draft item.')
-    level = property(_not_implemented, doc='The depth of the menu level.')
-    parent = property(_not_implemented, doc='The parent node.')
-    children = property(_not_implemented, doc='The list of children.')
-    has_children = property(_not_implemented, doc='Whether the node has children.')
+    slug = property(_not_implemented, doc="The slug of the node.")
+    title = property(_not_implemented, doc="The title of the node.")
+    url = property(_not_implemented, doc="The URL of the node.")
+    is_active = property(
+        _not_implemented, doc="True if the node is the currently active page."
+    )
+    is_child_active = property(
+        _not_implemented,
+        doc="True if a child of this node is the currently active page.",
+    )
+    is_published = property(
+        _not_implemented, doc="True if the node is a normal published item."
+    )
+    is_draft = property(_not_implemented, doc="True if the node is a draft item.")
+    level = property(_not_implemented, doc="The depth of the menu level.")
+    parent = property(_not_implemented, doc="The parent node.")
+    children = property(_not_implemented, doc="The list of children.")
+    has_children = property(_not_implemented, doc="Whether the node has children.")
     page = None
 
     # TODO: active trail item
@@ -66,14 +84,14 @@ class NavigationNode(object):
             url = self.url
         except TranslationDoesNotExist:
             url = None
-        return '<{0}: {1}>'.format(self.__class__.__name__, url)
+        return "<{0}: {1}>".format(self.__class__.__name__, url)
 
     def __str__(self):
         # This only exists in case a developer uses `{{ node }}` in the template.
         try:
             return self.title
         except TranslationDoesNotExist:
-            return ''
+            return ""
 
 
 class PageNavigationNode(NavigationNode):
@@ -81,11 +99,16 @@ class PageNavigationNode(NavigationNode):
     An implementation of the :class:`NavigationNode` for :class:`~fluent_pages.models.Page` models.
     """
 
-    def __init__(self, page, parent_node=None, max_depth=9999, current_page=None, for_user=None):
+    def __init__(
+        self, page, parent_node=None, max_depth=9999, current_page=None, for_user=None
+    ):
         """
         Initialize the node with a Page.
         """
-        assert page.in_navigation, "PageNavigationNode can't take page #%d (%s) which is not visible in the navigation." % (page.id, page.url)
+        assert page.in_navigation, (
+            "PageNavigationNode can't take page #%d (%s) which is not visible in the navigation."
+            % (page.id, page.url)
+        )
         super(NavigationNode, self).__init__()
         self._page = page
         self._current_page = current_page
@@ -105,16 +128,20 @@ class PageNavigationNode(NavigationNode):
 
     @property
     def is_active(self):
-        return self._page.pk \
-            and self._current_page is not None \
+        return (
+            self._page.pk
+            and self._current_page is not None
             and self._page.pk == self._current_page.pk
+        )
 
     @property
     def is_child_active(self):
-        return self._page.pk \
-            and self._current_page is not None \
-            and self._page.tree_id == self._current_page.tree_id \
+        return (
+            self._page.pk
+            and self._current_page is not None
+            and self._page.tree_id == self._current_page.tree_id
             and self._page.level < self._current_page.level
+        )
 
     @property
     def is_published(self):
@@ -127,13 +154,21 @@ class PageNavigationNode(NavigationNode):
     @property
     def parent(self):
         if not self._parent_node and not self._page.is_root_node():
-            self._parent_node = PageNavigationNode(self._page.get_parent(), max_depth=self._max_depth, current_page=self._current_page)
+            self._parent_node = PageNavigationNode(
+                self._page.get_parent(),
+                max_depth=self._max_depth,
+                current_page=self._current_page,
+            )
         return self._parent_node
 
     @parent.setter
     def parent(self, new_parent):
         # Happens when django-mptt finds an object with a different level in the recursetree() / cache_tree_children() code.
-        raise AttributeError("can't set attribute 'parent' of '{0}' object.".format(self.__class__.__name__))
+        raise AttributeError(
+            "can't set attribute 'parent' of '{0}' object.".format(
+                self.__class__.__name__
+            )
+        )
 
     @property
     def children(self):
@@ -142,9 +177,16 @@ class PageNavigationNode(NavigationNode):
             for child in self._children:
                 if child.pk == self._page.pk:
                     # This happened with the get_query_set() / get_queryset() transition for Django 1.7, affecting Django 1.4/1.5
-                    raise RuntimeError("Page #{0} children contained self!".format(self._page.pk))
+                    raise RuntimeError(
+                        "Page #{0} children contained self!".format(self._page.pk)
+                    )
 
-                yield PageNavigationNode(child, parent_node=self, max_depth=self._max_depth, current_page=self._current_page)
+                yield PageNavigationNode(
+                    child,
+                    parent_node=self,
+                    max_depth=self._max_depth,
+                    current_page=self._current_page,
+                )
 
     @property
     def has_children(self):
@@ -155,7 +197,11 @@ class PageNavigationNode(NavigationNode):
         if self._children is None and not self._page.is_leaf_node():
             if (self._page.get_level() + 1) < self._max_depth:  # level 0 = toplevel.
                 # children = self._page.get_children()  # Via MPTT
-                self._children = self._page.children.in_navigation(for_user=self._user)._mark_current(self._current_page)  # Via RelatedManager
+                self._children = self._page.children.in_navigation(
+                    for_user=self._user
+                )._mark_current(
+                    self._current_page
+                )  # Via RelatedManager
 
                 # If the parent wasn't polymorphic, neither will it's children be.
                 if self._page.get_real_instance_class() is not self._page.__class__:

@@ -5,15 +5,19 @@ the API is exposed via __init__.py
 from threading import Lock
 
 from django.contrib.contenttypes.models import ContentType
-from fluent_utils.load import import_apps_submodule
 from future.builtins import int, object
 from six import iteritems, itervalues
 
 from fluent_pages.models import UrlNode
+from fluent_utils.load import import_apps_submodule
+
 from .pagetypebase import PageTypePlugin
 
 __all__ = (
-    'PageTypeAlreadyRegistered', 'PageTypeNotFound', 'PageTypePool', 'page_type_pool'
+    "PageTypeAlreadyRegistered",
+    "PageTypeNotFound",
+    "PageTypePool",
+    "page_type_pool",
 )
 
 
@@ -33,6 +37,7 @@ class PageTypePool(object):
     """
     The central administration of plugins.
     """
+
     scanLock = Lock()
 
     def __init__(self):
@@ -54,13 +59,19 @@ class PageTypePool(object):
         If a plugin is already registered, this will raise a :class:`PluginAlreadyRegistered` exception.
         """
         # Duct-Typing does not suffice here, avoid hard to debug problems by upfront checks.
-        assert issubclass(plugin, PageTypePlugin), "The plugin must inherit from `PageTypePlugin`"
+        assert issubclass(
+            plugin, PageTypePlugin
+        ), "The plugin must inherit from `PageTypePlugin`"
         assert plugin.model, "The plugin has no model defined"
-        assert issubclass(plugin.model, UrlNode), "The plugin model must inherit from `UrlNode` or `Page`."
+        assert issubclass(
+            plugin.model, UrlNode
+        ), "The plugin model must inherit from `UrlNode` or `Page`."
 
         name = plugin.__name__
         if name in self.plugins:
-            raise PageTypeAlreadyRegistered("[%s] a plugin with this name is already registered" % name)
+            raise PageTypeAlreadyRegistered(
+                "[%s] a plugin with this name is already registered" % name
+            )
 
         # Reset some caches
         self._folder_types = None
@@ -70,7 +81,7 @@ class PageTypePool(object):
         # Make a single static instance, similar to ModelAdmin.
         plugin_instance = plugin()
         self.plugins[name] = plugin_instance
-        self._name_for_model[plugin.model] = name       # Track reverse for rendering
+        self._name_for_model[plugin.model] = name  # Track reverse for rendering
 
         # Only update lazy indexes if already created
         if self._name_for_ctype_id is not None:
@@ -97,32 +108,46 @@ class PageTypePool(object):
         """
         Return the corresponding :class:`PageTypePlugin` for a given model.
         """
-        self._import_plugins()                   # could happen during rendering that no plugin scan happened yet.
-        assert issubclass(model_class, UrlNode)  # avoid confusion between model instance and class here!
+        self._import_plugins()  # could happen during rendering that no plugin scan happened yet.
+        assert issubclass(
+            model_class, UrlNode
+        )  # avoid confusion between model instance and class here!
 
         try:
             name = self._name_for_model[model_class]
         except KeyError:
-            raise PageTypeNotFound("No plugin found for model '{0}'.".format(model_class.__name__))
+            raise PageTypeNotFound(
+                "No plugin found for model '{0}'.".format(model_class.__name__)
+            )
         return self.plugins[name]
 
     def _get_plugin_by_content_type(self, contenttype):
         self._import_plugins()
         self._setup_lazy_indexes()
 
-        ct_id = contenttype.id if isinstance(contenttype, ContentType) else int(contenttype)
+        ct_id = (
+            contenttype.id if isinstance(contenttype, ContentType) else int(contenttype)
+        )
         try:
             name = self._name_for_ctype_id[ct_id]
         except KeyError:
             # ContentType not found, likely a plugin is no longer registered or the app has been removed.
             try:
                 # ContentType could be stale
-                ct = contenttype if isinstance(contenttype, ContentType) else ContentType.objects.get_for_id(ct_id)
+                ct = (
+                    contenttype
+                    if isinstance(contenttype, ContentType)
+                    else ContentType.objects.get_for_id(ct_id)
+                )
             except AttributeError:  # should return the stale type but Django <1.6 raises an AttributeError in fact.
-                ct_name = 'stale content type'
+                ct_name = "stale content type"
             else:
-                ct_name = '{0}.{1}'.format(ct.app_label, ct.model)
-            raise PageTypeNotFound("No plugin found for content type #{0} ({1}).".format(contenttype, ct_name))
+                ct_name = "{0}.{1}".format(ct.app_label, ct.model)
+            raise PageTypeNotFound(
+                "No plugin found for content type #{0} ({1}).".format(
+                    contenttype, ct_name
+                )
+            )
 
         return self.plugins[name]
 
@@ -166,7 +191,9 @@ class PageTypePool(object):
         of page types that provide URL patterns.
         """
         if self._url_types is None:
-            self._url_types = [plugin.type_id for plugin in self.get_url_pattern_plugins()]
+            self._url_types = [
+                plugin.type_id for plugin in self.get_url_pattern_plugins()
+            ]
 
         return self._url_types
 

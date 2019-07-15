@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.contrib import admin
+
 from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_pages.admin import HtmlPageAdmin, PageAdminForm
 from fluent_pages.integration.fluent_contents.admin import FluentContentsPageAdmin
@@ -17,8 +18,10 @@ class FluentPageAdminForm(PageAdminForm):
 
     def __init__(self, *args, **kwargs):
         super(FluentPageAdminForm, self).__init__(*args, **kwargs)
-        if 'layout' in self.fields:
-            self.fields['layout'].queryset = self.get_layout_queryset(self.fields['layout'].queryset)
+        if "layout" in self.fields:
+            self.fields["layout"].queryset = self.get_layout_queryset(
+                self.fields["layout"].queryset
+            )
 
     def get_layout_queryset(self, base_qs):
         """
@@ -43,14 +46,20 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     of `Creating a CMS system <https://django-fluent-contents.readthedocs.io/en/latest/cms.html>`_
     in the *django-fluent-contents* documentation to implement the required API's.
     """
+
     base_form = FluentPageAdminForm
-    readonly_shared_fields = HtmlPageAdmin.readonly_shared_fields + ('layout',)
+    readonly_shared_fields = HtmlPageAdmin.readonly_shared_fields + ("layout",)
 
     # By using base_fieldsets, the parent PageAdmin will
     # add an extra fieldset for all derived fields automatically.
-    FIELDSET_GENERAL = (None, {
-        'fields': HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][:-1] + ('layout',) + HtmlPageAdmin.FIELDSET_GENERAL[1]['fields'][-1:],
-    })
+    FIELDSET_GENERAL = (
+        None,
+        {
+            "fields": HtmlPageAdmin.FIELDSET_GENERAL[1]["fields"][:-1]
+            + ("layout",)
+            + HtmlPageAdmin.FIELDSET_GENERAL[1]["fields"][-1:]
+        },
+    )
 
     base_fieldsets = (
         FIELDSET_GENERAL,
@@ -65,7 +74,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     # ]
 
     class Media:
-        js = ('fluent_pages/fluentpage/fluent_layouts.js',)
+        js = ("fluent_pages/fluentpage/fluent_layouts.js",)
 
     # ---- fluent-contents integration ----
 
@@ -97,9 +106,11 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     # ---- Layout selector code ----
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        if db_field.name == 'layout':
-            kwargs['widget'] = LayoutSelector
-        return super(FluentPageAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == "layout":
+            kwargs["widget"] = LayoutSelector
+        return super(FluentPageAdmin, self).formfield_for_foreignkey(
+            db_field, request, **kwargs
+        )
 
     def get_urls(self):
         """
@@ -107,7 +118,11 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         """
         urls = super(FluentPageAdmin, self).get_urls()
         my_urls = [
-            url(r'^get_layout/(?P<id>\d+)/$', self.admin_site.admin_view(self.get_layout_view), name='fluentpage_get_layout')
+            url(
+                r"^get_layout/(?P<id>\d+)/$",
+                self.admin_site.admin_view(self.get_layout_view),
+                name="fluentpage_get_layout",
+            )
         ]
         return my_urls + urls
 
@@ -118,7 +133,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         try:
             layout = PageLayout.objects.get(pk=id)
         except PageLayout.DoesNotExist:
-            json = {'success': False, 'error': 'Layout not found'}
+            json = {"success": False, "error": "Layout not found"}
             status = 404
         else:
             template = layout.get_template()
@@ -126,10 +141,10 @@ class FluentPageAdmin(FluentContentsPageAdmin):
 
             status = 200
             json = {
-                'id': layout.id,
-                'key': layout.key,
-                'title': layout.title,
-                'placeholders': [p.as_dict() for p in placeholders],
+                "id": layout.id,
+                "key": layout.key,
+                "title": layout.title,
+                "placeholders": [p.as_dict() for p in placeholders],
             }
 
         return JsonResponse(json, status=status)
@@ -139,17 +154,19 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     def get_readonly_fields(self, request, obj=None):
         fields = super(FluentPageAdmin, self).get_readonly_fields(request, obj)
 
-        if obj is not None \
-                and not 'layout' in fields \
-                and not self.has_change_page_layout_permission(request, obj):
+        if (
+            obj is not None
+            and not "layout" in fields
+            and not self.has_change_page_layout_permission(request, obj)
+        ):
             # Disable on edit page only.
             # Add page is allowed, need to be able to choose initial layout
-            fields = fields + ('layout',)
+            fields = fields + ("layout",)
         return fields
 
     def has_change_page_layout_permission(self, request, obj=None):
         """
         Whether the user can change the page layout.
         """
-        codename = '{0}.change_page_layout'.format(obj._meta.app_label)
+        codename = "{0}.change_page_layout".format(obj._meta.app_label)
         return request.user.has_perm(codename, obj=obj)

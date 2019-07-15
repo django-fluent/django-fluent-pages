@@ -2,14 +2,14 @@ from django.conf import settings
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
+
+from fluent_pages import appsettings
+from fluent_pages.models import UrlNode
 from fluent_utils.dry.admin import MultiSiteAdminMixin
 from parler.admin import TranslatableAdmin
 from parler.models import TranslationDoesNotExist
 from parler.utils import is_multilingual_project
 from polymorphic_tree.admin import NodeTypeChoiceForm, PolymorphicMPTTParentModelAdmin
-
-from fluent_pages import appsettings
-from fluent_pages.models import UrlNode
 
 
 class PageTypeChoiceForm(NodeTypeChoiceForm):
@@ -17,8 +17,8 @@ class PageTypeChoiceForm(NodeTypeChoiceForm):
 
 
 class PageTypeListFilter(SimpleListFilter):
-    parameter_name = 'ct_id'
-    title = _('page type')
+    parameter_name = "ct_id"
+    title = _("page type")
 
     def lookups(self, request, model_admin):
         return model_admin.get_child_type_choices()
@@ -29,28 +29,35 @@ class PageTypeListFilter(SimpleListFilter):
         return queryset
 
 
-class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
+class UrlNodeParentAdmin(
+    MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTTParentModelAdmin
+):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
     """
+
     filter_site = appsettings.FLUENT_PAGES_FILTER_SITE_ID
     base_model = UrlNode
     add_type_form = PageTypeChoiceForm
 
     # Config list page:
     if is_multilingual_project():
-        list_display = ('title', 'language_column', 'status_column', 'modification_date', 'actions_column')
+        list_display = (
+            "title",
+            "language_column",
+            "status_column",
+            "modification_date",
+            "actions_column",
+        )
     else:
-        list_display = ('title', 'status_column', 'modification_date', 'actions_column')
-    list_filter = ('status',) + (PageTypeListFilter,)
-    search_fields = ('translations__slug', 'translations__title')
-    actions = ['make_published']
+        list_display = ("title", "status_column", "modification_date", "actions_column")
+    list_filter = ("status",) + (PageTypeListFilter,)
+    search_fields = ("translations__slug", "translations__title")
+    actions = ["make_published"]
 
     class Media:
-        css = {
-            'screen': ('fluent_pages/admin/pagetree.css',)
-        }
+        css = {"screen": ("fluent_pages/admin/pagetree.css",)}
 
     # ---- Polymorphic tree overrides ----
 
@@ -59,6 +66,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         Provide the available models of the page type registration system to *django-polymorphic*.
         """
         from fluent_pages.extensions import page_type_pool
+
         return page_type_pool.get_model_classes()
 
     def get_child_type_choices(self, request=None, action=None):
@@ -67,6 +75,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         """
         # The arguments are made optional, to support both django-polymorphic 0.5 and 0.6
         from fluent_pages.extensions import page_type_pool
+
         can_have_children = None
         child_types = None
         base_plugins = page_type_pool.get_plugins()
@@ -111,7 +120,9 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
 
     # Provide some migration assistance for the users of the 0.8.1 alpha release:
     def get_child_model_classes(self):
-        raise DeprecationWarning("Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages.")
+        raise DeprecationWarning(
+            "Please upgrade django-polymorphic-tree to 0.8.2 to use this version of django-fluent-pages."
+        )
 
     # ---- parler overrides ----
 
@@ -128,8 +139,8 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
     # The jqTree variant still uses the server-side rendering for the colums.
 
     STATUS_ICONS = {
-        UrlNode.PUBLISHED: 'admin/img/icon-yes.svg',
-        UrlNode.DRAFT: 'admin/img/icon-unknown.svg',
+        UrlNode.PUBLISHED: "admin/img/icon-yes.svg",
+        UrlNode.DRAFT: "admin/img/icon-unknown.svg",
     }
 
     def status_column(self, urlnode):
@@ -140,11 +151,11 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         )
 
     status_column.allow_tags = True
-    status_column.short_description = _('Status')
+    status_column.short_description = _("Status")
 
     def can_preview_object(self, urlnode):
         """ Override whether the node can be previewed. """
-        if not hasattr(urlnode, 'get_absolute_url') or not urlnode.is_published:
+        if not hasattr(urlnode, "get_absolute_url") or not urlnode.is_published:
             return False
 
         try:
@@ -166,7 +177,9 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
         # The list code should be fixed instead, but that is much harder.
         if search_term:
             queryset = queryset.filter(level=0)
-        return super(UrlNodeParentAdmin, self).get_search_results(request, queryset, search_term)
+        return super(UrlNodeParentAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
 
     # ---- Bulk actions ----
 

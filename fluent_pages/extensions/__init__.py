@@ -9,13 +9,17 @@ While plugins can be easily detected via ``__subclasses__()``, the register appr
 Having to do an explicit register ensures future compatibility with other API's like reversion.
 """
 from .pagetypebase import PageTypePlugin
-from .pagetypepool import PageTypeAlreadyRegistered, PageTypeNotFound, PageTypePool, page_type_pool
-
+from .pagetypepool import (
+    PageTypeAlreadyRegistered,
+    PageTypeNotFound,
+    PageTypePool,
+    page_type_pool,
+)
 
 __all__ = (
-    'PageTypePlugin',
-    'PageTypeAlreadyRegistered',
-    'PageTypeNotFound',
-    'PageTypePool',
-    'page_type_pool'
+    "PageTypePlugin",
+    "PageTypeAlreadyRegistered",
+    "PageTypeNotFound",
+    "PageTypePool",
+    "page_type_pool",
 )

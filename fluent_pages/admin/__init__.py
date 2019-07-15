@@ -6,18 +6,19 @@ The admin site registration is only possible in Django 1.7 once all models are l
 """
 from django.contrib import admin
 
-from fluent_pages.models import Page, PageLayout
-
 # Leaving all old imports here
 # However, when using FLUENT_PAGES_PARENT_ADMIN_MIXIN / FLUENT_PAGES_CHILD_ADMIN_MIXIN
 # you can easily get circular import errors. Instead, import the classes from the adminui package.
 from fluent_pages.adminui import (
-    PageParentAdmin, DefaultPageParentAdmin,
-    PageAdmin, DefaultPageChildAdmin,
+    DefaultPageChildAdmin,
+    DefaultPageParentAdmin,
     HtmlPageAdmin,
-    PageLayoutAdmin,
+    PageAdmin,
     PageAdminForm,
+    PageLayoutAdmin,
+    PageParentAdmin,
 )
+from fluent_pages.models import Page, PageLayout
 
 # Register the models with the admin site
 admin.site.register(Page, admin_class=PageParentAdmin)

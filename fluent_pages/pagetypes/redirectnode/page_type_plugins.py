@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.utils.encoding import force_text
+
 from fluent_pages.extensions import PageTypePlugin, page_type_pool
 from fluent_pages.pagetypes.redirectnode.models import RedirectNode
 

@@ -5,16 +5,17 @@ Everything can be imported from ``__init__.py``.
 from __future__ import absolute_import
 
 from django.utils.translation import ugettext_lazy as _
+
 from fluent_contents.models import Placeholder
 from fluent_contents.models.fields import ContentItemRelation, PlaceholderRelation
-from fluent_pages.models import HtmlPage
-from fluent_pages.models import UrlNodeManager
+from fluent_pages.models import HtmlPage, UrlNodeManager
 
 
 class FluentContentsPage(HtmlPage):
     """
     The base model to create a Page object which hosts placeholders and content items.
     """
+
     # Access to fluent-contents via the model
     # This also makes sure that the admin delete page will list the models
     # because they are liked via a GenericForeignKey
@@ -33,7 +34,7 @@ class FluentContentsPage(HtmlPage):
         verbose_name = _("Page")
         verbose_name_plural = _("Pages")
 
-    def create_placeholder(self, slot, role='m', title=None):
+    def create_placeholder(self, slot, role="m", title=None):
         """
         Create a placeholder on this page.
 

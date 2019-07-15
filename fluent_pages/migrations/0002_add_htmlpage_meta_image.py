@@ -7,14 +7,18 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('fluent_pages', '0001_initial'),
-    ]
+    dependencies = [("fluent_pages", "0001_initial")]
 
     operations = [
         migrations.AddField(
-            model_name='htmlpagetranslation',
-            name='meta_image',
-            field=models.ImageField(blank=True, help_text='This allows social media sites to pick a default image.', max_length=100, null=True, verbose_name='example image'),
-        ),
+            model_name="htmlpagetranslation",
+            name="meta_image",
+            field=models.ImageField(
+                blank=True,
+                help_text="This allows social media sites to pick a default image.",
+                max_length=100,
+                null=True,
+                verbose_name="example image",
+            ),
+        )
     ]

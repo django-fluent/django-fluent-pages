@@ -4,7 +4,6 @@ from fluent_pages.tests.utils import AppTestCase
 
 
 class FlatPageTests(AppTestCase):
-
     def test_default_manager(self):
         """
         Test that the default manager is correct.

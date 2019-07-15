@@ -23,12 +23,12 @@ from django.urls import NoReverseMatch, reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from fluent_utils.softdeps.any_imagefield import AnyImageField
+from future.utils import iteritems, itervalues, with_metaclass
 
 from fluent_pages import appsettings
 from fluent_pages.models.fields import PageTreeForeignKey, TemplateFilePathField
 from fluent_pages.models.managers import UrlNodeManager
-from future.utils import iteritems, itervalues, with_metaclass
+from fluent_utils.softdeps.any_imagefield import AnyImageField
 from parler.cache import get_object_cache_keys
 from parler.fields import TranslatedField
 from parler.models import TranslatableModel, TranslatedFields, TranslatedFieldsModel
@@ -36,7 +36,6 @@ from parler.utils import get_language_title
 from parler.utils.context import switch_language
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from slug_preview.models import SlugPreviewField
-
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +58,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
     def __new__(mcs, name, bases, attrs):
         if django.VERSION < (2, 0):
             try:
-                attrs['Meta'].manager_inheritance_from_future = True
+                attrs["Meta"].manager_inheritance_from_future = True
             except KeyError:
                 pass
 
@@ -67,34 +66,43 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
 
         # Update the table name.
         # Inspired by from Django-CMS, (c) , BSD licensed.
-        if name not in ['AbstractUrlNode', 'UrlNode', 'Page', 'HtmlPage']:
+        if name not in ["AbstractUrlNode", "UrlNode", "Page", "HtmlPage"]:
             meta = new_class._meta
             # Make sure only values are updated if there is no manual edit, or a proxy model for UrlNode (e.g. HtmlPage)
-            if meta.db_table.startswith(meta.app_label + '_') and meta.db_table != 'fluent_pages_urlnode':
-                model_name = meta.db_table[len(meta.app_label) + 1:]
-                meta.db_table = truncate_name("pagetype_{0}_{1}".format(meta.app_label, model_name), connection.ops.max_name_length())
+            if (
+                meta.db_table.startswith(meta.app_label + "_")
+                and meta.db_table != "fluent_pages_urlnode"
+            ):
+                model_name = meta.db_table[len(meta.app_label) + 1 :]
+                meta.db_table = truncate_name(
+                    "pagetype_{0}_{1}".format(meta.app_label, model_name),
+                    connection.ops.max_name_length(),
+                )
 
-                if hasattr(meta, 'original_attrs'):
+                if hasattr(meta, "original_attrs"):
                     # Make sure that the Django 1.7 migrations also pick up this change!
                     # Changing the db_table beforehand might be cleaner,
                     # but also requires duplicating the whole algorithm that Django uses.
-                    meta.original_attrs['db_table'] = meta.db_table
+                    meta.original_attrs["db_table"] = meta.db_table
 
         return new_class
 
 
-class AbstractUrlNode(with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, TranslatableModel)):
+class AbstractUrlNode(
+    with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, TranslatableModel)
+):
     """
     An internal helper class, to make sure the proper manager is inherited.
     Django 1.10 only inherits managers when they are part of an abstract model.
     Without this intermediate class, any subclass would receive the polymorphic model manager.
     """
+
     objects = UrlNodeManager()
 
     class Meta:
-        app_label = 'fluent_pages'
+        app_label = "fluent_pages"
         abstract = True
-        base_manager_name = 'objects'
+        base_manager_name = "objects"
 
 
 @python_2_unicode_compatible
@@ -102,55 +110,97 @@ class UrlNode(AbstractUrlNode):
     """
     The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
     """
+
     # Some publication states
-    DRAFT = 'd'
-    PUBLISHED = 'p'
-    STATUSES = (
-        (PUBLISHED, _('Published')),
-        (DRAFT, _('Draft')),
-    )
+    DRAFT = "d"
+    PUBLISHED = "p"
+    STATUSES = ((PUBLISHED, _("Published")), (DRAFT, _("Draft")))
 
     title = TranslatedField(any_language=True)
     slug = TranslatedField()  # Explicitly added, but not needed
-    parent = PageTreeForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='children', verbose_name=_('parent'), help_text=_('You can also change the parent by dragging the page in the list.'))
-    parent_site = models.ForeignKey(Site, on_delete=models.CASCADE, editable=False, default=_get_current_site)
+    parent = PageTreeForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+        related_name="children",
+        verbose_name=_("parent"),
+        help_text=_("You can also change the parent by dragging the page in the list."),
+    )
+    parent_site = models.ForeignKey(
+        Site, on_delete=models.CASCADE, editable=False, default=_get_current_site
+    )
     # children = a RelatedManager by 'parent'
 
     # Publication information
-    status = models.CharField(_('status'), max_length=1, choices=STATUSES, default=DRAFT, db_index=True)
-    publication_date = models.DateTimeField(_('publication date'), null=True, blank=True, db_index=True, help_text=_('''When the page should go live, status must be "Published".'''))
-    publication_end_date = models.DateTimeField(_('publication end date'), null=True, blank=True, db_index=True)
-    in_navigation = models.BooleanField(_('show in navigation'), default=appsettings.FLUENT_PAGES_DEFAULT_IN_NAVIGATION, db_index=True)
-    in_sitemaps = models.BooleanField(_('include in search engine sitemaps'), default=True, db_index=True)
+    status = models.CharField(
+        _("status"), max_length=1, choices=STATUSES, default=DRAFT, db_index=True
+    )
+    publication_date = models.DateTimeField(
+        _("publication date"),
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text=_("""When the page should go live, status must be "Published"."""),
+    )
+    publication_end_date = models.DateTimeField(
+        _("publication end date"), null=True, blank=True, db_index=True
+    )
+    in_navigation = models.BooleanField(
+        _("show in navigation"),
+        default=appsettings.FLUENT_PAGES_DEFAULT_IN_NAVIGATION,
+        db_index=True,
+    )
+    in_sitemaps = models.BooleanField(
+        _("include in search engine sitemaps"), default=True, db_index=True
+    )
     override_url = TranslatedField()
 
     # For tagging nodes and locating them in code. This should be avoided if possible,
     # but can be a last resort to link to pages (e.g. a "Terms of Service" page).
-    key = models.SlugField(_("page identifier"), choices=appsettings.FLUENT_PAGES_KEY_CHOICES, blank=True, null=True, help_text=_("A unique identifier that is used for linking to this page."))
+    key = models.SlugField(
+        _("page identifier"),
+        choices=appsettings.FLUENT_PAGES_KEY_CHOICES,
+        blank=True,
+        null=True,
+        help_text=_("A unique identifier that is used for linking to this page."),
+    )
 
     # Metadata
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, verbose_name=_('author'), editable=False)
-    creation_date = models.DateTimeField(_('creation date'), editable=False, auto_now_add=True)
-    modification_date = models.DateTimeField(_('last modification'), editable=False, auto_now=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name=_("author"),
+        editable=False,
+    )
+    creation_date = models.DateTimeField(
+        _("creation date"), editable=False, auto_now_add=True
+    )
+    modification_date = models.DateTimeField(
+        _("last modification"), editable=False, auto_now=True
+    )
 
     # Caching
     _cached_url = TranslatedField()
 
     class Meta:
-        app_label = 'fluent_pages'
-        ordering = ('tree_id', 'lft',)
-        verbose_name = _('URL Node')
-        verbose_name_plural = _('URL Nodes')  # Using Urlnode here makes it's way to the admin pages too.
-        unique_together = (
-            ('parent_site', 'key'),
-        )
+        app_label = "fluent_pages"
+        ordering = ("tree_id", "lft")
+        # Using Urlnode here, this makes it's way to the admin pages too.
+        verbose_name = _("URL Node")
+        verbose_name_plural = _("URL Nodes")
+        unique_together = (("parent_site", "key"),)
         permissions = (
-            ('change_shared_fields_urlnode', _("Can change Shared fields")),     # The fields shared between languages.
-            ('change_override_url_urlnode', _("Can change Override URL field")),  # Fpr overriding URLs (e.g. '/' for homepage).
+            (
+                "change_shared_fields_urlnode",
+                _("Can change Shared fields"),
+            ),  # The fields shared between languages.
+            (
+                "change_override_url_urlnode",
+                _("Can change Override URL field"),
+            ),  # Fpr overriding URLs (e.g. '/' for homepage).
         )
-
-#    class MPTTMeta:
-#        order_insertion_by = 'title'
 
     def __str__(self):
         # This looks pretty nice on the delete page.
@@ -170,18 +220,19 @@ class UrlNode(AbstractUrlNode):
         self._original_parent = None
 
         deferred = self.get_deferred_fields()
-        if 'publication_date' not in deferred:
+        if "publication_date" not in deferred:
             self._original_pub_date = self.publication_date
-        if 'publication_end_date' not in deferred:
+        if "publication_end_date" not in deferred:
             self._original_pub_end_date = self.publication_end_date
-        if 'status' not in deferred:
+        if "status" not in deferred:
             self._original_status = self.status
-        if 'parent' not in deferred and 'parent_id' not in deferred:
+        if "parent" not in deferred and "parent_id" not in deferred:
             self._original_parent = self.parent_id
 
         self._cached_ancestors = None
-        self.is_current = None    # Can be defined by mark_current()
-        self.is_onpath = None     # is an ancestor of the current node (part of the "menu trail").
+        self.is_current = None  # Can be defined by mark_current()
+        # Set is_onpath to None, this is an ancestor of the current node (part of the "menu trail").
+        self.is_onpath = None
 
     def get_absolute_url(self):
         """
@@ -194,22 +245,22 @@ class UrlNode(AbstractUrlNode):
 
     def get_absolute_url_format(self):
         if self.is_file:
-            url_format = '/{slug}'
+            url_format = "/{slug}"
         else:
-            url_format = '/{slug}/'
+            url_format = "/{slug}/"
 
         # Extra for django-slug-preview
         if self.parent_id:
             # TODO: optimize this call. In some cases this would also work..
             #       that is, unless get_absolute_url() is redefined or ABSOLUTE_URL_OVERRIDES was used.
-            #parent_url = self.get_translation(self.get_current_language()).get_parent_cached_url(self)
+            # parent_url = self.get_translation(self.get_current_language()).get_parent_cached_url(self)
 
             # Need to fetch the whole parent to make sure the URL matches the actual URL being used.
             parent = self.parent
             with switch_language(parent, self.get_current_language()):
                 parent_url = parent.get_absolute_url()
 
-            return parent_url.rstrip('/') + url_format
+            return parent_url.rstrip("/") + url_format
         else:
             return url_format
 
@@ -226,9 +277,11 @@ class UrlNode(AbstractUrlNode):
         """
         with switch_language(self):
             try:
-                root = reverse('fluent-page').rstrip('/')
+                root = reverse("fluent-page").rstrip("/")
             except NoReverseMatch:
-                raise ImproperlyConfigured("Missing an include for 'fluent_pages.urls' in the URLConf")
+                raise ImproperlyConfigured(
+                    "Missing an include for 'fluent_pages.urls' in the URLConf"
+                )
 
             cached_url = self._cached_url  # May raise TranslationDoesNotExist
             if cached_url is None:
@@ -241,9 +294,11 @@ class UrlNode(AbstractUrlNode):
         Return all available URLs to this page.
         """
         result = {}
-        for code, cached_url in self.translations.values_list('language_code', '_cached_url'):
+        for code, cached_url in self.translations.values_list(
+            "language_code", "_cached_url"
+        ):
             with switch_language(self, code):
-                root = reverse('fluent-page').rstrip('/')
+                root = reverse("fluent-page").rstrip("/")
                 result[code] = root + cached_url
 
         return result
@@ -296,8 +351,9 @@ class UrlNode(AbstractUrlNode):
         """
         if date is None:
             date = now()
-        return (self.publication_date is None or self.publication_date < date) and \
-               (self.publication_end_date is None or self.publication_end_date >= date)
+        return (self.publication_date is None or self.publication_date < date) and (
+            self.publication_end_date is None or self.publication_end_date >= date
+        )
 
     @property
     def is_draft(self):
@@ -311,14 +367,18 @@ class UrlNode(AbstractUrlNode):
         """
         Return ``True`` when the node is the first sibling.
         """
-        return self.is_root_node() or (self.parent and (self.lft == self.parent.lft + 1))
+        return self.is_root_node() or (
+            self.parent and (self.lft == self.parent.lft + 1)
+        )
 
     @property
     def is_last_child(self):
         """
         Return ``True`` when the node is the last sibling.
         """
-        return self.is_root_node() or (self.parent and (self.rght + 1 == self.parent.rght))
+        return self.is_root_node() or (
+            self.parent and (self.rght + 1 == self.parent.rght)
+        )
 
     @property
     def is_file(self):
@@ -361,6 +421,7 @@ class UrlNode(AbstractUrlNode):
         Access the parent plugin which renders this model.
         """
         from fluent_pages.extensions import page_type_pool
+
         if self.__class__ in (UrlNode, Page):
             # Also allow a non_polymorphic() queryset to resolve the plugin.
             # Corresponding page_type_pool method is still private on purpose.
@@ -389,7 +450,8 @@ class UrlNode(AbstractUrlNode):
             self._mark_all_translations_dirty()
 
         try:
-            super(UrlNode, self).save(*args, **kwargs)  # Already saves translated model.
+            # This already saves translated model.
+            super(UrlNode, self).save(*args, **kwargs)
         except UrlNode_Translation.DoesNotExist:
             # Raised by get_parent_cached_url()
             # Some translations might already be updated, avoid bad cached data.
@@ -411,13 +473,19 @@ class UrlNode(AbstractUrlNode):
 
         # Find all translations that this object has, both in the database, and unsaved local objects.
         all_languages = self.get_available_languages(include_unsaved=True)
-        parent_urls = dict(UrlNode_Translation.objects.filter(master=self.parent_id).values_list('language_code', '_cached_url'))
+        parent_urls = dict(
+            UrlNode_Translation.objects.filter(master=self.parent_id).values_list(
+                "language_code", "_cached_url"
+            )
+        )
 
         for language_code in all_languages:
             # Get the parent-url for the translation (fetched once to speed up)
             parent_url = parent_urls.get(language_code, None)
             if not parent_url:
-                fallback = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(language_code)
+                fallback = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(
+                    language_code
+                )
                 parent_url = parent_urls.get(fallback, None)
 
             translation = self._get_translated_model(language_code)
@@ -436,7 +504,7 @@ class UrlNode(AbstractUrlNode):
         This also rebuilds the decedent URLs when the slug changed.
         """
         # Skip objects from derived models
-        if translation.related_name != 'translations':
+        if translation.related_name != "translations":
             return super(UrlNode, self).save_translation(translation, *args, **kwargs)
 
         # Make sure there is a slug!
@@ -450,9 +518,11 @@ class UrlNode(AbstractUrlNode):
         super(UrlNode, self).save_translation(translation, *args, **kwargs)
 
         # Detect changes
-        published_changed = self._original_pub_date != self.publication_date \
-            or self._original_pub_end_date != self.publication_end_date \
+        published_changed = (
+            self._original_pub_date != self.publication_date
+            or self._original_pub_end_date != self.publication_end_date
             or self._original_status != self.status
+        )
 
         if url_changed or published_changed or translation._fetched_parent_url:
             self._expire_url_caches()
@@ -486,7 +556,7 @@ class UrlNode(AbstractUrlNode):
             others = UrlNode.objects.filter(
                 parent=self.parent_id,
                 translations__slug=translation.slug,
-                translations__language_code=translation.language_code
+                translations__language_code=translation.language_code,
             ).non_polymorphic()
 
             if appsettings.FLUENT_PAGES_FILTER_SITE_ID:
@@ -513,20 +583,22 @@ class UrlNode(AbstractUrlNode):
             translation._cached_url = translation.override_url
         else:
             if self.is_root_node():
-                parent_url = '/'
+                parent_url = "/"
             else:
                 parent_url = translation.get_parent_cached_url(self, use_fallback=False)
 
             # The following shouldn't occur, it means a direct call to Page.objects.create()
             # attempts to add a child node to a file object instead of calling model.full_clean().
             # Make sure the URL space is kept clean.
-            if not parent_url[-1] == '/':
-                parent_url += '/'
+            if not parent_url[-1] == "/":
+                parent_url += "/"
 
             if self.is_file:
-                translation._cached_url = u'{0}{1}'.format(parent_url, translation.slug)
+                translation._cached_url = u"{0}{1}".format(parent_url, translation.slug)
             else:
-                translation._cached_url = u'{0}{1}/'.format(parent_url, translation.slug)
+                translation._cached_url = u"{0}{1}/".format(
+                    parent_url, translation.slug
+                )
 
     def _update_decendant_urls(self, translation):
         """
@@ -537,38 +609,41 @@ class UrlNode(AbstractUrlNode):
         # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
         # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
         current_language = translation.language_code
-        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(current_language)
+        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(
+            current_language
+        )
         fallback_languages = active_choices[1:]
 
         # Init the caches that are used for tracking generated URLs
         cached_page_urls = {
             current_language: {
-                self.id: translation._cached_url.rstrip('/') + '/'  # ensure slash, even with is_file
+                self.id: translation._cached_url.rstrip("/")
+                + "/"  # ensure slash, even with is_file
             }
         }
 
         for lang in fallback_languages:
-            fallback_url = self.safe_translation_getter('_cached_url', language_code=lang)
+            fallback_url = self.safe_translation_getter(
+                "_cached_url", language_code=lang
+            )
             if not fallback_url:
                 # The fallback language does not exist, mark explicitly as not available.
                 # Can't generate any URLs for sub objects, if they need a fallback language.
-                cached_page_urls[lang] = {
-                    self.id: None,
-                }
+                cached_page_urls[lang] = {self.id: None}
             else:
-                cached_page_urls[lang] = {
-                    self.id: fallback_url.rstrip('/') + '/'
-                }
+                cached_page_urls[lang] = {self.id: fallback_url.rstrip("/") + "/"}
 
         # Update all sub objects.
         # even if can_have_children is false, ensure a consistent state for the URL structure
-        subobjects = self.get_descendants().order_by('lft', 'tree_id')
+        subobjects = self.get_descendants().order_by("lft", "tree_id")
         for subobject in subobjects:
             if subobject.has_translation(current_language):
                 # Subobject has the current translation. Use that
                 # If the level in between does not have that translation, will use the fallback instead.
                 subobject.set_current_language(current_language)
-                use_fallback_base = cached_page_urls[current_language].get(subobject.parent_id) is None
+                use_fallback_base = (
+                    cached_page_urls[current_language].get(subobject.parent_id) is None
+                )
             else:
                 # The subobject is not yet translated in the parent's language.
                 # Mark explicitly as not available, so we can spot mptt inconsistencies later.
@@ -593,7 +668,9 @@ class UrlNode(AbstractUrlNode):
                         use_fallback_base = True
                     else:
                         # There is a translation in this language, construct the fallback URL
-                        cached_page_urls[lang][subobject.id] = u'{0}{1}/'.format(parent_url, subobject.slug)
+                        cached_page_urls[lang][subobject.id] = u"{0}{1}/".format(
+                            parent_url, subobject.slug
+                        )
                         if fallback_base is None and subobject.has_translation(lang):
                             fallback_base = parent_url
                             fallback_lang = lang
@@ -612,21 +689,27 @@ class UrlNode(AbstractUrlNode):
                     raise ParentTranslationDoesNotExist(
                         "Can't generate URL for child #{0} in '{1}' to connect to parent #{2}.\n"
                         "The child languages are: {3}".format(
-                            subobject.id, current_language, subobject.parent_id,
-                            ','.join(subobject.get_available_languages()),
-                        ))
+                            subobject.id,
+                            current_language,
+                            subobject.parent_id,
+                            ",".join(subobject.get_available_languages()),
+                        )
+                    )
 
                     # Alternative:
                     # no base == no URL for sub object. (be explicit here)
-                    #subobject._cached_url = None
+                    # subobject._cached_url = None
                 else:
-                    subobject._cached_url = u'{0}{1}/'.format(base, subobject.slug)
+                    subobject._cached_url = u"{0}{1}/".format(base, subobject.slug)
 
             if not use_fallback_base:
                 cached_page_urls[current_language][subobject.id] = subobject._cached_url
 
             # call base class, so this function doesn't recurse
-            sub_translation = subobject.get_translation(subobject.get_current_language())  # reads from _translations_cache!
+            # This reads from _translations_cache!
+            sub_translation = subobject.get_translation(
+                subobject.get_current_language()
+            )
             super(UrlNode, subobject).save_translation(sub_translation)
             subobject._expire_url_caches()
 
@@ -635,8 +718,10 @@ class UrlNode(AbstractUrlNode):
         Reset all cache keys related to this model.
         """
         cachekeys = [
-            # created by _get_pages_of_type()
-            'fluent_pages.instance_of.{0}.{1}'.format(self.__class__.__name__, self.parent_site_id),  # urlresolvers._get_pages_of_type()
+            # created by urlresolvers._get_pages_of_type()
+            "fluent_pages.instance_of.{0}.{1}".format(
+                self.__class__.__name__, self.parent_site_id
+            )
         ]
         for cachekey in cachekeys:
             cache.delete(cachekey)
@@ -648,30 +733,52 @@ class UrlNode_Translation(TranslatedFieldsModel):
     Translation table for UrlNode.
     This layout is identical to what *django-hvad* uses, to ease migration in the future.
     """
+
     # Translated fields
     title = models.CharField(_("title"), max_length=255)
-    slug = SlugPreviewField(_("slug"), max_length=100, help_text=_("The slug is used in the URL of the page"))
-    override_url = models.CharField(_('Override URL'), editable=True, max_length=255, blank=True, help_text=_('Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages\' URLs.'))
-    _cached_url = models.CharField(max_length=255, db_index=True, null=True, blank=True, editable=False)
+    slug = SlugPreviewField(
+        _("slug"),
+        max_length=100,
+        help_text=_("The slug is used in the URL of the page"),
+    )
+    override_url = models.CharField(
+        _("Override URL"),
+        editable=True,
+        max_length=255,
+        blank=True,
+        help_text=_(
+            "Override the target URL. Be sure to include slashes at the beginning and at the end if it is a local URL. This affects both the navigation and subpages' URLs."
+        ),
+    )
+    _cached_url = models.CharField(
+        max_length=255, db_index=True, null=True, blank=True, editable=False
+    )
 
     # Base fields
-    master = models.ForeignKey(UrlNode, on_delete=models.CASCADE, related_name='translations', null=True)
+    master = models.ForeignKey(
+        UrlNode, on_delete=models.CASCADE, related_name="translations", null=True
+    )
 
     class Meta:
-        app_label = 'fluent_pages'
+        app_label = "fluent_pages"
         unique_together = (
-            #('master__parent_site', '_cached_url', 'language_code'),
-            ('language_code', 'master'),
+            # ('master__parent_site', '_cached_url', 'language_code'),
+            ("language_code", "master"),
         )
-        verbose_name = _('URL Node translation')
-        verbose_name_plural = _('URL Nodes translations')  # Using Urlnode here makes it's way to the admin pages too.
+        # Using Urlnode here, this makes it's way to the admin pages too.
+        verbose_name = _("URL Node translation")
+        verbose_name_plural = _("URL Nodes translations")
 
     def __str__(self):
         return u"{0}: {1}".format(get_language_title(self.language_code), self.title)
 
     def __repr__(self):
         return "<{0}: #{1}, {2}, {3}, master: #{4}>".format(
-            self.__class__.__name__, self.pk, self._cached_url, self.language_code, self.master_id
+            self.__class__.__name__,
+            self.pk,
+            self._cached_url,
+            self.language_code,
+            self.master_id,
         )
 
     def __init__(self, *args, **kwargs):
@@ -690,13 +797,17 @@ class UrlNode_Translation(TranslatedFieldsModel):
         if not self.title and not self.slug:
             # If this empty object gets marked as dirty somehow, avoid corruption of the page tree.
             # The real checks for slug happen in save_translation(), this is only to catch internal state errors.
-            raise RuntimeError("An UrlNode_Translation object was created for '{}' without slug or title, blocking save.".format(
-                self.language_code
-            ))
+            raise RuntimeError(
+                "An UrlNode_Translation object was created for '{}' without slug or title, blocking save.".format(
+                    self.language_code
+                )
+            )
         if not self._cached_url:
-            raise RuntimeError("An UrlNode_Translation object was created for '{}' without _cached_url, blocking save.".format(
-                self.language_code
-            ))
+            raise RuntimeError(
+                "An UrlNode_Translation object was created for '{}' without _cached_url, blocking save.".format(
+                    self.language_code
+                )
+            )
 
         super(UrlNode_Translation, self).save(*args, **kwargs)
         self._original_cached_url = self._cached_url
@@ -711,7 +822,11 @@ class UrlNode_Translation(TranslatedFieldsModel):
 
         # Need the _cached_url from the parent.
         # Do this in the most efficient way possible.
-        parent_urls = dict(UrlNode_Translation.objects.filter(master=master.parent_id).values_list('language_code', '_cached_url'))
+        parent_urls = dict(
+            UrlNode_Translation.objects.filter(master=master.parent_id).values_list(
+                "language_code", "_cached_url"
+            )
+        )
         try:
             self._fetched_parent_url = parent_urls[self.language_code]
             return self._fetched_parent_url
@@ -724,7 +839,9 @@ class UrlNode_Translation(TranslatedFieldsModel):
         else:
             # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
             # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
-            fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(self.language_code)[1:]
+            fallback_languages = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(
+                self.language_code
+            )[1:]
             for lang in fallback_languages:
                 try:
                     self._fetched_parent_url = parent_urls[lang]
@@ -735,10 +852,13 @@ class UrlNode_Translation(TranslatedFieldsModel):
         raise ParentTranslationDoesNotExist(
             "Can't determine URL for active language ({1}) or fallback language ({2}) when parent node #{0} only has URLs in {4}.\n"
             "The current object has translations for: {3}".format(
-                self.master_id, self.language_code, ','.join(fallback_languages),
+                self.master_id,
+                self.language_code,
+                ",".join(fallback_languages),
                 ",".join(master.get_available_languages()),
                 ", ".join("{0}:{1}".format(k, v) for k, v in iteritems(parent_urls)),
-            ))
+            )
+        )
 
 
 class ParentTranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
@@ -755,17 +875,21 @@ class Page(UrlNode):
     This is a proxy model that changes the appearance of the node in the admin.
     The :class:`UrlNode` displays the URL path, while this model displays the :attr:`title`.
     """
+
     class Meta:
-        app_label = 'fluent_pages'
+        app_label = "fluent_pages"
         proxy = True
-        verbose_name = _('Page')
-        verbose_name_plural = _('Pages')
+        verbose_name = _("Page")
+        verbose_name_plural = _("Pages")
 
     def __str__(self):
         # Even through self.title is configured with any_language=True to always return a value,
         # this will still fail for situations where a Page() is created without having a language at all.
-        return self.safe_translation_getter('title', any_language=True) \
-            or self.safe_translation_getter('slug', u"#{0}".format(self.pk), any_language=True)
+        return self.safe_translation_getter(
+            "title", any_language=True
+        ) or self.safe_translation_getter(
+            "slug", u"#{0}".format(self.pk), any_language=True
+        )
 
 
 class HtmlPage(Page):
@@ -775,6 +899,7 @@ class HtmlPage(Page):
 
     .. versionchanged 0.9: This model used to be abstract, now it's a proxy model because all fields are translated.
     """
+
     # Just to be explicit
     meta_keywords = TranslatedField()
     meta_description = TranslatedField()
@@ -783,20 +908,42 @@ class HtmlPage(Page):
 
     # SEO fields, the underlying HtmlPageTranslation model can be created dynamically.
     seo_translations = TranslatedFields(
-        meta_keywords=models.CharField(_('keywords'), max_length=255, blank=True, default=''),
-        meta_description=models.CharField(_('description'), max_length=255, blank=True, default='', help_text=_("Typically, about 160 characters will be shown in search engines")),
-        meta_title=models.CharField(_('page title'), max_length=255, blank=True, default='', help_text=_("When this field is not filled in, the menu title text will be used.")),
-        meta_image=AnyImageField(_('example image'), blank=True, default='', help_text=_("This allows social media sites to pick a default image.")),
+        meta_keywords=models.CharField(
+            _("keywords"), max_length=255, blank=True, default=""
+        ),
+        meta_description=models.CharField(
+            _("description"),
+            max_length=255,
+            blank=True,
+            default="",
+            help_text=_(
+                "Typically, about 160 characters will be shown in search engines"
+            ),
+        ),
+        meta_title=models.CharField(
+            _("page title"),
+            max_length=255,
+            blank=True,
+            default="",
+            help_text=_(
+                "When this field is not filled in, the menu title text will be used."
+            ),
+        ),
+        meta_image=AnyImageField(
+            _("example image"),
+            blank=True,
+            default="",
+            help_text=_("This allows social media sites to pick a default image."),
+        ),
         meta=dict(
-            verbose_name=_("SEO Translation"),
-            verbose_name_plural=_("SEO Translations"),
-        )
+            verbose_name=_("SEO Translation"), verbose_name_plural=_("SEO Translations")
+        ),
     )
 
     class Meta:
-        app_label = 'fluent_pages'
+        app_label = "fluent_pages"
         proxy = True
-        verbose_name_plural = _('Pages')
+        verbose_name_plural = _("Pages")
 
     @property
     def meta_robots(self):
@@ -806,7 +953,7 @@ class HtmlPage(Page):
         """
         # Also exclude from crawling if removed from sitemaps.
         if not self.in_sitemaps:
-            return 'noindex'
+            return "noindex"
         else:
             return None
 
@@ -826,11 +973,16 @@ class PageLayout(models.Model):
     """
     A ``PageLayout`` object defines a template that can be used by a page.
     """
+
     # TODO: this should become optional, either allow Database templates, or a hard-coded list in settings.py
 
-    key = models.SlugField(_('key'), help_text=_("A short name to identify the layout programmatically"))
-    title = models.CharField(_('title'), max_length=255)
-    template_path = TemplateFilePathField('template file', path=appsettings.FLUENT_PAGES_TEMPLATE_DIR)
+    key = models.SlugField(
+        _("key"), help_text=_("A short name to identify the layout programmatically")
+    )
+    title = models.CharField(_("title"), max_length=255)
+    template_path = TemplateFilePathField(
+        "template file", path=appsettings.FLUENT_PAGES_TEMPLATE_DIR
+    )
     # no children
     # unique
     # allowed_children
@@ -840,6 +992,7 @@ class PageLayout(models.Model):
         Return the template to render this layout.
         """
         from django.template.loader import get_template
+
         return get_template(self.template_path)
 
     # Django stuff
@@ -847,7 +1000,7 @@ class PageLayout(models.Model):
         return self.title
 
     class Meta:
-        app_label = 'fluent_pages'
-        ordering = ('title',)
-        verbose_name = _('Layout')
-        verbose_name_plural = _('Layouts')
+        app_label = "fluent_pages"
+        ordering = ("title",)
+        verbose_name = _("Layout")
+        verbose_name_plural = _("Layouts")

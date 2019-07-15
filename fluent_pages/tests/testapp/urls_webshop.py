@@ -11,6 +11,6 @@ def webshop_article(request, slug):
 
 
 urlpatterns = [
-    url(r'^$', webshop_index, name='webshop_index'),
-    url(r'^(?P<slug>[^/]+)/$', webshop_article, name='webshop_article'),
+    url(r"^$", webshop_index, name="webshop_index"),
+    url(r"^(?P<slug>[^/]+)/$", webshop_article, name="webshop_article"),
 ]
