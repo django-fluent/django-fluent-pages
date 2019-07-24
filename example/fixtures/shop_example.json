@@ -76,14 +76,14 @@
   "fields": {
     "status": "p",
     "rght": 2,
-    "modification_date": "2014-04-03T11:57:55.157",
+    "modification_date": "2014-04-03T11:57:55.157Z",
     "parent": null,
     "level": 0,
     "author": [
       "admin"
     ],
     "publication_date": null,
-    "creation_date": "2014-04-03T11:57:55.157",
+    "creation_date": "2014-04-03T11:57:55.157Z",
     "lft": 1,
     "publication_end_date": null,
     "tree_id": 2,
@@ -102,7 +102,7 @@
     "title": "Notebooks",
     "override_url": "",
     "master": 2,
-    "language_code": "en-us",
+    "language_code": "en",
     "_cached_url": "/notebooks/",
     "slug": "notebooks"
   }

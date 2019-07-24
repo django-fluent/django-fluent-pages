@@ -1,26 +1,26 @@
 # Django version
-Django >= 1.8, <2.0
+Django == 2.2.*
 
 # Pillow version
-Pillow >= 5.0
+Pillow >= 6.1.0
 
 # Deps of fluent-pages
-django-fluent-utils >= 2.0
-django-mptt >= 0.9.0
-django-parler >= 1.9.1
+django-fluent-utils >= 2.0.1
+django-mptt >= 0.10.0
+django-parler >= 1.9.2
 django-polymorphic-tree >= 1.5
-django-polymorphic >= 1.3
-django-slug-preview >= 1.0.2
+django-polymorphic >= 2.1.2
+django-slug-preview >= 1.0.4
 django-tag-parser >= 3.1
 
 # For the `fluent_pages.plugins.fluentpage` plugin:
-django-fluent-contents >= 1.1
+django-fluent-contents >= 2.0.6
 django-template-analyzer >= 1.6.1
 
 # For the `fluent_contents.plugins.*` apps:
-django-wysiwyg >= 0.7.1
-django-tinymce >= 2.0.4
-Markdown >= 2.6.2
-docutils >= 0.12
-textile >= 2.2.2
-Pygments >= 2.0.2
+django-wysiwyg >= 0.8.0
+django-tinymce >= 2.8.0
+Markdown >= 3.1.1
+docutils >= 0.15.1
+textile >= 3.0.4
+Pygments >= 2.4.2

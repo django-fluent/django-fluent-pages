@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 (
                     "product_category",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
+                        on_delete=django.db.models.deletion.PROTECT,
                         to="simpleshop.ProductCategory",
                     ),
                 ),
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
             model_name="product",
             name="category",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE,
+                on_delete=django.db.models.deletion.PROTECT,
                 related_name="products",
                 to="simpleshop.ProductCategory",
                 verbose_name="Category",

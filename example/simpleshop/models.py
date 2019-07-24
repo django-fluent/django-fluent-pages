@@ -24,7 +24,7 @@ class ProductCategory(models.Model):
 @python_2_unicode_compatible
 class Product(models.Model):
     category = models.ForeignKey(
-        ProductCategory, verbose_name="Category", related_name="products"
+        ProductCategory, on_delete=models.PROTECT, verbose_name="Category", related_name="products"
     )
     title = models.CharField("Title", max_length=200)
     slug = models.SlugField("Slug")
@@ -47,7 +47,7 @@ class ProductCategoryPage(Page):
     The database model for the custom pagetype.
     """
 
-    product_category = models.ForeignKey(ProductCategory)
+    product_category = models.ForeignKey(ProductCategory, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = "Product category page"
