@@ -39,27 +39,27 @@ setup(
     version=find_version("fluent_pages", "__init__.py"),
     license="Apache 2.0",
     install_requires=[
-        "django-fluent-utils>=2.0",  # DRY utility code
+        "django-fluent-utils>=2.0.1",  # DRY utility code
         "django-mptt>=0.9.0",
-        "django-parler>=1.9.1",
-        "django-polymorphic>=1.3.1",
-        "django-polymorphic-tree>=1.5",
+        "django-parler>=2.0.1",
+        "django-polymorphic>=2.1.2",
+        "django-polymorphic-tree>=1.5.1",
         "django-slug-preview>=1.0.4",
-        "django-tag-parser>=3.0",
+        "django-tag-parser>=3.2",
         "future>=0.12.2",
         "Pillow",  # needed by ImageField
     ],
-    requires=["Django (>=1.10)"],
+    requires=["Django (>=1.11)"],
     extras_require={
         "tests": [
-            "django-any-urlfield>=2.6.1",
+            "django-any-urlfield>=2.6.2",
             "django-wysiwyg>=0.7.1",
-            "django-fluent-contents>=2.0.4",
+            "django-fluent-contents>=2.0.7",
         ],
         "flatpage": ["django-wysiwyg>=0.7.1"],
-        "fluentpage": ["django-fluent-contents>=2.0.1"],
+        "fluentpage": ["django-fluent-contents>=2.0.7"],
         "redirectnode": [
-            "django-any-urlfield>=2.6.1"
+            "django-any-urlfield>=2.6.2"
         ],  # Needs Pickle support for translated new_url field.
     },
     description="A flexible, scalable CMS with custom node types, and flexible block content.",
