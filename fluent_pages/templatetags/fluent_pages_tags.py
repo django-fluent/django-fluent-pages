@@ -10,7 +10,7 @@ from django.contrib.sites.models import Site
 from django.template import Library, TemplateSyntaxError
 from django.utils.functional import SimpleLazyObject
 from future.builtins import str
-from six import integer_types, iteritems, string_types
+from future.utils import integer_types, string_types
 
 from fluent_pages.models import UrlNode
 from fluent_pages.models.navigation import PageNavigationNode
@@ -68,7 +68,7 @@ def get_node_kwargs(tag_kwargs):
     """
     Return a dict suitable for passing as kwargs to a PageNavigationNode object
     """
-    return dict((k, v) for k, v in iteritems(tag_kwargs) if k in ("max_depth",))
+    return dict((k, v) for k, v in tag_kwargs.items() if k in ("max_depth",))
 
 
 @template_tag(register, "render_menu")

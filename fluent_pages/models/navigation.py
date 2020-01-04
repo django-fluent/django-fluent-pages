@@ -9,9 +9,8 @@ It offers properties such as :attr:`~fluent_pages.models.Page.parent`
 and :attr:`~fluent_pages.models.Page.children` (a :class:`~django.db.models.RelatedManager`),
 and methods such as `get_parent()` and `get_children()` through the `MPTTModel` base class.
 """
-from django.utils.encoding import python_2_unicode_compatible
 from future.builtins import object
-
+from future.utils import python_2_unicode_compatible
 from parler.models import TranslationDoesNotExist
 
 

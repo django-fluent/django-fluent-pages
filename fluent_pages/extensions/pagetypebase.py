@@ -10,8 +10,7 @@ from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
 from future.builtins import str
-from future.utils import with_metaclass
-from six import string_types
+from future.utils import string_types, with_metaclass
 
 from fluent_pages import appsettings
 from fluent_pages.adminui import PageAdmin

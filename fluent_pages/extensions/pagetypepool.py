@@ -6,7 +6,6 @@ from threading import Lock
 
 from django.contrib.contenttypes.models import ContentType
 from future.builtins import int, object
-from six import iteritems, itervalues
 
 from fluent_pages.models import UrlNode
 from fluent_utils.load import import_apps_submodule
@@ -102,7 +101,7 @@ class PageTypePool(object):
         Each model derives from :class:`~fluent_pages.models.Page` .
         """
         self._import_plugins()
-        return [plugin.model for plugin in itervalues(self.plugins)]
+        return [plugin.model for plugin in self.plugins.values()]
 
     def get_plugin_by_model(self, model_class):
         """
@@ -154,7 +153,7 @@ class PageTypePool(object):
     def _setup_lazy_indexes(self):
         if self._name_for_ctype_id is None:
             self._name_for_ctype_id = {}
-            for name, plugin_instance in iteritems(self.plugins):
+            for name, plugin_instance in self.plugins.items():
                 self._name_for_ctype_id[plugin_instance.type_id] = name
 
     def get_file_types(self):

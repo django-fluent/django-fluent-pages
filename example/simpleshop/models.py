@@ -2,7 +2,7 @@
 Just a pretty normal model definition of a simple "shop".
 """
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
+from future.utils import python_2_unicode_compatible
 
 from fluent_pages.models import Page
 

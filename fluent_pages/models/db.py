@@ -20,10 +20,9 @@ from django.db import connection, models, transaction
 from django.db.backends.utils import truncate_name
 from django.template.defaultfilters import slugify
 from django.urls import NoReverseMatch, reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from future.utils import iteritems, itervalues, with_metaclass
+from future.utils import with_metaclass, python_2_unicode_compatible
 
 from fluent_pages import appsettings
 from fluent_pages.models.fields import PageTreeForeignKey, TemplateFilePathField
@@ -205,7 +204,7 @@ class UrlNode(AbstractUrlNode):
     def __str__(self):
         # This looks pretty nice on the delete page.
         # All other models derive from Page, so they get good titles in the breadcrumb.
-        return u", ".join(itervalues(self.get_absolute_urls()))
+        return u", ".join(self.get_absolute_urls().values())
 
     # ---- Extra properties ----
 
@@ -856,7 +855,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
                 self.language_code,
                 ",".join(fallback_languages),
                 ",".join(master.get_available_languages()),
-                ", ".join("{0}:{1}".format(k, v) for k, v in iteritems(parent_urls)),
+                ", ".join("{0}:{1}".format(k, v) for k, v in parent_urls.items()),
             )
         )
 

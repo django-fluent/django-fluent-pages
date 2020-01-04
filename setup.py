@@ -47,7 +47,6 @@ setup(
         "django-slug-preview>=1.0.4",
         "django-tag-parser>=3.0",
         "future>=0.12.2",
-        "six>=1.5.2",
         "Pillow",  # needed by ImageField
     ],
     requires=["Django (>=1.10)"],

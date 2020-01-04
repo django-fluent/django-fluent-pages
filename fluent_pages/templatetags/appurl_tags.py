@@ -19,7 +19,6 @@ Usage:
 """
 from django.template import Library
 from django.utils.encoding import smart_str
-from six import iteritems
 
 from fluent_pages.models.db import UrlNode
 from fluent_pages.urlresolvers import mixed_reverse
@@ -39,7 +38,7 @@ class AppUrlNode(BaseAssignmentOrOutputNode):
         view_name = tag_args[0]
         url_args = tag_args[1::]
         url_kwargs = dict(
-            [(smart_str(name, "ascii"), value) for name, value in iteritems(tag_kwargs)]
+            [(smart_str(name, "ascii"), value) for name, value in tag_kwargs.items()]
         )
 
         # The app_reverse() tag can handle multiple results fine if it knows what the current page is.
