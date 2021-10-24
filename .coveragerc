@@ -1,0 +1,4 @@
+[run]
+source = fluent_pages/
+omit =
+    */migrations/*
