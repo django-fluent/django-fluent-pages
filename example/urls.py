@@ -1,11 +1,11 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.contrib import admin
 
 import fluent_pages.urls
 import tinymce.urls
 
 urlpatterns = [
-    url(r"^admin/utils/tinymce/", include(tinymce.urls)),
-    url(r"^admin/", admin.site.urls),
-    url(r"", include(fluent_pages.urls)),
+    path('admin/utils/tinymce/', include(tinymce.urls)),
+    path('admin/', admin.site.urls),
+    path('', include(fluent_pages.urls)),
 ]

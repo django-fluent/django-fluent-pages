@@ -34,7 +34,7 @@ class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelFor
             # https://github.com/django-mptt/django-mptt/issues/275
             TranslatableModelForm.__init__(self, *args, **kwargs)
         else:
-            super(UrlNodeAdminForm, self).__init__(*args, **kwargs)
+            super().__init__(*args, **kwargs)
 
         if "override_url" in self.fields:
             self.fields["override_url"].language_code = self.language_code
@@ -51,7 +51,7 @@ class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelFor
         Extend valiation of the form, checking whether the URL is unique.
         Returns all fields which are valid.
         """
-        cleaned_data = super(UrlNodeAdminForm, self).clean()
+        cleaned_data = super().clean()
 
         # See if the current URLs don't overlap.
         all_nodes = UrlNode.objects.all()
@@ -102,7 +102,7 @@ class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelFor
         elif cleaned_data.get("slug"):
             new_slug = cleaned_data["slug"]
             if parent:
-                new_url = "%s%s/" % (parent._cached_url, new_slug)
+                new_url = f"{parent._cached_url}{new_slug}/"
             else:
                 new_url = "/%s/" % new_slug
 
@@ -182,7 +182,7 @@ class UrlNodeChildAdmin(
         Determine which fields are readonly.
         This includes the shared fields if the user has no permission to change them.
         """
-        fields = super(UrlNodeChildAdmin, self).get_readonly_fields(request, obj)
+        fields = super().get_readonly_fields(request, obj)
         if obj is not None:
             # Edit screen
             if (
@@ -205,7 +205,7 @@ class UrlNodeChildAdmin(
         Whether the user can change the page layout.
         """
         opts = self.opts
-        codename = "{0}.change_shared_fields_urlnode".format(opts.app_label)
+        codename = f"{opts.app_label}.change_shared_fields_urlnode"
         return request.user.has_perm(codename, obj=obj)
 
     def has_change_override_url_permission(self, request, obj=None):
@@ -213,7 +213,7 @@ class UrlNodeChildAdmin(
         Whether the user can change the page layout.
         """
         opts = self.opts
-        codename = "{0}.change_override_url_urlnode".format(opts.app_label)
+        codename = f"{opts.app_label}.change_override_url_urlnode"
         return request.user.has_perm(codename, obj=obj)
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -224,7 +224,7 @@ class UrlNodeChildAdmin(
         if overrides:
             kwargs.update(overrides)
 
-        return super(UrlNodeChildAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
     def save_model(self, request, obj, form, change):
         # Automatically store the user in the author field.
@@ -237,4 +237,4 @@ class UrlNodeChildAdmin(
             if "in_sitemaps" not in form.fields:
                 obj.in_sitemaps = obj.plugin.default_in_sitemaps
 
-        super(UrlNodeChildAdmin, self).save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)

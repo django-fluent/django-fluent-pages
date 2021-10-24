@@ -1,7 +1,6 @@
 import django
 from django.test import override_settings
 from django.urls import resolve, reverse
-from future.builtins import str
 
 from fluent_pages.models import Page, UrlNode
 from fluent_pages.tests.testapp.models import PlainTextFile, SimpleTextPage, WebShopPage
@@ -55,7 +54,7 @@ class UrlDispatcherTests(AppTestCase):
         self.assertEqual(
             sibling1.get_absolute_url(),
             "/sibling1/",
-            "Page at {0} has invalid absolute URL".format("/sibling1/"),
+            "Page at {} has invalid absolute URL".format("/sibling1/"),
         )
         self.assert200("/")
         self.assert200("/sibling1/")
@@ -102,7 +101,7 @@ class UrlDispatcherTests(AppTestCase):
             self.assertEqual(
                 sibling1.get_absolute_url(),
                 "/_test_subdir_/sibling1/",
-                "UrlNode.get_absolute_url() should take changes to SCRIPT_NAME into account (got: {0}).".format(
+                "UrlNode.get_absolute_url() should take changes to SCRIPT_NAME into account (got: {}).".format(
                     sibling1.get_absolute_url()
                 ),
             )
@@ -155,8 +154,8 @@ class UrlDispatcherTests(AppTestCase):
         """
         The URL that is a mix
         """
-        response = self.client.get(u"/shop/\u20ac/")
-        self.assertContains(response, u"test_webshop: article: \u20ac")
+        response = self.client.get("/shop/\u20ac/")
+        self.assertContains(response, "test_webshop: article: \u20ac")
 
     def test_app_page_append_slash(self):
         """
@@ -180,7 +179,7 @@ class UrlDispatcherTests(AppTestCase):
         URLs that point to files should return properly.
         """
         response = self.client.get("/README")
-        self.assertEqual(response.content.decode("utf-8"), str("This is the README"))
+        self.assertEqual(response.content.decode("utf-8"), "This is the README")
         self.assertEqual(response["Content-Type"], "text/plain")
 
     def test_unicode_404_internal(self):
@@ -199,7 +198,7 @@ class UrlDispatcherTests(AppTestCase):
                 "nl",
                 UrlNode.DoesNotExist,
                 lambda lang: qs.get_for_path(
-                    u"/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/",
+                    "/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/",
                     language_code=lang,
                 ),
             ),
@@ -210,7 +209,7 @@ class UrlDispatcherTests(AppTestCase):
         Urls with unicode characters should return proper 404 pages, not crash on it.
         """
         # Non existing page
-        self.assert404(u"/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/")
+        self.assert404("/foo/\xe9\u20ac\xdf\xed\xe0\xf8\xeb\xee\xf1\xfc/")
 
     def test_admin_redirect(self):
         """
@@ -313,7 +312,7 @@ class UrlDispatcherNonRootTests(AppTestCase):
         self.assertEqual(
             sibling1.get_absolute_url(),
             "/pages/sibling1/",
-            "UrlNode.get_absolute_url() should other URLConf root into account (got: {0}).".format(
+            "UrlNode.get_absolute_url() should other URLConf root into account (got: {}).".format(
                 sibling1.get_absolute_url()
             ),
         )

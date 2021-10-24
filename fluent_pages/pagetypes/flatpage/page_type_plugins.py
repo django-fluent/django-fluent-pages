@@ -13,7 +13,7 @@ class FlatPagePlugin(PageTypePlugin):
         return flatpage.template_name
 
     def get_context(self, request, page, **kwargs):
-        context = super(FlatPagePlugin, self).get_context(request, page, **kwargs)
+        context = super().get_context(request, page, **kwargs)
 
         # Just like django.contrib.flatpages, mark content as safe:
         page = context["page"]

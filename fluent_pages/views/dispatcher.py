@@ -11,7 +11,6 @@ from django.urls import NoReverseMatch, Resolver404, get_script_prefix, resolve,
 from django.utils import translation
 from django.views.generic import RedirectView
 from django.views.generic.base import View
-from future.builtins import str
 
 from fluent_pages import appsettings
 from fluent_pages.models import UrlNode
@@ -88,7 +87,7 @@ class CmsPageDispatcher(GetPathMixin, View):
             full_path = get_script_prefix() + self.path.lstrip("/")
             if full_path.startswith(reverse("admin:index")):
                 raise Http404(
-                    u"No admin page found at '{0}'\n(raised by fluent_pages catch-all).".format(
+                    "No admin page found at '{}'\n(raised by fluent_pages catch-all).".format(
                         self.path
                     )
                 )
@@ -107,19 +106,19 @@ class CmsPageDispatcher(GetPathMixin, View):
             fallback = _get_fallback_language(self.language_code)
             if fallback:
                 languages = (self.language_code, fallback)
-                tried_msg = u" (language '{0}', fallback: '{1}')".format(*languages)
+                tried_msg = " (language '{}', fallback: '{}')".format(*languages)
             else:
-                tried_msg = u", language '{0}'".format(self.language_code)
+                tried_msg = f", language '{self.language_code}'"
 
             if self.path == "/":
                 raise Http404(
-                    u"No published '{0}' found for the path '{1}'{2}. Use the 'Override URL' field to make sure a page can be found at the root of the site.".format(
+                    "No published '{}' found for the path '{}'{}. Use the 'Override URL' field to make sure a page can be found at the root of the site.".format(
                         self.model.__name__, self.path, tried_msg
                     )
                 )
             else:
                 raise Http404(
-                    u"No published '{0}' found for the path '{1}'{2}.".format(
+                    "No published '{}' found for the path '{}'{}.".format(
                         self.model.__name__, self.path, tried_msg
                     )
                 )
@@ -217,7 +216,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         if response is None:
             # Avoid automatic fallback to 404 page in this dispatcher.
             raise ValueError(
-                "The method '{0}.get_response()' didn't return an HttpResponse object.".format(
+                "The method '{}.get_response()' didn't return an HttpResponse object.".format(
                     plugin.__class__.__name__
                 )
             )
@@ -295,7 +294,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         )
         if response is None:
             raise RuntimeError(
-                "The view '{0}' didn't return an HttpResponse object.".format(
+                "The view '{}' didn't return an HttpResponse object.".format(
                     match.url_name
                 )
             )
@@ -382,7 +381,7 @@ def _try_languages(language_code, exception_class, func):
         obj = func(fallback)
     except exception_class as e:
         raise exception_class(
-            u"{0}\nTried languages: {1}, {2}".format(str(e), language_code, fallback), e
+            f"{str(e)}\nTried languages: {language_code}, {fallback}", e
         )
 
     # NOTE: it could happen that objects are resolved using their fallback language,

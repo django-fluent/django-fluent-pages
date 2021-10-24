@@ -4,7 +4,6 @@ URL Resolving for dynamically added pages.
 from django.urls import NoReverseMatch, reverse
 from django.utils.functional import lazy
 from django.utils.translation import get_language
-from future.builtins import str
 
 # Several imports in this file are placed inline, to avoid loading the models too early.
 # Because fluent_pages.models creates a QuerySet, all all apps will be imported.
@@ -92,13 +91,13 @@ def app_reverse(
                     return current_page.get_absolute_url() + url_end
 
         raise MultipleReverseMatch(
-            "Reverse for application URL '{0}' found, but multiple root nodes available: {1}".format(
+            "Reverse for application URL '{}' found, but multiple root nodes available: {}".format(
                 viewname, ", ".join(page.get_absolute_url() for page in pages)
             )
         )
     elif not pages:
         raise PageTypeNotMounted(
-            "Reverse for application URL '{0}' is not available, a '{1}' page needs to be added to the page tree.".format(
+            "Reverse for application URL '{}' is not available, a '{}' page needs to be added to the page tree.".format(
                 viewname, str(plugin.verbose_name)
             )
         )
@@ -127,8 +126,8 @@ def _find_plugin_reverse(viewname, args, kwargs):
             pass
     else:
         raise NoReverseMatch(
-            "Reverse for application URL '{0}' with arguments '{1}' and keyword arguments '{2}' not found.\n"
-            "Searched in URLconf and installed page type plugins ({3}) for URLs.".format(
+            "Reverse for application URL '{}' with arguments '{}' and keyword arguments '{}' not found.\n"
+            "Searched in URLconf and installed page type plugins ({}) for URLs.".format(
                 viewname,
                 args,
                 kwargs,
@@ -149,7 +148,7 @@ def _get_pages_of_type(model, language_code=None):
     if language_code is None:
         language_code = get_language()
 
-    cachekey = "fluent_pages.instance_of.{0}.{1}".format(
+    cachekey = "fluent_pages.instance_of.{}.{}".format(
         model.__name__, settings.SITE_ID
     )
     pages = cache.get(cachekey)
@@ -194,4 +193,4 @@ def clear_app_reverse_cache():
     from fluent_pages.extensions import page_type_pool
 
     for model in page_type_pool.get_model_classes():
-        cache.delete("fluent_pages.instance_of.{0}".format(model.__name__))
+        cache.delete(f"fluent_pages.instance_of.{model.__name__}")

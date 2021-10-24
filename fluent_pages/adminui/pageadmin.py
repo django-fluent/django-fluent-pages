@@ -7,8 +7,6 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.utils.functional import lazy
 from django.utils.http import urlencode
-from future.builtins import int
-from future.utils import native_str
 
 from fluent_pages.models import Page
 
@@ -68,7 +66,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
     base_change_form_template = "admin/fluent_pages/page/base_change_form.html"
 
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
-        field = super(DefaultPageChildAdmin, self).formfield_for_foreignkey(
+        field = super().formfield_for_foreignkey(
             db_field, request, **kwargs
         )
         if field is None:
@@ -87,15 +85,15 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
 
     @property
     def change_form_template(self):
-        templates = super(DefaultPageChildAdmin, self).change_form_template
+        templates = super().change_form_template
         opts = self.model._meta
         app_label = opts.app_label
 
         return [
-            "admin/fluent_pages/pagetypes/{0}/{1}/change_form.html".format(
+            "admin/fluent_pages/pagetypes/{}/{}/change_form.html".format(
                 app_label, opts.object_name.lower()
             ),
-            "admin/fluent_pages/pagetypes/{0}/change_form.html".format(app_label),
+            f"admin/fluent_pages/pagetypes/{app_label}/change_form.html",
         ] + templates
 
     def render_change_form(
@@ -124,7 +122,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
             },
             form_url,
         )
-        return super(DefaultPageChildAdmin, self).render_change_form(
+        return super().render_change_form(
             request, context, add=add, change=change, form_url=form_url, obj=obj
         )
 
@@ -159,7 +157,7 @@ def _select_template_name(template_name_list):
             except TemplateDoesNotExist:
                 continue
             else:
-                template_name = native_str(
+                template_name = str(
                     template_name
                 )  # consistent value for lazy() function.
                 _cached_name_lookups[template_name_list] = template_name

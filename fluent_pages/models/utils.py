@@ -32,11 +32,11 @@ class DecoratingQuerySet(QuerySet):
     """
 
     def __init__(self, *args, **kwargs):
-        super(DecoratingQuerySet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._decorate_funcs = []
 
     def _clone(self):
-        c = super(DecoratingQuerySet, self)._clone()
+        c = super()._clone()
         c._decorate_funcs = self._decorate_funcs
         return c
 
@@ -54,7 +54,7 @@ class DecoratingQuerySet(QuerySet):
         # Alternatives include:
         # - overwriting iterator() for Django <= 1.10
         # - hacking _iterable_class, which breaks django-polymorphic
-        super(DecoratingQuerySet, self)._fetch_all()
+        super()._fetch_all()
         for obj in self._result_cache:
             for fn in self._decorate_funcs:
                 fn(obj)

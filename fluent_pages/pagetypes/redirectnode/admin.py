@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin.options import get_ul_class
 from django.contrib.admin.widgets import AdminRadioSelect
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from fluent_pages.admin import PageAdmin
 

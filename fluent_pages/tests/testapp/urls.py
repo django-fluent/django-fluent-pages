@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.contrib import admin
 from django.http import Http404
 
@@ -11,7 +11,7 @@ def simulate_404(request):
 
 
 urlpatterns = [
-    url(r"^admin/", admin.site.urls),
-    url(r"^404/$", simulate_404),
-    url(r"", include(fluent_pages.urls)),
+    path('admin/', admin.site.urls),
+    path('404/', simulate_404),
+    path('', include(fluent_pages.urls)),
 ]

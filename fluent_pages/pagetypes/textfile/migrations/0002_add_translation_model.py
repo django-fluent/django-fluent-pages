@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.db import migrations, models
 
 
@@ -50,6 +47,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name="textfiletranslation",
-            unique_together=set([("language_code", "master")]),
+            unique_together={("language_code", "master")},
         ),
     ]

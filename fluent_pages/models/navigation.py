@@ -9,13 +9,10 @@ It offers properties such as :attr:`~fluent_pages.models.Page.parent`
 and :attr:`~fluent_pages.models.Page.children` (a :class:`~django.db.models.RelatedManager`),
 and methods such as `get_parent()` and `get_children()` through the `MPTTModel` base class.
 """
-from future.builtins import object
-from future.utils import python_2_unicode_compatible
 from parler.models import TranslationDoesNotExist
 
 
-@python_2_unicode_compatible
-class NavigationNode(object):
+class NavigationNode:
     """
     The base class for all navigation nodes, whether model-based on virtually inserted ones.
     """
@@ -83,7 +80,7 @@ class NavigationNode(object):
             url = self.url
         except TranslationDoesNotExist:
             url = None
-        return "<{0}: {1}>".format(self.__class__.__name__, url)
+        return f"<{self.__class__.__name__}: {url}>"
 
     def __str__(self):
         # This only exists in case a developer uses `{{ node }}` in the template.
@@ -164,7 +161,7 @@ class PageNavigationNode(NavigationNode):
     def parent(self, new_parent):
         # Happens when django-mptt finds an object with a different level in the recursetree() / cache_tree_children() code.
         raise AttributeError(
-            "can't set attribute 'parent' of '{0}' object.".format(
+            "can't set attribute 'parent' of '{}' object.".format(
                 self.__class__.__name__
             )
         )
@@ -177,7 +174,7 @@ class PageNavigationNode(NavigationNode):
                 if child.pk == self._page.pk:
                     # This happened with the get_query_set() / get_queryset() transition for Django 1.7, affecting Django 1.4/1.5
                     raise RuntimeError(
-                        "Page #{0} children contained self!".format(self._page.pk)
+                        f"Page #{self._page.pk} children contained self!"
                     )
 
                 yield PageNavigationNode(

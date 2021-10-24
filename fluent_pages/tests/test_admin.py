@@ -38,14 +38,12 @@ class AdminTests(AppTestCase):
 
     def test_child_types(self):
         """test that all child types are created and correct"""
-        ids = set(
-            [
+        ids = {
                 self.root.polymorphic_ctype_id,
                 self.root2.polymorphic_ctype_id,
                 ContentType.objects.get_for_model(PlainTextFile).id,
                 ContentType.objects.get_for_model(WebShopPage).id,
-            ]
-        )
+        }
         childtypes = set(self.root2.get_child_types())
         self.assertEqual(len(ids), len(ids | childtypes))
 

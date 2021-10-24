@@ -11,7 +11,6 @@ It defines the following classes:
 """
 import logging
 
-import django
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.cache import cache
@@ -21,8 +20,7 @@ from django.db.backends.utils import truncate_name
 from django.template.defaultfilters import slugify
 from django.urls import NoReverseMatch, reverse
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
-from future.utils import with_metaclass, python_2_unicode_compatible
+from django.utils.translation import gettext_lazy as _
 
 from fluent_pages import appsettings
 from fluent_pages.models.fields import PageTreeForeignKey, TemplateFilePathField
@@ -55,13 +53,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
     """
 
     def __new__(mcs, name, bases, attrs):
-        if django.VERSION < (2, 0):
-            try:
-                attrs["Meta"].manager_inheritance_from_future = True
-            except KeyError:
-                pass
-
-        new_class = super(URLNodeMetaClass, mcs).__new__(mcs, name, bases, attrs)
+        new_class = super().__new__(mcs, name, bases, attrs)
 
         # Update the table name.
         # Inspired by from Django-CMS, (c) , BSD licensed.
@@ -74,7 +66,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
             ):
                 model_name = meta.db_table[len(meta.app_label) + 1 :]
                 meta.db_table = truncate_name(
-                    "pagetype_{0}_{1}".format(meta.app_label, model_name),
+                    f"pagetype_{meta.app_label}_{model_name}",
                     connection.ops.max_name_length(),
                 )
 
@@ -87,9 +79,7 @@ class URLNodeMetaClass(PolymorphicMPTTModelBase):
         return new_class
 
 
-class AbstractUrlNode(
-    with_metaclass(URLNodeMetaClass, PolymorphicMPTTModel, TranslatableModel)
-):
+class AbstractUrlNode(PolymorphicMPTTModel, TranslatableModel, metaclass=URLNodeMetaClass):
     """
     An internal helper class, to make sure the proper manager is inherited.
     Django 1.10 only inherits managers when they are part of an abstract model.
@@ -104,7 +94,6 @@ class AbstractUrlNode(
         base_manager_name = "objects"
 
 
-@python_2_unicode_compatible
 class UrlNode(AbstractUrlNode):
     """
     The base class for all nodes; a mapping of an URL to content (e.g. a HTML page, text file, blog, etc..)
@@ -204,12 +193,12 @@ class UrlNode(AbstractUrlNode):
     def __str__(self):
         # This looks pretty nice on the delete page.
         # All other models derive from Page, so they get good titles in the breadcrumb.
-        return u", ".join(self.get_absolute_urls().values())
+        return ", ".join(self.get_absolute_urls().values())
 
     # ---- Extra properties ----
 
     def __init__(self, *args, **kwargs):
-        super(UrlNode, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Cache status changes so we can determine changed values in the save handler.
         # This needs to take .only() and .defer() usage of querysets into account.
@@ -450,7 +439,7 @@ class UrlNode(AbstractUrlNode):
 
         try:
             # This already saves translated model.
-            super(UrlNode, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
         except UrlNode_Translation.DoesNotExist:
             # Raised by get_parent_cached_url()
             # Some translations might already be updated, avoid bad cached data.
@@ -504,7 +493,7 @@ class UrlNode(AbstractUrlNode):
         """
         # Skip objects from derived models
         if translation.related_name != "translations":
-            return super(UrlNode, self).save_translation(translation, *args, **kwargs)
+            return super().save_translation(translation, *args, **kwargs)
 
         # Make sure there is a slug!
         if not translation.slug and translation.title:
@@ -514,7 +503,7 @@ class UrlNode(AbstractUrlNode):
         self._make_slug_unique(translation)
         self._update_cached_url(translation)
         url_changed = translation.is_cached_url_modified
-        super(UrlNode, self).save_translation(translation, *args, **kwargs)
+        super().save_translation(translation, *args, **kwargs)
 
         # Detect changes
         published_changed = (
@@ -538,7 +527,7 @@ class UrlNode(AbstractUrlNode):
                     raise TreeInconsistencyError(msg)
 
     def delete(self, *args, **kwargs):
-        super(UrlNode, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
         self._expire_url_caches()
 
     # Following of the principles for "clean code"
@@ -593,9 +582,9 @@ class UrlNode(AbstractUrlNode):
                 parent_url += "/"
 
             if self.is_file:
-                translation._cached_url = u"{0}{1}".format(parent_url, translation.slug)
+                translation._cached_url = f"{parent_url}{translation.slug}"
             else:
-                translation._cached_url = u"{0}{1}/".format(
+                translation._cached_url = "{}{}/".format(
                     parent_url, translation.slug
                 )
 
@@ -667,7 +656,7 @@ class UrlNode(AbstractUrlNode):
                         use_fallback_base = True
                     else:
                         # There is a translation in this language, construct the fallback URL
-                        cached_page_urls[lang][subobject.id] = u"{0}{1}/".format(
+                        cached_page_urls[lang][subobject.id] = "{}{}/".format(
                             parent_url, subobject.slug
                         )
                         if fallback_base is None and subobject.has_translation(lang):
@@ -686,8 +675,8 @@ class UrlNode(AbstractUrlNode):
                     # The site doesn't have fallback languages.
                     # TODO: deside whether such objects should have NO url, or block moving/reparenting objects.
                     raise ParentTranslationDoesNotExist(
-                        "Can't generate URL for child #{0} in '{1}' to connect to parent #{2}.\n"
-                        "The child languages are: {3}".format(
+                        "Can't generate URL for child #{} in '{}' to connect to parent #{}.\n"
+                        "The child languages are: {}".format(
                             subobject.id,
                             current_language,
                             subobject.parent_id,
@@ -699,7 +688,7 @@ class UrlNode(AbstractUrlNode):
                     # no base == no URL for sub object. (be explicit here)
                     # subobject._cached_url = None
                 else:
-                    subobject._cached_url = u"{0}{1}/".format(base, subobject.slug)
+                    subobject._cached_url = f"{base}{subobject.slug}/"
 
             if not use_fallback_base:
                 cached_page_urls[current_language][subobject.id] = subobject._cached_url
@@ -718,7 +707,7 @@ class UrlNode(AbstractUrlNode):
         """
         cachekeys = [
             # created by urlresolvers._get_pages_of_type()
-            "fluent_pages.instance_of.{0}.{1}".format(
+            "fluent_pages.instance_of.{}.{}".format(
                 self.__class__.__name__, self.parent_site_id
             )
         ]
@@ -726,7 +715,6 @@ class UrlNode(AbstractUrlNode):
             cache.delete(cachekey)
 
 
-@python_2_unicode_compatible
 class UrlNode_Translation(TranslatedFieldsModel):
     """
     Translation table for UrlNode.
@@ -769,10 +757,10 @@ class UrlNode_Translation(TranslatedFieldsModel):
         verbose_name_plural = _("URL Nodes translations")
 
     def __str__(self):
-        return u"{0}: {1}".format(get_language_title(self.language_code), self.title)
+        return f"{get_language_title(self.language_code)}: {self.title}"
 
     def __repr__(self):
-        return "<{0}: #{1}, {2}, {3}, master: #{4}>".format(
+        return "<{}: #{}, {}, {}, master: #{}>".format(
             self.__class__.__name__,
             self.pk,
             self._cached_url,
@@ -781,7 +769,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
         )
 
     def __init__(self, *args, **kwargs):
-        super(UrlNode_Translation, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Cache a copy of the loaded _cached_url value so we can reliably
         # determine whether it has been changed in the save handler:
@@ -808,7 +796,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
                 )
             )
 
-        super(UrlNode_Translation, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         self._original_cached_url = self._cached_url
 
     def get_ancestors(self, ascending=False, include_self=False):
@@ -855,7 +843,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
                 self.language_code,
                 ",".join(fallback_languages),
                 ",".join(master.get_available_languages()),
-                ", ".join("{0}:{1}".format(k, v) for k, v in parent_urls.items()),
+                ", ".join(f"{k}:{v}" for k, v in parent_urls.items()),
             )
         )
 
@@ -866,7 +854,6 @@ class ParentTranslationDoesNotExist(UrlNode_Translation.DoesNotExist):
     """
 
 
-@python_2_unicode_compatible
 class Page(UrlNode):
     """
     The base class for all all :class:`UrlNode` subclasses that display pages.
@@ -887,7 +874,7 @@ class Page(UrlNode):
         return self.safe_translation_getter(
             "title", any_language=True
         ) or self.safe_translation_getter(
-            "slug", u"#{0}".format(self.pk), any_language=True
+            "slug", f"#{self.pk}", any_language=True
         )
 
 
@@ -964,10 +951,9 @@ class HtmlPage(Page):
         self.seo_translations.all().delete()  # Accesses RelatedManager
 
         # Continue regular delete.
-        super(HtmlPage, self).delete(*args, **kwargs)
+        super().delete(*args, **kwargs)
 
 
-@python_2_unicode_compatible
 class PageLayout(models.Model):
     """
     A ``PageLayout`` object defines a template that can be used by a page.

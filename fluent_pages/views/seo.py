@@ -64,10 +64,10 @@ class RobotsTxtView(TemplateView):
         response_kwargs[
             "content_type"
         ] = self.content_type  # standard TemplateView does not offer this!
-        return super(RobotsTxtView, self).render_to_response(context, **response_kwargs)
+        return super().render_to_response(context, **response_kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(RobotsTxtView, self).get_context_data()
+        context = super().get_context_data()
         is_multilingual = is_multilingual_project()
 
         context["ROBOTS_TXT_DISALLOW_ALL"] = appsettings.ROBOTS_TXT_DISALLOW_ALL
@@ -84,17 +84,17 @@ class RobotsTxtView(TemplateView):
         if self.has_i18n_patterns_urls():
             language_codes = self.get_i18n_patterns_codes()
             return [
-                "{0}{1}/sitemap.xml".format(root_url, language_code)
+                f"{root_url}{language_code}/sitemap.xml"
                 for language_code in language_codes
             ]
         else:
-            return ["{0}sitemap.xml".format(root_url)]
+            return [f"{root_url}sitemap.xml"]
 
     def has_i18n_patterns_urls(self):
         """
         Check whether something like :func:`~django.conf.urls.i18n.i18n_patterns` is used.
         """
-        return "/{0}/".format(get_language()) in reverse("fluent-page")
+        return f"/{get_language()}/" in reverse("fluent-page")
 
     def get_i18n_patterns_codes(self):
         """

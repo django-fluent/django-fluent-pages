@@ -1,6 +1,6 @@
 import django
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from fluent_pages import forms
 from fluent_utils.django_compat import ForwardManyToOneDescriptor
@@ -15,16 +15,16 @@ class TemplateFilePathField(models.FilePathField):
     def __init__(self, verbose_name=None, path="", **kwargs):
         defaults = dict(match=r".*\.html$", recursive=True)
         defaults.update(kwargs)
-        super(TemplateFilePathField, self).__init__(verbose_name, path=path, **defaults)
+        super().__init__(verbose_name, path=path, **defaults)
 
     def formfield(self, **kwargs):
         # Like the FilePathField, the formfield does the actual work
         defaults = {"form_class": forms.TemplateFilePathField}
         defaults.update(kwargs)
-        return super(TemplateFilePathField, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
     def deconstruct(self):
-        name, path, args, kwargs = super(TemplateFilePathField, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         if "path" in kwargs:
             del kwargs["path"]
         return name, path, args, kwargs
@@ -34,7 +34,7 @@ class TranslatedForeignKeyDescriptor(ForwardManyToOneDescriptor):
     def __get__(self, instance, instance_type=None):
         # let the .parent return an object in the same language as our selves.
         # note: when the object is switched to a different language, this updates the shared/cached parent.
-        obj = super(TranslatedForeignKeyDescriptor, self).__get__(
+        obj = super().__get__(
             instance, instance_type
         )
         if instance is not None and obj is not None:
@@ -56,7 +56,7 @@ class PageTreeForeignKey(PolymorphicTreeForeignKey):
     }
 
     def contribute_to_class(self, cls, name, **kwargs):
-        super(PageTreeForeignKey, self).contribute_to_class(cls, name, **kwargs)
+        super().contribute_to_class(cls, name, **kwargs)
         setattr(
             cls, self.name, TranslatedForeignKeyDescriptor(self)
         )  # override what ForeignKey does.

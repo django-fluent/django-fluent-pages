@@ -95,7 +95,7 @@ A ``mixedurl`` template tag has to be included in the application itself. Use th
             from fluent_pages.templatetags.appurl_tags import appurl
             return appurl(parser, token)
         else:
-            from django.templatetags.future import url
+            from django.template.defaulttags import url
             return url(parser, token)
 
 

@@ -1,9 +1,9 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.contrib import admin
 
 import fluent_pages.urls
 
 urlpatterns = [
-    url(r"^admin/", admin.site.urls),
-    url(r"^pages/", include(fluent_pages.urls)),
+    path('admin/', admin.site.urls),
+    path('pages/', include(fluent_pages.urls)),
 ]

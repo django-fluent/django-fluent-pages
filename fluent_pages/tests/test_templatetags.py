@@ -49,7 +49,7 @@ class TemplateTagTests(AppTestCase):
 
         # Kind of JSON like, but not really (has trailing commma)
         menu = html[html.find("menu =") + 7 :]
-        menu = re.sub("\s+", "", menu)
+        menu = re.sub(r"\s+", "", menu)
 
         self.assertEqual(
             menu,

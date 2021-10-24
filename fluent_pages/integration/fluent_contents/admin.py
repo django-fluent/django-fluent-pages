@@ -2,7 +2,6 @@
 Admin classes to create page.
 Everything can be imported from ``__init__.py``.
 """
-from __future__ import absolute_import
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -66,7 +65,7 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
             # Similar to PlaceholderEditorAdmin.get_placeholder_data(),
             # raise an exception to indicate the class is not properly used.
             raise ImproperlyConfigured(
-                "The '{0}' subclass should define a static 'placeholder_layout', "
+                "The '{}' subclass should define a static 'placeholder_layout', "
                 "a 'placeholder_layout_template', "
                 "or overwrite get_placeholder_data().".format(self.__class__.__name__)
             )
@@ -84,7 +83,7 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
             except PluginNotFound as e:
                 raise PluginNotFound(
                     str(e)
-                    + " Update the plugin list of the {0}.all_allowed_plugins setting.".format(
+                    + " Update the plugin list of the {}.all_allowed_plugins setting.".format(
                         self.__class__.__name__
                     )
                 )
@@ -113,16 +112,15 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
             return plugins
         else:
             # Accepts all plugins by default
-            return super(FluentContentsPageAdmin, self).get_all_allowed_plugins()
+            return super().get_all_allowed_plugins()
 
     def get_translation_objects(self, request, language_code, obj=None, inlines=True):
         """
         Make sure the translated ContentItem objects are also deleted when a translation is removed.
         """
-        for qs in super(FluentContentsPageAdmin, self).get_translation_objects(
+        yield from super().get_translation_objects(
             request, language_code, obj=obj, inlines=inlines
-        ):
-            yield qs
+        )
 
         if obj is not None and inlines:
             yield ContentItem.objects.parent(obj, limit_parent_language=False).filter(

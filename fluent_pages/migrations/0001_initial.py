@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.conf import settings
 from django.db import migrations, models
 
@@ -316,10 +313,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name="urlnode_translation",
-            unique_together=set([("language_code", "master")]),
+            unique_together={("language_code", "master")},
         ),
         migrations.AlterUniqueTogether(
-            name="urlnode", unique_together=set([("parent_site", "key")])
+            name="urlnode", unique_together={("parent_site", "key")}
         ),
         migrations.CreateModel(
             name="Page",
@@ -351,6 +348,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name="htmlpagetranslation",
-            unique_together=set([("language_code", "master")]),
+            unique_together={("language_code", "master")},
         ),
     ]

@@ -8,7 +8,6 @@ from django.contrib.sites.models import Site
 from django.core.management import call_command
 from django.test import TestCase, override_settings
 from django.urls import get_script_prefix, set_script_prefix
-from future.builtins import str
 
 from fluent_pages.models.db import UrlNode
 
@@ -28,7 +27,7 @@ class AppTestCase(TestCase):
             run_migrate = False
             for appname in cls.install_apps:
                 if appname not in settings.INSTALLED_APPS:
-                    print("Adding {0} to INSTALLED_APPS".format(appname))
+                    print(f"Adding {appname} to INSTALLED_APPS")
                     settings.INSTALLED_APPS = (appname,) + tuple(
                         settings.INSTALLED_APPS
                     )
@@ -45,7 +44,7 @@ class AppTestCase(TestCase):
                 call_command("migrate", verbosity=0)
 
         # This also runs setUpTestData
-        super(AppTestCase, cls).setUpClass()
+        super().setUpClass()
 
     @classmethod
     def setUpTestData(cls):
@@ -81,7 +80,7 @@ class AppTestCase(TestCase):
         self.assertEqual(
             self.client.get(url).status_code,
             200,
-            str(msg_prefix) + u"Page at {0} should be found.".format(url),
+            str(msg_prefix) + f"Page at {url} should be found.",
         )
 
     def assert404(self, url, msg_prefix=""):
@@ -95,7 +94,7 @@ class AppTestCase(TestCase):
             response.status_code,
             404,
             str(msg_prefix)
-            + u"Page at {0} should return 404, got {1}.".format(
+            + "Page at {} should return 404, got {}.".format(
                 url, response.status_code
             ),
         )
@@ -129,14 +128,14 @@ class script_name(override_settings):
         ):
             new_settings["STATIC_URL"] = newpath_noslash + settings.STATIC_URL
 
-        super(script_name, self).__init__(**new_settings)
+        super().__init__(**new_settings)
         self.newpath = newpath
         self.oldprefix = get_script_prefix()
 
     def enable(self):
-        super(script_name, self).enable()
+        super().enable()
         set_script_prefix(self.newpath)
 
     def disable(self):
-        super(script_name, self).disable()
+        super().disable()
         set_script_prefix(self.oldprefix)

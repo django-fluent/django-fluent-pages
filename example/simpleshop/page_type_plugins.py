@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 
 from fluent_pages.extensions import PageTypePlugin, page_type_pool
 from simpleshop.models import ProductCategoryPage
@@ -13,4 +13,4 @@ class ProductCategoryPagePlugin(PageTypePlugin):
 
     model = ProductCategoryPage
     render_template = "products/productcategorypage.html"
-    urls = [url("^(?P<slug>[^/]+)/$", product_details)]
+    urls = [path('<str:slug>/', product_details),]

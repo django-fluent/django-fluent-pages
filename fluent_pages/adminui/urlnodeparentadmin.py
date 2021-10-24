@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from fluent_pages import appsettings
 from fluent_pages.models import UrlNode
@@ -146,7 +146,7 @@ class UrlNodeParentAdmin(
     def status_column(self, urlnode):
         title = [rec[1] for rec in UrlNode.STATUSES if rec[0] == urlnode.status].pop()
         icon = self.STATUS_ICONS[urlnode.status]
-        return u'<img src="{static_url}{icon}" alt="{title}" title="{title}" />'.format(
+        return '<img src="{static_url}{icon}" alt="{title}" title="{title}" />'.format(
             static_url=settings.STATIC_URL, icon=icon, title=title
         )
 
@@ -177,7 +177,7 @@ class UrlNodeParentAdmin(
         # The list code should be fixed instead, but that is much harder.
         if search_term:
             queryset = queryset.filter(level=0)
-        return super(UrlNodeParentAdmin, self).get_search_results(
+        return super().get_search_results(
             request, queryset, search_term
         )
 
@@ -189,7 +189,7 @@ class UrlNodeParentAdmin(
         if rows_updated == 1:
             message = "1 page was marked as published."
         else:
-            message = "{0} pages were marked as published.".format(rows_updated)
+            message = f"{rows_updated} pages were marked as published."
         self.message_user(request, message)
 
     make_published.short_description = _("Mark selected objects as published")

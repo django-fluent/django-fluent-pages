@@ -1,6 +1,6 @@
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from fluent_pages.models import HtmlPage, Page, ParentTranslationDoesNotExist, UrlNode
 from fluent_pages.models.fields import PageTreeForeignKey
@@ -277,12 +277,12 @@ class ModelDataTests(AppTestCase):
             slug="en1", status=SimpleTextPage.PUBLISHED, author=self.user
         )
         level1.create_translation("nl", slug="nl1")
-        self.assertUrls(level1, {"en": u"/en1/", "nl": u"/nl1/"})
+        self.assertUrls(level1, {"en": "/en1/", "nl": "/nl1/"})
 
         level2 = SimpleTextPage.objects.language("en").create(
             slug="en2", parent=level1, status=SimpleTextPage.PUBLISHED, author=self.user
         )
-        self.assertUrls(level2, {"en": u"/en1/en2/"})
+        self.assertUrls(level2, {"en": "/en1/en2/"})
 
         level3 = SimpleTextPage.objects.language("en").create(
             slug="en3", parent=level2, status=SimpleTextPage.PUBLISHED, author=self.user
@@ -301,16 +301,16 @@ class ModelDataTests(AppTestCase):
         root2 = SimpleTextPage.objects.get(translations__slug="root2")
 
         # Confirm we have a healthy starting point
-        self.assertUrls(level1, {"en-us": u"/level1/"})
-        self.assertUrls(draft1, {"en-us": u"/draft1/"})
-        self.assertUrls(root, {"en-us": u"/"})
-        self.assertUrls(root2, {"en-us": u"/root2/"})
+        self.assertUrls(level1, {"en-us": "/level1/"})
+        self.assertUrls(draft1, {"en-us": "/draft1/"})
+        self.assertUrls(root, {"en-us": "/"})
+        self.assertUrls(root2, {"en-us": "/root2/"})
 
         # When the root gets another translation,
         # the sublevel may also get a translation.
         root.create_translation("af", slug="home", override_url="/")
-        self.assertUrls(root, {u"en-us": u"/", u"af": u"/"})
-        self.assertUrls(draft1, {u"en-us": u"/draft1/"})
+        self.assertUrls(root, {"en-us": "/", "af": "/"})
+        self.assertUrls(draft1, {"en-us": "/draft1/"})
 
         level1.create_translation("af", slug="level1-af")  # Now you can.
 
@@ -324,15 +324,15 @@ class ModelDataTests(AppTestCase):
         level1 = SimpleTextPage.objects.get(pk=level1.pk)
 
         # However, with a fallback in place, it will adjust the sublevels too.
-        self.assertUrls(level1, {u"af": u"/level1-af/", u"en-us": u"/level1/"})
+        self.assertUrls(level1, {"af": "/level1-af/", "en-us": "/level1/"})
         root2.create_translation("en", slug="home2")
         root2.save()  # TODO: make this call redundant.
 
         level1.parent = root2
         level1.save()
-        self.assertUrls(root2, {u"en": u"/home2/", u"en-us": u"/root2/"})
+        self.assertUrls(root2, {"en": "/home2/", "en-us": "/root2/"})
         self.assertUrls(
-            level1, {u"af": u"/home2/level1-af/", u"en-us": u"/root2/level1/"}
+            level1, {"af": "/home2/level1-af/", "en-us": "/root2/level1/"}
         )
 
         cache.clear()
@@ -406,7 +406,7 @@ class ModelDataTests(AppTestCase):
         # Note that .save() doesn't validate, as per default Django behavior.
         self.assertRaisesMessage(
             ValidationError,
-            force_text(
+            force_str(
                 PageTreeForeignKey.default_error_messages["no_children_allowed"]
             ),
             lambda: text_file2.full_clean(),

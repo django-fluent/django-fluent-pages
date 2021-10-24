@@ -1,7 +1,7 @@
 from optparse import make_option
 
 from django.core.management import BaseCommand, CommandError
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 
 from fluent_pages import appsettings
 from fluent_pages.extensions import page_type_pool
@@ -16,7 +16,7 @@ class Command(BaseCommand):
     help = "Update the cached_url for the translated URL node tree"
 
     def add_arguments(self, parser):
-        super(Command, self).add_arguments(parser)
+        super().add_arguments(parser)
         parser.add_argument(
             "-p",
             "--dry-run",
@@ -62,7 +62,7 @@ class Command(BaseCommand):
         type_len = str(
             max(len(plugin.type_name) for plugin in page_type_pool.get_plugins())
         )
-        col_style = u"| {0:6} | {1:6} | {2:" + type_len + "} | {3:6} | {4}"
+        col_style = "| {0:6} | {1:6} | {2:" + type_len + "} | {3:6} | {4}"
         header = col_style.format("Site", "Page", "Type", "Locale", "URL")
         sep = "-" * (len(header) + 40)
         self.stdout.write(sep)
@@ -87,7 +87,7 @@ class Command(BaseCommand):
             if page.parent_id:
                 if page.parent_id not in slugs[translation.language_code]:
                     self.stderr.write(
-                        "WARNING: Parent #{0} is not translated in '{1}', while the child #{2} is.".format(
+                        "WARNING: Parent #{} is not translated in '{}', while the child #{} is.".format(
                             page.parent_id,
                             translation.language_code,
                             translation.master_id,
@@ -107,7 +107,7 @@ class Command(BaseCommand):
                 if is_dry_run:
                     # When the mptt tree is broken, some URLs can't be correctly generated yet.
                     self.stderr.write(
-                        "Failed to determine new URL for {0}, please run with --mptt-only first.".format(
+                        "Failed to determine new URL for {}, please run with --mptt-only first.".format(
                             old_url
                         )
                     )
@@ -121,8 +121,8 @@ class Command(BaseCommand):
 
             if old_url != new_url:
                 self.stdout.write(
-                    smart_text(
-                        u"{0}  {1} {2}\n".format(
+                    smart_str(
+                        "{}  {} {}\n".format(
                             col_style.format(
                                 page.parent_site_id,
                                 page.pk,
@@ -137,7 +137,7 @@ class Command(BaseCommand):
                 )
             else:
                 self.stdout.write(
-                    smart_text(
+                    smart_str(
                         col_style.format(
                             page.parent_site_id,
                             page.pk,
@@ -178,4 +178,4 @@ class Command(BaseCommand):
                 except KeyError:
                     continue
 
-        return (u"/".join(url_parts) + u"/").replace("//", "/")
+        return ("/".join(url_parts) + "/").replace("//", "/")

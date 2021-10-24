@@ -5,7 +5,6 @@ from django.conf import settings
 from django.db.models.query_utils import Q
 from django.utils.timezone import now
 from django.utils.translation import get_language
-from future.builtins import range
 
 from fluent_pages import appsettings
 from parler import is_multilingual_project
@@ -26,11 +25,11 @@ class UrlNodeQuerySet(
     """
 
     def __init__(self, *args, **kwargs):
-        super(UrlNodeQuerySet, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._parent_site = None
 
     def _clone(self):
-        c = super(UrlNodeQuerySet, self)._clone()
+        c = super()._clone()
         c._parent_site = self._parent_site
         return c
 
@@ -74,7 +73,7 @@ class UrlNodeQuerySet(
             return obj
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(
-                u"No published {0} found for the path '{1}'".format(
+                "No published {} found for the path '{}'".format(
                     self.model.__name__, path
                 )
             )
@@ -110,7 +109,7 @@ class UrlNodeQuerySet(
             return obj
         except IndexError:
             raise self.model.DoesNotExist(
-                u"No published {0} found for the path '{1}'".format(
+                "No published {} found for the path '{}'".format(
                     self.model.__name__, path
                 )
             )
@@ -124,7 +123,7 @@ class UrlNodeQuerySet(
         if path:
             tokens = path.rstrip("/").split("/")
             paths += [
-                u"{0}/".format(u"/".join(tokens[:i])) for i in range(1, len(tokens) + 1)
+                "{}/".format("/".join(tokens[:i])) for i in range(1, len(tokens) + 1)
             ]
 
             # If the original URL didn't end with a slash,
@@ -146,13 +145,13 @@ class UrlNodeQuerySet(
         except self.model.DoesNotExist as e:
             if self._parent_site is not None:
                 raise self.model.DoesNotExist(
-                    "{0} with key='{1}' does not exist in site {2}.".format(
+                    "{} with key='{}' does not exist in site {}.".format(
                         self.model.__name__, key, self._parent_site
                     )
                 )
             else:
                 raise self.model.DoesNotExist(
-                    "{0} with key='{1}' does not exist.".format(
+                    "{} with key='{}' does not exist.".format(
                         self.model.__name__, key
                     )
                 )

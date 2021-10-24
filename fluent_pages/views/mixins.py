@@ -31,7 +31,7 @@ class CurrentPageMixin(ViewUrlMixin):
         """
         Add the plugin context to the template.
         """
-        context = super(CurrentPageMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         page = self.get_current_page()
 
         # Expose the same context data as PageTypePlugin.get_context()
@@ -69,7 +69,7 @@ class CurrentPageMixin(ViewUrlMixin):
                 current_page=self.get_current_page(),
             )
         else:
-            return super(CurrentPageMixin, self).get_view_url()
+            return super().get_view_url()
 
 
 class CurrentPageTemplateMixin(CurrentPageMixin):

@@ -21,7 +21,7 @@ class Command(BaseCommand):
     args = "language"
 
     def add_arguments(self, parser):
-        super(Command, self).add_arguments(parser)
+        super().add_arguments(parser)
         parser.add_argument(
             "--format",
             default="nginx",
@@ -49,7 +49,7 @@ class Command(BaseCommand):
             host = Site.objects.get_current().domain
 
         if "://" not in host:
-            host = "http://{0}".format(host)
+            host = f"http://{host}"
 
         from_name = get_language_info(from_lang)["name"]
         to_name = get_language_info(to_lang)["name"]
@@ -63,15 +63,15 @@ class Command(BaseCommand):
             )
             if not qs:
                 raise CommandError(
-                    "No URLs found for site {0} in {1}".format(site, from_name)
+                    f"No URLs found for site {site} in {from_name}"
                 )
 
             self.stdout.write(
-                "# Redirecting all translated {0} URLs to the {1} site\n".format(
+                "# Redirecting all translated {} URLs to the {} site\n".format(
                     from_name, to_name
                 )
             )
-            self.stdout.write("# Generated using {0}".format(" ".join(sys.argv)))
+            self.stdout.write("# Generated using {}".format(" ".join(sys.argv)))
 
             for page in qs:
                 from_url = page.default_url
@@ -83,10 +83,10 @@ class Command(BaseCommand):
 
                 if from_url.endswith("/"):
                     from_regexp = from_url.rstrip("/")
-                    from_rule = "~ ^{0}(/|$)".format(from_regexp)
+                    from_rule = f"~ ^{from_regexp}(/|$)"
                 else:
                     from_regexp = from_url
-                    from_rule = "= {0}".format(from_regexp)
+                    from_rule = f"= {from_regexp}"
 
                 if page.plugin.urls:
                     self.stdout.write(
@@ -104,5 +104,5 @@ class Command(BaseCommand):
             # Final redirect for all identical URLs
             self.stdout.write("\n# Redirect all remaining and identical URls:\n")
             self.stdout.write(
-                "location / {{ rewrite ^/(.*)$  {0}/$1 permanent; }}\n".format(host)
+                f"location / {{ rewrite ^/(.*)$  {host}/$1 permanent; }}\n"
             )

@@ -10,7 +10,7 @@ from django.utils import translation
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from fluent_pages import appsettings
 from mptt.forms import TreeNodeChoiceField
@@ -22,7 +22,7 @@ class TemplateFilePathField(forms.FilePathField):
     """
 
     def __init__(self, *args, **kwargs):
-        super(TemplateFilePathField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # Make choices relative if requested.
         if appsettings.FLUENT_PAGES_RELATIVE_TEMPLATE_DIR:
@@ -54,7 +54,7 @@ class RelativeRootPathField(forms.CharField):
     """
 
     def __init__(self, *args, **kwargs):
-        super(RelativeRootPathField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.language_code = get_language()
 
     def bound_data(self, data, initial):
@@ -80,7 +80,7 @@ class RelativeRootPathField(forms.CharField):
         Removes the root of the CMS pages.
         """
         root = self.get_root(value)
-        value = super(RelativeRootPathField, self).to_python(value)
+        value = super().to_python(value)
         if root and value.startswith(root):
             value = value[len(root) :]
         return value
@@ -105,10 +105,10 @@ class PageChoiceField(TreeNodeChoiceField):
             self.custom_qs = False
         else:
             self.custom_qs = True
-        super(PageChoiceField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __deepcopy__(self, memo):
-        new_self = super(PageChoiceField, self).__deepcopy__(memo)
+        new_self = super().__deepcopy__(memo)
 
         if not self.custom_qs:
             # Reevaluate the queryset for django-multisite support.
@@ -130,7 +130,7 @@ class PageChoiceField(TreeNodeChoiceField):
         """
         try:
             # either to_python() or validate() can check the model
-            return super(PageChoiceField, self).clean(value)
+            return super().clean(value)
         except ValidationError as e:
             if e.code == "invalid_choice":
                 if self._is_unpublished(value):
@@ -152,4 +152,4 @@ class PageChoiceField(TreeNodeChoiceField):
 
     def label_from_instance(self, page):
         page_title = page.title or page.slug  # TODO: menu title?
-        return mark_safe(u"%s %s" % (u"&nbsp;&nbsp;" * page.level, escape(page_title)))
+        return mark_safe("{} {}".format("&nbsp;&nbsp;" * page.level, escape(page_title)))

@@ -1,5 +1,5 @@
 from django.contrib.admin.widgets import AdminTextareaWidget, AdminTextInputWidget
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .overrides import PageAdmin
 
@@ -52,4 +52,4 @@ class HtmlPageAdmin(PageAdmin):
         if db_field.name == "meta_description":
             kwargs.setdefault("widget", AdminTextareaWidget(attrs={"rows": 3}))
 
-        return super(HtmlPageAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        return super().formfield_for_dbfield(db_field, **kwargs)

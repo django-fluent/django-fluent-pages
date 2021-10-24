@@ -6,7 +6,6 @@ import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.text import slugify
-from future.builtins import str
 
 from parler import appsettings as parler_appsettings
 from parler.utils import is_supported_django_language, normalize_language_code
@@ -82,11 +81,11 @@ else:
     )
     if not os.path.isabs(FLUENT_PAGES_TEMPLATE_DIR):
         raise ImproperlyConfigured(
-            "The setting '{0}' needs to be an absolute path!".format(settingName)
+            f"The setting '{settingName}' needs to be an absolute path!"
         )
     if not os.path.exists(FLUENT_PAGES_TEMPLATE_DIR):
         raise ImproperlyConfigured(
-            "The path '{0}' in the setting '{1}' does not exist!".format(
+            "The path '{}' in the setting '{}' does not exist!".format(
                 FLUENT_PAGES_TEMPLATE_DIR, settingName
             )
         )
@@ -99,7 +98,7 @@ FLUENT_PAGES_DEFAULT_LANGUAGE_CODE = normalize_language_code(
 
 if not is_supported_django_language(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE):
     raise ImproperlyConfigured(
-        "FLUENT_PAGES_DEFAULT_LANGUAGE_CODE '{0}' does not exist in LANGUAGES".format(
+        "FLUENT_PAGES_DEFAULT_LANGUAGE_CODE '{}' does not exist in LANGUAGES".format(
             FLUENT_PAGES_DEFAULT_LANGUAGE_CODE
         )
     )

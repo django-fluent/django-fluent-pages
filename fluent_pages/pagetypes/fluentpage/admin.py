@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 from django.contrib import admin
 
 from fluent_contents.analyzer import get_template_placeholder_data
@@ -17,7 +17,7 @@ class FluentPageAdminForm(PageAdminForm):
     """
 
     def __init__(self, *args, **kwargs):
-        super(FluentPageAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if "layout" in self.fields:
             self.fields["layout"].queryset = self.get_layout_queryset(
                 self.fields["layout"].queryset
@@ -108,7 +108,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == "layout":
             kwargs["widget"] = LayoutSelector
-        return super(FluentPageAdmin, self).formfield_for_foreignkey(
+        return super().formfield_for_foreignkey(
             db_field, request, **kwargs
         )
 
@@ -116,10 +116,10 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         """
         Introduce more urls
         """
-        urls = super(FluentPageAdmin, self).get_urls()
+        urls = super().get_urls()
         my_urls = [
-            url(
-                r"^get_layout/(?P<id>\d+)/$",
+            path(
+                'get_layout/<int:id>/',
                 self.admin_site.admin_view(self.get_layout_view),
                 name="fluentpage_get_layout",
             )
@@ -152,7 +152,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     # ---- Layout permission hooks ----
 
     def get_readonly_fields(self, request, obj=None):
-        fields = super(FluentPageAdmin, self).get_readonly_fields(request, obj)
+        fields = super().get_readonly_fields(request, obj)
 
         if (
             obj is not None
@@ -168,5 +168,5 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         """
         Whether the user can change the page layout.
         """
-        codename = "{0}.change_page_layout".format(obj._meta.app_label)
+        codename = f"{obj._meta.app_label}.change_page_layout"
         return request.user.has_perm(codename, obj=obj)

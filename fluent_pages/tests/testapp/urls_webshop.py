@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 from django.http import HttpResponse
 
 
@@ -11,6 +11,6 @@ def webshop_article(request, slug):
 
 
 urlpatterns = [
-    url(r"^$", webshop_index, name="webshop_index"),
-    url(r"^(?P<slug>[^/]+)/$", webshop_article, name="webshop_article"),
+    path('', webshop_index, name="webshop_index"),
+    path('<str:slug>/', webshop_article, name="webshop_article"),
 ]

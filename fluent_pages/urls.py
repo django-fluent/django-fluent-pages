@@ -13,7 +13,7 @@ The following named URLs are defined:
 
 By Appending @admin to an URL, the request will be redirected to the admin URL of the page.
 """
-from django.conf.urls import url
+from django.urls import path, re_path
 
 from fluent_pages.views import CmsPageAdminRedirect, CmsPageDispatcher
 
@@ -22,11 +22,11 @@ from fluent_pages.views import CmsPageAdminRedirect, CmsPageDispatcher
 # Sadly, that circumvents the CommonMiddleware check whether a slash needs to be appended to a path.
 # The APPEND_SLASH behavior is implemented in the CmsPageDispatcher so the standard behavior still works as expected.
 urlpatterns = [
-    url(
+    re_path(
         r"^(?P<path>.*)@admin$",
         CmsPageAdminRedirect.as_view(),
         name="fluent-page-admin-redirect",
     ),
-    url(r"^(?P<path>.*)$", CmsPageDispatcher.as_view(), name="fluent-page-url"),
-    url(r"^$", CmsPageDispatcher.as_view(), name="fluent-page"),
+    re_path(r"^(?P<path>.*)$", CmsPageDispatcher.as_view(), name="fluent-page-url"),
+    path('', CmsPageDispatcher.as_view(), name="fluent-page"),
 ]

@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from django_wysiwyg.utils import clean_html, sanitize_html
 from fluent_pages.models import HtmlPage
@@ -37,4 +37,4 @@ class FlatPage(HtmlPage):
         if appsettings.FLUENT_TEXT_SANITIZE_HTML:
             self.content = sanitize_html(self.content)
 
-        super(FlatPage, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

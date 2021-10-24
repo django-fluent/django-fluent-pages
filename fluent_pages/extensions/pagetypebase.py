@@ -9,8 +9,6 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import DatabaseError
 from django.template.response import TemplateResponse
 from django.utils.functional import SimpleLazyObject
-from future.builtins import str
-from future.utils import string_types, with_metaclass
 
 from fluent_pages import appsettings
 from fluent_pages.adminui import PageAdmin
@@ -29,7 +27,7 @@ except ImportError:
 __all__ = ("PageTypePlugin",)
 
 
-class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
+class PageTypePlugin(metaclass=forms.MediaDefiningClass):
     """
     The base class for a page type plugin.
 
@@ -118,7 +116,7 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
         self._url_resolver = None
 
     def __repr__(self):
-        return "<{0} for {1} model>".format(
+        return "<{} for {} model>".format(
             self.__class__.__name__, str(self.model.__name__).encode("ascii")
         )
 
@@ -146,7 +144,7 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
                 self._type_id = ContentType.objects.get_for_model(self.model).id
             except DatabaseError as e:
                 raise DatabaseError(
-                    "Unable to fetch ContentType object, is a plugin being registered before the initial syncdb? (original error: {0})".format(
+                    "Unable to fetch ContentType object, is a plugin being registered before the initial syncdb? (original error: {})".format(
                         str(e)
                     )
                 )
@@ -169,7 +167,7 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
         render_template = self.get_render_template(request, page, **kwargs)
         if not render_template:
             raise ImproperlyConfigured(
-                "{0} should either provide a definition of `render_template`, `urls` or an implementation of `get_response()`".format(
+                "{} should either provide a definition of `render_template`, `urls` or an implementation of `get_response()`".format(
                     self.__class__.__name__
                 )
             )
@@ -217,18 +215,18 @@ class PageTypePlugin(with_metaclass(forms.MediaDefiningClass, object)):
         if self._url_resolver is None:
             if self.urls is None:
                 return None
-            elif isinstance(self.urls, string_types):
+            elif isinstance(self.urls, str):
                 mod = import_module(self.urls)
                 if not hasattr(mod, "urlpatterns"):
                     raise ImproperlyConfigured(
-                        "URLConf `{0}` has no urlpatterns attribute".format(self.urls)
+                        f"URLConf `{self.urls}` has no urlpatterns attribute"
                     )
                 patterns = getattr(mod, "urlpatterns")
             elif isinstance(self.urls, (list, tuple)):
                 patterns = self.urls
             else:
                 raise ImproperlyConfigured(
-                    "Invalid value for '{0}.urls', must be string, list or tuple.".format(
+                    "Invalid value for '{}.urls', must be string, list or tuple.".format(
                         self.__class__.__name__
                     )
                 )

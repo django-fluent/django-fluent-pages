@@ -5,7 +5,6 @@ the API is exposed via __init__.py
 from threading import Lock
 
 from django.contrib.contenttypes.models import ContentType
-from future.builtins import int, object
 
 from fluent_pages.models import UrlNode
 from fluent_utils.load import import_apps_submodule
@@ -32,7 +31,7 @@ class PageTypeNotFound(Exception):
     """
 
 
-class PageTypePool(object):
+class PageTypePool:
     """
     The central administration of plugins.
     """
@@ -116,7 +115,7 @@ class PageTypePool(object):
             name = self._name_for_model[model_class]
         except KeyError:
             raise PageTypeNotFound(
-                "No plugin found for model '{0}'.".format(model_class.__name__)
+                f"No plugin found for model '{model_class.__name__}'."
             )
         return self.plugins[name]
 
@@ -141,9 +140,9 @@ class PageTypePool(object):
             except AttributeError:  # should return the stale type but Django <1.6 raises an AttributeError in fact.
                 ct_name = "stale content type"
             else:
-                ct_name = "{0}.{1}".format(ct.app_label, ct.model)
+                ct_name = f"{ct.app_label}.{ct.model}"
             raise PageTypeNotFound(
-                "No plugin found for content type #{0} ({1}).".format(
+                "No plugin found for content type #{} ({}).".format(
                     contenttype, ct_name
                 )
             )
