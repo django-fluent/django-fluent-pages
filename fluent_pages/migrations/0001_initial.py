@@ -1,9 +1,9 @@
+import slug_preview.models
 from django.conf import settings
 from django.db import migrations, models
 
 import fluent_pages.models.db
 import fluent_pages.models.fields
-import slug_preview.models
 from fluent_pages import appsettings
 
 
@@ -42,9 +42,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "language_code",
-                    models.CharField(
-                        db_index=True, max_length=15, verbose_name="Language"
-                    ),
+                    models.CharField(db_index=True, max_length=15, verbose_name="Language"),
                 ),
                 (
                     "meta_keywords",
@@ -187,15 +185,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "creation_date",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="creation date"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="creation date"),
                 ),
                 (
                     "modification_date",
-                    models.DateTimeField(
-                        auto_now=True, verbose_name="last modification"
-                    ),
+                    models.DateTimeField(auto_now=True, verbose_name="last modification"),
                 ),
                 (
                     "author",
@@ -263,9 +257,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "language_code",
-                    models.CharField(
-                        db_index=True, max_length=15, verbose_name="Language"
-                    ),
+                    models.CharField(db_index=True, max_length=15, verbose_name="Language"),
                 ),
                 ("title", models.CharField(max_length=255, verbose_name="title")),
                 (
@@ -315,9 +307,7 @@ class Migration(migrations.Migration):
             name="urlnode_translation",
             unique_together={("language_code", "master")},
         ),
-        migrations.AlterUniqueTogether(
-            name="urlnode", unique_together={("parent_site", "key")}
-        ),
+        migrations.AlterUniqueTogether(name="urlnode", unique_together={("parent_site", "key")}),
         migrations.CreateModel(
             name="Page",
             fields=[],

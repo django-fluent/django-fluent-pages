@@ -33,7 +33,5 @@ class RedirectNodeAdmin(PageAdmin):
         """
         # If the field is named as a radio_field, use a RadioSelect
         if db_field.name == "redirect_type":
-            kwargs["widget"] = AdminRadioSelect(
-                attrs={"class": get_ul_class(admin.VERTICAL)}
-            )
+            kwargs["widget"] = AdminRadioSelect(attrs={"class": get_ul_class(admin.VERTICAL)})
         return db_field.formfield(**kwargs)

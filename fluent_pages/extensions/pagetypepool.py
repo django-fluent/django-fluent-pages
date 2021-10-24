@@ -5,9 +5,9 @@ the API is exposed via __init__.py
 from threading import Lock
 
 from django.contrib.contenttypes.models import ContentType
+from fluent_utils.load import import_apps_submodule
 
 from fluent_pages.models import UrlNode
-from fluent_utils.load import import_apps_submodule
 
 from .pagetypebase import PageTypePlugin
 
@@ -57,9 +57,7 @@ class PageTypePool:
         If a plugin is already registered, this will raise a :class:`PluginAlreadyRegistered` exception.
         """
         # Duct-Typing does not suffice here, avoid hard to debug problems by upfront checks.
-        assert issubclass(
-            plugin, PageTypePlugin
-        ), "The plugin must inherit from `PageTypePlugin`"
+        assert issubclass(plugin, PageTypePlugin), "The plugin must inherit from `PageTypePlugin`"
         assert plugin.model, "The plugin has no model defined"
         assert issubclass(
             plugin.model, UrlNode
@@ -114,18 +112,14 @@ class PageTypePool:
         try:
             name = self._name_for_model[model_class]
         except KeyError:
-            raise PageTypeNotFound(
-                f"No plugin found for model '{model_class.__name__}'."
-            )
+            raise PageTypeNotFound(f"No plugin found for model '{model_class.__name__}'.")
         return self.plugins[name]
 
     def _get_plugin_by_content_type(self, contenttype):
         self._import_plugins()
         self._setup_lazy_indexes()
 
-        ct_id = (
-            contenttype.id if isinstance(contenttype, ContentType) else int(contenttype)
-        )
+        ct_id = contenttype.id if isinstance(contenttype, ContentType) else int(contenttype)
         try:
             name = self._name_for_ctype_id[ct_id]
         except KeyError:
@@ -142,9 +136,7 @@ class PageTypePool:
             else:
                 ct_name = f"{ct.app_label}.{ct.model}"
             raise PageTypeNotFound(
-                "No plugin found for content type #{} ({}).".format(
-                    contenttype, ct_name
-                )
+                "No plugin found for content type #{} ({}).".format(contenttype, ct_name)
             )
 
         return self.plugins[name]
@@ -189,9 +181,7 @@ class PageTypePool:
         of page types that provide URL patterns.
         """
         if self._url_types is None:
-            self._url_types = [
-                plugin.type_id for plugin in self.get_url_pattern_plugins()
-            ]
+            self._url_types = [plugin.type_id for plugin in self.get_url_pattern_plugins()]
 
         return self._url_types
 

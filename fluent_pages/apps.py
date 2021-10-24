@@ -1,7 +1,6 @@
 import re
 
 from django.apps import AppConfig
-
 from fluent_utils.load import import_module_or_none
 
 

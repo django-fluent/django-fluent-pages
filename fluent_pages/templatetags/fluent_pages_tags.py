@@ -9,12 +9,12 @@ Load this module using:
 from django.contrib.sites.models import Site
 from django.template import Library, TemplateSyntaxError
 from django.utils.functional import SimpleLazyObject
+from tag_parser import template_tag
+from tag_parser.basetags import BaseInclusionNode, BaseNode
 
 from fluent_pages.models import UrlNode
 from fluent_pages.models.navigation import PageNavigationNode
 from fluent_pages.models.utils import prefill_parent_site
-from tag_parser import template_tag
-from tag_parser.basetags import BaseInclusionNode, BaseNode
 
 register = Library()
 
@@ -129,9 +129,7 @@ class MenuNode(BaseInclusionNode):
             "parent": parent_context,
             "request": request,
             "menu_items": [
-                PageNavigationNode(
-                    page, current_page=current_page, for_user=user, **node_kwargs
-                )
+                PageNavigationNode(page, current_page=current_page, for_user=user, **node_kwargs)
                 for page in top_pages
             ],
         }
@@ -215,9 +213,7 @@ def _get_current_page(context):
                 )
 
         if not isinstance(current_page, UrlNode):
-            raise UrlNode.DoesNotExist(
-                "The 'page' context variable is not a valid page"
-            )
+            raise UrlNode.DoesNotExist("The 'page' context variable is not a valid page")
 
         prefill_parent_site(current_page)
         request._current_fluent_page = current_page

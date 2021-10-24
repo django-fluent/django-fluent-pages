@@ -46,8 +46,9 @@ def _register_cmsfield_url_type():
     except ImportError:
         pass
     else:
-        import any_urlfield
         from distutils.version import StrictVersion
+
+        import any_urlfield
         from any_urlfield.forms.widgets import SimpleRawIdWidget
 
         if StrictVersion(any_urlfield.__version__) >= StrictVersion("2.0a1"):

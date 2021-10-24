@@ -6,9 +6,9 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import translation
 from django.utils.translation import get_language_info
+from parler.utils.context import switch_language
 
 from fluent_pages.models import UrlNode
-from parler.utils.context import switch_language
 
 
 class Command(BaseCommand):
@@ -62,14 +62,10 @@ class Command(BaseCommand):
                 .order_by("translations___cached_url")
             )
             if not qs:
-                raise CommandError(
-                    f"No URLs found for site {site} in {from_name}"
-                )
+                raise CommandError(f"No URLs found for site {site} in {from_name}")
 
             self.stdout.write(
-                "# Redirecting all translated {} URLs to the {} site\n".format(
-                    from_name, to_name
-                )
+                "# Redirecting all translated {} URLs to the {} site\n".format(from_name, to_name)
             )
             self.stdout.write("# Generated using {}".format(" ".join(sys.argv)))
 
@@ -96,13 +92,9 @@ class Command(BaseCommand):
                     )
                 else:
                     self.stdout.write(
-                        "location {0} {{ return 301 {1}{2}; }}\n".format(
-                            from_rule, host, to_url
-                        )
+                        "location {0} {{ return 301 {1}{2}; }}\n".format(from_rule, host, to_url)
                     )
 
             # Final redirect for all identical URLs
             self.stdout.write("\n# Redirect all remaining and identical URls:\n")
-            self.stdout.write(
-                f"location / {{ rewrite ^/(.*)$  {host}/$1 permanent; }}\n"
-            )
+            self.stdout.write(f"location / {{ rewrite ^/(.*)$  {host}/$1 permanent; }}\n")

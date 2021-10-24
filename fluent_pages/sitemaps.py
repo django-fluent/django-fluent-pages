@@ -35,9 +35,7 @@ class PageSitemap(Sitemap):
             .non_polymorphic()
             .active_translations()
             .prefetch_related("translations")
-            .order_by(
-                "level", "translations__language_code", "translations___cached_url"
-            )
+            .order_by("level", "translations__language_code", "translations___cached_url")
         )
 
     def lastmod(self, urlnode):

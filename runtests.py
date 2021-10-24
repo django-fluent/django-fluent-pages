@@ -12,9 +12,7 @@ from django.core.management import execute_from_command_line
 warnings.simplefilter("always", DeprecationWarning)
 
 # Give feedback on used versions
-sys.stderr.write(
-    f"Using Python version {sys.version[:5]} from {sys.executable}\n"
-)
+sys.stderr.write(f"Using Python version {sys.version[:5]} from {sys.executable}\n")
 sys.stderr.write(
     "Using Django version {} from {}\n".format(
         django.get_version(), path.dirname(path.abspath(django.__file__))
@@ -26,7 +24,7 @@ if not settings.configured:
 
     settings.configure(
         DATABASES={
-            "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}
+            "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"},
         },
         INSTALLED_APPS=(
             "django.contrib.auth",
@@ -94,8 +92,7 @@ DEFAULT_TEST_APPS = ["fluent_pages"]
 def runtests():
     other_args = list(filter(lambda arg: arg.startswith("-"), sys.argv[1:]))
     test_apps = (
-        list(filter(lambda arg: not arg.startswith("-"), sys.argv[1:]))
-        or DEFAULT_TEST_APPS
+        list(filter(lambda arg: not arg.startswith("-"), sys.argv[1:])) or DEFAULT_TEST_APPS
     )
     argv = sys.argv[:1] + ["test", "--traceback"] + other_args + test_apps
     execute_from_command_line(argv)

@@ -6,11 +6,11 @@ Everything can be imported from ``__init__.py``.
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import get_template
-
 from fluent_contents.admin import PlaceholderEditorAdmin
 from fluent_contents.analyzer import get_template_placeholder_data
 from fluent_contents.extensions import PluginNotFound, plugin_pool
 from fluent_contents.models import ContentItem
+
 from fluent_pages.adminui import HtmlPageAdmin
 
 
@@ -92,10 +92,7 @@ class FluentContentsPageAdmin(PlaceholderEditorAdmin, HtmlPageAdmin):
             # Extract all slot names from the template, and base the list of plugins on that.
             # Note that this actually parses the template, but it will be cached for production environments.
             template = get_template(self.placeholder_layout_template)
-            slots = [
-                placeholder.slot
-                for placeholder in get_template_placeholder_data(template)
-            ]
+            slots = [placeholder.slot for placeholder in get_template_placeholder_data(template)]
 
             # Resolve all plugins.
             plugins = []

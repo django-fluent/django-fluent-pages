@@ -3,9 +3,9 @@ Mixins to simplify creating URLpattern views in custom page pages.
 """
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from parler.views import ViewUrlMixin
 
 from fluent_pages.urlresolvers import mixed_reverse
-from parler.views import ViewUrlMixin
 
 
 class CurrentPageMixin(ViewUrlMixin):

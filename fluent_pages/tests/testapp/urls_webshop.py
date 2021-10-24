@@ -1,5 +1,5 @@
-from django.urls import path
 from django.http import HttpResponse
+from django.urls import path
 
 
 def webshop_index(request):
@@ -11,6 +11,6 @@ def webshop_article(request, slug):
 
 
 urlpatterns = [
-    path('', webshop_index, name="webshop_index"),
-    path('<str:slug>/', webshop_article, name="webshop_article"),
+    path("", webshop_index, name="webshop_index"),
+    path("<str:slug>/", webshop_article, name="webshop_article"),
 ]

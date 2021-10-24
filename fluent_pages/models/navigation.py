@@ -41,16 +41,12 @@ class NavigationNode:
     slug = property(_not_implemented, doc="The slug of the node.")
     title = property(_not_implemented, doc="The title of the node.")
     url = property(_not_implemented, doc="The URL of the node.")
-    is_active = property(
-        _not_implemented, doc="True if the node is the currently active page."
-    )
+    is_active = property(_not_implemented, doc="True if the node is the currently active page.")
     is_child_active = property(
         _not_implemented,
         doc="True if a child of this node is the currently active page.",
     )
-    is_published = property(
-        _not_implemented, doc="True if the node is a normal published item."
-    )
+    is_published = property(_not_implemented, doc="True if the node is a normal published item.")
     is_draft = property(_not_implemented, doc="True if the node is a draft item.")
     level = property(_not_implemented, doc="The depth of the menu level.")
     parent = property(_not_implemented, doc="The parent node.")
@@ -95,9 +91,7 @@ class PageNavigationNode(NavigationNode):
     An implementation of the :class:`NavigationNode` for :class:`~fluent_pages.models.Page` models.
     """
 
-    def __init__(
-        self, page, parent_node=None, max_depth=9999, current_page=None, for_user=None
-    ):
+    def __init__(self, page, parent_node=None, max_depth=9999, current_page=None, for_user=None):
         """
         Initialize the node with a Page.
         """
@@ -161,9 +155,7 @@ class PageNavigationNode(NavigationNode):
     def parent(self, new_parent):
         # Happens when django-mptt finds an object with a different level in the recursetree() / cache_tree_children() code.
         raise AttributeError(
-            "can't set attribute 'parent' of '{}' object.".format(
-                self.__class__.__name__
-            )
+            "can't set attribute 'parent' of '{}' object.".format(self.__class__.__name__)
         )
 
     @property
@@ -173,9 +165,7 @@ class PageNavigationNode(NavigationNode):
             for child in self._children:
                 if child.pk == self._page.pk:
                     # This happened with the get_query_set() / get_queryset() transition for Django 1.7, affecting Django 1.4/1.5
-                    raise RuntimeError(
-                        f"Page #{self._page.pk} children contained self!"
-                    )
+                    raise RuntimeError(f"Page #{self._page.pk} children contained self!")
 
                 yield PageNavigationNode(
                     child,

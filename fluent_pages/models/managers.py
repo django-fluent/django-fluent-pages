@@ -5,21 +5,16 @@ from django.conf import settings
 from django.db.models.query_utils import Q
 from django.utils.timezone import now
 from django.utils.translation import get_language
-
-from fluent_pages import appsettings
 from parler import is_multilingual_project
 from parler.managers import TranslatableManager, TranslatableQuerySet
-from polymorphic_tree.managers import (
-    PolymorphicMPTTModelManager,
-    PolymorphicMPTTQuerySet,
-)
+from polymorphic_tree.managers import PolymorphicMPTTModelManager, PolymorphicMPTTQuerySet
+
+from fluent_pages import appsettings
 
 from .utils import DecoratingQuerySet
 
 
-class UrlNodeQuerySet(
-    TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQuerySet
-):
+class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQuerySet):
     """
     Queryset methods for UrlNode objects.
     """
@@ -35,9 +30,7 @@ class UrlNodeQuerySet(
 
     def active_translations(self, language_code=None, **translated_fields):
         # overwritten to honor our settings instead of the django-parler defaults
-        language_codes = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(
-            language_code
-        )
+        language_codes = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
         return self.translated(*language_codes, **translated_fields)
 
     def get_for_id(self, pk):
@@ -73,9 +66,7 @@ class UrlNodeQuerySet(
             return obj
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(
-                "No published {} found for the path '{}'".format(
-                    self.model.__name__, path
-                )
+                "No published {} found for the path '{}'".format(self.model.__name__, path)
             )
 
     def best_match_for_path(self, path, language_code=None):
@@ -109,9 +100,7 @@ class UrlNodeQuerySet(
             return obj
         except IndexError:
             raise self.model.DoesNotExist(
-                "No published {} found for the path '{}'".format(
-                    self.model.__name__, path
-                )
+                "No published {} found for the path '{}'".format(self.model.__name__, path)
             )
 
     def _split_path_levels(self, path):
@@ -122,9 +111,7 @@ class UrlNodeQuerySet(
         paths = []
         if path:
             tokens = path.rstrip("/").split("/")
-            paths += [
-                "{}/".format("/".join(tokens[:i])) for i in range(1, len(tokens) + 1)
-            ]
+            paths += ["{}/".format("/".join(tokens[:i])) for i in range(1, len(tokens) + 1)]
 
             # If the original URL didn't end with a slash,
             # make sure the splitted path also doesn't.
@@ -151,9 +138,7 @@ class UrlNodeQuerySet(
                 )
             else:
                 raise self.model.DoesNotExist(
-                    "{} with key='{}' does not exist.".format(
-                        self.model.__name__, key
-                    )
+                    "{} with key='{}' does not exist.".format(self.model.__name__, key)
                 )
 
     def parent_site(self, site):
@@ -185,9 +170,9 @@ class UrlNodeQuerySet(
 
         .. versionchanged:: 0.9 This filter only returns the pages of the current site.
         """
-        from fluent_pages.models import (
+        from fluent_pages.models import (  # the import can't be globally, that gives a circular dependency
             UrlNode,
-        )  # the import can't be globally, that gives a circular dependency
+        )
 
         if for_user is not None and for_user.is_staff:
             return self._single_site()
@@ -196,10 +181,7 @@ class UrlNodeQuerySet(
             self._single_site()
             .filter(status=UrlNode.PUBLISHED)
             .filter(Q(publication_date__isnull=True) | Q(publication_date__lt=now()))
-            .filter(
-                Q(publication_end_date__isnull=True)
-                | Q(publication_end_date__gte=now())
-            )
+            .filter(Q(publication_end_date__isnull=True) | Q(publication_end_date__gte=now()))
         )
 
     def in_navigation(self, for_user=None):
@@ -221,9 +203,7 @@ class UrlNodeQuerySet(
         """
         from fluent_pages.extensions import page_type_pool
 
-        return self.filter(
-            polymorphic_ctype_id__in=(page_type_pool.get_url_pattern_types())
-        )
+        return self.filter(polymorphic_ctype_id__in=(page_type_pool.get_url_pattern_types()))
 
     def toplevel(self):
         """

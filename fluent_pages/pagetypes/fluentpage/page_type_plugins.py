@@ -1,7 +1,5 @@
 from fluent_pages.extensions import page_type_pool
-from fluent_pages.integration.fluent_contents.page_type_plugins import (
-    FluentContentsPagePlugin,
-)
+from fluent_pages.integration.fluent_contents.page_type_plugins import FluentContentsPagePlugin
 
 from .models import FluentPage
 

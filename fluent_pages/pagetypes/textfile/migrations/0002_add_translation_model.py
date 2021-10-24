@@ -20,9 +20,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "language_code",
-                    models.CharField(
-                        max_length=15, verbose_name="Language", db_index=True
-                    ),
+                    models.CharField(max_length=15, verbose_name="Language", db_index=True),
                 ),
                 ("content", models.TextField(verbose_name="File contents")),
                 (

@@ -4,9 +4,9 @@ Everything can be imported from ``__init__.py``.
 """
 
 from django.utils.translation import gettext_lazy as _
-
 from fluent_contents.models import Placeholder
 from fluent_contents.models.fields import ContentItemRelation, PlaceholderRelation
+
 from fluent_pages.models import HtmlPage, UrlNodeManager
 
 

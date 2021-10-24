@@ -46,9 +46,7 @@ class HtmlPageAdmin(PageAdmin):
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name in ("meta_title", "meta_keywords"):
-            kwargs.setdefault(
-                "widget", AdminTextInputWidget(attrs={"class": "vLargeTextField"})
-            )
+            kwargs.setdefault("widget", AdminTextInputWidget(attrs={"class": "vLargeTextField"}))
         if db_field.name == "meta_description":
             kwargs.setdefault("widget", AdminTextareaWidget(attrs={"rows": 3}))
 

@@ -79,38 +79,26 @@ class ModelDataTests(AppTestCase):
         self.assertEqual(Page.objects.get_for_path("/level1/level2/"), self.level2)
 
         # Any inaccuracies should raise errors
-        self.assertRaises(
-            Page.DoesNotExist, lambda: Page.objects.get_for_path("/level1/level2")
-        )
-        self.assertRaises(
-            Page.DoesNotExist, lambda: Page.objects.get_for_path("level1/level2/")
-        )
-        self.assertRaises(
-            Page.DoesNotExist, lambda: Page.objects.get_for_path("level1/level2")
-        )
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path("/level1/level2"))
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path("level1/level2/"))
+        self.assertRaises(Page.DoesNotExist, lambda: Page.objects.get_for_path("level1/level2"))
 
     def test_best_match_for_path(self):
         """
         The best match should return the first match, but never the '/'.
         """
-        self.assertEqual(
-            Page.objects.best_match_for_path("/level1/level2/foo/bar/"), self.level2
-        )
+        self.assertEqual(Page.objects.best_match_for_path("/level1/level2/foo/bar/"), self.level2)
         self.assertEqual(
             Page.objects.best_match_for_path("/level1/level2/noslash.txt"), self.level2
         )
 
         # If the root node has custom URLs support, that should also work:
-        self.assertEqual(
-            Page.objects.best_match_for_path("/virtual/root-path/"), self.root
-        )
+        self.assertEqual(Page.objects.best_match_for_path("/virtual/root-path/"), self.root)
 
         # If there is no slash, there is still a best match.
         # However, it can't be the level2 itself because that URL has a slash at it's end.
         # The URL dispatcher handles APPEND_SLASH behaviour, not the model API.
-        self.assertEqual(
-            Page.objects.best_match_for_path("/level1/level2"), self.level1
-        )
+        self.assertEqual(Page.objects.best_match_for_path("/level1/level2"), self.level1)
 
         # Any inaccuracies should raise errors
         self.assertRaises(
@@ -174,9 +162,7 @@ class ModelDataTests(AppTestCase):
         self.assertIs(
             type(Page.objects.get_for_path("/").children.all()), UrlNodeQuerySet
         )  # This broke with some django-mptt 0.5.x versions
-        self.assertEqual(
-            Page.objects.get_for_path("/").children.in_navigation()[0].slug, "level1"
-        )
+        self.assertEqual(Page.objects.get_for_path("/").children.in_navigation()[0].slug, "level1")
 
     def test_default_manager(self):
         """
@@ -331,9 +317,7 @@ class ModelDataTests(AppTestCase):
         level1.parent = root2
         level1.save()
         self.assertUrls(root2, {"en": "/home2/", "en-us": "/root2/"})
-        self.assertUrls(
-            level1, {"af": "/home2/level1-af/", "en-us": "/root2/level1/"}
-        )
+        self.assertUrls(level1, {"af": "/home2/level1-af/", "en-us": "/root2/level1/"})
 
         cache.clear()
 
@@ -351,9 +335,7 @@ class ModelDataTests(AppTestCase):
 
         # The duplicates should be detected per level,
         # and update when the page is moved.
-        page4 = SimpleTextPage.objects.create(
-            slug="dup-slug", parent=page3, author=self.user
-        )
+        page4 = SimpleTextPage.objects.create(slug="dup-slug", parent=page3, author=self.user)
         self.assertEqual(page4.slug, "dup-slug")
 
         page4.parent = None
@@ -406,9 +388,7 @@ class ModelDataTests(AppTestCase):
         # Note that .save() doesn't validate, as per default Django behavior.
         self.assertRaisesMessage(
             ValidationError,
-            force_str(
-                PageTreeForeignKey.default_error_messages["no_children_allowed"]
-            ),
+            force_str(PageTreeForeignKey.default_error_messages["no_children_allowed"]),
             lambda: text_file2.full_clean(),
         )
 

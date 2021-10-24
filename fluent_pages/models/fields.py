@@ -1,10 +1,10 @@
 import django
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from fluent_pages import forms
 from fluent_utils.django_compat import ForwardManyToOneDescriptor
 from polymorphic_tree.models import PolymorphicTreeForeignKey
+
+from fluent_pages import forms
 
 
 class TemplateFilePathField(models.FilePathField):
@@ -34,9 +34,7 @@ class TranslatedForeignKeyDescriptor(ForwardManyToOneDescriptor):
     def __get__(self, instance, instance_type=None):
         # let the .parent return an object in the same language as our selves.
         # note: when the object is switched to a different language, this updates the shared/cached parent.
-        obj = super().__get__(
-            instance, instance_type
-        )
+        obj = super().__get__(instance, instance_type)
         if instance is not None and obj is not None:
             obj.set_current_language(instance.get_current_language())
         return obj
@@ -50,9 +48,7 @@ class PageTreeForeignKey(PolymorphicTreeForeignKey):
     default_error_messages = {
         "required": _("This page type should have a parent."),
         "no_children_allowed": _("The selected page cannot have sub pages."),
-        "child_not_allowed": _(
-            "The selected page cannot have this page type as a child!"
-        ),
+        "child_not_allowed": _("The selected page cannot have this page type as a child!"),
     }
 
     def contribute_to_class(self, cls, name, **kwargs):

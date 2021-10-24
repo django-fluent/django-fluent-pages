@@ -6,29 +6,20 @@ import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.text import slugify
-
 from parler import appsettings as parler_appsettings
 from parler.utils import is_supported_django_language, normalize_language_code
 
-default_template_dir = next(
-    (t["DIRS"][0] for t in settings.TEMPLATES if t.get("DIRS")), None
-)
+default_template_dir = next((t["DIRS"][0] for t in settings.TEMPLATES if t.get("DIRS")), None)
 
 # Templates
 FLUENT_PAGES_BASE_TEMPLATE = getattr(
     settings, "FLUENT_PAGES_BASE_TEMPLATE", "fluent_pages/base.html"
 )
-FLUENT_PAGES_TEMPLATE_DIR = getattr(
-    settings, "FLUENT_PAGES_TEMPLATE_DIR", default_template_dir
-)
-FLUENT_PAGES_RELATIVE_TEMPLATE_DIR = getattr(
-    settings, "FLUENT_PAGES_RELATIVE_TEMPLATE_DIR", True
-)
+FLUENT_PAGES_TEMPLATE_DIR = getattr(settings, "FLUENT_PAGES_TEMPLATE_DIR", default_template_dir)
+FLUENT_PAGES_RELATIVE_TEMPLATE_DIR = getattr(settings, "FLUENT_PAGES_RELATIVE_TEMPLATE_DIR", True)
 
 # User-visible settings
-FLUENT_PAGES_DEFAULT_IN_NAVIGATION = getattr(
-    settings, "FLUENT_PAGES_DEFAULT_IN_NAVIGATION", True
-)
+FLUENT_PAGES_DEFAULT_IN_NAVIGATION = getattr(settings, "FLUENT_PAGES_DEFAULT_IN_NAVIGATION", True)
 FLUENT_PAGES_KEY_CHOICES = getattr(settings, "FLUENT_PAGES_KEY_CHOICES", ())
 
 # Note: the default language setting is used during the migrations
@@ -46,18 +37,12 @@ FLUENT_PAGES_LANGUAGES = getattr(
 )
 
 # Performance settings
-FLUENT_PAGES_PREFETCH_TRANSLATIONS = getattr(
-    settings, "FLUENT_PAGES_PREFETCH_TRANSLATIONS", False
-)
+FLUENT_PAGES_PREFETCH_TRANSLATIONS = getattr(settings, "FLUENT_PAGES_PREFETCH_TRANSLATIONS", False)
 
 # Advanced settings
 FLUENT_PAGES_FILTER_SITE_ID = getattr(settings, "FLUENT_PAGES_FILTER_SITE_ID", True)
-FLUENT_PAGES_PARENT_ADMIN_MIXIN = getattr(
-    settings, "FLUENT_PAGES_PARENT_ADMIN_MIXIN", None
-)
-FLUENT_PAGES_CHILD_ADMIN_MIXIN = getattr(
-    settings, "FLUENT_PAGES_CHILD_ADMIN_MIXIN", None
-)
+FLUENT_PAGES_PARENT_ADMIN_MIXIN = getattr(settings, "FLUENT_PAGES_PARENT_ADMIN_MIXIN", None)
+FLUENT_PAGES_CHILD_ADMIN_MIXIN = getattr(settings, "FLUENT_PAGES_CHILD_ADMIN_MIXIN", None)
 
 ROBOTS_TXT_DISALLOW_ALL = getattr(settings, "ROBOTS_TXT_DISALLOW_ALL", settings.DEBUG)
 
@@ -69,9 +54,7 @@ if not FLUENT_PAGES_TEMPLATE_DIR:
     )
 else:
     # Clean settings
-    FLUENT_PAGES_TEMPLATE_DIR = (
-        FLUENT_PAGES_TEMPLATE_DIR.rstrip("/" + os.path.sep) + os.path.sep
-    )
+    FLUENT_PAGES_TEMPLATE_DIR = FLUENT_PAGES_TEMPLATE_DIR.rstrip("/" + os.path.sep) + os.path.sep
 
     # Test whether the template dir for page templates exists.
     settingName = (
@@ -80,9 +63,7 @@ else:
         else "FLUENT_PAGES_TEMPLATE_DIR"
     )
     if not os.path.isabs(FLUENT_PAGES_TEMPLATE_DIR):
-        raise ImproperlyConfigured(
-            f"The setting '{settingName}' needs to be an absolute path!"
-        )
+        raise ImproperlyConfigured(f"The setting '{settingName}' needs to be an absolute path!")
     if not os.path.exists(FLUENT_PAGES_TEMPLATE_DIR):
         raise ImproperlyConfigured(
             "The path '{}' in the setting '{}' does not exist!".format(
@@ -92,9 +73,7 @@ else:
 
 
 # Clean settings
-FLUENT_PAGES_DEFAULT_LANGUAGE_CODE = normalize_language_code(
-    FLUENT_PAGES_DEFAULT_LANGUAGE_CODE
-)
+FLUENT_PAGES_DEFAULT_LANGUAGE_CODE = normalize_language_code(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE)
 
 if not is_supported_django_language(FLUENT_PAGES_DEFAULT_LANGUAGE_CODE):
     raise ImproperlyConfigured(
@@ -113,9 +92,7 @@ FLUENT_PAGES_LANGUAGES = parler_appsettings.add_default_language_settings(
 )
 
 # Using a slug field, enforce keys as slugs too.
-FLUENT_PAGES_KEY_CHOICES = [
-    (slugify(str(key)), title) for key, title in FLUENT_PAGES_KEY_CHOICES
-]
+FLUENT_PAGES_KEY_CHOICES = [(slugify(str(key)), title) for key, title in FLUENT_PAGES_KEY_CHOICES]
 
 
 def get_language_settings(language_code, site_id=None):

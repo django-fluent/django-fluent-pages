@@ -1,11 +1,11 @@
-from django.urls import path
 from django.contrib import admin
-
+from django.urls import path
 from fluent_contents.analyzer import get_template_placeholder_data
+from fluent_utils.ajax import JsonResponse
+
 from fluent_pages.admin import HtmlPageAdmin, PageAdminForm
 from fluent_pages.integration.fluent_contents.admin import FluentContentsPageAdmin
 from fluent_pages.models import PageLayout
-from fluent_utils.ajax import JsonResponse
 
 from .models import FluentPage
 from .widgets import LayoutSelector
@@ -108,9 +108,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
     def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
         if db_field.name == "layout":
             kwargs["widget"] = LayoutSelector
-        return super().formfield_for_foreignkey(
-            db_field, request, **kwargs
-        )
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_urls(self):
         """
@@ -119,7 +117,7 @@ class FluentPageAdmin(FluentContentsPageAdmin):
         urls = super().get_urls()
         my_urls = [
             path(
-                'get_layout/<int:id>/',
+                "get_layout/<int:id>/",
                 self.admin_site.admin_view(self.get_layout_view),
                 name="fluentpage_get_layout",
             )

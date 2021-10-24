@@ -1,17 +1,17 @@
+import mptt
 from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-
-import mptt
-from fluent_pages import appsettings
-from fluent_pages.forms.fields import RelativeRootPathField
-from fluent_pages.models import UrlNode, UrlNode_Translation
 from fluent_utils.dry.admin import MultiSiteAdminMixin
 from mptt.forms import MPTTAdminForm
 from parler.admin import TranslatableAdmin
 from parler.forms import TranslatableModelForm, TranslatedField
 from polymorphic_tree.admin import PolymorphicMPTTChildModelAdmin
 from slug_preview.forms import SlugPreviewFormMixin
+
+from fluent_pages import appsettings
+from fluent_pages.forms.fields import RelativeRootPathField
+from fluent_pages.models import UrlNode, UrlNode_Translation
 
 
 class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelForm):
@@ -42,9 +42,7 @@ class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelFor
         # When the is_sitemap field is exposed, make sure it has the right default.
         # This can't be set on the model level, because the default depends on the page type.
         if "in_sitemaps" in self.fields and not self.instance.pk:
-            self.fields[
-                "in_sitemaps"
-            ].initial = self.instance.plugin.default_in_sitemaps
+            self.fields["in_sitemaps"].initial = self.instance.plugin.default_in_sitemaps
 
     def clean(self):
         """
@@ -115,9 +113,7 @@ class UrlNodeAdminForm(MPTTAdminForm, SlugPreviewFormMixin, TranslatableModelFor
         return cleaned_data
 
 
-class UrlNodeChildAdmin(
-    MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, TranslatableAdmin
-):
+class UrlNodeChildAdmin(MultiSiteAdminMixin, PolymorphicMPTTChildModelAdmin, TranslatableAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.

@@ -21,10 +21,6 @@ from django.template.defaultfilters import slugify
 from django.urls import NoReverseMatch, reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-
-from fluent_pages import appsettings
-from fluent_pages.models.fields import PageTreeForeignKey, TemplateFilePathField
-from fluent_pages.models.managers import UrlNodeManager
 from fluent_utils.softdeps.any_imagefield import AnyImageField
 from parler.cache import get_object_cache_keys
 from parler.fields import TranslatedField
@@ -33,6 +29,10 @@ from parler.utils import get_language_title
 from parler.utils.context import switch_language
 from polymorphic_tree.models import PolymorphicMPTTModel, PolymorphicMPTTModelBase
 from slug_preview.models import SlugPreviewField
+
+from fluent_pages import appsettings
+from fluent_pages.models.fields import PageTreeForeignKey, TemplateFilePathField
+from fluent_pages.models.managers import UrlNodeManager
 
 logger = logging.getLogger(__name__)
 
@@ -162,12 +162,8 @@ class UrlNode(AbstractUrlNode):
         verbose_name=_("author"),
         editable=False,
     )
-    creation_date = models.DateTimeField(
-        _("creation date"), editable=False, auto_now_add=True
-    )
-    modification_date = models.DateTimeField(
-        _("last modification"), editable=False, auto_now=True
-    )
+    creation_date = models.DateTimeField(_("creation date"), editable=False, auto_now_add=True)
+    modification_date = models.DateTimeField(_("last modification"), editable=False, auto_now=True)
 
     # Caching
     _cached_url = TranslatedField()
@@ -282,9 +278,7 @@ class UrlNode(AbstractUrlNode):
         Return all available URLs to this page.
         """
         result = {}
-        for code, cached_url in self.translations.values_list(
-            "language_code", "_cached_url"
-        ):
+        for code, cached_url in self.translations.values_list("language_code", "_cached_url"):
             with switch_language(self, code):
                 root = reverse("fluent-page").rstrip("/")
                 result[code] = root + cached_url
@@ -355,18 +349,14 @@ class UrlNode(AbstractUrlNode):
         """
         Return ``True`` when the node is the first sibling.
         """
-        return self.is_root_node() or (
-            self.parent and (self.lft == self.parent.lft + 1)
-        )
+        return self.is_root_node() or (self.parent and (self.lft == self.parent.lft + 1))
 
     @property
     def is_last_child(self):
         """
         Return ``True`` when the node is the last sibling.
         """
-        return self.is_root_node() or (
-            self.parent and (self.rght + 1 == self.parent.rght)
-        )
+        return self.is_root_node() or (self.parent and (self.rght + 1 == self.parent.rght))
 
     @property
     def is_file(self):
@@ -471,9 +461,7 @@ class UrlNode(AbstractUrlNode):
             # Get the parent-url for the translation (fetched once to speed up)
             parent_url = parent_urls.get(language_code, None)
             if not parent_url:
-                fallback = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(
-                    language_code
-                )
+                fallback = appsettings.FLUENT_PAGES_LANGUAGES.get_fallback_language(language_code)
                 parent_url = parent_urls.get(fallback, None)
 
             translation = self._get_translated_model(language_code)
@@ -584,9 +572,7 @@ class UrlNode(AbstractUrlNode):
             if self.is_file:
                 translation._cached_url = f"{parent_url}{translation.slug}"
             else:
-                translation._cached_url = "{}{}/".format(
-                    parent_url, translation.slug
-                )
+                translation._cached_url = "{}{}/".format(parent_url, translation.slug)
 
     def _update_decendant_urls(self, translation):
         """
@@ -597,9 +583,7 @@ class UrlNode(AbstractUrlNode):
         # By using get_active_choices() instead of get_fallback_language()/get_fallback_languages(),
         # this code supports both django-parler 1.5 with multiple fallbacks, as the previously single fallback choice.
         current_language = translation.language_code
-        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(
-            current_language
-        )
+        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(current_language)
         fallback_languages = active_choices[1:]
 
         # Init the caches that are used for tracking generated URLs
@@ -611,9 +595,7 @@ class UrlNode(AbstractUrlNode):
         }
 
         for lang in fallback_languages:
-            fallback_url = self.safe_translation_getter(
-                "_cached_url", language_code=lang
-            )
+            fallback_url = self.safe_translation_getter("_cached_url", language_code=lang)
             if not fallback_url:
                 # The fallback language does not exist, mark explicitly as not available.
                 # Can't generate any URLs for sub objects, if they need a fallback language.
@@ -695,9 +677,7 @@ class UrlNode(AbstractUrlNode):
 
             # call base class, so this function doesn't recurse
             # This reads from _translations_cache!
-            sub_translation = subobject.get_translation(
-                subobject.get_current_language()
-            )
+            sub_translation = subobject.get_translation(subobject.get_current_language())
             super(UrlNode, subobject).save_translation(sub_translation)
             subobject._expire_url_caches()
 
@@ -707,9 +687,7 @@ class UrlNode(AbstractUrlNode):
         """
         cachekeys = [
             # created by urlresolvers._get_pages_of_type()
-            "fluent_pages.instance_of.{}.{}".format(
-                self.__class__.__name__, self.parent_site_id
-            )
+            "fluent_pages.instance_of.{}.{}".format(self.__class__.__name__, self.parent_site_id)
         ]
         for cachekey in cachekeys:
             cache.delete(cachekey)
@@ -873,9 +851,7 @@ class Page(UrlNode):
         # this will still fail for situations where a Page() is created without having a language at all.
         return self.safe_translation_getter(
             "title", any_language=True
-        ) or self.safe_translation_getter(
-            "slug", f"#{self.pk}", any_language=True
-        )
+        ) or self.safe_translation_getter("slug", f"#{self.pk}", any_language=True)
 
 
 class HtmlPage(Page):
@@ -894,26 +870,20 @@ class HtmlPage(Page):
 
     # SEO fields, the underlying HtmlPageTranslation model can be created dynamically.
     seo_translations = TranslatedFields(
-        meta_keywords=models.CharField(
-            _("keywords"), max_length=255, blank=True, default=""
-        ),
+        meta_keywords=models.CharField(_("keywords"), max_length=255, blank=True, default=""),
         meta_description=models.CharField(
             _("description"),
             max_length=255,
             blank=True,
             default="",
-            help_text=_(
-                "Typically, about 160 characters will be shown in search engines"
-            ),
+            help_text=_("Typically, about 160 characters will be shown in search engines"),
         ),
         meta_title=models.CharField(
             _("page title"),
             max_length=255,
             blank=True,
             default="",
-            help_text=_(
-                "When this field is not filled in, the menu title text will be used."
-            ),
+            help_text=_("When this field is not filled in, the menu title text will be used."),
         ),
         meta_image=AnyImageField(
             _("example image"),
@@ -921,9 +891,7 @@ class HtmlPage(Page):
             default="",
             help_text=_("This allows social media sites to pick a default image."),
         ),
-        meta=dict(
-            verbose_name=_("SEO Translation"), verbose_name_plural=_("SEO Translations")
-        ),
+        meta=dict(verbose_name=_("SEO Translation"), verbose_name_plural=_("SEO Translations")),
     )
 
     class Meta:

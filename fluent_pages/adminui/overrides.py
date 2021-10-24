@@ -1,5 +1,6 @@
-from fluent_pages import appsettings
 from fluent_utils.load import import_settings_class
+
+from fluent_pages import appsettings
 
 from .pageadmin import DefaultPageChildAdmin, DefaultPageParentAdmin
 
@@ -9,9 +10,7 @@ if not appsettings.FLUENT_PAGES_PARENT_ADMIN_MIXIN:
     PageParentAdmin = DefaultPageParentAdmin
 else:
     _ParentMixin = import_settings_class("FLUENT_PAGES_PARENT_ADMIN_MIXIN")
-    PageParentAdmin = type(
-        "PageParentAdmin", (_ParentMixin, DefaultPageParentAdmin), {}
-    )
+    PageParentAdmin = type("PageParentAdmin", (_ParentMixin, DefaultPageParentAdmin), {})
 
 if not appsettings.FLUENT_PAGES_CHILD_ADMIN_MIXIN:
     PageChildAdmin = DefaultPageChildAdmin

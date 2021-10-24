@@ -2,9 +2,9 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import get_language
 from django.views.generic import TemplateView
+from parler.utils import is_multilingual_project
 
 from fluent_pages import appsettings
-from parler.utils import is_multilingual_project
 
 
 class RobotsTxtView(TemplateView):
@@ -83,10 +83,7 @@ class RobotsTxtView(TemplateView):
         """
         if self.has_i18n_patterns_urls():
             language_codes = self.get_i18n_patterns_codes()
-            return [
-                f"{root_url}{language_code}/sitemap.xml"
-                for language_code in language_codes
-            ]
+            return [f"{root_url}{language_code}/sitemap.xml" for language_code in language_codes]
         else:
             return [f"{root_url}sitemap.xml"]
 

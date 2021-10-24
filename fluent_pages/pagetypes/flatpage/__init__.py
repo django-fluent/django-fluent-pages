@@ -16,6 +16,4 @@ if backendapp not in settings.INSTALLED_APPS:
 try:
     import django_wysiwyg  # noqa
 except ImportError:
-    raise ImportError(
-        "The 'django-wysiwyg' package is required to use the 'flatpage' page type."
-    )
+    raise ImportError("The 'django-wysiwyg' package is required to use the 'flatpage' page type.")

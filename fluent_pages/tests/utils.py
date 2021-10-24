@@ -28,9 +28,7 @@ class AppTestCase(TestCase):
             for appname in cls.install_apps:
                 if appname not in settings.INSTALLED_APPS:
                     print(f"Adding {appname} to INSTALLED_APPS")
-                    settings.INSTALLED_APPS = (appname,) + tuple(
-                        settings.INSTALLED_APPS
-                    )
+                    settings.INSTALLED_APPS = (appname,) + tuple(settings.INSTALLED_APPS)
                     run_migrate = True
 
                     testapp = import_module(appname)
@@ -94,9 +92,7 @@ class AppTestCase(TestCase):
             response.status_code,
             404,
             str(msg_prefix)
-            + "Page at {} should return 404, got {}.".format(
-                url, response.status_code
-            ),
+            + "Page at {} should return 404, got {}.".format(url, response.status_code),
         )
 
 

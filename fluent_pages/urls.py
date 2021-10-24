@@ -28,5 +28,5 @@ urlpatterns = [
         name="fluent-page-admin-redirect",
     ),
     re_path(r"^(?P<path>.*)$", CmsPageDispatcher.as_view(), name="fluent-page-url"),
-    path('', CmsPageDispatcher.as_view(), name="fluent-page"),
+    path("", CmsPageDispatcher.as_view(), name="fluent-page"),
 ]

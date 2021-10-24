@@ -11,9 +11,9 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
+from mptt.forms import TreeNodeChoiceField
 
 from fluent_pages import appsettings
-from mptt.forms import TreeNodeChoiceField
 
 
 class TemplateFilePathField(forms.FilePathField):
@@ -28,8 +28,7 @@ class TemplateFilePathField(forms.FilePathField):
         if appsettings.FLUENT_PAGES_RELATIVE_TEMPLATE_DIR:
             self.choices.sort(key=lambda choice: choice[1])
             self.choices = self.widget.choices = [
-                (filename.replace(self.path, "", 1), title)
-                for filename, title in self.choices
+                (filename.replace(self.path, "", 1), title) for filename, title in self.choices
             ]
 
     def prepare_value(self, value):

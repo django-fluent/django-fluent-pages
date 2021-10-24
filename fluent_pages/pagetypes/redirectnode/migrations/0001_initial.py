@@ -42,9 +42,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "language_code",
-                    models.CharField(
-                        db_index=True, max_length=15, verbose_name="Language"
-                    ),
+                    models.CharField(db_index=True, max_length=15, verbose_name="Language"),
                 ),
                 ("new_url", models.URLField(max_length=255, verbose_name="New URL")),
                 (

@@ -39,10 +39,10 @@ class AdminTests(AppTestCase):
     def test_child_types(self):
         """test that all child types are created and correct"""
         ids = {
-                self.root.polymorphic_ctype_id,
-                self.root2.polymorphic_ctype_id,
-                ContentType.objects.get_for_model(PlainTextFile).id,
-                ContentType.objects.get_for_model(WebShopPage).id,
+            self.root.polymorphic_ctype_id,
+            self.root2.polymorphic_ctype_id,
+            ContentType.objects.get_for_model(PlainTextFile).id,
+            ContentType.objects.get_for_model(WebShopPage).id,
         }
         childtypes = set(self.root2.get_child_types())
         self.assertEqual(len(ids), len(ids | childtypes))
@@ -61,7 +61,7 @@ class AdminTests(AppTestCase):
         self.assertEqual(response.status_code, expect_status)
 
     def test_allowed(self):
-        """"test the move with no modifications to child types"""
+        """ "test the move with no modifications to child types"""
         # try the move
         self.move_mode()
         # refresh objects
@@ -71,7 +71,7 @@ class AdminTests(AppTestCase):
         self.assertTrue(self.root.url.startswith(self.root2.url))
 
     def test_not_allowed(self):
-        """"test the move after removing child from allowed child types"""
+        """ "test the move after removing child from allowed child types"""
         # modify the childtypes cache
         page_key = self.root2.page_key
         self.root2._PolymorphicMPTTModel__child_types[page_key].remove(

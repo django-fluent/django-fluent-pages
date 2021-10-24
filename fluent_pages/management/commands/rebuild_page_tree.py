@@ -59,9 +59,7 @@ class Command(BaseCommand):
             self.stdout.write("Updating cached URLs")
             self.stdout.write("Page tree nodes:\n\n")
 
-        type_len = str(
-            max(len(plugin.type_name) for plugin in page_type_pool.get_plugins())
-        )
+        type_len = str(max(len(plugin.type_name) for plugin in page_type_pool.get_plugins()))
         col_style = "| {0:6} | {1:6} | {2:" + type_len + "} | {3:6} | {4}"
         header = col_style.format("Site", "Page", "Type", "Locale", "URL")
         sep = "-" * (len(header) + 40)
@@ -149,9 +147,7 @@ class Command(BaseCommand):
                 )
 
     def _construct_url(self, language_code, child_id, parents, slugs, overrides):
-        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(
-            language_code
-        )
+        active_choices = appsettings.FLUENT_PAGES_LANGUAGES.get_active_choices(language_code)
 
         breadcrumb = []
         cur = child_id

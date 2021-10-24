@@ -2,14 +2,14 @@ from django.conf import settings
 from django.contrib.admin import SimpleListFilter
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext_lazy as _
-
-from fluent_pages import appsettings
-from fluent_pages.models import UrlNode
 from fluent_utils.dry.admin import MultiSiteAdminMixin
 from parler.admin import TranslatableAdmin
 from parler.models import TranslationDoesNotExist
 from parler.utils import is_multilingual_project
 from polymorphic_tree.admin import NodeTypeChoiceForm, PolymorphicMPTTParentModelAdmin
+
+from fluent_pages import appsettings
+from fluent_pages.models import UrlNode
 
 
 class PageTypeChoiceForm(NodeTypeChoiceForm):
@@ -29,9 +29,7 @@ class PageTypeListFilter(SimpleListFilter):
         return queryset
 
 
-class UrlNodeParentAdmin(
-    MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTTParentModelAdmin
-):
+class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTTParentModelAdmin):
     """
     The internal machinery
     The admin screen for the ``UrlNode`` objects.
@@ -154,7 +152,7 @@ class UrlNodeParentAdmin(
     status_column.short_description = _("Status")
 
     def can_preview_object(self, urlnode):
-        """ Override whether the node can be previewed. """
+        """Override whether the node can be previewed."""
         if not hasattr(urlnode, "get_absolute_url") or not urlnode.is_published:
             return False
 
@@ -177,9 +175,7 @@ class UrlNodeParentAdmin(
         # The list code should be fixed instead, but that is much harder.
         if search_term:
             queryset = queryset.filter(level=0)
-        return super().get_search_results(
-            request, queryset, search_term
-        )
+        return super().get_search_results(request, queryset, search_term)
 
     # ---- Bulk actions ----
 

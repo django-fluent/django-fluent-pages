@@ -19,10 +19,10 @@ Usage:
 """
 from django.template import Library
 from django.utils.encoding import smart_str
+from tag_parser.basetags import BaseAssignmentOrOutputNode
 
 from fluent_pages.models.db import UrlNode
 from fluent_pages.urlresolvers import mixed_reverse
-from tag_parser.basetags import BaseAssignmentOrOutputNode
 
 register = Library()
 
@@ -37,9 +37,7 @@ class AppUrlNode(BaseAssignmentOrOutputNode):
     def get_value(self, context, *tag_args, **tag_kwargs):
         view_name = tag_args[0]
         url_args = tag_args[1::]
-        url_kwargs = {
-            smart_str(name, "ascii"): value for name, value in tag_kwargs.items()
-        }
+        url_kwargs = {smart_str(name, "ascii"): value for name, value in tag_kwargs.items()}
 
         # The app_reverse() tag can handle multiple results fine if it knows what the current page is.
         # Try to find it.

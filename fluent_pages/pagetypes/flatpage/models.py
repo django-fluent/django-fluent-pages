@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
 from django_wysiwyg.utils import clean_html, sanitize_html
+
 from fluent_pages.models import HtmlPage
 from fluent_pages.pagetypes.flatpage import appsettings
 

@@ -131,8 +131,7 @@ def _find_plugin_reverse(viewname, args, kwargs):
                 viewname,
                 args,
                 kwargs,
-                ", ".join(x.__class__.__name__ for x in page_type_pool.get_plugins())
-                or "none",
+                ", ".join(x.__class__.__name__ for x in page_type_pool.get_plugins()) or "none",
             )
         )
 
@@ -143,14 +142,13 @@ def _get_pages_of_type(model, language_code=None):
     """
     from django.conf import settings
     from django.core.cache import cache
+
     from fluent_pages.models.db import UrlNode
 
     if language_code is None:
         language_code = get_language()
 
-    cachekey = "fluent_pages.instance_of.{}.{}".format(
-        model.__name__, settings.SITE_ID
-    )
+    cachekey = "fluent_pages.instance_of.{}.{}".format(model.__name__, settings.SITE_ID)
     pages = cache.get(cachekey)
     if not pages:
         pages = (
@@ -190,6 +188,7 @@ def clear_app_reverse_cache():
     This only has to be called when doing bulk update/delete actions that circumvent the individual model classes.
     """
     from django.core.cache import cache
+
     from fluent_pages.extensions import page_type_pool
 
     for model in page_type_pool.get_model_classes():

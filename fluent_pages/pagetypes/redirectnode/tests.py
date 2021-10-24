@@ -1,4 +1,5 @@
 from any_urlfield.models import AnyUrlValue
+
 from fluent_pages.models import UrlNodeManager, UrlNodeQuerySet
 from fluent_pages.pagetypes.redirectnode.models import RedirectNode
 from fluent_pages.tests.testapp.models import SimpleTextPage

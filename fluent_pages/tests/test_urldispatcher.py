@@ -71,9 +71,7 @@ class UrlDispatcherTests(AppTestCase):
         because ``fluent_pages.urls`` is a catch-all for ALL url's, including those without a slash.
         """
         with override_settings(APPEND_SLASH=True):
-            self.assertRedirects(
-                self.client.get("/sibling1"), "/sibling1/", status_code=302
-            )
+            self.assertRedirects(self.client.get("/sibling1"), "/sibling1/", status_code=302)
 
         with override_settings(APPEND_SLASH=False):
             self.assert404("/sibling1", "APPEND_SLASH=False: ")
@@ -114,13 +112,11 @@ class UrlDispatcherTests(AppTestCase):
         Pages should render output via the ``render_template``.
         """
         # Test initial state
-        from fluent_pages.tests.testapp.page_type_plugins import (
+        from fluent_pages.tests.testapp.page_type_plugins import (  # Import here as it needs an existing DB
             SimpleTextPagePlugin,
-        )  # Import here as it needs an existing DB
-
-        self.assertEqual(
-            SimpleTextPagePlugin.render_template, "testapp/simpletextpage.html"
         )
+
+        self.assertEqual(SimpleTextPagePlugin.render_template, "testapp/simpletextpage.html")
 
         # Test how a normal page is rendered
         response = self.client.get("/sibling1/")
@@ -134,9 +130,7 @@ class UrlDispatcherTests(AppTestCase):
         # Test initial state
         from fluent_pages.tests.testapp.page_type_plugins import WebShopPagePlugin
 
-        self.assertEqual(
-            WebShopPagePlugin.urls, "fluent_pages.tests.testapp.urls_webshop"
-        )
+        self.assertEqual(WebShopPagePlugin.urls, "fluent_pages.tests.testapp.urls_webshop")
 
         response = self.client.get("/shop/")
         self.assertContains(

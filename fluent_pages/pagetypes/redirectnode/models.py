@@ -1,9 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from fluent_pages.models import Page
 from fluent_utils.softdeps.any_urlfield import AnyUrlField
 from parler.models import TranslatedFields
+
+from fluent_pages.models import Page
 
 
 class RedirectNode(Page):

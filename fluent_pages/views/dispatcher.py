@@ -38,9 +38,7 @@ class GetPathMixin(View):
         """
         Return the language to display in this view.
         """
-        return (
-            translation.get_language()
-        )  # Assumes that middleware has set this properly.
+        return translation.get_language()  # Assumes that middleware has set this properly.
 
 
 class CmsPageDispatcher(GetPathMixin, View):
@@ -95,11 +93,7 @@ class CmsPageDispatcher(GetPathMixin, View):
             # Admin might not be loaded.
             pass
 
-        if (
-            settings.DEBUG
-            and self.model.objects.published().count() == 0
-            and self.path == "/"
-        ):
+        if settings.DEBUG and self.model.objects.published().count() == 0 and self.path == "/":
             # No pages in the database, present nice homepage.
             return self._intro_page()
         else:
@@ -280,9 +274,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         # perform some service for the user if this is the case.
         if _is_accidental_fallback(self.object, self.language_code):
             self.object.set_current_language(self.language_code)
-            return HttpResponsePermanentRedirect(
-                self.object.default_url.rstrip("/") + sub_path
-            )
+            return HttpResponsePermanentRedirect(self.object.default_url.rstrip("/") + sub_path)
 
         # Avoid additional lookup in templatetags
         self.request._current_fluent_page = self.object
@@ -294,9 +286,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         )
         if response is None:
             raise RuntimeError(
-                "The view '{}' didn't return an HttpResponse object.".format(
-                    match.url_name
-                )
+                "The view '{}' didn't return an HttpResponse object.".format(match.url_name)
             )
 
         return response
@@ -380,9 +370,7 @@ def _try_languages(language_code, exception_class, func):
     try:
         obj = func(fallback)
     except exception_class as e:
-        raise exception_class(
-            f"{str(e)}\nTried languages: {language_code}, {fallback}", e
-        )
+        raise exception_class(f"{str(e)}\nTried languages: {language_code}, {fallback}", e)
 
     # NOTE: it could happen that objects are resolved using their fallback language,
     # but the actual translation also exists. This is handled in _get_node() above.

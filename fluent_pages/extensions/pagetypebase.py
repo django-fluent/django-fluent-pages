@@ -21,8 +21,8 @@ except ImportError:
         from django.urls import RegexURLResolver as URLResolver  # Django 1.11
     except ImportError:
         from django.core.urlresolvers import (
-            RegexURLResolver as URLResolver,
-        )  # Django 1.10 / 1.11 with deprecation warning
+            RegexURLResolver as URLResolver,  # Django 1.10 / 1.11 with deprecation warning
+        )
 
 __all__ = ("PageTypePlugin",)
 
@@ -173,9 +173,7 @@ class PageTypePlugin(metaclass=forms.MediaDefiningClass):
             )
 
         context = self.get_context(request, page, **kwargs)
-        return self.response_class(
-            request=request, template=render_template, context=context
-        )
+        return self.response_class(request=request, template=render_template, context=context)
 
     def get_render_template(self, request, page, **kwargs):
         """
@@ -196,9 +194,7 @@ class PageTypePlugin(metaclass=forms.MediaDefiningClass):
         return {
             "FLUENT_PAGES_BASE_TEMPLATE": appsettings.FLUENT_PAGES_BASE_TEMPLATE,
             "page": page,
-            "site": SimpleLazyObject(
-                lambda: page.parent_site
-            ),  # delay query until read
+            "site": SimpleLazyObject(lambda: page.parent_site),  # delay query until read
         }
 
     def get_view_response(self, request, page, view_func, view_args, view_kwargs):
