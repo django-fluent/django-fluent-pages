@@ -1,3 +1,14 @@
+*This project has reached the end of its development as CMS framework.*
+*It only receives low maintenance to continue running existing websites.*
+*Feel free to browse the code, but please use other Django-based CMS frameworks such as*
+`Wagtail CMS <https://wagtail.io/>`_ *when you start a new project.*
+
+django-fluent-pages
+===================
+
+.. image:: http://unmaintained.tech/badge.svg
+    :target: http://unmaintained.tech
+    :alt: No Maintenance Intended
 .. image:: https://img.shields.io/travis/django-fluent/django-fluent-pages/master.svg?branch=master
     :target: http://travis-ci.org/django-fluent/django-fluent-pages
 .. image:: https://img.shields.io/pypi/v/django-fluent-pages.svg
@@ -9,8 +20,6 @@
 .. image:: https://readthedocs.org/projects/django-fluent-pages/badge/?version=latest
     :target: https://django-fluent-pages.readthedocs.io/en/latest/
 
-django-fluent-pages
-===================
 
 This is a stand-alone module, which provides a flexible,
 scalable CMS with custom node types, and flexible block content.
