@@ -6,6 +6,8 @@
     :target: https://pypi.python.org/pypi/django-fluent-pages/
 .. image:: https://img.shields.io/codecov/c/github/django-fluent/django-fluent-pages/master.svg
     :target: https://codecov.io/github/django-fluent/django-fluent-pages?branch=master
+.. image:: https://readthedocs.org/projects/django-fluent-pages/badge/?version=latest
+    :target: https://django-fluent-pages.readthedocs.io/en/latest/
 
 django-fluent-pages
 ===================
