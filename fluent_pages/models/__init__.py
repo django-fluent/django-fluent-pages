@@ -42,25 +42,15 @@ __all__ = [
 
 def _register_cmsfield_url_type():
     try:
+        from any_urlfield.forms.widgets import SimpleRawIdWidget
         from any_urlfield.models import AnyUrlField
     except ImportError:
         pass
     else:
-        from distutils.version import StrictVersion
-
-        import any_urlfield
-        from any_urlfield.forms.widgets import SimpleRawIdWidget
-
-        if StrictVersion(any_urlfield.__version__) >= StrictVersion("2.0a1"):
-            # Allow lambda parameter for late evaluation.
-            AnyUrlField.register_model(
-                Page, form_field=lambda: PageChoiceField(widget=SimpleRawIdWidget(Page))
-            )
-        else:
-            # This will run a query at import time!
-            AnyUrlField.register_model(
-                Page, form_field=PageChoiceField(widget=SimpleRawIdWidget(Page))
-            )
+        # Allow lambda parameter for late evaluation.
+        AnyUrlField.register_model(
+            Page, form_field=lambda: PageChoiceField(widget=SimpleRawIdWidget(Page))
+        )
 
 
 if "any_urlfield" in settings.INSTALLED_APPS:
