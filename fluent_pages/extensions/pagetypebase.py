@@ -2,27 +2,17 @@
 import re
 from importlib import import_module
 
-import django
 from django import forms
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ImproperlyConfigured
 from django.db import DatabaseError
 from django.template.response import TemplateResponse
+from django.urls import URLResolver
+from django.urls.resolvers import RegexPattern
 from django.utils.functional import SimpleLazyObject
 
 from fluent_pages import appsettings
 from fluent_pages.adminui import PageAdmin
-
-try:
-    from django.urls import URLResolver  # Django 2.0+
-    from django.urls.resolvers import RegexPattern
-except ImportError:
-    try:
-        from django.urls import RegexURLResolver as URLResolver  # Django 1.11
-    except ImportError:
-        from django.core.urlresolvers import (
-            RegexURLResolver as URLResolver,  # Django 1.10 / 1.11 with deprecation warning
-        )
 
 __all__ = ("PageTypePlugin",)
 
@@ -227,8 +217,5 @@ class PageTypePlugin(metaclass=forms.MediaDefiningClass):
                     )
                 )
 
-            if django.VERSION > (2, 0):
-                self._url_resolver = URLResolver(RegexPattern(r"^/"), patterns)
-            else:
-                self._url_resolver = URLResolver(r"^/", patterns)
+            self._url_resolver = URLResolver(RegexPattern(r"^/"), patterns)
         return self._url_resolver
