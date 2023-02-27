@@ -97,7 +97,7 @@ class UrlNodeParentAdmin(MultiSiteAdminMixin, TranslatableAdmin, PolymorphicMPTT
 
         def fill_choices(filter=lambda x: True):
             for plugin in base_plugins:
-                ct_id = ContentType.objects.get_for_model(plugin.model).id
+                ct_id = ContentType.objects.get_for_model(plugin.model, for_concrete_model=False).id
                 if not filter(ct_id):
                     continue
                 choices.append((ct_id, plugin.verbose_name))

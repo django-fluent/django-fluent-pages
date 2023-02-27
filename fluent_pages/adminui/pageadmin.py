@@ -100,7 +100,7 @@ class DefaultPageChildAdmin(UrlNodeChildAdmin):
                 "base_change_form_template": self.base_change_form_template,
                 "default_change_form_template": _lazy_get_default_change_form_template(self),
                 "ct_id": int(
-                    ContentType.objects.get_for_model(obj).pk
+                    ContentType.objects.get_for_model(obj, for_concrete_model=False).pk
                     if change
                     else request.GET.get("ct_id", 0)
                 ),  # HACK for polymorphic admin
