@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Changes in 3.0.1 (2023-02-27)
+-----------------------------
+
+* Added support for pure-proxy models as page type.
+* Fixed unapplied changes warning in migrations for django-mptt >=0.10.
+* Fixed unneeded compatibility import for ``ForwardManyToOneDescriptor``.
+* RedirectNode: hide "show in sitemaps" link
+* TextFile: hide in sitemaps by default
+
+
 Changes in 3.0 (2021-11-17)
 ---------------------------
 
