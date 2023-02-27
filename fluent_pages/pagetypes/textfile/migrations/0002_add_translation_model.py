@@ -1,3 +1,4 @@
+import parler.fields
 from django.db import migrations, models
 
 
@@ -25,7 +26,7 @@ class Migration(migrations.Migration):
                 ("content", models.TextField(verbose_name="File contents")),
                 (
                     "master",
-                    models.ForeignKey(
+                    parler.fields.TranslationsForeignKey(
                         related_name="text_translations",
                         editable=False,
                         to="textfile.TextFile",

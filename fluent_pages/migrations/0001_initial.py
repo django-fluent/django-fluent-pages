@@ -4,6 +4,7 @@ from django.db import migrations, models
 
 import fluent_pages.models.db
 import fluent_pages.models.fields
+import parler.fields
 from fluent_pages import appsettings
 
 
@@ -327,7 +328,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="htmlpagetranslation",
             name="master",
-            field=models.ForeignKey(
+            field=parler.fields.TranslationsForeignKey(
                 related_name="seo_translations",
                 editable=False,
                 to="fluent_pages.HtmlPage",

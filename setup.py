@@ -40,7 +40,7 @@ setup(
     license="Apache 2.0",
     install_requires=[
         "django-fluent-utils>=2.0.1",  # DRY utility code
-        "django-mptt>=0.9.0",
+        "django-mptt>=0.10.0",
         "django-parler>=2.0.1",
         "django-polymorphic>=2.1.2",
         "django-polymorphic-tree>=1.5.1",

@@ -1,3 +1,4 @@
+import parler.fields
 from django.db import migrations, models
 
 
@@ -59,7 +60,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "master",
-                    models.ForeignKey(
+                    parler.fields.TranslationsForeignKey(
                         related_name="redirect_translations",
                         editable=False,
                         to="redirectnode.RedirectNode",
