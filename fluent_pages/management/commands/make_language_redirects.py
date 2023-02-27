@@ -65,7 +65,7 @@ class Command(BaseCommand):
                 raise CommandError(f"No URLs found for site {site} in {from_name}")
 
             self.stdout.write(
-                "# Redirecting all translated {} URLs to the {} site\n".format(from_name, to_name)
+                f"# Redirecting all translated {from_name} URLs to the {to_name} site\n"
             )
             self.stdout.write("# Generated using {}".format(" ".join(sys.argv)))
 
@@ -92,7 +92,7 @@ class Command(BaseCommand):
                     )
                 else:
                     self.stdout.write(
-                        "location {0} {{ return 301 {1}{2}; }}\n".format(from_rule, host, to_url)
+                        f"location {from_rule} {{ return 301 {host}{to_url}; }}\n"
                     )
 
             # Final redirect for all identical URLs

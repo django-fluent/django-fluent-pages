@@ -155,7 +155,7 @@ class PageNavigationNode(NavigationNode):
     def parent(self, new_parent):
         # Happens when django-mptt finds an object with a different level in the recursetree() / cache_tree_children() code.
         raise AttributeError(
-            "can't set attribute 'parent' of '{}' object.".format(self.__class__.__name__)
+            f"can't set attribute 'parent' of '{self.__class__.__name__}' object."
         )
 
     @property

@@ -136,7 +136,7 @@ class PageTypePool:
             else:
                 ct_name = f"{ct.app_label}.{ct.model}"
             raise PageTypeNotFound(
-                "No plugin found for content type #{} ({}).".format(contenttype, ct_name)
+                f"No plugin found for content type #{contenttype} ({ct_name})."
             )
 
         return self.plugins[name]

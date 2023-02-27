@@ -148,7 +148,7 @@ def _get_pages_of_type(model, language_code=None):
     if language_code is None:
         language_code = get_language()
 
-    cachekey = "fluent_pages.instance_of.{}.{}".format(model.__name__, settings.SITE_ID)
+    cachekey = f"fluent_pages.instance_of.{model.__name__}.{settings.SITE_ID}"
     pages = cache.get(cachekey)
     if not pages:
         pages = (

@@ -92,7 +92,7 @@ class AppTestCase(TestCase):
             response.status_code,
             404,
             str(msg_prefix)
-            + "Page at {} should return 404, got {}.".format(url, response.status_code),
+            + f"Page at {url} should return 404, got {response.status_code}.",
         )
 
 

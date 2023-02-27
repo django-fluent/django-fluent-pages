@@ -572,7 +572,7 @@ class UrlNode(AbstractUrlNode):
             if self.is_file:
                 translation._cached_url = f"{parent_url}{translation.slug}"
             else:
-                translation._cached_url = "{}{}/".format(parent_url, translation.slug)
+                translation._cached_url = f"{parent_url}{translation.slug}/"
 
     def _update_decendant_urls(self, translation):
         """
@@ -687,7 +687,7 @@ class UrlNode(AbstractUrlNode):
         """
         cachekeys = [
             # created by urlresolvers._get_pages_of_type()
-            "fluent_pages.instance_of.{}.{}".format(self.__class__.__name__, self.parent_site_id)
+            f"fluent_pages.instance_of.{self.__class__.__name__}.{self.parent_site_id}"
         ]
         for cachekey in cachekeys:
             cache.delete(cachekey)

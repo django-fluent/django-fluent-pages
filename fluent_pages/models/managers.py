@@ -66,7 +66,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             return obj
         except self.model.DoesNotExist:
             raise self.model.DoesNotExist(
-                "No published {} found for the path '{}'".format(self.model.__name__, path)
+                f"No published {self.model.__name__} found for the path '{path}'"
             )
 
     def best_match_for_path(self, path, language_code=None):
@@ -100,7 +100,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
             return obj
         except IndexError:
             raise self.model.DoesNotExist(
-                "No published {} found for the path '{}'".format(self.model.__name__, path)
+                f"No published {self.model.__name__} found for the path '{path}'"
             )
 
     def _split_path_levels(self, path):
@@ -138,7 +138,7 @@ class UrlNodeQuerySet(TranslatableQuerySet, DecoratingQuerySet, PolymorphicMPTTQ
                 )
             else:
                 raise self.model.DoesNotExist(
-                    "{} with key='{}' does not exist.".format(self.model.__name__, key)
+                    f"{self.model.__name__} with key='{key}' does not exist."
                 )
 
     def parent_site(self, site):

@@ -286,7 +286,7 @@ class CmsPageDispatcher(GetPathMixin, View):
         )
         if response is None:
             raise RuntimeError(
-                "The view '{}' didn't return an HttpResponse object.".format(match.url_name)
+                f"The view '{match.url_name}' didn't return an HttpResponse object."
             )
 
         return response
