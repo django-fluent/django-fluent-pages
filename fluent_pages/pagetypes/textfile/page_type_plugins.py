@@ -9,6 +9,7 @@ from .models import TextFile
 class TextFilePlugin(PageTypePlugin):
     model = TextFile
     is_file = True
+    default_in_sitemaps = False
 
     def get_response(self, request, textfile, **kwargs):
         content_type = textfile.content_type
