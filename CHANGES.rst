@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Changes in 3.0.2 (2023-10-16)
+-----------------------------
+
+* Added Django 4.1/4.2 support.
+* Fix test running in Tox 4.
+
+
 Changes in 3.0.1 (2023-02-27)
 -----------------------------
 
