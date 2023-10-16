@@ -27,7 +27,6 @@ LANGUAGE_CODE = "en"
 SITE_ID = 1
 
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 MEDIA_ROOT = join(dirname(__file__), "media")
@@ -41,6 +40,8 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = "-#@bi6bue%#1j)6+4b&#i0g-*xro@%f@_#zwv=2-g_@n3n_kj5"
