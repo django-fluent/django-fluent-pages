@@ -76,6 +76,7 @@ if not settings.configured:
             }
         ],
         TEST_RUNNER="django.test.runner.DiscoverRunner",
+        DEFAULT_AUTO_FIELD="django.db.models.AutoField",
         SITE_ID=4,
         SECRET_KEY="testtest",
         PARLER_LANGUAGES={4: ({"code": "nl", "fallback": "en"}, {"code": "en"})},
