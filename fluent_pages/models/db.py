@@ -23,7 +23,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from fluent_utils.softdeps.any_imagefield import AnyImageField
 from parler.cache import get_object_cache_keys
-from parler.fields import TranslatedField
+from parler.fields import TranslatedField, TranslationsForeignKey
 from parler.models import TranslatableModel, TranslatedFields, TranslatedFieldsModel
 from parler.utils import get_language_title
 from parler.utils.context import switch_language
@@ -720,7 +720,7 @@ class UrlNode_Translation(TranslatedFieldsModel):
     )
 
     # Base fields
-    master = models.ForeignKey(
+    master = TranslationsForeignKey(
         UrlNode, on_delete=models.CASCADE, related_name="translations", null=True
     )
 
