@@ -1,6 +1,7 @@
 """
 Custom generic managers
 """
+from django.apps import apps
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.query import QuerySet
@@ -10,7 +11,7 @@ def prefill_parent_site(page):
     """
     Optimize the ``parent_site`` field of a page if possible, fill it's cache.
     """
-    if Site._meta.installed:
+    if apps.is_installed("django.contrib.sites"):
         current_site = Site.objects.get_current()
 
         if page.parent_site_id == current_site.id:
